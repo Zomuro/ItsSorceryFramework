@@ -22,6 +22,7 @@ namespace ItsSorceryFramework
             this.pawn = pawn;
             this.def = def;
             this.sorcerySchemaDef = null;
+            Initialize();
         }
 
         public ProgressTracker(Pawn pawn, SorcerySchemaDef def)
@@ -29,6 +30,7 @@ namespace ItsSorceryFramework
             this.pawn = pawn;
             this.def = def.progressTrackerDef;
             this.sorcerySchemaDef = def;
+            Initialize();
         }
 
         public virtual void ExposeData()
@@ -37,6 +39,9 @@ namespace ItsSorceryFramework
             Scribe_Defs.Look(ref def, "def");
             Scribe_Defs.Look(ref sorcerySchemaDef, "sorcerySchemaDef");
             Scribe_Deep.Look(ref hediff, "hediff");
+            Scribe_Values.Look(ref points, "points", 0);
+            Scribe_Collections.Look(ref statOffsetsTotal, "statOffsetsTotal", LookMode.Def, LookMode.Value);
+            Scribe_Collections.Look(ref statFactorsTotal, "statFactorsTotal", LookMode.Def, LookMode.Value);
         }
 
         public virtual void Initialize()
@@ -58,7 +63,7 @@ namespace ItsSorceryFramework
                     sevAdjust = currentLevelEXPReq - sevToCurrProgress(hediff.Severity);
                     exp -= sevAdjust;
                     HealthUtility.AdjustSeverity(pawn, def.progressHediff, sevAdjust / currentLevelEXPReq);
-                    notifyLevelUp();
+                    notifyLevelUp(hediff.Severity);
                 }
                 else
                 {
@@ -69,18 +74,65 @@ namespace ItsSorceryFramework
 
             if(Mathf.Floor(hediff.Severity) > Mathf.Floor(orgSev))
             {
-                notifyTotalLevelUp();
+                notifyTotalLevelUp(orgSev);
             }
         }
 
-        public virtual void notifyLevelUp()
+        public virtual void notifyLevelUp(float sev)
         {
-            
+            int sevInt = (int)sev;
+            bool check = false;
+            foreach(ProgressLevelModulo modulo in def.levelModulo.OrderByDescending(x => x.levelFactor))
+            {
+                if(sevInt % modulo.levelFactor == 0)
+                {
+                    adjustTotalStatMods(statOffsetsTotal, modulo.statOffsets);
+                    adjustTotalStatMods(statFactorsTotal, modulo.statFactors);
+
+                    points += modulo.pointGain;
+                    check = true;
+                    break;
+                }
+            }
+            if(!check) points += 1;
+
+            HediffStage newStage = new HediffStage();
+            newStage.minSeverity = sevInt;
+            newStage.statOffsets = createStatModifiers(statOffsetsTotal).ToList();
+            newStage.statFactors = createStatModifiers(statFactorsTotal).ToList();
+            hediff.def.stages.Add(newStage);
         }
 
-        public virtual void notifyTotalLevelUp()
+        public void adjustTotalStatMods(Dictionary<StatDef, float> stats, List<StatModifier> statMods)
         {
-            
+            foreach(StatModifier statMod in statMods)
+            {
+                if (stats.Keys.Contains(statMod.stat))
+                {
+                    stats[statMod.stat] += statMod.value;
+                    continue;
+                }
+
+                stats[statMod.stat] = statMod.value;
+            }
+        }
+
+        public IEnumerable<StatModifier> createStatModifiers(Dictionary<StatDef, float> stats)
+        {
+            StatModifier mod = new StatModifier();
+            foreach (var pair in stats)
+            {
+                mod.stat = pair.Key; mod.value = pair.Value;
+                yield return mod;
+            }
+
+            yield break;
+        }
+
+        public virtual void notifyTotalLevelUp(float sev)
+        {
+            Find.LetterStack.ReceiveLetter("Level up: "+ pawn.Name,
+                "This pawn has leveled up.", LetterDefOf.NeutralEvent, null);
         }
 
         public float sevToCurrProgress(float currSev)
@@ -104,8 +156,18 @@ namespace ItsSorceryFramework
 
         public Hediff hediff;
 
-        public List<StatModifier> statOffsetsTotal;
+        // public List<StatModifier> statOffsetsTotal1;
 
-        public List<StatModifier> statFactorsTotal;
+        public Dictionary<StatDef, float> statOffsetsTotal = new Dictionary<StatDef, float>();
+
+        //public List<StatModifier> statFactorsTotal1;
+
+        public Dictionary<StatDef, float> statFactorsTotal = new Dictionary<StatDef, float>();
+
+        public int points = 0;
+
+        
+
+
     }
 }
