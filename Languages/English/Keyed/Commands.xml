@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+
+	<CommandDisableReasonBase_ISF>{0} does not possess enough energy to cast this.</CommandDisableReasonBase_ISF>
+	<CommandDisableReasonInvert_ISF>{0} cannot contain any more energy to cast this.</CommandDisableReasonInvert_ISF>
+	<CommandDisableReasonVancian_ISF>{0} has no more casts of this.</CommandDisableReasonVancian_ISF>
+	<CommandDisableReasonCooldown_ISF>{0} must wait longer to cast abilities.</CommandDisableReasonCooldown_ISF>
+	
+</LanguageData>

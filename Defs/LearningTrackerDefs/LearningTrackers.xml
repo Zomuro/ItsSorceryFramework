@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	<!-- Demostration + Testing LearningTracker def -->
+	<ItsSorceryFramework.LearningTrackerDef Name = "LearningTrackerBase">
+		<learningTrackerClass>ItsSorceryFramework.LearningTracker</learningTrackerClass>
+		<defName>LearningTracker_Base</defName>
+		<label>learning tracker test</label>
+		
+	</ItsSorceryFramework.LearningTrackerDef>
+	
+	<ItsSorceryFramework.LearningTrackerDef Name = "LearningTrackerTree">
+		<learningTrackerClass>ItsSorceryFramework.LearningTracker_Tree</learningTrackerClass>
+		<defName>LearningTracker_Tree</defName>
+		<label>learning tree</label>
+	</ItsSorceryFramework.LearningTrackerDef>
+	
+	<ItsSorceryFramework.LearningTrackerDef ParentName = "LearningTrackerTree">
+		<defName>LearningTracker_Tree2</defName>
+		<label>learning tree 2</label>
+	</ItsSorceryFramework.LearningTrackerDef>
+	
+	<ItsSorceryFramework.LearningTreeNodeDef Name = "BaseNode">
+		<learningTracker>LearningTracker_Tree</learningTracker>
+		<defName>node1</defName>
+		<label>Birds and bees</label>
+		<description>The literal basics.</description>
+		
+		<coordX>0</coordX>
+		<coordY>0</coordY>
+	</ItsSorceryFramework.LearningTreeNodeDef>
+	
+	<ItsSorceryFramework.LearningTreeNodeDef ParentName = "BaseNode">
+		<defName>node2</defName>
+		<label>Mediocrity</label>
+		<description>100 IQ.</description>
+		<coordX>1</coordX>
+		<coordY>0</coordY>
+		<prereqs>
+			<li>node1</li>
+		</prereqs>
+		<prereqsResearch>
+			<li>Electricity</li>
+		</prereqsResearch>
+		
+		<abilityGain>
+			<li>testsorcery</li>
+		</abilityGain>
+	</ItsSorceryFramework.LearningTreeNodeDef>
+	
+	<ItsSorceryFramework.LearningTreeNodeDef ParentName = "BaseNode">
+		<defName>node3</defName>
+		<label>Something cool</label>
+		<description>but no pumped up kicks.</description>
+		<coordX>1</coordX>
+		<coordY>1</coordY>
+		<prereqs>
+			<li>node1</li>
+		</prereqs>
+		<prereqsResearch>
+			<li>Electricity</li>
+			<li>Batteries</li>
+		</prereqsResearch>
+		
+		<abilityGain>
+			<li>testsorcery2</li>
+		</abilityGain>
+	</ItsSorceryFramework.LearningTreeNodeDef>
+	
+	<ItsSorceryFramework.LearningTreeNodeDef ParentName = "BaseNode">
+		<defName>node4</defName>
+		<label>Top dog</label>
+		<description>Wise words: WOOF.</description>
+		<coordX>2</coordX>
+		<coordY>0</coordY>
+		<prereqs>
+			<li>node2</li>
+			<li>node3</li>
+		</prereqs>
+		<prereqsResearch>
+			<li>NutrientPaste</li>
+		</prereqsResearch>
+		
+		<abilityGain>
+			<li>testsorcery3</li>
+		</abilityGain>
+		<abilityRemove>
+			<li>testsorcery</li>
+		</abilityRemove>
+	</ItsSorceryFramework.LearningTreeNodeDef>
+	
+	<ItsSorceryFramework.LearningTreeNodeDef>
+		<defName>node12</defName>
+		<label>node12</label>
+		<learningTracker>LearningTracker_Tree2</learningTracker>
+		<coordX>0</coordX>
+		<coordY>0</coordY>
+	</ItsSorceryFramework.LearningTreeNodeDef>
+	
+	<ItsSorceryFramework.LearningTreeNodeDef>
+		<defName>node22</defName>
+		<label>node22</label>
+		<learningTracker>LearningTracker_Tree2</learningTracker>
+		<coordX>1</coordX>
+		<coordY>0</coordY>
+	</ItsSorceryFramework.LearningTreeNodeDef>
+	
+	<ItsSorceryFramework.LearningTreeNodeDef>
+		<defName>node32</defName>
+		<label>node32</label>
+		<learningTracker>LearningTracker_Tree2</learningTracker>
+		<coordX>1</coordX>
+		<coordY>1</coordY>
+	</ItsSorceryFramework.LearningTreeNodeDef>
+	
+</Defs>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+	
+	<!-- SorcerySchemaDef Info window - Energy Trackers -->
+	<EnergyTrackerEnergyLabel_ISF>energy</EnergyTrackerEnergyLabel_ISF>
+	<EnergyTrackerUnit_ISF>Unit</EnergyTrackerUnit_ISF>
+	
+	<EnergyTrackerUnderBarFactor_ISF>Underbar recovery factor</EnergyTrackerUnderBarFactor_ISF>
+	<EnergyTrackerOverBarFactor_ISF>Overbar recovery factor</EnergyTrackerOverBarFactor_ISF>
+	<EnergyTrackerTurnInfo_ISF>Turn time (secs)</EnergyTrackerTurnInfo_ISF>
+	<EnergyTrackerRefreshInfo_ISF>Refresh time (secs)</EnergyTrackerRefreshInfo_ISF>
+	<EnergyTrackerAmmo_ISF>Source(s)</EnergyTrackerAmmo_ISF>
+	
+	<EnergyTrackerUnderBarFactorDesc_ISF>A multiplier on recovery rate when the current energy level is below 0.</EnergyTrackerUnderBarFactorDesc_ISF>
+	<EnergyTrackerOverBarFactorDesc_ISF>A multiplier on recovery rate when the current energy level is above the maximum energy.</EnergyTrackerOverBarFactorDesc_ISF>
+	<EnergyStatDesc_ISF>The resource that pawns require to cast sorceries, upon which it is depleted (or in rare cases, gained).</EnergyStatDesc_ISF>
+	<EnergyTrackerTurnInfoDesc_ISF>The amount of time a "turn" (the period of time between automatic game pauses when the pawn is drafted) takes in seconds.</EnergyTrackerTurnInfoDesc_ISF>
+	<EnergyTrackerRefreshInfoDesc_ISF>The amount of time it takes a sorcery schema to refresh various values, often discrete casts, in seconds.</EnergyTrackerRefreshInfoDesc_ISF>
+	<EnergyTrackerAmmoDesc_ISF>The source(s) of this schema's energy unit. Depending on schema, various sources can contribute differing amounts of energy units.</EnergyTrackerAmmoDesc_ISF>
+	
+	<!-- SorcerySchemaDef Info window - Learning Trackers -->
+	<LearningNodePrerequisites_ISF>Node prerequisites:</LearningNodePrerequisites_ISF>
+	
+	
+</LanguageData>

@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	<!-- Demostration + Testing EnergyTracker def -->
+	<ItsSorceryFramework.EnergyTrackerDef Name = "EnergyTrackerBase">
+		<energyTrackerClass>ItsSorceryFramework.EnergyTracker</energyTrackerClass>
+		<defName>EnergyTracker_Base</defName>
+		<label>energy tracker test</label>
+		
+		<energyMaxStatDef>MaxEnergy_ItsSorcery</energyMaxStatDef>
+		<energyMinStatDef>MinEnergy_ItsSorcery</energyMinStatDef>
+		<energyRecoveryStatDef>EnergyRecovery_ItsSorcery</energyRecoveryStatDef>
+		
+	</ItsSorceryFramework.EnergyTrackerDef>
+	
+	<ItsSorceryFramework.EnergyTrackerDef Name = "EnergyTrackerBaseRPG">
+		<energyTrackerClass>ItsSorceryFramework.EnergyTracker_RPG</energyTrackerClass>
+		<defName>EnergyTracker_BaseRPG</defName>
+		<label>energy tracker test RPG</label>
+		
+		<energyMaxStatDef>MaxEnergy_ItsSorcery</energyMaxStatDef>
+		<energyMinStatDef>MinEnergy_ItsSorcery</energyMinStatDef>
+		<energyRecoveryStatDef>EnergyRecovery_ItsSorcery</energyRecoveryStatDef>
+		
+		<sideEffect>test2hediff</sideEffect>
+	</ItsSorceryFramework.EnergyTrackerDef>
+	
+	<ItsSorceryFramework.EnergyTrackerDef Name = "EnergyTrackerBaseRPGTurnBased">
+		<energyTrackerClass>ItsSorceryFramework.EnergyTracker_RPGTurnBased</energyTrackerClass>
+		<defName>EnergyTracker_BaseRPGTurnBased</defName>
+		<label>energy tracker test RPG turn based</label>
+		
+		<energyMaxStatDef>MaxEnergy_ItsSorcery</energyMaxStatDef>
+		<energyMinStatDef>MinEnergy_ItsSorcery</energyMinStatDef>
+		<energyRecoveryStatDef>EnergyRecovery_ItsSorcery</energyRecoveryStatDef>
+		
+		<turnTicks>180</turnTicks>
+	</ItsSorceryFramework.EnergyTrackerDef>
+	
+	<ItsSorceryFramework.EnergyTrackerDef Name = "EnergyTrackerBaseInverted">
+		<energyTrackerClass>ItsSorceryFramework.EnergyTracker_Inverted</energyTrackerClass>
+		<defName>EnergyTracker_BaseInverted</defName>
+		<label>energy tracker test RPG</label>
+		
+		<energyMaxStatDef>MaxEnergy_ItsSorcery</energyMaxStatDef>
+		<energyMinStatDef>MinEnergy_ItsSorcery</energyMinStatDef>
+		<energyRecoveryStatDef>EnergyRecovery_ItsSorcery</energyRecoveryStatDef>
+		
+	</ItsSorceryFramework.EnergyTrackerDef>
+	
+	<ItsSorceryFramework.EnergyTrackerDef Name = "EnergyTrackerBaseVancian">
+		<energyTrackerClass>ItsSorceryFramework.EnergyTracker_Vancian</energyTrackerClass>
+		<defName>EnergyTracker_BaseVancian</defName>
+		<label>energy tracker test vancian</label>
+		
+		<refreshTicks>1500</refreshTicks>
+	</ItsSorceryFramework.EnergyTrackerDef>
+	
+	<ItsSorceryFramework.EnergyTrackerDef Name = "EnergyTrackerBaseVancianLifetime">
+		<energyTrackerClass>ItsSorceryFramework.EnergyTracker_VancianLifetime</energyTrackerClass>
+		<defName>EnergyTracker_BaseVancianLifetime</defName>
+		<label>energy tracker test vancian lifetime</label>
+		
+		<energyMaxStatDef>MaxEnergy_ItsSorcery</energyMaxStatDef>
+		<energyRecoveryStatDef>EnergyRecovery_ItsSorcery</energyRecoveryStatDef>
+		<refreshTicks>1500</refreshTicks>
+	</ItsSorceryFramework.EnergyTrackerDef>
+	
+	<ItsSorceryFramework.EnergyTrackerDef Name = "EnergyTrackerBaseConsumable">
+		<energyTrackerClass>ItsSorceryFramework.EnergyTracker_Consumable</energyTrackerClass>
+		<defName>EnergyTracker_BaseConsumable</defName>
+		<label>energy tracker test consumable</label>
+		
+		<energyMaxStatDef>MaxEnergy_ItsSorcery</energyMaxStatDef>
+		<energyRecoveryStatDef>EnergyRecovery_ItsSorcery</energyRecoveryStatDef>
+		<refreshTicks>3000</refreshTicks>
+		<sorceryAmmoDict>
+			<li>
+				<key>Milk</key>
+				<value>5.0</value>
+			</li>
+			<li>
+				<key>Chocolate</key>
+				<value>10.0</value>
+			</li>
+		</sorceryAmmoDict>
+	</ItsSorceryFramework.EnergyTrackerDef>
+	
+	<ItsSorceryFramework.EnergyTrackerDef Name = "EnergyTrackerBaseCooldown">
+		<energyTrackerClass>ItsSorceryFramework.EnergyTracker_Cooldown</energyTrackerClass>
+		<defName>EnergyTracker_BaseCooldown</defName>
+		<label>energy tracker test cooldown</label>
+		
+		<energyMaxStatDef>MaxEnergy_ItsSorcery</energyMaxStatDef>
+		<energyRecoveryStatDef>EnergyRecovery_ItsSorcery</energyRecoveryStatDef>
+		<refreshTicks>180</refreshTicks>
+	</ItsSorceryFramework.EnergyTrackerDef>
+
+
+</Defs>

@@ -1,0 +1,113 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	
+	<StatDef>
+		<defName>MaxEnergy_ItsSorcery</defName>
+		<label>maximum energy</label>
+		<description>The maximum energy normally availible to a pawn.</description>
+		<category>BasicsPawn</category>
+		<defaultBaseValue>50</defaultBaseValue>
+		<minValue>0</minValue>
+		<toStringStyle>FloatTwo</toStringStyle>
+		<showOnAnimals>false</showOnAnimals>
+		<alwaysHide>true</alwaysHide>
+		<displayPriorityInCategory>3499</displayPriorityInCategory>
+		<scenarioRandomizable>true</scenarioRandomizable>
+		<statFactors>
+			<li>EnergyFactor_ItsSorcery</li>
+		</statFactors>
+	</StatDef>
+	
+	<StatDef>
+		<defName>MinEnergy_ItsSorcery</defName>
+		<label>minimum energy</label>
+		<description>The minimum energy a pawn can have.</description>
+		<category>BasicsPawn</category>
+		<maxValue>0</maxValue>
+		<defaultBaseValue>-50</defaultBaseValue>
+		<toStringStyle>FloatTwo</toStringStyle>
+		<showOnAnimals>false</showOnAnimals>
+		<alwaysHide>true</alwaysHide>
+		<displayPriorityInCategory>3498</displayPriorityInCategory>
+		<scenarioRandomizable>true</scenarioRandomizable>
+		<statFactors>
+			<li>EnergyFactor_ItsSorcery</li>
+		</statFactors>
+	</StatDef>
+	
+	<StatDef>
+		<defName>OverMaxEnergy_ItsSorcery</defName>
+		<label>overmax energy</label>
+		<description>The absolute maximum amount of energy availible to a pawn.</description>
+		<category>BasicsPawn</category>
+		<minValue>0</minValue>
+		<defaultBaseValue>100</defaultBaseValue>
+		<toStringStyle>FloatTwo</toStringStyle>
+		<showOnAnimals>false</showOnAnimals>
+		<alwaysHide>true</alwaysHide>
+		<displayPriorityInCategory>3497</displayPriorityInCategory>
+		<scenarioRandomizable>true</scenarioRandomizable>
+		<statFactors>
+			<li>EnergyFactor_ItsSorcery</li>
+		</statFactors>
+	</StatDef>
+	
+	<StatDef>
+		<defName>EnergyRecovery_ItsSorcery</defName>
+		<label>energy recovery rate</label>
+		<description>The rate at which a pawn recovers energy per second.</description>
+		<category>BasicsPawn</category>
+		<defaultBaseValue>5</defaultBaseValue>
+		<toStringStyle>FloatTwo</toStringStyle>
+		<showOnAnimals>false</showOnAnimals>
+		<alwaysHide>true</alwaysHide>
+		<displayPriorityInCategory>3496</displayPriorityInCategory>
+		<scenarioRandomizable>true</scenarioRandomizable>
+		<statFactors>
+			<li>EnergyFactor_ItsSorcery</li>
+		</statFactors>
+	</StatDef>
+	
+	<StatDef>
+		<defName>EnergyFactor_ItsSorcery</defName>
+		<label>energy factor</label>
+		<description>A multiplier on energy recovery and maximum energy.</description>
+		<category>BasicsPawn</category>
+		<defaultBaseValue>1</defaultBaseValue>
+		<toStringStyle>FloatTwo</toStringStyle>
+		<showOnAnimals>false</showOnAnimals>
+		<alwaysHide>true</alwaysHide>
+		<minValue>0</minValue>
+		<displayPriorityInCategory>3495</displayPriorityInCategory>
+		<scenarioRandomizable>true</scenarioRandomizable>
+	</StatDef>
+	
+	<StatDef>
+		<defName>EnergyCostFactor_ItsSorcery</defName>
+		<label>energy cost factor</label>
+		<description>A multiplier on energy cost when using sorceries.</description>
+		<category>BasicsPawn</category>
+		<defaultBaseValue>1</defaultBaseValue>
+		<toStringStyle>PercentZero</toStringStyle>
+		<showOnAnimals>false</showOnAnimals>
+		<alwaysHide>true</alwaysHide>
+		<minValue>0</minValue>
+		<displayPriorityInCategory>3494</displayPriorityInCategory>
+		<scenarioRandomizable>true</scenarioRandomizable>
+	</StatDef>
+	
+	<StatDef>
+		<defName>CastFactor_ItsSorcery</defName>
+		<label>cast factor</label>
+		<description>A multiplier on the number of times a Vancian sorcery may be cast.</description>
+		<category>BasicsPawn</category>
+		<defaultBaseValue>1</defaultBaseValue>
+		<toStringStyle>PercentZero</toStringStyle>
+		<showOnAnimals>false</showOnAnimals>
+		<alwaysHide>true</alwaysHide>
+		<minValue>0</minValue>
+		<displayPriorityInCategory>3493</displayPriorityInCategory>
+		<scenarioRandomizable>true</scenarioRandomizable>
+	</StatDef>
+
+</Defs>

@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+    
+  <HediffDef ParentName="DiseaseBase">
+    <defName>PsychicEntropy2</defName>
+    <label>test</label>
+    <description>test the hediff addition system</description>
+    <isBad>true</isBad>
+    <descriptionHyperlinks>
+      <HediffDef>PsychicBreakdown</HediffDef>
+      <HediffDef>PsychicShock</HediffDef>
+    </descriptionHyperlinks>
+    <comps>
+      <li Class="HediffCompProperties_DisappearsOnDeath"/>
+      <!--<li Class="HediffCompProperties_SeverityFromEntropy" />-->
+    </comps>
+    <stages>
+      <li>
+        <minSeverity>0.0</minSeverity>
+        <label>safe</label>
+      </li>
+      <li>
+        <minSeverity>0.1</minSeverity>
+        <label>overloaded</label>
+        <hediffGivers>
+          <li Class="HediffGiver_AddSeverity">
+            <hediff>PsychicBreakdown</hediff> <!-- bear in mind that when you go to a high level you also have to fall through the lower ones -->
+            <severityAmount>2</severityAmount>
+            <mtbHours>2</mtbHours>
+          </li>
+        </hediffGivers>
+      </li>
+      <li>
+        <minSeverity>0.33</minSeverity>
+        <label>very overloaded</label>
+        <hediffGivers>
+          <li Class="HediffGiver_AddSeverity">
+            <hediff>PsychicBreakdown</hediff>
+            <severityAmount>4</severityAmount>
+            <mtbHours>2</mtbHours>
+          </li>
+        </hediffGivers>
+      </li>
+      <li>
+        <minSeverity>0.66</minSeverity>
+        <label>extreme</label>
+        <hediffGivers>
+          <li Class="HediffGiver_AddSeverity">
+            <hediff>PsychicBreakdown</hediff>
+            <severityAmount>6</severityAmount>
+            <mtbHours>2</mtbHours>
+          </li>
+        </hediffGivers>
+      </li>
+      <li>
+        <minSeverity>1.0</minSeverity>
+        <label>overwhelming</label>
+        <hediffGivers>
+          <li Class="HediffGiver_Refresh">
+            <hediff>PsychicShock</hediff>
+          </li>
+          <li Class="HediffGiver_AddSeverity">
+            <hediff>PsychicBreakdown</hediff>
+            <severityAmount>8</severityAmount>
+            <mtbHours>2</mtbHours>
+          </li>
+        </hediffGivers>
+      </li>
+    </stages>
+  </HediffDef>
+  
+  <HediffDef ParentName="DiseaseBase">
+		<defName>test2hediff</defName>
+		<label>vital depletion</label>
+		<description>In emergencies where a cultivator is unable to utilize any qi freely flowing within their body, they are able to substitute with their own life force. Doing so allows them to make a last-ditch effort to get to safety, but also damages their body as they near death. Eventually, even an immortal can exhaust their vast lifeforce, literally throwing their life away when casting a technique.</description>
+		<isBad>true</isBad>
+		<initialSeverity>0</initialSeverity>
+		<maxSeverity>1</maxSeverity>
+		<comps>
+		    <li Class="HediffCompProperties_SeverityPerDay">
+				<severityPerDay>-0.20</severityPerDay>
+				<showDaysToRecover>true</showDaysToRecover>
+		    </li>
+		    <li Class="HediffCompProperties_DisappearsOnDeath"/>
+		</comps>
+		<stages>
+		    <li>
+				<label>minor</label>			
+				<capMods>
+					<li>
+						<capacity>Consciousness</capacity>
+						<offset>-0.15</offset>
+					</li>
+				</capMods>
+		    </li>
+		    <li>
+				<minSeverity>0.2</minSeverity>
+				<label>moderate</label>
+				<painOffset>0.05</painOffset>					
+				<capMods>
+				    <li>
+						<capacity>Consciousness</capacity>
+						<offset>-0.3</offset>
+				    </li>
+				</capMods>
+				<mentalBreakMtbDays>5</mentalBreakMtbDays>
+				<allowedMentalBreakIntensities>
+					<li>Minor</li>
+				</allowedMentalBreakIntensities>
+		    </li>
+		    <li>
+				<minSeverity>0.4</minSeverity>
+				<label>major</label>
+				<painOffset>0.1</painOffset>					
+				<capMods>
+				    <li>
+						<capacity>Consciousness</capacity>
+						<offset>-0.45</offset>
+				    </li>		
+				</capMods>
+				<mentalBreakMtbDays>5</mentalBreakMtbDays>
+				<allowedMentalBreakIntensities>
+				    <li>Minor</li>
+				    <li>Major</li>
+				</allowedMentalBreakIntensities>
+		    </li>
+		    <li>
+				<minSeverity>0.6</minSeverity>
+				<label>extreme</label>
+				<painOffset>0.15</painOffset>								
+				<capMods>
+				    <li>
+						<capacity>Consciousness</capacity>
+						<setMax>0.5</setMax>
+				    </li>
+				</capMods>
+				<mentalBreakMtbDays>5</mentalBreakMtbDays>
+				<allowedMentalBreakIntensities>
+				    <li>Major</li>
+				</allowedMentalBreakIntensities>	
+		    </li>		
+			<li>
+				<minSeverity>0.8</minSeverity>
+				<label>critical</label>
+				<painOffset>0.2</painOffset>					
+				<lifeThreatening>true</lifeThreatening>				
+				<capMods>
+				    <li>
+						<capacity>Consciousness</capacity>
+						<setMax>0.3</setMax>
+				    </li>
+				</capMods>
+				<mentalBreakMtbDays>3</mentalBreakMtbDays>
+				<allowedMentalBreakIntensities>
+				    <li>Major</li>
+				</allowedMentalBreakIntensities>	
+		    </li>	
+			<li>
+				<minSeverity>1</minSeverity>
+				<!--<hediffGivers>
+					<li Class="HediffGiver_Refresh">
+						<hediff>VitalDepletionDeath_Yaoma</hediff>
+					</li>
+				</hediffGivers>-->
+			</li>
+		</stages>
+	</HediffDef>
+
+</Defs>

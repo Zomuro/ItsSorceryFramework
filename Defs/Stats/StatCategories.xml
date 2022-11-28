@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+	<!--<StatCategoryDef>
+		<defName>Ability</defName>
+		<label>Ability</label>
+		<displayOrder>60</displayOrder>
+	</StatCategoryDef>-->
+
+	<StatCategoryDef>
+		<defName>SorcerySchema_ISF</defName>
+		<label>Sorcery schema</label>
+		<displayOrder>100</displayOrder>
+	</StatCategoryDef>
+	
+	<StatCategoryDef>
+		<defName>EnergyTracker_ISF</defName>
+		<label>Energy system</label>
+		<displayOrder>90</displayOrder>
+	</StatCategoryDef>
+	
+	<StatCategoryDef>
+		<defName>LearningTracker_ISF</defName>
+		<label>Learning systems</label>
+		<displayOrder>80</displayOrder>
+	</StatCategoryDef>
+	
+	<StatCategoryDef>
+		<defName>ProgressTracker_ISF</defName>
+		<label>Progress systems</label>
+		<displayOrder>70</displayOrder>
+	</StatCategoryDef>
+	
+	<StatCategoryDef>
+		<defName>Sorcery</defName>
+		<label>Sorcery</label>
+		<displayOrder>60</displayOrder>
+	</StatCategoryDef>
+
+</Defs>

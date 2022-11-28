@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+	<ItsSorceryFramework.SorcerySchemaDef>
+		<defName>SorcerySchema_Base</defName>
+		<label>Logos Experimentia</label>
+	
+		<energyTrackerDef>EnergyTracker_BaseRPG</energyTrackerDef>
+		<learningTrackerDefs>
+			<!--<li>LearningTracker_Base</li>-->
+			<li>LearningTracker_Tree</li>
+			<li>LearningTracker_Tree2</li>
+		</learningTrackerDefs>
+	</ItsSorceryFramework.SorcerySchemaDef>
+	
+	<ItsSorceryFramework.SorcerySchemaDef>
+		<defName>SorcerySchema_Base2</defName>
+		<label>Vex Sovereignty</label>
+	
+		<energyTrackerDef>EnergyTracker_BaseRPGTurnBased</energyTrackerDef>
+	</ItsSorceryFramework.SorcerySchemaDef>
+	
+	<ItsSorceryFramework.SorcerySchemaDef>
+		<defName>SorcerySchema_Base3</defName>
+		<label>Royalty Inspiration</label>
+	
+		<energyTrackerDef>EnergyTracker_BaseInverted</energyTrackerDef>
+	</ItsSorceryFramework.SorcerySchemaDef>
+	
+	<ItsSorceryFramework.SorcerySchemaDef>
+		<defName>SorcerySchema_Base4</defName>
+		<label>Vancian 1: The Original</label>
+	
+		<energyTrackerDef>EnergyTracker_BaseVancian</energyTrackerDef>
+	</ItsSorceryFramework.SorcerySchemaDef>
+	
+	<ItsSorceryFramework.SorcerySchemaDef>
+		<defName>SorcerySchema_Base5</defName>
+		<label>Vancian 2: Electric Bungaloo</label>
+	
+		<energyTrackerDef>EnergyTracker_BaseVancianLifetime</energyTrackerDef>
+	</ItsSorceryFramework.SorcerySchemaDef>
+	
+	<ItsSorceryFramework.SorcerySchemaDef>
+		<defName>SorcerySchema_Base6</defName>
+		<label>Coomsumerism</label>
+	
+		<energyTrackerDef>EnergyTracker_BaseConsumable</energyTrackerDef>
+	</ItsSorceryFramework.SorcerySchemaDef>
+	
+	<ItsSorceryFramework.SorcerySchemaDef>
+		<defName>SorcerySchema_Base7</defName>
+		<label>The Waiting Game</label>
+	
+		<energyTrackerDef>EnergyTracker_BaseCooldown</energyTrackerDef>
+	</ItsSorceryFramework.SorcerySchemaDef>
+
+</Defs>

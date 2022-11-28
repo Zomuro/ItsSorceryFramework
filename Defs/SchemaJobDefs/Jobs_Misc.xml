@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+	<ItsSorceryFramework.SchemaJobDef>
+		<defName>ChargeSchema</defName>
+		<driverClass>ItsSorceryFramework.JobDriver_Charge</driverClass>
+		<reportString>charging schema with TargetB.</reportString>
+		<suspendable>false</suspendable>
+		<allowOpportunisticPrefix>true</allowOpportunisticPrefix>
+	</ItsSorceryFramework.SchemaJobDef>
+  
+</Defs>

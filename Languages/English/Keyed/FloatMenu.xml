@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+
+	<ISF_Charge>Charge {0} with {1}: </ISF_Charge>
+	<ISF_ChargeFull>full</ISF_ChargeFull>
+	<ISF_ChargeNoPath>no path</ISF_ChargeNoPath>
+	<ISF_ChargeCalc>{0}x {1} for {2} {3}</ISF_ChargeCalc>
+
+</LanguageData>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+
+	<Operation Class="PatchOperationAdd"> 
+		<xpath>/Defs/ThingDef[@Name="BasePawn"]/comps</xpath>
+		<value>
+			<li Class="ItsSorceryFramework.CompProperties_ItsSorcery">
+			</li>
+		</value>
+    </Operation>	
+	
+	<Operation Class="PatchOperationAdd"> 
+		<xpath>/Defs/ThingDef[@Name="BasePawn"]/inspectorTabs</xpath>
+		<order>Prepend</order>
+		<value>
+			<li>ItsSorceryFramework.ITab_Pawn_Schemas</li>
+		</value>
+    </Operation>	
+	
+</Patch>

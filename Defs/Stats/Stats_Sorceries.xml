@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+	<StatDef>
+		<defName>Sorcery_EnergyCost</defName>
+		<label>energy cost</label>
+		<category>Sorcery</category>
+		<description>The amount of energy a technique requires to cast.</description>
+		<defaultBaseValue>10</defaultBaseValue>
+		<showIfUndefined>false</showIfUndefined>
+		<displayPriorityInCategory>1</displayPriorityInCategory>
+	</StatDef>
+	
+	<StatDef>
+		<defName>Sorcery_MaxCasts</defName>
+		<label>maximum casts</label>
+		<category>Sorcery</category>
+		<description>The number of times a sorcery can be casted in a certain timeframe.</description>
+		<defaultBaseValue>1</defaultBaseValue>
+		<showIfUndefined>false</showIfUndefined>
+		<displayPriorityInCategory>1</displayPriorityInCategory>
+		<statFactors>
+			<li>EnergyFactor_ItsSorcery</li>
+		</statFactors>
+	</StatDef>
+	
+
+</Defs>
