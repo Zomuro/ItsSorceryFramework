@@ -64,6 +64,15 @@ namespace ItsSorceryFramework
 				this.tabs.Add(new LearningTabRecord(lt, lt.def.LabelCap, delegate ()
 				{
 					this.CurTracker = lt;
+
+					/*LearningTracker_Tree ltTree = lt as LearningTracker_Tree;
+					if (ltTree != null)
+                    {
+						Log.Message(ltTree.completion.NullOrEmpty().ToString());
+						(lt as LearningTracker_Tree).refreshCompletion();
+						Log.Message(ltTree.completion.NullOrEmpty().ToString());
+					}*/
+
 				}, () => this.CurTracker == lt));
 			}
 

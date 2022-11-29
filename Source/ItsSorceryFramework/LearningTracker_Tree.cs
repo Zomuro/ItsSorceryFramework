@@ -101,6 +101,7 @@ namespace ItsSorceryFramework
                 Rect descRect = new Rect(0f, coordY, viewRect.width, 0f);
                 Widgets.LabelCacheHeight(ref descRect, this.selectedNode.description, true, false);
                 coordY += descRect.height;
+
                 Rect prereqRect = new Rect(0f, coordY, viewRect.width, 500f);
                 coordY += this.drawNodePrereqs(this.selectedNode, prereqRect);
                 Rect hyperlinkRect = new Rect(0f, coordY, viewRect.width, 500f);

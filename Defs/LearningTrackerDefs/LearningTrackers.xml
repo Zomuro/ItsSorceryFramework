@@ -92,6 +92,7 @@
 		<defName>node12</defName>
 		<label>node12</label>
 		<learningTracker>LearningTracker_Tree2</learningTracker>
+		<description>it's happening all over again.</description>
 		<coordX>0</coordX>
 		<coordY>0</coordY>
 	</ItsSorceryFramework.LearningTreeNodeDef>
@@ -100,6 +101,7 @@
 		<defName>node22</defName>
 		<label>node22</label>
 		<learningTracker>LearningTracker_Tree2</learningTracker>
+		<description>absolut agony.</description>
 		<coordX>1</coordX>
 		<coordY>0</coordY>
 	</ItsSorceryFramework.LearningTreeNodeDef>
@@ -108,6 +110,7 @@
 		<defName>node32</defName>
 		<label>node32</label>
 		<learningTracker>LearningTracker_Tree2</learningTracker>
+		<description>who thought this was a good idea</description>
 		<coordX>1</coordX>
 		<coordY>1</coordY>
 	</ItsSorceryFramework.LearningTreeNodeDef>
