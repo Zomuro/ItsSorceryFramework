@@ -11,6 +11,7 @@
 			<li>LearningTracker_Tree</li>
 			<li>LearningTracker_Tree2</li>
 		</learningTrackerDefs>
+		<progressTrackerDef>ProgressTracker_Base</progressTrackerDef>
 	</ItsSorceryFramework.SorcerySchemaDef>
 	
 	<ItsSorceryFramework.SorcerySchemaDef>

@@ -65,6 +65,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CompAbilityEffect_ForceLevelUp.cs" />
+    <Compile Include="CompUseEffectProgress.cs" />
+    <Compile Include="CompProperties_UseEffectProgress.cs" />
     <Compile Include="Dialog_LearningTabs.cs" />
     <Compile Include="LearningTracker_Tree.cs" />
     <Compile Include="LearningTreeNodeDef.cs" />

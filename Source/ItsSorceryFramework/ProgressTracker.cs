@@ -78,6 +78,13 @@ namespace ItsSorceryFramework
             }
         }
 
+        public virtual void forceLevelUp()
+        {
+            if (hediff == null) return;
+            hediff.Severity = Mathf.Floor(hediff.Severity) + 1f;
+            notifyLevelUp(hediff.Severity);
+        }
+
         public virtual void notifyLevelUp(float sev)
         {
             int sevInt = (int)sev;
@@ -86,6 +93,10 @@ namespace ItsSorceryFramework
             {
                 if(sevInt % modulo.levelFactor == 0)
                 {
+                    Log.Message("curr sev: " + sevInt.ToString());
+                    Log.Message("modulo: " + modulo.levelFactor.ToString());
+                    modulo.statOffsets.ToStringSafeEnumerable();
+
                     adjustTotalStatMods(statOffsetsTotal, modulo.statOffsets);
                     adjustTotalStatMods(statFactorsTotal, modulo.statFactors);
 
@@ -98,6 +109,7 @@ namespace ItsSorceryFramework
 
             HediffStage newStage = new HediffStage();
             newStage.minSeverity = sevInt;
+            newStage.label = "level " + sevInt.ToString();
             newStage.statOffsets = createStatModifiers(statOffsetsTotal).ToList();
             newStage.statFactors = createStatModifiers(statFactorsTotal).ToList();
             hediff.def.stages.Add(newStage);
@@ -105,6 +117,8 @@ namespace ItsSorceryFramework
 
         public void adjustTotalStatMods(Dictionary<StatDef, float> stats, List<StatModifier> statMods)
         {
+            if (statMods.NullOrEmpty()) return;
+            
             foreach(StatModifier statMod in statMods)
             {
                 if (stats.Keys.Contains(statMod.stat))
@@ -115,6 +129,20 @@ namespace ItsSorceryFramework
 
                 stats[statMod.stat] = statMod.value;
             }
+        }
+
+        // for later
+        public void adjustTotalCapMods(List<PawnCapacityModifier> capModsTotal, List<PawnCapacityModifier> capMods)
+        {
+            if (capMods.NullOrEmpty()) return;
+
+            List<PawnCapacityDef> capacities = (from capMod in capMods select capMod.capacity).ToList();
+
+            foreach (PawnCapacityModifier capMod in capMods)
+            {
+                
+            }
+
         }
 
         public IEnumerable<StatModifier> createStatModifiers(Dictionary<StatDef, float> stats)
@@ -163,6 +191,8 @@ namespace ItsSorceryFramework
         //public List<StatModifier> statFactorsTotal1;
 
         public Dictionary<StatDef, float> statFactorsTotal = new Dictionary<StatDef, float>();
+
+        public List<PawnCapacityModifier> capModsTotal = new List<PawnCapacityModifier>();
 
         public int points = 0;
 
