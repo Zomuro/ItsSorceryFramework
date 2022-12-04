@@ -37,30 +37,33 @@ namespace ItsSorceryFramework
             if(pawn.health.hediffSet.GetFirstHediffOfDef(def.progressHediff) == null)
                 HealthUtility.AdjustSeverity(pawn, def.progressHediff, 1f);
             hediff = pawn.health.hediffSet.GetFirstHediffOfDef(def.progressHediff);
+            HediffStage newStage = new HediffStage();
+            newStage.minSeverity = currLevel;
+            newStage.label = "level " + currLevel.ToString() + "; " + currProgress.ToString("P2");
+            hediff.def.stages.Add(newStage);
         }
 
-        public override void addHediffEXP(float exp)
+        public override void addExperience(float experience)
         {
-            float orgSev = hediff.Severity;
-            float sevAdjust;
+            float orgSev = currLevel;
+            bool done = false;
+            exp += experience;
 
-            while(exp > 0)
+            while (!done)
             {
-                if(exp > currentLevelEXPReq - sevToCurrProgress(hediff.Severity))
+                if(exp > currentLevelEXPReq)
                 {
-                    sevAdjust = currentLevelEXPReq - sevToCurrProgress(hediff.Severity);
-                    exp -= sevAdjust;
-                    HealthUtility.AdjustSeverity(pawn, def.progressHediff, sevAdjust / currentLevelEXPReq);
+                    exp -= currentLevelEXPReq;
+                    hediff.Severity += 1;
                     notifyLevelUp(hediff.Severity);
                 }
                 else
                 {
-                    HealthUtility.AdjustSeverity(pawn, def.progressHediff, exp / currentLevelEXPReq);
-                    exp = 0;
+                    done = true;
                 }
             }
 
-            if(Mathf.Floor(hediff.Severity) > Mathf.Floor(orgSev))
+            if(currLevel > orgSev)
             {
                 notifyTotalLevelUp(orgSev);
             }
@@ -69,7 +72,7 @@ namespace ItsSorceryFramework
         public override void forceLevelUp()
         {
             if (hediff == null) return;
-            hediff.Severity = Mathf.Floor(hediff.Severity) + 1f;
+            hediff.Severity += 1;
             notifyLevelUp(hediff.Severity);
         }
 
@@ -97,7 +100,7 @@ namespace ItsSorceryFramework
 
             HediffStage newStage = new HediffStage();
             newStage.minSeverity = sevInt;
-            newStage.label = "level " + sevInt.ToString();
+            newStage.label = "level " + sevInt.ToString() +"; "+ currProgress.ToString("P2");
             newStage.statOffsets = createStatModifiers(statOffsetsTotal).ToList();
             newStage.statFactors = createStatModifiers(statFactorsTotal).ToList();
             hediff.def.stages.Add(newStage);
@@ -145,22 +148,25 @@ namespace ItsSorceryFramework
             yield break;
         }
 
-        public override void notifyTotalLevelUp(float sev)
+        public override void notifyTotalLevelUp(float orgSev)
         {
             Find.LetterStack.ReceiveLetter("Level up: "+ pawn.Name,
                 "This pawn has leveled up.", LetterDefOf.NeutralEvent, null);
         }
 
-        public override float sevToCurrProgress(float currSev)
+        public override float currProgress
         {
-            return (currSev - Mathf.Floor(currSev)) * currentLevelEXPReq;
+            get
+            {
+                return exp / currentLevelEXPReq;
+            }
         }
 
         public override float currentLevelEXPReq
         {
             get
             {
-                return def.baseEXP * Mathf.Pow(def.scaling, Mathf.Floor(hediff.Severity) - 1f);
+                return def.baseEXP * Mathf.Pow(def.scaling, currLevel - 1f);
             }
         }      
 

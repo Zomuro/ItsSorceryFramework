@@ -35,7 +35,5 @@ namespace ItsSorceryFramework
 				return this.level <= 0;
 			}
 		}
-
-		public ProgressTracker progressTracker;
     }
 }

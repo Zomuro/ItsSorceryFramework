@@ -31,6 +31,10 @@ namespace ItsSorceryFramework
         public List<ProgressLevelModulo> levelModulo = new List<ProgressLevelModulo>();
 
         public List<ProgressTrackerCompProperties> progressComps = new List<ProgressTrackerCompProperties>();
+
+        public string progressLevelUpTransKey = "levelup";
+
+        public string progressLevelUpDescTransKey = "levelup";
     }
 
     public class ProgressLevelModulo

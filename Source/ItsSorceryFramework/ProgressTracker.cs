@@ -50,7 +50,7 @@ namespace ItsSorceryFramework
 
         }
 
-        public virtual void addHediffEXP(float exp)
+        public virtual void addExperience(float experience)
         {
 
         }
@@ -82,22 +82,34 @@ namespace ItsSorceryFramework
             yield break;
         }
 
-        public virtual void notifyTotalLevelUp(float sev)
+        public virtual void notifyTotalLevelUp(float orgSev)
         {
             Find.LetterStack.ReceiveLetter("Level up.",
                 "This pawn has leveled up.", LetterDefOf.NeutralEvent, null);
         }
 
-        public virtual float sevToCurrProgress(float currSev)
+        public int currLevel
         {
-            return (currSev - Mathf.Floor(currSev)) * currentLevelEXPReq;
+            get
+            {
+                return (int) hediff.Severity;
+            }
+        }
+
+        public virtual float currProgress
+        {
+            get
+            {
+                return exp / currentLevelEXPReq;
+            }
+            
         }
 
         public virtual float currentLevelEXPReq
         {
             get
             {
-                return Mathf.Round(def.baseEXP * Mathf.Pow(def.scaling, Mathf.Floor(hediff.Severity) - 1f));
+                return def.baseEXP;
             }
         }
 
