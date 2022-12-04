@@ -2,7 +2,7 @@
 <Defs>
 	<!-- Demostration + Testing ProgressTracker def -->
 	<ItsSorceryFramework.ProgressTrackerDef Name = "ProgressTrackerBase">
-		<progressTrackerClass>ItsSorceryFramework.ProgressTracker</progressTrackerClass>
+		<progressTrackerClass>ItsSorceryFramework.ProgressTracker_RPG</progressTrackerClass>
 		<defName>ProgressTracker_Base</defName>
 		<label>progress tracker test</label>
 		

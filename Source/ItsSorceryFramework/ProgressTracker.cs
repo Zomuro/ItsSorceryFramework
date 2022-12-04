@@ -22,7 +22,7 @@ namespace ItsSorceryFramework
             this.pawn = pawn;
             this.def = def;
             this.sorcerySchemaDef = null;
-            Initialize();
+            //Initialize();
         }
 
         public ProgressTracker(Pawn pawn, SorcerySchemaDef def)
@@ -30,7 +30,7 @@ namespace ItsSorceryFramework
             this.pawn = pawn;
             this.def = def.progressTrackerDef;
             this.sorcerySchemaDef = def;
-            Initialize();
+            //Initialize();
         }
 
         public virtual void ExposeData()
@@ -39,6 +39,7 @@ namespace ItsSorceryFramework
             Scribe_Defs.Look(ref def, "def");
             Scribe_Defs.Look(ref sorcerySchemaDef, "sorcerySchemaDef");
             Scribe_Deep.Look(ref hediff, "hediff");
+            Scribe_Values.Look(ref exp, "exp", 0f);
             Scribe_Values.Look(ref points, "points", 0);
             Scribe_Collections.Look(ref statOffsetsTotal, "statOffsetsTotal", LookMode.Def, LookMode.Value);
             Scribe_Collections.Look(ref statFactorsTotal, "statFactorsTotal", LookMode.Def, LookMode.Value);
@@ -46,124 +47,48 @@ namespace ItsSorceryFramework
 
         public virtual void Initialize()
         {
-            if(pawn.health.hediffSet.GetFirstHediffOfDef(def.progressHediff) == null)
-                HealthUtility.AdjustSeverity(pawn, def.progressHediff, 1f);
-            hediff = pawn.health.hediffSet.GetFirstHediffOfDef(def.progressHediff);
+
         }
 
         public virtual void addHediffEXP(float exp)
         {
-            float orgSev = hediff.Severity;
-            float sevAdjust;
 
-            while(exp > 0)
-            {
-                if(exp > currentLevelEXPReq - sevToCurrProgress(hediff.Severity))
-                {
-                    sevAdjust = currentLevelEXPReq - sevToCurrProgress(hediff.Severity);
-                    exp -= sevAdjust;
-                    HealthUtility.AdjustSeverity(pawn, def.progressHediff, sevAdjust / currentLevelEXPReq);
-                    notifyLevelUp(hediff.Severity);
-                }
-                else
-                {
-                    HealthUtility.AdjustSeverity(pawn, def.progressHediff, exp / currentLevelEXPReq);
-                    exp = 0;
-                }
-            }
-
-            if(Mathf.Floor(hediff.Severity) > Mathf.Floor(orgSev))
-            {
-                notifyTotalLevelUp(orgSev);
-            }
         }
 
         public virtual void forceLevelUp()
         {
-            if (hediff == null) return;
-            hediff.Severity = Mathf.Floor(hediff.Severity) + 1f;
-            notifyLevelUp(hediff.Severity);
+
         }
 
         public virtual void notifyLevelUp(float sev)
         {
-            int sevInt = (int)sev;
-            bool check = false;
-            foreach(ProgressLevelModulo modulo in def.levelModulo.OrderByDescending(x => x.levelFactor))
-            {
-                if(sevInt % modulo.levelFactor == 0)
-                {
-                    Log.Message("curr sev: " + sevInt.ToString());
-                    Log.Message("modulo: " + modulo.levelFactor.ToString());
-                    modulo.statOffsets.ToStringSafeEnumerable();
 
-                    adjustTotalStatMods(statOffsetsTotal, modulo.statOffsets);
-                    adjustTotalStatMods(statFactorsTotal, modulo.statFactors);
-
-                    points += modulo.pointGain;
-                    check = true;
-                    break;
-                }
-            }
-            if(!check) points += 1;
-
-            HediffStage newStage = new HediffStage();
-            newStage.minSeverity = sevInt;
-            newStage.label = "level " + sevInt.ToString();
-            newStage.statOffsets = createStatModifiers(statOffsetsTotal).ToList();
-            newStage.statFactors = createStatModifiers(statFactorsTotal).ToList();
-            hediff.def.stages.Add(newStage);
         }
 
-        public void adjustTotalStatMods(Dictionary<StatDef, float> stats, List<StatModifier> statMods)
+        public virtual void adjustTotalStatMods(Dictionary<StatDef, float> stats, List<StatModifier> statMods)
         {
             if (statMods.NullOrEmpty()) return;
-            
-            foreach(StatModifier statMod in statMods)
-            {
-                if (stats.Keys.Contains(statMod.stat))
-                {
-                    stats[statMod.stat] += statMod.value;
-                    continue;
-                }
-
-                stats[statMod.stat] = statMod.value;
-            }
         }
 
         // for later
-        public void adjustTotalCapMods(List<PawnCapacityModifier> capModsTotal, List<PawnCapacityModifier> capMods)
+        public virtual void adjustTotalCapMods(List<PawnCapacityModifier> capModsTotal, List<PawnCapacityModifier> capMods)
         {
             if (capMods.NullOrEmpty()) return;
 
-            List<PawnCapacityDef> capacities = (from capMod in capMods select capMod.capacity).ToList();
-
-            foreach (PawnCapacityModifier capMod in capMods)
-            {
-                
-            }
-
         }
 
-        public IEnumerable<StatModifier> createStatModifiers(Dictionary<StatDef, float> stats)
+        public virtual IEnumerable<StatModifier> createStatModifiers(Dictionary<StatDef, float> stats)
         {
-            StatModifier mod = new StatModifier();
-            foreach (var pair in stats)
-            {
-                mod.stat = pair.Key; mod.value = pair.Value;
-                yield return mod;
-            }
-
             yield break;
         }
 
         public virtual void notifyTotalLevelUp(float sev)
         {
-            Find.LetterStack.ReceiveLetter("Level up: "+ pawn.Name,
+            Find.LetterStack.ReceiveLetter("Level up.",
                 "This pawn has leveled up.", LetterDefOf.NeutralEvent, null);
         }
 
-        public float sevToCurrProgress(float currSev)
+        public virtual float sevToCurrProgress(float currSev)
         {
             return (currSev - Mathf.Floor(currSev)) * currentLevelEXPReq;
         }
@@ -172,7 +97,7 @@ namespace ItsSorceryFramework
         {
             get
             {
-                return def.baseEXP * Mathf.Pow(def.scaling, Mathf.Floor(hediff.Severity) - 1f);
+                return Mathf.Round(def.baseEXP * Mathf.Pow(def.scaling, Mathf.Floor(hediff.Severity) - 1f));
             }
         }
 
@@ -184,15 +109,13 @@ namespace ItsSorceryFramework
 
         public Hediff hediff;
 
-        // public List<StatModifier> statOffsetsTotal1;
-
         public Dictionary<StatDef, float> statOffsetsTotal = new Dictionary<StatDef, float>();
-
-        //public List<StatModifier> statFactorsTotal1;
 
         public Dictionary<StatDef, float> statFactorsTotal = new Dictionary<StatDef, float>();
 
         public List<PawnCapacityModifier> capModsTotal = new List<PawnCapacityModifier>();
+
+        public float exp = 0f;
 
         public int points = 0;
 
