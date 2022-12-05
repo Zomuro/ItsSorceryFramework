@@ -35,11 +35,12 @@ namespace ItsSorceryFramework
         public override void Initialize()
         {
             if(pawn.health.hediffSet.GetFirstHediffOfDef(def.progressHediff) == null)
-                HealthUtility.AdjustSeverity(pawn, def.progressHediff, 1f);
-            hediff = pawn.health.hediffSet.GetFirstHediffOfDef(def.progressHediff);
+                HealthUtility.AdjustSeverity(pawn, def.progressHediff, def.progressHediff.initialSeverity);
+            hediff = pawn.health.hediffSet.GetFirstHediffOfDef(def.progressHediff) as Hediff_ProgressLevel;
+            hediff.progressTracker = this;
             HediffStage newStage = new HediffStage();
             newStage.minSeverity = currLevel;
-            newStage.label = "level " + currLevel.ToString() + "; " + currProgress.ToString("P2");
+            //newStage.label = "level " + currLevel.ToString() + "; " + currProgress.ToString("P2");
             hediff.def.stages.Add(newStage);
         }
 
@@ -80,7 +81,7 @@ namespace ItsSorceryFramework
         {
             int sevInt = (int)sev;
             bool check = false;
-            foreach(ProgressLevelModulo modulo in def.levelModulo.OrderByDescending(x => x.levelFactor))
+            foreach(ProgressLevelModulo modulo in def.levelModulos.OrderByDescending(x => x.levelFactor))
             {
                 if(sevInt % modulo.levelFactor == 0)
                 {

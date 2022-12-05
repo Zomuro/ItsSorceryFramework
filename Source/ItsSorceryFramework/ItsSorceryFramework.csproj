@@ -65,6 +65,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CompAbilityEffect_AddEXP.cs" />
     <Compile Include="Hediff_ProgressLevel.cs" />
     <Compile Include="CompAbilityEffect_ForceLevelUp.cs" />
     <Compile Include="Dialog_LearningTabs.cs" />

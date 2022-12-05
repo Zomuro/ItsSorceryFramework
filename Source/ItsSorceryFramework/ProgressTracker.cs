@@ -119,7 +119,7 @@ namespace ItsSorceryFramework
 
         public SorcerySchemaDef sorcerySchemaDef;
 
-        public Hediff hediff;
+        public Hediff_ProgressLevel hediff;
 
         public Dictionary<StatDef, float> statOffsetsTotal = new Dictionary<StatDef, float>();
 
