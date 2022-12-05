@@ -25,7 +25,12 @@ namespace ItsSorceryFramework
             harmony.Patch(AccessTools.Method(typeof(FloatMenuMakerMap), "AddHumanlikeOrders"), null,
                 new HarmonyMethod(typeof(HarmonyPatches), nameof(AddHumanlikeOrders_EnergyTracker_Consumable)));
 
-           
+            // DefIconAbilities
+            // allows DefIcon to show abilitydef icons
+            harmony.Patch(AccessTools.Method(typeof(Widgets), "DefIcon"), null,
+                new HarmonyMethod(typeof(HarmonyPatches), nameof(DefIconAbilities)));
+
+
         }
 
         // POSTFIX: when right clicking items that can reload the schema, provide FloatMenu option to "reload" with them
@@ -93,6 +98,20 @@ namespace ItsSorceryFramework
                             MenuOptionPriority.Default, null, null, 0f, null, null, true, 0), __1, ammo, "ReservedBy", null));
                     }
                 }
+            }
+
+            return;
+        }
+
+        // POSTFIX: enables the skill tree to show ability icon
+        public static void DefIconAbilities(Rect __0, Def __1, float __3, Material __7)
+        {
+            AbilityDef abilityDef;
+            if ((abilityDef = (__1 as AbilityDef)) != null)
+            {
+                GUI.color = Color.white;
+                Widgets.DrawTextureFitted(__0, abilityDef.uiIcon, __3, __7);
+                return;
             }
 
             return;

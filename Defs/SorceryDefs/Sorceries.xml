@@ -74,6 +74,41 @@
 		<!--<hotKey>Misc1</hotKey>-->
 	</ItsSorceryFramework.SorceryDef>
 	
+	<ItsSorceryFramework.SorceryDef ParentName="SorceryBase">
+		<defName>testsorcerylevelup</defName>
+		<label>level up</label>
+		<description>its testing time</description>
+		<level>1</level>
+		<iconPath>UI/Sorceries/hea</iconPath>
+
+		<comps Inherit = "False">
+			<li Class = "CompProperties_AbilityGiveHediff">
+				<compClass>ItsSorceryFramework.CompAbilityEffect_ForceLevelUp</compClass>
+			</li>
+			<li Class="CompProperties_AbilityFleckOnTarget">
+				<fleckDef>PsycastPsychicEffect</fleckDef>
+			</li>
+		</comps>
+	</ItsSorceryFramework.SorceryDef>
+	
+	<ItsSorceryFramework.SorceryDef ParentName="SorceryBase">
+		<defName>testsorceryaddexp</defName>
+		<label>add exp 200</label>
+		<description>its testing time</description>
+		<level>1</level>
+		<iconPath>UI/Sorceries/hea</iconPath>
+
+		<comps Inherit = "False">
+			<li Class = "CompProperties_AbilityGiveHediff">
+				<compClass>ItsSorceryFramework.CompAbilityEffect_AddEXP</compClass>
+				<severity>200</severity>
+			</li>
+			<li Class="CompProperties_AbilityFleckOnTarget">
+				<fleckDef>PsycastPsychicEffect</fleckDef>
+			</li>
+		</comps>
+	</ItsSorceryFramework.SorceryDef>
+	
 	<!--<ItsSorceryFramework.SorceryDef>
 		<abilityClass>ItsSorceryFramework.Sorcery</abilityClass>
 		<category>Sorcery</category>

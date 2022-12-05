@@ -33,6 +33,9 @@ namespace ItsSorceryFramework
                     new object[] { pawn, ltDef, def }) as LearningTracker);
             }
 
+            this.progressTracker = Activator.CreateInstance(def.progressTrackerDef.progressTrackerClass,
+                new object[] { pawn, def }) as ProgressTracker;
+
         }
 
         public virtual void SchemaTick()
@@ -51,7 +54,7 @@ namespace ItsSorceryFramework
             Scribe_Defs.Look(ref def, "def");
             Scribe_Deep.Look(ref energyTracker, "energyTracker", new object[] {pawn});
             Scribe_Collections.Look(ref learningTrackers, "learningTrackers", LookMode.Deep, new object[] { pawn });
-            Scribe_Deep.Look(ref progressTracker, "progressTracker");
+            Scribe_Deep.Look(ref progressTracker, "progressTracker", new object[] { pawn });
         }
 
         public Pawn pawn;

@@ -17,7 +17,9 @@ namespace ItsSorceryFramework
                 return progressHediff?.maxSeverity ?? 0f;
             }
         }
-      
+
+        public Type progressTrackerClass = typeof(ProgressTracker);
+
         public HediffDef progressHediff;
 
         public float baseEXP = 100f;
@@ -26,18 +28,26 @@ namespace ItsSorceryFramework
 
         public float maxEXP = 1000f;
 
-        public List<ProgressLevelProperties> moduloStatGain = new List<ProgressLevelProperties>();
+        public List<ProgressLevelModulo> levelModulos = new List<ProgressLevelModulo>();
 
         public List<ProgressTrackerCompProperties> progressComps = new List<ProgressTrackerCompProperties>();
+
+        public string progressLevelUpTransKey = "levelup";
+
+        public string progressLevelUpDescTransKey = "levelup";
     }
 
-    public class ProgressLevelProperties
+    public class ProgressLevelModulo
     {
         public int levelFactor = 1;
 
         public List<StatModifier> statOffsets;
 
         public List<StatModifier> statFactors;
+
+        public List<PawnCapacityModifier> capMods = new List<PawnCapacityModifier>();
+
+        public int pointGain = 1;
     }
 
     public class ProgressTrackerCompProperties : CompProperties

@@ -47,6 +47,26 @@ namespace ItsSorceryFramework
             }
         }
 
+        public SorcerySchema schema
+        {
+            get
+            {
+                if (cachedSchema == null) cachedSchema = SorcerySchemaUtility.FindSorcerySchema(pawn, schemaDef);
+
+                return cachedSchema;
+            }
+        }
+
+        public float pointUsePercent
+        {
+            get
+            {
+                ProgressTracker progress = schema.progressTracker;
+                if (progress.points == 0) return 0;
+                return (float) (progress.points - progress.usedPoints) / progress.points;
+            }
+        }
+
         public override void ExposeData()
         {
             base.ExposeData();
@@ -101,6 +121,7 @@ namespace ItsSorceryFramework
                 Rect descRect = new Rect(0f, coordY, viewRect.width, 0f);
                 Widgets.LabelCacheHeight(ref descRect, this.selectedNode.description, true, false);
                 coordY += descRect.height;
+
                 Rect prereqRect = new Rect(0f, coordY, viewRect.width, 500f);
                 coordY += this.drawNodePrereqs(this.selectedNode, prereqRect);
                 Rect hyperlinkRect = new Rect(0f, coordY, viewRect.width, 500f);
@@ -113,68 +134,60 @@ namespace ItsSorceryFramework
                 Widgets.EndScrollView();
                 leftViewDebugHeight = 0f;
 
-                /*Rect rect11 = new Rect(0f, outRect.yMax + 10f + this.leftViewDebugHeight, rect.width, this.leftStartAreaHeight);
-                if (this.selectedProject.CanStartNow && this.selectedProject != Find.ResearchManager.currentProj)
+                ProgressTracker progress = schema.progressTracker;
+                Rect confirmButton = new Rect(0f, outRect.yMax + 10f + this.leftViewDebugHeight, rect.width, this.leftStartAreaHeight);
+                string reason = "";
+                if (!completion[selectedNode] && prereqFufilled(selectedNode) && prereqResearchFufilled(selectedNode) &&
+                    selectedNode.pointReq + progress.usedPoints <= progress.points) 
                 {
-                    this.leftStartAreaHeight = 68f;
-                    if (Widgets.ButtonText(rect11, "Research".Translate(), true, true, true, null))
+                    if (Widgets.ButtonText(confirmButton, "complete: " + selectedNode.pointReq))
                     {
-                        this.AttemptBeginResearch(this.selectedProject);
+                        completion[selectedNode] = true;
+                        completionAbilities(selectedNode);
+                        //progress.usedPoints += selectedNode.pointReq;
+                        schema.progressTracker.usedPoints += selectedNode.pointReq;
                     }
+
+                    /*
+                    if (prereqFufilled(selectedNode) && selectedNode.pointReq + progress.usedPoints <= progress.points &&
+                            Widgets.ButtonText(confirmButton, "complete: "+ selectedNode.pointReq))
+                    {
+                        completion[selectedNode] = true;
+                        completionAbilities(selectedNode);
+                    } */
                 }
                 else
                 {
-                    string text2;
-                    if (this.selectedProject.IsFinished)
+                    Text.Anchor = TextAnchor.MiddleCenter;
+                    if (completion[selectedNode])
                     {
-                        text2 = "Finished".Translate();
-                        Text.Anchor = TextAnchor.MiddleCenter;
-                    }
-                    else if (this.selectedProject == Find.ResearchManager.currentProj)
-                    {
-                        text2 = "InProgress".Translate();
-                        Text.Anchor = TextAnchor.MiddleCenter;
+                        reason = "Completed.";
                     }
                     else
                     {
-                        text2 = "";
-                        if (!this.selectedProject.PrerequisitesCompleted)
-                        {
-                            text2 += "\n  " + "PrerequisitesNotCompleted".Translate();
-                        }
-                        if (!this.selectedProject.TechprintRequirementMet)
-                        {
-                            text2 += "\n  " + "InsufficientTechprintsApplied".Translate(this.selectedProject.TechprintsApplied, this.selectedProject.TechprintCount);
-                        }
-                        if (!this.selectedProject.PlayerHasAnyAppropriateResearchBench)
-                        {
-                            text2 += "\n  " + "MissingRequiredResearchFacilities".Translate();
-                        }
-                        if (!this.selectedProject.PlayerMechanitorRequirementMet)
-                        {
-                            text2 += "\n  " + "MissingRequiredMechanitor".Translate();
-                        }
-                        if (!this.selectedProject.StudiedThingsRequirementsMet)
-                        {
-                            text2 = text2 + "\n" + (from t in this.selectedProject.requiredStudied
-                                                    select "NotStudied".Translate(t.LabelCap).ToString()).ToLineList("  ", false);
-                        }
-                        if (text2.NullOrEmpty())
-                        {
-                            Log.ErrorOnce("Research " + this.selectedProject.defName + " locked but no reasons given", this.selectedProject.GetHashCode() ^ 100543441);
-                        }
-                        text2 = "Locked".Translate() + ":" + text2;
+                        reason = "Locked:";
+
+                        if (selectedNode.pointReq + progress.usedPoints > progress.points) reason += "\nNot enough skill points.";
+
+                        if (!prereqFufilled(selectedNode)) reason += "\nPrior nodes not completed.";
+
+                        if (!prereqResearchFufilled(selectedNode)) reason += "\nResearch requirements not completed.";
+
+                        // if for exlusive nodes check
                     }
-                    this.leftStartAreaHeight = Mathf.Max(Text.CalcHeight(text2, rect11.width - 10f) + 10f, 68f);
-                    Widgets.DrawHighlight(rect11);
-                    Widgets.Label(rect11.ContractedBy(5f), text2);
+
+                    this.leftStartAreaHeight = Mathf.Max(Text.CalcHeight(reason, confirmButton.width - 10f) + 10f, 68f);
+                    Widgets.DrawHighlight(confirmButton);
+                    Widgets.Label(confirmButton.ContractedBy(5f), reason);
                     Text.Anchor = TextAnchor.UpperLeft;
                 }
-                Rect rect12 = new Rect(0f, rect11.yMax + 10f, rect.width, 35f);
-                Widgets.FillableBar(rect12, this.selectedProject.ProgressPercent, MainTabWindow_Research.ResearchBarFillTex, MainTabWindow_Research.ResearchBarBGTex, true);
+                
+                Rect pointBar = new Rect(0f, confirmButton.yMax + 10f, rect.width, 35f);
+                Widgets.FillableBar(pointBar, pointUsePercent);
                 Text.Anchor = TextAnchor.MiddleCenter;
-                Widgets.Label(rect12, this.selectedProject.ProgressApparent.ToString("F0") + " / " + this.selectedProject.CostApparent.ToString("F0"));
-                Text.Anchor = TextAnchor.UpperLeft;
+                Widgets.Label(pointBar, (progress.points-progress.usedPoints).ToString("F0") + " / " + schema.progressTracker.points.ToString("F0"));
+                
+                /*Text.Anchor = TextAnchor.UpperLeft;
                 this.leftViewDebugHeight = 0f;
                 if (Prefs.DevMode && this.selectedProject != Find.ResearchManager.currentProj && !this.selectedProject.IsFinished)
                 {
@@ -363,13 +376,30 @@ namespace ItsSorceryFramework
             return true;
         }
 
-        /*public virtual void completionAbilities(LearningTreeNodeDef node)
+        public bool prereqResearchFufilled(LearningTreeNodeDef node)
+        {
+            foreach (ResearchProjectDef prereq in node.prereqsResearch)
+            {
+                if (!prereq.IsFinished) return false;
+            }
+
+            return true;
+        }
+
+        public virtual void completionAbilities(LearningTreeNodeDef node)
         {
             Pawn_AbilityTracker abilityTracker = this.pawn.abilities;
 
-            if (node.nodeAbilityGain != null) abilityTracker.GainAbility(node.nodeAbilityGain);
-            if (node.nodeAbilityRemove != null) abilityTracker.RemoveAbility(node.nodeAbilityRemove);
-        }*/
+            foreach(AbilityDef abilityDef in node.abilityGain)
+            {
+                abilityTracker.GainAbility(abilityDef);
+            }
+
+            foreach (AbilityDef abilityDef in node.abilityRemove)
+            {
+                abilityTracker.RemoveAbility(abilityDef);
+            }
+        }
 
         public override void DrawRightGUI(Rect rect)
         {
@@ -479,6 +509,8 @@ namespace ItsSorceryFramework
         }
 
         public List<LearningTreeNodeDef> cachedAllNodes;
+
+        public SorcerySchema cachedSchema;
 
         public LearningTreeNodeDef selectedNode;
 

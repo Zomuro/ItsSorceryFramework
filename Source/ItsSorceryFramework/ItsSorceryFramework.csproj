@@ -65,10 +65,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CompAbilityEffect_AddEXP.cs" />
+    <Compile Include="Hediff_ProgressLevel.cs" />
+    <Compile Include="CompAbilityEffect_ForceLevelUp.cs" />
     <Compile Include="Dialog_LearningTabs.cs" />
     <Compile Include="LearningTracker_Tree.cs" />
     <Compile Include="LearningTreeNodeDef.cs" />
     <Compile Include="EnergyTracker_Cooldown.cs" />
+    <Compile Include="ProgressTracker_RPG.cs" />
     <Compile Include="SchemaJobDefOf.cs" />
     <Compile Include="SchemaJobDef.cs" />
     <Compile Include="EnergyTracker_Inverted.cs" />

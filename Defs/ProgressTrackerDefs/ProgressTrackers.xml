@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	<!-- Demostration + Testing ProgressTracker def -->
+	<ItsSorceryFramework.ProgressTrackerDef Name = "ProgressTrackerBase">
+		<progressTrackerClass>ItsSorceryFramework.ProgressTracker_RPG</progressTrackerClass>
+		<defName>ProgressTracker_Base</defName>
+		<label>progress tracker test</label>
+		
+		<progressHediff>ProgressTrackerHediffDef</progressHediff>
+		<levelModulos>
+			<li>
+				<levelFactor>1</levelFactor>
+				<statOffsets>
+					<MoveSpeed>0.25</MoveSpeed>
+				</statOffsets>
+			</li>
+			<li>
+				<levelFactor>3</levelFactor>
+				<statOffsets>
+					<MoveSpeed>0.5</MoveSpeed>
+				</statOffsets>
+				<capMods>
+					<li>
+						<capacity>Manipulation</capacity>
+						<offset>0.5</offset>
+					</li>
+				</capMods>
+
+			</li>
+		</levelModulos>
+	</ItsSorceryFramework.ProgressTrackerDef>
+	
+	<HediffDef Name="ProgressTrackerHediffBase"> 
+		<defName>ProgressTrackerHediffDef</defName>
+		<hediffClass>ItsSorceryFramework.Hediff_ProgressLevel</hediffClass>
+		<label>Logic Gate</label>
+		<defaultLabelColor>(0.8314,0.6863,0.2157)</defaultLabelColor> <!-- golden color -->
+		<description>Test.</description>
+		<initialSeverity>1</initialSeverity> <!-- Severity is bound to level of implant -->
+		<minSeverity>0</minSeverity>
+		<maxSeverity>100</maxSeverity>
+		<countsAsAddedPartOrImplant>false</countsAsAddedPartOrImplant>
+		<stages>	
+		</stages>
+	</HediffDef>
+
+	
+</Defs>
