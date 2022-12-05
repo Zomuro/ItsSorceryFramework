@@ -57,6 +57,6 @@ namespace ItsSorceryFramework
 
 		public ProgressTracker progressTracker;
 
-		public string temp = " (lvl {0}; {1})";
+		public string temp = " (level {0} | {1})";
 	}
 }

@@ -24,11 +24,6 @@ namespace ItsSorceryFramework
 
 				schema.progressTracker.addExperience(Props.severity);
 
-				//schema.progressTracker.forceLevelUp();
-
-				//Log.Message(schema.progressTracker.hediff.Severity.ToString());
-				//Log.Message(caster.health.hediffSet.GetFirstHediffOfDef(schema.progressTracker.hediff.def).Severity.ToString());
-
 			}
 
 		}

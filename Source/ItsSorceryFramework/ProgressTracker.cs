@@ -129,6 +129,8 @@ namespace ItsSorceryFramework
 
         public float exp = 0f;
 
+        public int usedPoints = 0;
+
         public int points = 0;
 
         

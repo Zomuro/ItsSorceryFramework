@@ -79,18 +79,14 @@ namespace ItsSorceryFramework
 
         public override void notifyLevelUp(float sev)
         {
-            int sevInt = (int)sev;
             bool check = false;
             foreach(ProgressLevelModulo modulo in def.levelModulos.OrderByDescending(x => x.levelFactor))
             {
-                if(sevInt % modulo.levelFactor == 0)
+                if(sev % modulo.levelFactor == 0)
                 {
-                    Log.Message("curr sev: " + sevInt.ToString());
-                    Log.Message("modulo: " + modulo.levelFactor.ToString());
-                    modulo.statOffsets.ToStringSafeEnumerable();
-
                     adjustTotalStatMods(statOffsetsTotal, modulo.statOffsets);
                     adjustTotalStatMods(statFactorsTotal, modulo.statFactors);
+                    adjustTotalCapMods(capModsTotal, modulo.capMods);
 
                     points += modulo.pointGain;
                     check = true;
@@ -100,10 +96,10 @@ namespace ItsSorceryFramework
             if(!check) points += 1;
 
             HediffStage newStage = new HediffStage();
-            newStage.minSeverity = sevInt;
-            newStage.label = "level " + sevInt.ToString() +"; "+ currProgress.ToString("P2");
+            newStage.minSeverity = sev;
             newStage.statOffsets = createStatModifiers(statOffsetsTotal).ToList();
             newStage.statFactors = createStatModifiers(statFactorsTotal).ToList();
+            newStage.capMods = capModsTotal.ToList();
             hediff.def.stages.Add(newStage);
         }
 
@@ -127,14 +123,24 @@ namespace ItsSorceryFramework
         public override void adjustTotalCapMods(List<PawnCapacityModifier> capModsTotal, List<PawnCapacityModifier> capMods)
         {
             if (capMods.NullOrEmpty()) return;
-
-            List<PawnCapacityDef> capacities = (from capMod in capMods select capMod.capacity).ToList();
+            List<PawnCapacityModifier> newCapMods = new List<PawnCapacityModifier>();
 
             foreach (PawnCapacityModifier capMod in capMods)
             {
-                
+                PawnCapacityModifier relCapMod = capModsTotal.FirstOrDefault(x => x.capacity == capMod.capacity);
+                if(relCapMod != null)
+                {
+                    relCapMod.offset += capMod.offset;
+                    relCapMod.setMax += capMod.setMax;
+                    relCapMod.postFactor += capMod.postFactor;
+                }
+                else
+                {
+                    newCapMods.Add(capMod);
+                }
             }
 
+            capModsTotal.AddRange(newCapMods);
         }
 
         public override IEnumerable<StatModifier> createStatModifiers(Dictionary<StatDef, float> stats)
