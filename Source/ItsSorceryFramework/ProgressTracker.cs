@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace ItsSorceryFramework
 {
-    public class ProgressTracker
+    public class ProgressTracker : IExposable
     {
         // initalizer- created via activator via SorcerySchema
         public ProgressTracker(Pawn pawn)
@@ -38,11 +38,15 @@ namespace ItsSorceryFramework
             Scribe_References.Look(ref pawn, "pawn");
             Scribe_Defs.Look(ref def, "def");
             Scribe_Defs.Look(ref sorcerySchemaDef, "sorcerySchemaDef");
-            Scribe_Deep.Look(ref hediff, "hediff");
+            Scribe_References.Look(ref hediff, "hediff");
             Scribe_Values.Look(ref exp, "exp", 0f);
+            Scribe_Values.Look(ref usedPoints, "usedPoints", 0);
             Scribe_Values.Look(ref points, "points", 0);
             Scribe_Collections.Look(ref statOffsetsTotal, "statOffsetsTotal", LookMode.Def, LookMode.Value);
             Scribe_Collections.Look(ref statFactorsTotal, "statFactorsTotal", LookMode.Def, LookMode.Value);
+            
+            // probably will have to just cache this
+            //Scribe_Collections.Look(ref capModsTotal, "capModsTotal", LookMode.Def, LookMode.Value);
         }
 
         public virtual void Initialize()
@@ -71,7 +75,7 @@ namespace ItsSorceryFramework
         }
 
         // for later
-        public virtual void adjustTotalCapMods(List<PawnCapacityModifier> capModsTotal, List<PawnCapacityModifier> capMods)
+        public virtual void adjustTotalCapMods(List<PawnCapacityModifier> capMods)
         {
             if (capMods.NullOrEmpty()) return;
 

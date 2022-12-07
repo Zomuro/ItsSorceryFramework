@@ -38,10 +38,10 @@ namespace ItsSorceryFramework
                 HealthUtility.AdjustSeverity(pawn, def.progressHediff, def.progressHediff.initialSeverity);
             hediff = pawn.health.hediffSet.GetFirstHediffOfDef(def.progressHediff) as Hediff_ProgressLevel;
             hediff.progressTracker = this;
-            HediffStage newStage = new HediffStage();
+            /*HediffStage newStage = new HediffStage();
             newStage.minSeverity = currLevel;
             //newStage.label = "level " + currLevel.ToString() + "; " + currProgress.ToString("P2");
-            hediff.def.stages.Add(newStage);
+            hediff.def.stages.Add(newStage);*/
         }
 
         public override void addExperience(float experience)
@@ -86,7 +86,7 @@ namespace ItsSorceryFramework
                 {
                     adjustTotalStatMods(statOffsetsTotal, modulo.statOffsets);
                     adjustTotalStatMods(statFactorsTotal, modulo.statFactors);
-                    adjustTotalCapMods(capModsTotal, modulo.capMods);
+                    adjustTotalCapMods(modulo.capMods);
 
                     points += modulo.pointGain;
                     check = true;
@@ -120,8 +120,12 @@ namespace ItsSorceryFramework
         }
 
         // for later
-        public override void adjustTotalCapMods(List<PawnCapacityModifier> capModsTotal, List<PawnCapacityModifier> capMods)
+        public override void adjustTotalCapMods(List<PawnCapacityModifier> capMods)
         {
+            if (capModsTotal.NullOrEmpty())
+            {
+                capModsTotal = hediff.CapMods;
+            }
             if (capMods.NullOrEmpty()) return;
             List<PawnCapacityModifier> newCapMods = new List<PawnCapacityModifier>();
 

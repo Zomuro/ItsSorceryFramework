@@ -37,19 +37,6 @@ namespace ItsSorceryFramework
         public string progressLevelUpDescTransKey = "levelup";
     }
 
-    public class ProgressLevelModulo
-    {
-        public int levelFactor = 1;
-
-        public List<StatModifier> statOffsets;
-
-        public List<StatModifier> statFactors;
-
-        public List<PawnCapacityModifier> capMods = new List<PawnCapacityModifier>();
-
-        public int pointGain = 1;
-    }
-
     public class ProgressTrackerCompProperties : CompProperties
     {
 
