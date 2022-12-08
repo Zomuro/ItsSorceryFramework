@@ -47,6 +47,16 @@ namespace ItsSorceryFramework
             }
         }
 
+        public Vector2 ViewSize
+        {
+            get
+            {
+                if (cachedViewSize == null || cachedViewSize == Vector2.zero) cachedViewSize = findViewSize();
+
+                return cachedViewSize;
+            }
+        }
+
         public SorcerySchema schema
         {
             get
@@ -77,35 +87,13 @@ namespace ItsSorceryFramework
 
         public override void DrawLeftGUI(Rect rect)
         {
-            /*if (selectedNode != null)
-            {
-                Text.Anchor = TextAnchor.UpperLeft;
-                Text.Font = GameFont.Medium;
-                Widgets.Label(rect, selectedNode.LabelCap);
-
-                rect.yMin += 32f;
-                Rect desc = new Rect(rect);
-                desc.yMax = rect.yMax - 50f;
-                Text.Font = GameFont.Small;
-                Widgets.Label(desc, selectedNode.description);
-
-                Text.Anchor = TextAnchor.MiddleCenter;
-                if (!completion[selectedNode] && prereqFufilled(selectedNode) && 
-                    Widgets.ButtonText(new Rect(rect.x, rect.yMax - 50f, 140, 50), "complete"))
-                {
-                    completion[selectedNode] = true;
-                    completionAbilities(selectedNode);
-                }
-                Text.Anchor = TextAnchor.UpperLeft;
-            }*/
-
             float outRectHeight = rect.height - (10f + leftStartAreaHeight) - 45f;
 
             Widgets.BeginGroup(rect);
             if (this.selectedNode != null)
             {
                 Rect outRect = new Rect(0f, 0f, rect.width, outRectHeight - leftViewDebugHeight);
-                Rect viewRect = new Rect(0f, 0f, outRect.width - 16f, leftScrollViewHeight);
+                Rect viewRect = new Rect(0f, 0f, outRect.width - 20f, leftScrollViewHeight);
                 Widgets.BeginScrollView(outRect, ref this.leftScrollPosition, viewRect, true);
                 
                 float coordY = 0f;
@@ -147,22 +135,11 @@ namespace ItsSorceryFramework
                         //progress.usedPoints += selectedNode.pointReq;
                         schema.progressTracker.usedPoints += selectedNode.pointReq;
                     }
-
-                    /*
-                    if (prereqFufilled(selectedNode) && selectedNode.pointReq + progress.usedPoints <= progress.points &&
-                            Widgets.ButtonText(confirmButton, "complete: "+ selectedNode.pointReq))
-                    {
-                        completion[selectedNode] = true;
-                        completionAbilities(selectedNode);
-                    } */
                 }
                 else
                 {
                     Text.Anchor = TextAnchor.MiddleCenter;
-                    if (completion[selectedNode])
-                    {
-                        reason = "Completed.";
-                    }
+                    if (completion[selectedNode]) reason = "Completed.";
                     else
                     {
                         reason = "Locked:";
@@ -406,44 +383,52 @@ namespace ItsSorceryFramework
             rect.yMin += 32f;
 
             Rect outRect = rect.ContractedBy(10f);
-            Rect viewRect = outRect.ContractedBy(10f);
+            //Rect viewRect = outRect.ContractedBy(10f);
+            //Rect groupRect = viewRect.ContractedBy(10f);
+
+            Rect viewRect = new Rect(0f, 0f, ViewSize.x, ViewSize.y);
+            viewRect.ContractedBy(10f);
+            viewRect.width = ViewSize.x;
+            Log.Message("nodecount: " + allNodes.Count().ToString());
+            Log.Message(viewRect.width.ToString());
+            Log.Message(viewRect.height.ToString());
             Rect groupRect = viewRect.ContractedBy(10f);
 
-
-            //Widgets.ScrollHorizontal(outRect, ref this.rightScrollPosition, viewRect, 20f);
-			//Widgets.BeginScrollView(outRect, ref this.rightScrollPosition, viewRect, true);
-			Widgets.BeginGroup(groupRect);
+            //this.scrollPositioner.ClearInterestRects();
+            Widgets.BeginScrollView(outRect, ref this.rightScrollPosition, viewRect, true);
+            Widgets.ScrollHorizontal(outRect, ref this.rightScrollPosition, viewRect, 20f);
+            Widgets.BeginGroup(groupRect);
             
-            foreach (LearningTreeNodeDef ltnDef in allNodes)
+            foreach (LearningTreeNodeDef node in allNodes)
             {
-                Rect nodeRect = getNodeRect(ltnDef);
-
-                /*Color BG = selectionBGColor(ltnDef);
-                Color border = selectionBorderColor(ltnDef);*/
-
-                if (Widgets.CustomButtonText(ref nodeRect, "", selectionBGColor(ltnDef),
-                    new Color(0.8f, 0.85f, 1f), selectionBorderColor(ltnDef), false, 1, true, true))
+                Rect nodeRect = getNodeRect(node);
+                if (Widgets.CustomButtonText(ref nodeRect, "", selectionBGColor(node),
+                    new Color(0.8f, 0.85f, 1f), selectionBorderColor(node), false, 1, true, true))
                 {
                     SoundDefOf.Click.PlayOneShotOnCamera(null);
-                    this.selectedNode = ltnDef;
+                    this.selectedNode = node;
                 }
+
                 Text.Anchor = TextAnchor.UpperCenter;
-                Widgets.Label(nodeRect, ltnDef.LabelCap);
+                Widgets.LabelCacheHeight(ref nodeRect, node.LabelCap, true, false);
                 Text.Anchor = TextAnchor.UpperLeft;
 
-                foreach (LearningTreeNodeDef prereq in ltnDef.prereqs)
+                foreach (LearningTreeNodeDef prereq in node.prereqs)
                 {
-                    Tuple<Vector2, Vector2> points = lineEnds(prereq, ltnDef, nodeRect);
-                    Widgets.DrawLine(points.Item1, points.Item2, selectionLineColor(ltnDef), 2f);
+                    Tuple<Vector2, Vector2> points = lineEnds(prereq, node, nodeRect);
+                    Widgets.DrawLine(points.Item1, points.Item2, selectionLineColor(node), 2f);
                 }
 
             }
 
 			Widgets.EndGroup();
-			//Widgets.EndScrollView();
-			//this.scrollPositioner.ScrollHorizontally(ref this.rightScrollPosition, outRect.size);
+            Widgets.EndScrollView();
+            //this.scrollPositioner.ScrollHorizontally(ref this.rightScrollPosition, outRect.size);
 
-		}
+            //Widgets.EndScrollView();
+            //this.scrollPositioner.ScrollHorizontally(ref this.rightScrollPosition, outRect.size);
+
+        }
 
         private float CoordToPixelsX(float x)
         {
@@ -469,6 +454,19 @@ namespace ItsSorceryFramework
             current.y += nodeRef.height/2;
 
             return new Tuple<Vector2, Vector2>(prereq, current);
+        }
+
+        private Vector2 findViewSize()
+        {
+            float x = 0f;
+            float y = 0f;
+            foreach (LearningTreeNodeDef node in allNodes)
+            { 
+                x = Mathf.Max(x, this.CoordToPixelsX(node.coordX) + 140f);
+                y = Mathf.Max(y, this.CoordToPixelsY(node.coordY) + 50f);
+            }
+
+            return new Vector2(x + 32f, y + 32f);
         }
 
         private Color selectionBGColor(LearningTreeNodeDef node)
@@ -511,6 +509,8 @@ namespace ItsSorceryFramework
         public List<LearningTreeNodeDef> cachedAllNodes;
 
         public SorcerySchema cachedSchema;
+
+        public Vector2 cachedViewSize;
 
         public LearningTreeNodeDef selectedNode;
 

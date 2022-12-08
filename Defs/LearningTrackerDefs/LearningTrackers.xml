@@ -69,7 +69,7 @@
 	<ItsSorceryFramework.LearningTreeNodeDef ParentName = "BaseNode">
 		<defName>node4</defName>
 		<label>Top dog</label>
-		<description>Wise words: WOOF.</description>
+		<description>Wise words: WOOF.\n Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent a dolor id tellus consequat ullamcorper. Sed at lectus aliquam, euismod nunc a, mattis lectus. Morbi sodales sollicitudin lectus quis pretium. Nunc hendrerit posuere erat eu ornare. Donec sit amet varius lorem. Cras varius rhoncus enim at dictum. Aenean vel euismod eros, sed rhoncus magna. Duis quis dui a arcu hendrerit aliquet. Mauris nisl purus, volutpat eu dapibus placerat, efficitur a urna.\n\n\nAliquam tempus malesuada nunc sed imperdiet. Nulla at leo eu urna dignissim laoreet eget sit amet nulla. Quisque eros neque, tempus sit amet quam sed, maximus porta tortor. Ut posuere sapien nibh, id placerat turpis ullamcorper ac. Etiam et sollicitudin elit. In eget vestibulum eros. Suspendisse pretium at metus non venenatis. Donec malesuada tellus risus, tempor ornare erat consequat eget. Curabitur ac dictum nisi. Praesent dignissim magna elit, ut elementum nunc tristique vel. Ut at dapibus mi. Sed scelerisque facilisis mi, in molestie ipsum pretium sit amet. Fusce gravida hendrerit efficitur. Suspendisse placerat massa ut arcu porttitor, eget consectetur leo tincidunt. Quisque sed efficitur purus.\n\nDonec mollis turpis at libero scelerisque interdum. Morbi eget lacus hendrerit quam sollicitudin dapibus. Proin at vehicula elit, vel feugiat turpis. Mauris congue sapien vitae massa pulvinar, ac congue dui luctus. Suspendisse eget turpis sed lacus maximus convallis sit amet nec ligula. Nunc ultrices varius consequat. Vivamus id lectus tempus, mattis nisl nec, fringilla velit. Vestibulum massa neque, gravida sed aliquam at, tempor ac ipsum. Praesent gravida tempor viverra. Quisque condimentum vel nisl et congue. Morbi et rutrum velit. Quisque venenatis lorem urna. Morbi at aliquet metus. Donec condimentum turpis a elit elementum, quis facilisis ante pellentesque. Mauris vel rutrum tellus.</description>
 		<coordX>2</coordX>
 		<coordY>0</coordY>
 		<prereqs>
@@ -86,6 +86,28 @@
 		<abilityRemove>
 			<li>testsorcery</li>
 		</abilityRemove>
+	</ItsSorceryFramework.LearningTreeNodeDef>
+	
+	<ItsSorceryFramework.LearningTreeNodeDef ParentName = "BaseNode">
+		<defName>node5</defName>
+		<label>far from home</label>
+		<description>A WHOLE NEW WORLDDDD</description>
+		<coordX>5</coordX>
+		<coordY>10</coordY>
+		<prereqs>
+			<li>node4</li>
+		</prereqs>
+	</ItsSorceryFramework.LearningTreeNodeDef>
+	
+	<ItsSorceryFramework.LearningTreeNodeDef ParentName = "BaseNode">
+		<defName>node6</defName>
+		<label>farther from home</label>
+		<description>stop going this far</description>
+		<coordX>10</coordX>
+		<coordY>3</coordY>
+		<prereqs>
+			<li>node5</li>
+		</prereqs>
 	</ItsSorceryFramework.LearningTreeNodeDef>
 	
 	<ItsSorceryFramework.LearningTreeNodeDef>

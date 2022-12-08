@@ -42,7 +42,7 @@ namespace ItsSorceryFramework
 
 		public bool condVisiblePrereq = true;
 
-		List<LearningTreeNodeDef> exclusiveNodes = new List<LearningTreeNodeDef>();
+		public List<LearningTreeNodeDef> exclusiveNodes = new List<LearningTreeNodeDef>();
 
 		public List<AbilityDef> abilityGain = new List<AbilityDef>();
 
@@ -51,6 +51,12 @@ namespace ItsSorceryFramework
 		public Dictionary<HediffDef, float> hediffAdjust = new Dictionary<HediffDef, float>();
 
 		public List<HediffDef> hediffRemove = new List<HediffDef>();
+
+		public List<StatModifier> statOffsets;
+
+		public List<StatModifier> statFactors;
+
+		public List<PawnCapacityModifier> capMods;
 
 	}
 }
