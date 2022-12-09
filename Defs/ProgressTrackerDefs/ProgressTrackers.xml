@@ -13,18 +13,21 @@
 				<statOffsets>
 					<MoveSpeed>0.25</MoveSpeed>
 				</statOffsets>
+				<statFactorOffsets>
+					<MoveSpeed>0.25</MoveSpeed>
+				</statFactorOffsets>
 			</li>
 			<li>
 				<levelFactor>3</levelFactor>
 				<statOffsets>
 					<MoveSpeed>0.5</MoveSpeed>
 				</statOffsets>
-				<capMods>
+				<!--<capMods>
 					<li>
 						<capacity>Manipulation</capacity>
 						<offset>0.5</offset>
 					</li>
-				</capMods>
+				</capMods>-->
 			</li>
 		</levelModulos>
 	</ItsSorceryFramework.ProgressTrackerDef>

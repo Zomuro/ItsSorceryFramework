@@ -112,15 +112,10 @@ namespace ItsSorceryFramework
                     adjustTotalStatMods(statFactorsTotal, modulo.statFactors);
                     adjustTotalCapMods(modulo.capMods);*/
 
-                    
                     Log.Warning("modulo: " + modulo.levelFactor);
-                    foreach (StatModifier offset in modulo.statOffsets)
-                    {
-                        Log.Message(offset.stat.ToString() + ": " + offset.value.ToString());
-                    }
 
                     // adjust the current stage with the modulo statOffsets
-                    adjustStatMods(currStage, modulo.statOffsets);
+                    adjustStatMods(currStage, modulo.statOffsets, modulo.statFactorOffsets);
 
                     // add points
                     points += modulo.pointGain;
@@ -166,39 +161,41 @@ namespace ItsSorceryFramework
             }
         }
 
-        public void adjustStatMods(HediffStage stage, List<StatModifier> offsets)
+        public void adjustStatMods(HediffStage stage, List<StatModifier> offsets, List<StatModifier> factors)
         {
             StatModifier statMod;
-
-            foreach(StatModifier offset in offsets)
+            if (!offsets.NullOrEmpty()) 
             {
-                Log.Error(offset.stat.ToString() + ": " + offset.value.ToString());
-            }
-            foreach (StatModifier offset in offsets)
-            {
-                statMod = stage?.statOffsets?.FirstOrDefault(x => x.stat == offset.stat);
-                if (statMod != null)
+                foreach (StatModifier offset in offsets)
                 {
-                    Log.Warning(statMod.stat.ToString() + " before: " + statMod.value.ToString());
-
-                    // what fucking witchcraft causes this
-                    //statMod.value += offset.value;
-                    float oldVal = statMod.value;
-                    stage.statOffsets.Remove(statMod);
-                    StatModifier newone = new StatModifier();
-                    newone.stat = offset.stat;
-                    newone.value = offset.value + oldVal;
-                    
-                    Log.Message(statMod.stat.ToString() + " offset: " + offset.value.ToString());
-                    Log.Warning(statMod.stat.ToString() + " after: " + statMod.value.ToString());
-                }
-                else
-                {
-                    Log.Message(offset.stat.ToString() + " added: " + offset.value.ToString());
-                    //Log.Message(statMod.stat.ToString() + " current: " + statMod.value);
-                    stage.statOffsets.Add(offset);
+                    statMod = stage?.statOffsets?.FirstOrDefault(x => x.stat == offset.stat);
+                    if (statMod != null) statMod.value += offset.value;
+                    else stage.statOffsets.Add(newStatMod(offset));
                 }
             }
+
+            if (!factors.NullOrEmpty())
+            {
+                foreach (StatModifier factor in factors)
+                {
+                    statMod = stage?.statFactors?.FirstOrDefault(x => x.stat == factor.stat);
+                    if (statMod != null) statMod.value += factor.value;
+                    else stage.statFactors.Add(newStatMod(factor, true));
+                }
+            }
+
+            
+        }
+
+        public StatModifier newStatMod(StatModifier statMod, bool factor = false)
+        {
+            StatModifier newMod = new StatModifier();
+            float start = 0f;
+            if (factor) start = 1f;
+
+            newMod.stat = statMod.stat;
+            newMod.value = statMod.value + start;
+            return newMod;
         }
 
         // for later

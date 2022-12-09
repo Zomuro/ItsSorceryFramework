@@ -14,7 +14,7 @@ namespace ItsSorceryFramework
 
         public List<StatModifier> statOffsets;
 
-        public List<StatModifier> statFactors;
+        public List<StatModifier> statFactorOffsets;
 
         public List<PawnCapacityModifier> capMods = new List<PawnCapacityModifier>();
 
