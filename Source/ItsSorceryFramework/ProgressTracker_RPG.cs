@@ -38,10 +38,21 @@ namespace ItsSorceryFramework
                 HealthUtility.AdjustSeverity(pawn, def.progressHediff, def.progressHediff.initialSeverity);
             hediff = pawn.health.hediffSet.GetFirstHediffOfDef(def.progressHediff) as Hediff_ProgressLevel;
             hediff.progressTracker = this;
-            /*HediffStage newStage = new HediffStage();
+            setupHediffStage(hediff);
+        }
+
+        public void setupHediffStage(Hediff_ProgressLevel hediff)
+        {
+            if(hediff.CurStage != null)
+            {
+                hediff.def.stages.Clear();
+            }
+            HediffStage newStage = new HediffStage();
             newStage.minSeverity = currLevel;
-            //newStage.label = "level " + currLevel.ToString() + "; " + currProgress.ToString("P2");
-            hediff.def.stages.Add(newStage);*/
+            newStage.statOffsets = new List<StatModifier>();
+            newStage.statFactors = new List<StatModifier>();
+            newStage.capMods = new List<PawnCapacityModifier>();
+            hediff.def.stages.Add(newStage);
         }
 
         public override void addExperience(float experience)
@@ -79,28 +90,64 @@ namespace ItsSorceryFramework
 
         public override void notifyLevelUp(float sev)
         {
+            HediffStage currStage = hediff.def.stages[hediff.CurStageIndex];
             bool check = false;
+
+            foreach(ProgressLevelModulo p in def.levelModulos)
+            {
+                Log.Message("Modulo " + p.levelFactor.ToString());
+                foreach (StatModifier offset in p.statOffsets)
+                {
+                    Log.Message(offset.stat.ToString() + ": " + offset.value.ToString());
+                }
+            }
+
+            
             foreach(ProgressLevelModulo modulo in def.levelModulos.OrderByDescending(x => x.levelFactor))
             {
+                // if the level devided by the modulo leaves a remainder of 0
                 if(sev % modulo.levelFactor == 0)
                 {
-                    adjustTotalStatMods(statOffsetsTotal, modulo.statOffsets);
+                    /*adjustTotalStatMods(statOffsetsTotal, modulo.statOffsets);
                     adjustTotalStatMods(statFactorsTotal, modulo.statFactors);
-                    adjustTotalCapMods(modulo.capMods);
+                    adjustTotalCapMods(modulo.capMods);*/
 
+                    
+                    Log.Warning("modulo: " + modulo.levelFactor);
+                    foreach (StatModifier offset in modulo.statOffsets)
+                    {
+                        Log.Message(offset.stat.ToString() + ": " + offset.value.ToString());
+                    }
+
+                    // adjust the current stage with the modulo statOffsets
+                    adjustStatMods(currStage, modulo.statOffsets);
+
+                    // add points
                     points += modulo.pointGain;
                     check = true;
+                    
+                    // end loop
                     break;
                 }
             }
             if(!check) points += 1;
 
-            HediffStage newStage = new HediffStage();
+            foreach (ProgressLevelModulo p in def.levelModulos)
+            {
+                Log.Message("Modulo " + p.levelFactor.ToString());
+                foreach (StatModifier offset in p.statOffsets)
+                {
+                    Log.Message(offset.stat.ToString() + ": " + offset.value.ToString());
+                }
+            }
+
+
+            /*HediffStage newStage = new HediffStage();
             newStage.minSeverity = sev;
             newStage.statOffsets = createStatModifiers(statOffsetsTotal).ToList();
             newStage.statFactors = createStatModifiers(statFactorsTotal).ToList();
             newStage.capMods = capModsTotal.ToList();
-            hediff.def.stages.Add(newStage);
+            hediff.def.stages.Add(newStage);*/
         }
 
         public override void adjustTotalStatMods(Dictionary<StatDef, float> stats, List<StatModifier> statMods)
@@ -119,10 +166,45 @@ namespace ItsSorceryFramework
             }
         }
 
+        public void adjustStatMods(HediffStage stage, List<StatModifier> offsets)
+        {
+            StatModifier statMod;
+
+            foreach(StatModifier offset in offsets)
+            {
+                Log.Error(offset.stat.ToString() + ": " + offset.value.ToString());
+            }
+            foreach (StatModifier offset in offsets)
+            {
+                statMod = stage?.statOffsets?.FirstOrDefault(x => x.stat == offset.stat);
+                if (statMod != null)
+                {
+                    Log.Warning(statMod.stat.ToString() + " before: " + statMod.value.ToString());
+
+                    // what fucking witchcraft causes this
+                    //statMod.value += offset.value;
+                    float oldVal = statMod.value;
+                    stage.statOffsets.Remove(statMod);
+                    StatModifier newone = new StatModifier();
+                    newone.stat = offset.stat;
+                    newone.value = offset.value + oldVal;
+                    
+                    Log.Message(statMod.stat.ToString() + " offset: " + offset.value.ToString());
+                    Log.Warning(statMod.stat.ToString() + " after: " + statMod.value.ToString());
+                }
+                else
+                {
+                    Log.Message(offset.stat.ToString() + " added: " + offset.value.ToString());
+                    //Log.Message(statMod.stat.ToString() + " current: " + statMod.value);
+                    stage.statOffsets.Add(offset);
+                }
+            }
+        }
+
         // for later
         public override void adjustTotalCapMods(List<PawnCapacityModifier> capMods)
         {
-            if (capModsTotal.NullOrEmpty())
+            if (capModsTotal.NullOrEmpty() && hediff.CapMods != null)
             {
                 capModsTotal = hediff.CapMods;
             }
