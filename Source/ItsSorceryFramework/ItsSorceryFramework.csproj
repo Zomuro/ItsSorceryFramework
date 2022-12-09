@@ -65,7 +65,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
     <Compile Include="ProgressLevelOption.cs" />
     <Compile Include="ProgressLevelModulo.cs" />
     <Compile Include="CompAbilityEffect_AddEXP.cs" />
