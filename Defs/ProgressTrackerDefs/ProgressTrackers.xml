@@ -22,12 +22,12 @@
 				<statOffsets>
 					<MoveSpeed>0.5</MoveSpeed>
 				</statOffsets>
-				<!--<capMods>
+				<capMods>
 					<li>
 						<capacity>Manipulation</capacity>
 						<offset>0.5</offset>
 					</li>
-				</capMods>-->
+				</capMods>
 			</li>
 		</levelModulos>
 	</ItsSorceryFramework.ProgressTrackerDef>

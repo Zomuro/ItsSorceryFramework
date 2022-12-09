@@ -44,9 +44,11 @@ namespace ItsSorceryFramework
             Scribe_Values.Look(ref points, "points", 0);
             Scribe_Collections.Look(ref statOffsetsTotal, "statOffsetsTotal", LookMode.Def, LookMode.Value);
             Scribe_Collections.Look(ref statFactorsTotal, "statFactorsTotal", LookMode.Def, LookMode.Value);
-            
+            Scribe_Collections.Look(ref capModsTotal, "capModsTotal", LookMode.Def, LookMode.Value);
+
+
             // probably will have to just cache this
-            //Scribe_Collections.Look(ref capModsTotal, "capModsTotal", LookMode.Def, LookMode.Value);
+
         }
 
         public virtual void Initialize()
@@ -69,13 +71,13 @@ namespace ItsSorceryFramework
 
         }
 
-        public virtual void adjustTotalStatMods(Dictionary<StatDef, float> stats, List<StatModifier> statMods)
+        /*public virtual void adjustTotalStatMods(Dictionary<StatDef, float> stats, List<StatModifier> statMods, bool factor = false)
         {
             if (statMods.NullOrEmpty()) return;
         }
 
         // for later
-        public virtual void adjustTotalCapMods(List<PawnCapacityModifier> capMods)
+        public virtual void adjustTotalCapMods(Dictionary<PawnCapacityDef, float> caps, List<PawnCapacityModifier> capMods)
         {
             if (capMods.NullOrEmpty()) return;
 
@@ -84,7 +86,7 @@ namespace ItsSorceryFramework
         public virtual IEnumerable<StatModifier> createStatModifiers(Dictionary<StatDef, float> stats)
         {
             yield break;
-        }
+        }*/
 
         public virtual void notifyTotalLevelUp(float orgSev)
         {
@@ -117,6 +119,11 @@ namespace ItsSorceryFramework
             }
         }
 
+        public virtual HediffStage refreshCurStage()
+        {
+            return new HediffStage();
+        }
+
         public Pawn pawn;
 
         public ProgressTrackerDef def;
@@ -129,7 +136,7 @@ namespace ItsSorceryFramework
 
         public Dictionary<StatDef, float> statFactorsTotal = new Dictionary<StatDef, float>();
 
-        public List<PawnCapacityModifier> capModsTotal = new List<PawnCapacityModifier>();
+        public Dictionary<PawnCapacityDef, float> capModsTotal = new Dictionary<PawnCapacityDef, float>();
 
         public float exp = 0f;
 

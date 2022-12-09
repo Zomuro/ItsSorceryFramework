@@ -31,18 +31,17 @@ namespace ItsSorceryFramework
             }
         }
 
-		/*public override HediffStage CurStage
+		public override HediffStage CurStage
 		{
 			get
 			{
-				bool flag = this.curStage == null;
-				if (flag)
+				if (curStage == null)
 				{
-					this.RecacheCurStage();
+					return progressTracker?.refreshCurStage() ?? new HediffStage();
 				}
 				return this.curStage;
 			}
-		}*/
+		}
 
 		public override void Tick()
 		{
