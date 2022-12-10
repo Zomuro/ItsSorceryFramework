@@ -119,6 +119,12 @@ namespace ItsSorceryFramework
             }
         }
 
+        public virtual void adjustModifiers(List<StatModifier> offsets = null, List<StatModifier> factorOffsets = null,
+            List<PawnCapacityModifier> capMods = null)
+        {
+
+        }
+
         public virtual HediffStage refreshCurStage()
         {
             return new HediffStage();

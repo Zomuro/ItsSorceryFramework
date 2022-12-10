@@ -115,6 +115,9 @@ namespace ItsSorceryFramework
                 Rect hyperlinkRect = new Rect(0f, coordY, viewRect.width, 500f);
                 coordY += this.drawHyperlinks(hyperlinkRect, selectedNode);
 
+                Rect statModRect = new Rect(0f, coordY, viewRect.width, 500f);
+                coordY += this.drawStatMods(statModRect, selectedNode);
+
                 Rect contentRect = new Rect(0f, coordY, viewRect.width, 500f);
                 coordY += this.drawContentSource(contentRect, selectedNode);
                 coordY += 3f;
@@ -132,6 +135,8 @@ namespace ItsSorceryFramework
                     {
                         completion[selectedNode] = true;
                         completionAbilities(selectedNode);
+                        completionModifiers(selectedNode);
+
                         //progress.usedPoints += selectedNode.pointReq;
                         schema.progressTracker.usedPoints += selectedNode.pointReq;
                     }
@@ -311,6 +316,36 @@ namespace ItsSorceryFramework
             return rect.yMin - yMin;
         }
 
+        private float drawStatMods(Rect rect, LearningTreeNodeDef node)
+        {
+            float yMin = rect.yMin;
+            float x = rect.x;
+
+            String tipString = TipStringExtra(node);
+            if (!tipString.NullOrEmpty()) 
+            {
+                Widgets.LabelCacheHeight(ref rect, "Modifiers applied:", true, false);
+                rect.yMin += rect.height;
+                Widgets.LabelCacheHeight(ref rect, tipString, true, false);
+                rect.yMin += rect.height;
+            }
+
+            return rect.yMin - yMin;
+        }
+
+        public string TipStringExtra(LearningTreeNodeDef node)
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+            foreach (StatDrawEntry statDrawEntry in node.specialDisplayMods()){
+                if (statDrawEntry.ShouldDisplay)
+                {
+                    stringBuilder.AppendInNewLine("  - " + statDrawEntry.LabelCap + ": " + statDrawEntry.ValueString);
+                }
+            }
+            return stringBuilder.ToString();
+        }
+
+
         // yeah i just copied this from MainTabWindow_Research
         private float drawContentSource(Rect rect, LearningTreeNodeDef node)
         {
@@ -376,6 +411,13 @@ namespace ItsSorceryFramework
             {
                 abilityTracker.RemoveAbility(abilityDef);
             }
+        }
+
+        public virtual void completionModifiers(LearningTreeNodeDef node)
+        {
+            ProgressTracker progressTracker = schema.progressTracker;
+            progressTracker.adjustModifiers(node.statOffsets, node.statFactors, node.capMods);
+            progressTracker.refreshCurStage();
         }
 
         public override void DrawRightGUI(Rect rect)

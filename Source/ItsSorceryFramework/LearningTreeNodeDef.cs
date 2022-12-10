@@ -26,6 +26,45 @@ namespace ItsSorceryFramework
 			}
 		}
 
+		public IEnumerable<StatDrawEntry> specialDisplayMods()
+        {
+            if (!capMods.NullOrEmpty())
+            {
+				foreach(PawnCapacityModifier capMod in capMods)
+                {
+					if (capMod.offset != 0f)
+					{
+						yield return new StatDrawEntry(StatCategoryDefOf.CapacityEffects, 
+							capMod.capacity.GetLabelFor(true, true).CapitalizeFirst(), 
+							(capMod.offset * 100f).ToString("+#;-#") + "%", 
+							capMod.capacity.description, 4060, null, null, false);
+					}
+				}
+            }
+
+            if (!statOffsets.NullOrEmpty())
+            {
+				foreach(StatModifier statMod in statOffsets)
+                {
+					yield return new StatDrawEntry(StatCategoryDefOf.CapacityEffects,
+						statMod.stat.LabelCap, statMod.stat.Worker.ValueToString(statMod.value, false, ToStringNumberSense.Offset), 
+						statMod.stat.description, 4070, null, null, false);
+				}
+            }
+
+            if (!statFactors.NullOrEmpty())
+            {
+				foreach (StatModifier statMod in statFactors)
+				{
+					yield return new StatDrawEntry(StatCategoryDefOf.CapacityEffects,
+						statMod.stat.LabelCap, statMod.stat.Worker.ValueToString(statMod.value, false, ToStringNumberSense.Factor),
+						statMod.stat.description, 4070, null, null, false);
+				}
+			}
+
+			yield break;
+        }
+
 		public List<LearningTreeNodeDef> prereqs = new List<LearningTreeNodeDef>();
 
 		public List<ResearchProjectDef> prereqsResearch = new List<ResearchProjectDef>();

@@ -43,20 +43,14 @@ namespace ItsSorceryFramework
 
         public void setupHediffStage(Hediff_ProgressLevel hediff)
         {
-            if(hediff.CurStage != null)
-            {
-                hediff.def.stages.Clear();
-            }
+            if(hediff.CurStage != null) hediff.def.stages.Clear();
+
             HediffStage newStage = new HediffStage() {
                 minSeverity = currLevel,
                 statOffsets = new List<StatModifier>(),
                 statFactors = new List<StatModifier>(),
                 capMods = new List<PawnCapacityModifier>()
             };
-            /*newStage.minSeverity = currLevel;
-            newStage.statOffsets = new List<StatModifier>();
-            newStage.statFactors = new List<StatModifier>();
-            newStage.capMods = new List<PawnCapacityModifier>();*/
             hediff.curStage = newStage;
         }
 
@@ -105,13 +99,6 @@ namespace ItsSorceryFramework
                 {
                     adjustModifiers(modulo);
 
-                    /*adjustTotalStatMods(statOffsetsTotal, modulo.statOffsets);
-                    adjustTotalStatMods(statFactorsTotal, modulo.statFactorOffsets, true);
-                    adjustTotalCapMods(capModsTotal, modulo.capMods);*/
-
-                    // adjust the current stage with the modulo statOffsets
-                    //adjustStatMods(currStage, modulo.statOffsets, modulo.statFactorOffsets);
-
                     // add points
                     points += modulo.pointGain;
                     check = true;
@@ -132,7 +119,7 @@ namespace ItsSorceryFramework
             adjustTotalCapMods(capModsTotal, modulo.capMods);
         }
 
-        public void adjustModifiers(List<StatModifier> offsets = null, List<StatModifier> factorOffsets = null, 
+        public override void adjustModifiers(List<StatModifier> offsets = null, List<StatModifier> factorOffsets = null, 
             List<PawnCapacityModifier> capMods = null)
         {
             adjustTotalStatMods(statOffsetsTotal, offsets);
@@ -157,44 +144,6 @@ namespace ItsSorceryFramework
             }
         }
 
-        /*public void adjustStatMods(HediffStage stage, List<StatModifier> offsets, List<StatModifier> factors)
-        {
-            StatModifier statMod;
-            if (!offsets.NullOrEmpty()) 
-            {
-                foreach (StatModifier offset in offsets)
-                {
-                    statMod = stage?.statOffsets?.FirstOrDefault(x => x.stat == offset.stat);
-                    if (statMod != null) statMod.value += offset.value;
-                    else stage.statOffsets.Add(newStatMod(offset));
-                }
-            }
-
-            if (!factors.NullOrEmpty())
-            {
-                foreach (StatModifier factor in factors)
-                {
-                    statMod = stage?.statFactors?.FirstOrDefault(x => x.stat == factor.stat);
-                    if (statMod != null) statMod.value += factor.value;
-                    else stage.statFactors.Add(newStatMod(factor, true));
-                }
-            }
-
-            
-        }
-
-        public StatModifier newStatMod(StatModifier statMod, bool factor = false)
-        {
-            StatModifier newMod = new StatModifier();
-            float start = 0f;
-            if (factor) start = 1f;
-
-            newMod.stat = statMod.stat;
-            newMod.value = statMod.value + start;
-            return newMod;
-        }*/
-
-        // for later
         public virtual void adjustTotalCapMods(Dictionary<PawnCapacityDef, float> caps, List<PawnCapacityModifier> capMods)
         {
             if (capMods.NullOrEmpty()) return;
@@ -213,24 +162,14 @@ namespace ItsSorceryFramework
 
         public virtual IEnumerable<StatModifier> createStatModifiers(Dictionary<StatDef, float> stats)
         {
-            //StatModifier mod = new StatModifier();
-            foreach (var pair in stats)
-            {
-                //mod.stat = pair.Key; mod.value = pair.Value;
-                yield return new StatModifier() {stat = pair.Key, value = pair.Value};
-            }
+            foreach (var pair in stats) yield return new StatModifier() { stat = pair.Key, value = pair.Value };
 
             yield break;
         }
 
         public virtual IEnumerable<PawnCapacityModifier> createCapModifiers(Dictionary<PawnCapacityDef, float> caps)
         {
-            //StatModifier mod = new StatModifier();
-            foreach (var pair in caps)
-            {
-                //mod.stat = pair.Key; mod.value = pair.Value;
-                yield return new PawnCapacityModifier() { capacity = pair.Key, offset = pair.Value};
-            }
+            foreach (var pair in caps) yield return new PawnCapacityModifier() { capacity = pair.Key, offset = pair.Value };
 
             yield break;
         }
