@@ -440,10 +440,26 @@ namespace ItsSorceryFramework
             Widgets.BeginScrollView(outRect, ref this.rightScrollPosition, viewRect, true);
             Widgets.ScrollHorizontal(outRect, ref this.rightScrollPosition, viewRect, 20f);
             Widgets.BeginGroup(groupRect);
-            
+
+            // first pass- draw the lines for the node requirements
+            Rect nodeRect;
             foreach (LearningTreeNodeDef node in allNodes)
             {
-                Rect nodeRect = getNodeRect(node);
+                nodeRect = getNodeRect(node);
+                foreach (LearningTreeNodeDef prereq in node.prereqs)
+                {
+                    Tuple<Vector2, Vector2> points = lineEnds(prereq, node, nodeRect);
+                    Tuple<Color, float> lineColor = selectionLineColor(node, prereq);
+                    //Widgets.DrawLine(points.Item1, points.Item2, selectionLineColor(node), 2f);
+                    Widgets.DrawLine(points.Item1, points.Item2, lineColor.Item1, lineColor.Item2);
+                }               
+            }
+
+            // second pass- draw the nodes + label
+            foreach(LearningTreeNodeDef node in allNodes)
+            {
+                nodeRect = getNodeRect(node);
+
                 if (Widgets.CustomButtonText(ref nodeRect, "", selectionBGColor(node),
                     new Color(0.8f, 0.85f, 1f), selectionBorderColor(node), false, 1, true, true))
                 {
@@ -454,13 +470,6 @@ namespace ItsSorceryFramework
                 Text.Anchor = TextAnchor.UpperCenter;
                 Widgets.LabelCacheHeight(ref nodeRect, node.LabelCap, true, false);
                 Text.Anchor = TextAnchor.UpperLeft;
-
-                foreach (LearningTreeNodeDef prereq in node.prereqs)
-                {
-                    Tuple<Vector2, Vector2> points = lineEnds(prereq, node, nodeRect);
-                    Widgets.DrawLine(points.Item1, points.Item2, selectionLineColor(node), 2f);
-                }
-
             }
 
 			Widgets.EndGroup();
@@ -513,9 +522,15 @@ namespace ItsSorceryFramework
 
         private Color selectionBGColor(LearningTreeNodeDef node)
         {
-            Color baseCol = TexUI.AvailResearchColor;
+            Color baseCol = default(Color);
+        
+            //Color baseCol2 = TexUI.AvailResearchColor;
 
             if (completion[node]) baseCol = TexUI.FinishedResearchColor;
+
+            else if (prereqFufilled(node) && prereqResearchFufilled(node)) baseCol = TexUI.AvailResearchColor;
+
+            else baseCol = TexUI.LockedResearchColor;
 
             // if the node is the selected one, change background to highlight
             if (selectedNode != null && selectedNode == node) return baseCol + TexUI.HighlightBgResearchColor;
@@ -546,6 +561,30 @@ namespace ItsSorceryFramework
             if (selectedNode == node) return TexUI.HighlightLineResearchColor;
 
             return TexUI.DefaultLineResearchColor;
+        }
+
+        private Tuple<Color,float> selectionLineColor(LearningTreeNodeDef node, LearningTreeNodeDef prereq)
+        {
+            Color col = default(Color);
+            float width = 3f;
+            if (selectedNode == node)
+            {
+                if (completion[prereq])
+                {
+                    col = TexUI.HighlightLineResearchColor;
+                    return new Tuple<Color, float>(col, width);
+                }
+
+                else 
+                {
+                    col = TexUI.DependencyOutlineResearchColor;
+                    return new Tuple<Color, float>(col, width);
+                } 
+            }   
+
+            col =  TexUI.DefaultLineResearchColor;
+            width = 2f;
+            return new Tuple<Color, float>(col, 2f );
         }
 
         public List<LearningTreeNodeDef> cachedAllNodes;
