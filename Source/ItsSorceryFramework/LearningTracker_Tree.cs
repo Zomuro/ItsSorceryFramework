@@ -202,36 +202,43 @@ namespace ItsSorceryFramework
 
         private float drawNodePrereqs(LearningTreeNodeDef node, Rect rect)
         {
-            if (node.prereqs.NullOrEmpty())
+            if (node.prereqs.NullOrEmpty() && node.prereqsResearch.NullOrEmpty())
             {
                 return 0f;
             }
             float xMin = rect.xMin;
             float yMin = rect.yMin;
 
-            Widgets.LabelCacheHeight(ref rect, "LearningNodePrerequisites_ISF".Translate() + ":", true, false);
-            rect.yMin += rect.height;
-            rect.xMin += 6f;
-            foreach (LearningTreeNodeDef prereq in node.prereqs)
+            if (!node.prereqs.NullOrEmpty()) 
             {
-                this.setPrereqStatusColor(completion[prereq], node);
-                Widgets.LabelCacheHeight(ref rect, prereq.LabelCap, true, false);
+                Widgets.LabelCacheHeight(ref rect, "LearningNodePrerequisites_ISF".Translate() + ":", true, false);
                 rect.yMin += rect.height;
+                rect.xMin += 6f;
+                foreach (LearningTreeNodeDef prereq in node.prereqs)
+                {
+                    this.setPrereqStatusColor(completion[prereq], node);
+                    Widgets.LabelCacheHeight(ref rect, prereq.LabelCap, true, false);
+                    rect.yMin += rect.height;
+                }
+                rect.xMin = xMin;
+                GUI.color = Color.white;
             }
-            rect.xMin = xMin;
-            GUI.color = Color.white;
 
-            Widgets.LabelCacheHeight(ref rect, "ResearchPrerequisites".Translate() + ":", true, false);
-            rect.yMin += rect.height;
-            rect.xMin += 6f;
-            foreach (ResearchProjectDef prereq in node.prereqsResearch)
+            if (!node.prereqsResearch.NullOrEmpty())
             {
-                this.setPrereqStatusColor(prereq.IsFinished, node);
-                Widgets.LabelCacheHeight(ref rect, prereq.LabelCap, true, false);
+                Widgets.LabelCacheHeight(ref rect, "ResearchPrerequisites".Translate() + ":", true, false);
                 rect.yMin += rect.height;
+                rect.xMin += 6f;
+                foreach (ResearchProjectDef prereq in node.prereqsResearch)
+                {
+                    this.setPrereqStatusColor(prereq.IsFinished, node);
+                    Widgets.LabelCacheHeight(ref rect, prereq.LabelCap, true, false);
+                    rect.yMin += rect.height;
+                }
+                GUI.color = Color.white;
+                rect.xMin = xMin;
             }
-            GUI.color = Color.white;
-            rect.xMin = xMin;
+
             return rect.yMin - yMin;
         }
 
