@@ -123,7 +123,6 @@ namespace ItsSorceryFramework
                 coordY += 3f;
                 this.leftScrollViewHeight = coordY;
                 Widgets.EndScrollView();
-                leftViewDebugHeight = 0f;
 
                 ProgressTracker progress = schema.progressTracker;
                 Rect confirmButton = new Rect(0f, outRect.yMax + 10f + this.leftViewDebugHeight, rect.width, this.leftStartAreaHeight);
@@ -136,8 +135,8 @@ namespace ItsSorceryFramework
                         completion[selectedNode] = true;
                         completionAbilities(selectedNode);
                         completionModifiers(selectedNode);
+                        // add the hediff completion portion
 
-                        //progress.usedPoints += selectedNode.pointReq;
                         schema.progressTracker.usedPoints += selectedNode.pointReq;
                     }
                 }
@@ -169,20 +168,26 @@ namespace ItsSorceryFramework
                 Text.Anchor = TextAnchor.MiddleCenter;
                 Widgets.Label(pointBar, (progress.points-progress.usedPoints).ToString("F0") + " / " + schema.progressTracker.points.ToString("F0"));
                 
-                /*Text.Anchor = TextAnchor.UpperLeft;
+                Text.Anchor = TextAnchor.UpperLeft;
                 this.leftViewDebugHeight = 0f;
-                if (Prefs.DevMode && this.selectedProject != Find.ResearchManager.currentProj && !this.selectedProject.IsFinished)
+                if (Prefs.DevMode && !completion[selectedNode])
                 {
                     Text.Font = GameFont.Tiny;
-                    Rect rect13 = new Rect(rect11.x, outRect.yMax, 120f, 30f);
-                    if (Widgets.ButtonText(rect13, "Debug: Finish now", true, true, true, null))
+                    Rect debugButton = new Rect(confirmButton.x, outRect.yMax, 120f, 30f);
+                    if (Widgets.ButtonText(debugButton, "Debug: Finish now", true, true, true, null))
                     {
-                        Find.ResearchManager.currentProj = this.selectedProject;
-                        Find.ResearchManager.FinishProject(this.selectedProject, false, null, true);
+                        // add the hediff completion portion
+                        completion[selectedNode] = true;
+                        completionAbilities(selectedNode);
+                        completionModifiers(selectedNode);
+                        // add the hediff completion portion
+
+                        //schema.progressTracker.usedPoints += selectedNode.pointReq;
                     }
                     Text.Font = GameFont.Small;
-                    this.leftViewDebugHeight = rect13.height;
+                    this.leftViewDebugHeight = debugButton.height;
                 }
+                /*
                 if (Prefs.DevMode && !this.selectedProject.TechprintRequirementMet)
                 {
                     Text.Font = GameFont.Tiny;
@@ -563,12 +568,12 @@ namespace ItsSorceryFramework
             return TexUI.DefaultBorderResearchColor;
         }
 
-        private Color selectionLineColor(LearningTreeNodeDef node)
+        /*private Color selectionLineColor(LearningTreeNodeDef node)
         {
             if (selectedNode == node) return TexUI.HighlightLineResearchColor;
 
             return TexUI.DefaultLineResearchColor;
-        }
+        }*/
 
         private Tuple<Color,float> selectionLineColor(LearningTreeNodeDef node, LearningTreeNodeDef prereq)
         {

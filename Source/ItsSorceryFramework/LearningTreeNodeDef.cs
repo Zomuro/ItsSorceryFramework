@@ -79,7 +79,10 @@ namespace ItsSorceryFramework
 
 		public int pointReq = 1;
 
-		public bool condVisiblePrereq = true;
+		public bool condVisiblePrereq = false;
+
+		[NoTranslate]
+		public string iconPath;
 
 		public List<LearningTreeNodeDef> exclusiveNodes = new List<LearningTreeNodeDef>();
 
