@@ -165,5 +165,36 @@
 			</li>
 		</stages>
 	</HediffDef>
+	
+	<HediffDef ParentName="DiseaseBase">
+		<defName>verysmort</defName>
+		<label>smort level</label>
+		<description>a genius is you</description>
+		<isBad>false</isBad>
+		<initialSeverity>1</initialSeverity>
+		<maxSeverity>10</maxSeverity>
+		<stages>
+		    <li>
+				<label>minor</label>			
+				<capMods>
+					<li>
+						<capacity>Consciousness</capacity>
+						<offset>0.15</offset>
+					</li>
+				</capMods>
+		    </li>
+		    <li>
+				<minSeverity>3</minSeverity>
+				<label>moderate</label>
+				<capMods>
+					<li>
+						<capacity>Consciousness</capacity>
+						<offset>0.3</offset>
+					</li>
+				</capMods>
+		    </li>
+
+		</stages>
+	</HediffDef>
 
 </Defs>

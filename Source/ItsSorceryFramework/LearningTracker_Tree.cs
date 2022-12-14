@@ -157,7 +157,7 @@ namespace ItsSorceryFramework
                 Rect confirmButton = new Rect(0f, outRect.yMax + 10f + this.leftViewDebugHeight, rect.width, this.leftStartAreaHeight);
                 string reason = "";
                 if (!completion[selectedNode] && prereqFufilled(selectedNode) && prereqResearchFufilled(selectedNode) &&
-                    exclusiveNodeFufilled(selectedNode) &&
+                    prereqHediffFufilled(selectedNode) && exclusiveNodeFufilled(selectedNode) &&
                     selectedNode.pointReq + progress.usedPoints <= progress.points) 
                 {
                     if (Widgets.ButtonText(confirmButton, "complete: " + selectedNode.pointReq))
@@ -184,6 +184,8 @@ namespace ItsSorceryFramework
                         if (!prereqFufilled(selectedNode)) reason += "\nPrior nodes not completed.";
 
                         if (!prereqResearchFufilled(selectedNode)) reason += "\nResearch requirements not completed.";
+
+                        if (!prereqHediffFufilled(selectedNode)) reason += "\nHediff requirements not met.";
 
                         // if for exlusive nodes check
                     }
@@ -247,7 +249,7 @@ namespace ItsSorceryFramework
 
             if (!node.prereqs.NullOrEmpty()) 
             {
-                Widgets.LabelCacheHeight(ref rect, "LearningNodePrerequisites_ISF".Translate() + ":", true, false);
+                Widgets.LabelCacheHeight(ref rect, "LearningNodePrerequisites_ISF".Translate(), true, false);
                 rect.yMin += rect.height;
                 rect.xMin += 6f;
                 foreach (LearningTreeNodeDef prereq in node.prereqs)
@@ -269,6 +271,26 @@ namespace ItsSorceryFramework
                 {
                     this.setPrereqStatusColor(prereq.IsFinished, node);
                     Widgets.LabelCacheHeight(ref rect, prereq.LabelCap, true, false);
+                    rect.yMin += rect.height;
+                }
+                GUI.color = Color.white;
+                rect.xMin = xMin;
+            }
+
+            if (!node.prereqsHediff.NullOrEmpty())
+            {
+                Widgets.LabelCacheHeight(ref rect, "Hediff requirements:", true, false);
+                rect.yMin += rect.height;
+                rect.xMin += 6f;
+                Hediff hediff;
+                String reqLabel;
+                foreach (var prereq in node.prereqsHediff)
+                {
+                    hediff = pawn.health.hediffSet.GetFirstHediffOfDef(prereq.Key);
+                    this.setPrereqStatusColor((hediff != null && hediff.Severity >= prereq.Value), node);
+                    reqLabel = !prereq.Key.stages.NullOrEmpty() ? 
+                        prereq.Key.stages[prereq.Key.StageAtSeverity(prereq.Value)].label : prereq.Value.ToString("F0");
+                    Widgets.LabelCacheHeight(ref rect, prereq.Key.LabelCap + " ({0})".Translate(reqLabel), true, false);
                     rect.yMin += rect.height;
                 }
                 GUI.color = Color.white;
@@ -459,6 +481,19 @@ namespace ItsSorceryFramework
             foreach (ResearchProjectDef prereq in node.prereqsResearch)
             {
                 if (!prereq.IsFinished) return false;
+            }
+
+            return true;
+        }
+
+        public bool prereqHediffFufilled(LearningTreeNodeDef node)
+        {
+            Hediff hediff;
+            foreach (var pair in node.prereqsHediff)
+            {
+                hediff = pawn.health.hediffSet.GetFirstHediffOfDef(pair.Key);
+                if (hediff == null) return false;
+                else if (hediff.Severity < pair.Value) return false;
             }
 
             return true;
