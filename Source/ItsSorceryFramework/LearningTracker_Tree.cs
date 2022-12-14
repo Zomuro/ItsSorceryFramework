@@ -47,6 +47,31 @@ namespace ItsSorceryFramework
             }
         }
 
+        public Dictionary<LearningTreeNodeDef, List<LearningTreeNodeDef>> exclusiveNodes 
+        {
+            get
+            {
+                if(cacheExclusive == null)
+                {
+                    Dictionary<LearningTreeNodeDef, List<LearningTreeNodeDef>> exclusive = new Dictionary<LearningTreeNodeDef, List<LearningTreeNodeDef>>();
+                    foreach(LearningTreeNodeDef node in allNodes)
+                    {
+                        if (!exclusive.ContainsKey(node)) exclusive[node] = node.exclusiveNodes.Distinct().ToList();
+
+                        foreach(LearningTreeNodeDef conflict in node.exclusiveNodes)
+                        {
+                            if (!exclusive.ContainsKey(conflict)) exclusive[conflict] = new List<LearningTreeNodeDef>() { node };
+                            else exclusive[conflict].AddDistinct(node);
+                        }
+                    }
+
+                    cacheExclusive = exclusive;
+                }
+
+                return cacheExclusive;
+            }           
+        }
+
         public Vector2 ViewSize
         {
             get
@@ -112,6 +137,10 @@ namespace ItsSorceryFramework
 
                 Rect prereqRect = new Rect(0f, coordY, viewRect.width, 500f);
                 coordY += this.drawNodePrereqs(this.selectedNode, prereqRect);
+
+                Rect exclusiveRect = new Rect(0f, coordY, viewRect.width, 500f);
+                coordY += this.drawExclusive(this.selectedNode, exclusiveRect);
+
                 Rect hyperlinkRect = new Rect(0f, coordY, viewRect.width, 500f);
                 coordY += this.drawHyperlinks(hyperlinkRect, selectedNode);
 
@@ -128,6 +157,7 @@ namespace ItsSorceryFramework
                 Rect confirmButton = new Rect(0f, outRect.yMax + 10f + this.leftViewDebugHeight, rect.width, this.leftStartAreaHeight);
                 string reason = "";
                 if (!completion[selectedNode] && prereqFufilled(selectedNode) && prereqResearchFufilled(selectedNode) &&
+                    exclusiveNodeFufilled(selectedNode) &&
                     selectedNode.pointReq + progress.usedPoints <= progress.points) 
                 {
                     if (Widgets.ButtonText(confirmButton, "complete: " + selectedNode.pointReq))
@@ -144,6 +174,7 @@ namespace ItsSorceryFramework
                 {
                     Text.Anchor = TextAnchor.MiddleCenter;
                     if (completion[selectedNode]) reason = "Completed.";
+                    else if (!exclusiveNodeFufilled(selectedNode)) reason = "Conflicts with another node.";
                     else
                     {
                         reason = "Locked:";
@@ -243,6 +274,29 @@ namespace ItsSorceryFramework
                 GUI.color = Color.white;
                 rect.xMin = xMin;
             }
+
+            return rect.yMin - yMin;
+        }
+
+        private float drawExclusive(LearningTreeNodeDef node, Rect rect)
+        {
+            if (exclusiveNodes[node].NullOrEmpty()) return 0;
+
+            float xMin = rect.xMin;
+            float yMin = rect.yMin;
+
+            Widgets.LabelCacheHeight(ref rect, "Exclusive with: ", true, false);
+            rect.yMin += rect.height;
+            rect.xMin += 6f;
+            foreach (LearningTreeNodeDef ex in exclusiveNodes[node])
+            {
+                if(completion[ex]) GUI.color = ColorLibrary.RedReadable;
+
+                Widgets.LabelCacheHeight(ref rect, ex.LabelCap, true, false);
+                rect.yMin += rect.height;
+            }
+            GUI.color = Color.white;
+            rect.xMin = xMin;
 
             return rect.yMin - yMin;
         }
@@ -410,6 +464,18 @@ namespace ItsSorceryFramework
             return true;
         }
 
+        public bool exclusiveNodeFufilled(LearningTreeNodeDef node)
+        {
+            if (!exclusiveNodes.ContainsKey(node)) return true;
+
+            foreach(LearningTreeNodeDef ex in exclusiveNodes[node])
+            {
+                if (completion[ex]) return false;
+            }
+
+            return true;
+        }
+
         public virtual void completionAbilities(LearningTreeNodeDef node)
         {
             Pawn_AbilityTracker abilityTracker = this.pawn.abilities;
@@ -535,10 +601,12 @@ namespace ItsSorceryFramework
         private Color selectionBGColor(LearningTreeNodeDef node)
         {
             Color baseCol = default(Color);
-        
+
             //Color baseCol2 = TexUI.AvailResearchColor;
 
             if (completion[node]) baseCol = TexUI.FinishedResearchColor;
+
+            else if (!exclusiveNodeFufilled(node)) baseCol = ColorLibrary.BrickRed;
 
             else if (prereqFufilled(node) && prereqResearchFufilled(node)) baseCol = TexUI.AvailResearchColor;
 
@@ -600,6 +668,8 @@ namespace ItsSorceryFramework
         }
 
         public List<LearningTreeNodeDef> cachedAllNodes;
+
+        public Dictionary<LearningTreeNodeDef, List<LearningTreeNodeDef>> cacheExclusive; 
 
         public SorcerySchema cachedSchema;
 

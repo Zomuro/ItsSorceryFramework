@@ -123,6 +123,9 @@
 		<prereqs>
 			<li>node1</li>
 		</prereqs>
+		<exclusiveNodes>
+			<li>node5</li>
+		</exclusiveNodes>
 		
 		<statOffsets>
 			<MoveSpeed>0.25</MoveSpeed>
