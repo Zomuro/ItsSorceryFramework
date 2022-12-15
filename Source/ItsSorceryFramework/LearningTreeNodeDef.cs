@@ -92,10 +92,11 @@ namespace ItsSorceryFramework
 
 		public List<AbilityDef> abilityRemove = new List<AbilityDef>();
 
-		
-		public Dictionary<HediffDef, HediffAddProps> hediffAdd = new Dictionary<HediffDef, HediffAddProps>();
+		public List<NodeHediffProps> hediffAdd = new List<NodeHediffProps>();
 
-		public Dictionary<HediffDef, float> hediffAdjust = new Dictionary<HediffDef, float>();
+		public List<NodeHediffProps> hediffAdjust = new List<NodeHediffProps>();
+
+		//public Dictionary<HediffDef, float> hediffAdjust = new Dictionary<HediffDef, float>();
 
 		public List<HediffDef> hediffRemove = new List<HediffDef>();
 
@@ -107,10 +108,10 @@ namespace ItsSorceryFramework
 
 	}
 
-	public class HediffAddProps
+	public class NodeHediffProps
     {
-		public float severity = 1;
+		public HediffDef hediffDef;
 
-		public BodyPartDef bodyPart;
+		public float severity = 1;
     }
 }

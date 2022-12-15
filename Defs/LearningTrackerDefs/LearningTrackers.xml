@@ -45,6 +45,12 @@
 		<abilityGain>
 			<li>testsorcery</li>
 		</abilityGain>
+		<hediffAdd>
+			<li>
+				<hediffDef>verysmort</hediffDef>
+				<severity>2</severity>
+			</li>
+		</hediffAdd>
 	</ItsSorceryFramework.LearningTreeNodeDef>
 	
 	<ItsSorceryFramework.LearningTreeNodeDef ParentName = "BaseNode">
@@ -129,6 +135,12 @@
 				<value>2</value>
 			</li>
 		</prereqsHediff>
+		<hediffAdjust>
+			<li>
+				<hediffDef>verysmort</hediffDef>
+				<severity>2</severity>
+			</li>
+		</hediffAdjust>
 		
 		<exclusiveNodes>
 			<li>node5</li>

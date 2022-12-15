@@ -212,6 +212,7 @@ namespace ItsSorceryFramework
                         // add the hediff completion portion
                         completion[selectedNode] = true;
                         completionAbilities(selectedNode);
+                        completionHediffs(selectedNode);
                         completionModifiers(selectedNode);
                         // add the hediff completion portion
 
@@ -327,10 +328,12 @@ namespace ItsSorceryFramework
         {
             List<AbilityDef> abilityGain = node.abilityGain;
             List<AbilityDef> abilityRemove = node.abilityRemove;
-            Dictionary<HediffDef, float> hediffAdjust = node.hediffAdjust;
+            List<NodeHediffProps> hediffAdd = node.hediffAdd;
+            List<NodeHediffProps> hediffAdjust = node.hediffAdjust;
             List<HediffDef> hediffRemove = node.hediffRemove;
 
-            if (abilityGain.NullOrEmpty() && abilityRemove.NullOrEmpty() && hediffAdjust.NullOrEmpty() && hediffRemove.NullOrEmpty())
+            if (abilityGain.NullOrEmpty() && abilityRemove.NullOrEmpty() && hediffAdd.NullOrEmpty() && hediffAdjust.NullOrEmpty() &&
+                hediffRemove.NullOrEmpty())
             {
                 return 0f;
             }
@@ -369,22 +372,50 @@ namespace ItsSorceryFramework
                 rect.x = x;
             }
 
-            if (!hediffAdjust.NullOrEmpty())
+            if (!hediffAdd.NullOrEmpty())
             {
                 Widgets.LabelCacheHeight(ref rect, "Hediffs added:", true, false);
                 rect.yMin += rect.height;
                 rect.x += 6f;
-                foreach (var pair in hediffAdjust)
+                foreach (NodeHediffProps prop in hediffAdd)
                 {
                     Rect hyperRect = new Rect(rect.x, rect.yMin, rect.width, 24f);
-                    HediffDef hediffDef = pair.Key;
-                    string stageName = hediffDef.stages[hediffDef.StageAtSeverity(pair.Value)].label;
+                    HediffDef hediffDef = prop.hediffDef;
+                    string sev;
+
+                    sev = hediffDef.stages.NullOrEmpty() ? prop.severity.ToStringWithSign("F0") :
+                        hediffDef.stages[hediffDef.StageAtSeverity(prop.severity)].label;
                     hyperlink = new Dialog_InfoCard.Hyperlink(hediffDef, -1);
-                    Widgets.HyperlinkWithIcon(hyperRect, hyperlink, hediffDef.LabelCap + "({0})".Translate(stageName), 2f, 6f, new Color(0.8f, 0.85f, 1f), false);
+                    Widgets.HyperlinkWithIcon(hyperRect, hyperlink, hediffDef.LabelCap + " ({0})".Translate(sev),
+                        2f, 6f, new Color(0.8f, 0.85f, 1f), false);
+                    rect.yMin += 24f;
+
+                }
+                rect.x = x;
+            }
+
+            if (!hediffAdjust.NullOrEmpty())
+            {
+                Widgets.LabelCacheHeight(ref rect, "Hediff adjustments:", true, false);
+                rect.yMin += rect.height;
+                rect.x += 6f;
+                foreach (NodeHediffProps prop in hediffAdjust)
+                {
+                    Rect hyperRect = new Rect(rect.x, rect.yMin, rect.width, 24f);
+                    HediffDef hediffDef = prop.hediffDef;
+                    string sev;
+
+                    sev = prop.severity.ToStringWithSign("F0");
+                    hyperlink = new Dialog_InfoCard.Hyperlink(hediffDef, -1);
+                    Widgets.HyperlinkWithIcon(hyperRect, hyperlink, hediffDef.LabelCap + " ({0})".Translate(sev),
+                        2f, 6f, new Color(0.8f, 0.85f, 1f), false);
                     rect.yMin += 24f;
                 }
                 rect.x = x;
             }
+
+
+
 
             if (!hediffRemove.NullOrEmpty())
             {
@@ -526,6 +557,29 @@ namespace ItsSorceryFramework
             }
         }
 
+        public virtual void completionHediffs(LearningTreeNodeDef node)
+        {
+            Hediff hediff;
+            foreach (NodeHediffProps props in node.hediffAdd)
+            {
+                hediff = HediffMaker.MakeHediff(props.hediffDef, pawn, null);
+                hediff.Severity = props.severity;
+
+                pawn.health.AddHediff(hediff, null, null, null);
+            }
+
+            foreach (NodeHediffProps props in node.hediffAdjust)
+            {
+                HealthUtility.AdjustSeverity(pawn, props.hediffDef, props.severity);
+            }
+
+            foreach (HediffDef hediffDef in node.hediffRemove)
+            {
+                hediff = pawn.health.hediffSet.GetFirstHediffOfDef(hediffDef);
+                if (hediff != null) pawn.health.RemoveHediff(hediff);
+            }
+        }
+
         public virtual void completionModifiers(LearningTreeNodeDef node)
         {
             ProgressTracker progressTracker = schema.progressTracker;
@@ -544,9 +598,9 @@ namespace ItsSorceryFramework
             Rect viewRect = new Rect(0f, 0f, ViewSize.x, ViewSize.y);
             viewRect.ContractedBy(10f);
             viewRect.width = ViewSize.x;
-            Log.Message("nodecount: " + allNodes.Count().ToString());
-            Log.Message(viewRect.width.ToString());
-            Log.Message(viewRect.height.ToString());
+            //Log.Message("nodecount: " + allNodes.Count().ToString());
+            //Log.Message(viewRect.width.ToString());
+            //Log.Message(viewRect.height.ToString());
             Rect groupRect = viewRect.ContractedBy(10f);
 
             //this.scrollPositioner.ClearInterestRects();
