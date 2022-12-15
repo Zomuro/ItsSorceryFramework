@@ -637,6 +637,12 @@ namespace ItsSorceryFramework
                 Text.Anchor = TextAnchor.UpperCenter;
                 Widgets.LabelCacheHeight(ref nodeRect, node.LabelCap, true, false);
                 Text.Anchor = TextAnchor.UpperLeft;
+
+                if (Mouse.IsOver(nodeRect))
+                {
+                    Widgets.DrawLightHighlight(nodeRect);
+                    TooltipHandler.TipRegion(nodeRect, node.GetTip());
+                }
             }
 
 			Widgets.EndGroup();

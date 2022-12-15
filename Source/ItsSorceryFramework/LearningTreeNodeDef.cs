@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using RimWorld;
 using Verse;
+using UnityEngine;
 
 namespace ItsSorceryFramework
 {
@@ -65,6 +66,21 @@ namespace ItsSorceryFramework
 			yield break;
 		}
 
+		public string GetTip()
+		{
+			if (this.cachedTip == null)
+			{
+				this.cachedTip = this.LabelCap.Colorize(ColoredText.TipSectionTitleColor) + "\n" + this.description;
+				
+				if (this.modContentPack != null && !this.modContentPack.IsCoreMod)
+				{
+					Color color = this.modContentPack.IsOfficialMod ? ModLister.GetExpansionWithIdentifier(this.modContentPack.PackageId.ToLower()).primaryColor : ColoredText.SubtleGrayColor;
+					this.cachedTip = this.cachedTip + "\n\n" + ("Stat_Source_Label".Translate().ToString() + ": " + this.modContentPack.Name).Colorize(color);
+				}
+			}
+			return this.cachedTip;
+		}
+
 		public List<LearningTreeNodeDef> prereqs = new List<LearningTreeNodeDef>();
 
 		public List<ResearchProjectDef> prereqsResearch = new List<ResearchProjectDef>();
@@ -105,6 +121,8 @@ namespace ItsSorceryFramework
 		public List<StatModifier> statFactors;
 
 		public List<PawnCapacityModifier> capMods;
+
+		private string cachedTip;
 
 	}
 
