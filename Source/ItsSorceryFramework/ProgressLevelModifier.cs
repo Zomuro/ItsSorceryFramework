@@ -8,9 +8,9 @@ using Verse;
 
 namespace ItsSorceryFramework
 {
-    public class ProgressLevelModulo
+    public class ProgressLevelModifier
     {
-        public int levelFactor = 1;
+        public int level = 1;
 
         public List<StatModifier> statOffsets;
 

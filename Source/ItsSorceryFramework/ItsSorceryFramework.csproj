@@ -67,7 +67,7 @@
   <ItemGroup>
     <Compile Include="LearningTreeNodeCompletion.cs" />
     <Compile Include="ProgressLevelOption.cs" />
-    <Compile Include="ProgressLevelModulo.cs" />
+    <Compile Include="ProgressLevelModifier.cs" />
     <Compile Include="CompAbilityEffect_AddEXP.cs" />
     <Compile Include="Hediff_ProgressLevel.cs" />
     <Compile Include="CompAbilityEffect_ForceLevelUp.cs" />

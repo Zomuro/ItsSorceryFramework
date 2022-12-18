@@ -90,29 +90,42 @@ namespace ItsSorceryFramework
         public override void notifyLevelUp(float sev)
         {
             HediffStage currStage = hediff.CurStage;
-            bool check = false;
+            //bool check = false;
             
-            foreach(ProgressLevelModulo modulo in def.levelModulos.OrderByDescending(x => x.levelFactor))
+            foreach(ProgressLevelModifier factor in def.levelFactors.OrderByDescending(x => x.level))
             {
                 // if the level devided by the modulo leaves a remainder of 0
-                if(sev % modulo.levelFactor == 0)
+                if(sev % factor.level == 0)
                 {
-                    adjustModifiers(modulo);
+                    adjustModifiers(factor); // alter the hediffstage's modifiers
 
-                    // add points
-                    points += modulo.pointGain;
-                    check = true;
+                    points += factor.pointGain; // add points
+                    //check = true;
                     
                     // end loop
                     break;
                 }
             }
-            if(!check) points += 1;
+            foreach (ProgressLevelModifier special in def.levelSpecifics)
+            {
+                // if the new level == the level
+                if (sev == special.level)
+                {
+                    adjustModifiers(special); // alter the hediffstage's modifiers
+
+                    points += special.pointGain; // add points
+                    //check = true;
+
+                    // end loop
+                    break;
+                }
+            }
+            //if (!check) points += 1;
 
             hediff.curStage = refreshCurStage();
         }
 
-        public void adjustModifiers(ProgressLevelModulo modulo)
+        public void adjustModifiers(ProgressLevelModifier modulo)
         {
             adjustTotalStatMods(statOffsetsTotal, modulo.statOffsets);
             adjustTotalStatMods(statFactorsTotal, modulo.statFactorOffsets, true);

@@ -28,7 +28,9 @@ namespace ItsSorceryFramework
 
         public float maxEXP = 1000f;
 
-        public List<ProgressLevelModulo> levelModulos = new List<ProgressLevelModulo>();
+        public List<ProgressLevelModifier> levelFactors = new List<ProgressLevelModifier>();
+
+        public List<ProgressLevelModifier> levelSpecifics = new List<ProgressLevelModifier>();
 
         public List<ProgressTrackerCompProperties> progressComps = new List<ProgressTrackerCompProperties>();
 
