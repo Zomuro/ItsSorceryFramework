@@ -257,6 +257,11 @@ namespace ItsSorceryFramework
                 {
                     this.setPrereqStatusColor(completion[prereq], node);
                     Widgets.LabelCacheHeight(ref rect, prereq.LabelCap, true, false);
+                    if (Widgets.ButtonInvisible(rect, true))
+                    {
+                        SoundDefOf.Click.PlayOneShotOnCamera(null);
+                        this.selectedNode = prereq;
+                    }
                     rect.yMin += rect.height;
                 }
                 rect.xMin = xMin;
@@ -612,6 +617,8 @@ namespace ItsSorceryFramework
             Rect nodeRect;
             foreach (LearningTreeNodeDef node in allNodes)
             {
+                if (!prereqFufilled(node) && node.condVisiblePrereq) continue;
+
                 nodeRect = getNodeRect(node);
                 foreach (LearningTreeNodeDef prereq in node.prereqs)
                 {
@@ -625,6 +632,8 @@ namespace ItsSorceryFramework
             // second pass- draw the nodes + label
             foreach(LearningTreeNodeDef node in allNodes)
             {
+                if (!prereqFufilled(node) && node.condVisiblePrereq) continue;
+
                 nodeRect = getNodeRect(node);
 
                 if (Widgets.CustomButtonText(ref nodeRect, "", selectionBGColor(node),

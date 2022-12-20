@@ -65,7 +65,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="LearningTreeNodeCompletion.cs" />
+    <Compile Include="NodeCompletionUtility.cs" />
     <Compile Include="ProgressLevelOption.cs" />
     <Compile Include="ProgressLevelModifier.cs" />
     <Compile Include="CompAbilityEffect_AddEXP.cs" />

@@ -81,7 +81,20 @@ namespace ItsSorceryFramework
 			return this.cachedTip;
 		}
 
-		public List<LearningTreeNodeDef> prereqs = new List<LearningTreeNodeDef>();
+        public override void ResolveReferences()
+        {
+            base.ResolveReferences();
+
+			foreach(LearningTreeNodeDef node in prereqs)
+            {
+				if(node.learningTracker != this.learningTracker)
+                {
+					Log.Error("Prerequisite nodes must be in the same learning tracker. Error on: "+ node.defName);
+				}
+            }
+        }
+
+        public List<LearningTreeNodeDef> prereqs = new List<LearningTreeNodeDef>();
 
 		public List<ResearchProjectDef> prereqsResearch = new List<ResearchProjectDef>();
 

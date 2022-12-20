@@ -152,6 +152,23 @@
 		</statOffsets>
 	</ItsSorceryFramework.LearningTreeNodeDef>
 	
+	<ItsSorceryFramework.LearningTreeNodeDef ParentName = "BaseNode">
+		<defName>node8</defName>
+		<label>near home (v2)</label>
+		<description>boringgggg but more</description>
+		<coordX>3.1</coordX>
+		<coordY>2.9</coordY>
+		<prereqs>
+			<li>node7</li>
+		</prereqs>
+		<condVisiblePrereq>true</condVisiblePrereq>
+		
+		<hediffRemove>
+			<li>verysmort</li>
+		</hediffRemove>
+		
+	</ItsSorceryFramework.LearningTreeNodeDef>
+	
 	<ItsSorceryFramework.LearningTreeNodeDef>
 		<defName>node12</defName>
 		<label>node12</label>
