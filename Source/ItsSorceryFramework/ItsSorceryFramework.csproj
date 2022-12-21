@@ -65,6 +65,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LearningTracker_Progress.cs" />
     <Compile Include="NodeCompletionUtility.cs" />
     <Compile Include="ProgressLevelOption.cs" />
     <Compile Include="ProgressLevelModifier.cs" />

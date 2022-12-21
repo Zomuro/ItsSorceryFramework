@@ -19,6 +19,13 @@
 		<label>learning tree 2</label>
 	</ItsSorceryFramework.LearningTrackerDef>
 	
+	<ItsSorceryFramework.LearningTrackerDef Name = "LearningTrackerProgress">
+		<learningTrackerClass>ItsSorceryFramework.LearningTracker_Progress</learningTrackerClass>
+		<defName>LearningTracker_Progress</defName>
+		<label>learning progress</label>
+		<bgPath>UI/LearningTrackers/LogicaBG</bgPath>
+	</ItsSorceryFramework.LearningTrackerDef>
+	
 	<ItsSorceryFramework.LearningTreeNodeDef Name = "BaseNode">
 		<learningTracker>LearningTracker_Tree</learningTracker>
 		<defName>node1</defName>
