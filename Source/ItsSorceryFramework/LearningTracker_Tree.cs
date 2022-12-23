@@ -419,9 +419,6 @@ namespace ItsSorceryFramework
                 rect.x = x;
             }
 
-
-
-
             if (!hediffRemove.NullOrEmpty())
             {
                 Widgets.LabelCacheHeight(ref rect, "Hediffs removed:", true, false);
