@@ -130,13 +130,9 @@ namespace ItsSorceryFramework
 
             float coordY = 0f;
 
-            /*
-            Rect leftQuad1 = new Rect(0, 0, rect.width / 4f, rect.height * 2f/3f).ContractedBy(10f);
-            Rect leftQuad1View = new Rect(leftQuad1.x, leftQuad1.y, leftQuad1.width - 20f, scrollViewHeightQuad1);
-            Widgets.BeginScrollView(leftQuad1, ref this.scrollPositionQuad1, leftQuad1View, true);*/
-
             // current and upcoming modifiers for hediff
             Rect modRect = new Rect(0, 0, rect.width / 4f, rect.height * 2f / 3f).ContractedBy(20f);
+            modRect.height += 20f;
             Rect modRectView = new Rect(modRect.x, modRect.y, modRect.width - 20f, modScrollViewHeight);
             Widgets.BeginScrollView(modRect, ref this.modScrollPosition, modRectView, true);
 
@@ -149,6 +145,7 @@ namespace ItsSorceryFramework
 
             // all sorceries linked to this schema (and if you have them)
             Rect sorceryRect = new Rect(0, rect.height * 2f / 3f, rect.width / 2f, rect.height * 3f).ContractedBy(20f);
+            sorceryRect.height += 20f;
             Rect sorceryRectView = new Rect(sorceryRect.x, sorceryRect.y, sorceryRect.width - 20f, sorceryScrollViewHeight);
             Widgets.BeginScrollView(sorceryRect, ref this.sorceryScrollPosition, sorceryRectView, true);
 
@@ -175,8 +172,8 @@ namespace ItsSorceryFramework
             Text.Font = GameFont.Medium;
             Widgets.LabelCacheHeight(ref rect, "Modifiers", true, false);
             rect.yMin += rect.height;
-            Text.Font = GameFont.Small;
-            rect.x += 6f;
+            //Text.Font = GameFont.Small;
+            rect.x += 22f;
 
             String tipString = TipStringExtra(progressTracker.hediff.CurStage);
             String tipString2;
@@ -184,6 +181,8 @@ namespace ItsSorceryFramework
             {
                 Widgets.LabelCacheHeight(ref rect, "Current:", true, false);
                 rect.yMin += rect.height;
+                Text.Font = GameFont.Small;
+
                 Widgets.LabelCacheHeight(ref rect, tipString, true, false);
                 rect.yMin += rect.height;
             }
@@ -192,8 +191,10 @@ namespace ItsSorceryFramework
             IEnumerable<StatDrawEntry> mods;
             float projLevel = progressTracker.currLevel + 1;
 
+            Text.Font = GameFont.Medium;
             Widgets.LabelCacheHeight(ref rect, "Upcoming:", true, false);
             rect.yMin += rect.height;
+            Text.Font = GameFont.Small;
 
             for (int i = (int) projLevel; i < (int) projLevel + 5; i++)
             {
@@ -206,8 +207,10 @@ namespace ItsSorceryFramework
 
                 if (tipString.NullOrEmpty() && tipString2.NullOrEmpty()) continue;
 
-                Widgets.LabelCacheHeight(ref rect, "Level "+ i, true, false);
+                Text.Font = GameFont.Medium;
+                Widgets.LabelCacheHeight(ref rect, ("Level "+ i).Colorize(ColoredText.TipSectionTitleColor), true, false);
                 rect.yMin += rect.height;
+                Text.Font = GameFont.Small;
 
                 if (!tipString.NullOrEmpty())
                 {
@@ -263,6 +266,10 @@ namespace ItsSorceryFramework
                                        where (ability as Sorcery) != null && (ability as Sorcery).sorceryDef.sorcerySchema == this.schemaDef
                                        select (ability as Sorcery)).ToList();
 
+            List<SorceryDef> sorceryDefs = (from def in DefDatabase<SorceryDef>.AllDefs
+                                       where def.sorcerySchema == this.schemaDef
+                                       select def).ToList();
+
             Text.Font = GameFont.Medium;
             Rect titleRect = new Rect(rect);
             Widgets.LabelCacheHeight(ref titleRect, "Sorceries:", true, false);
@@ -271,28 +278,32 @@ namespace ItsSorceryFramework
 
             float scale = 50f;
 
+            Color col = Color.white;
             Rect bounds = new Rect(rect.x, rect.y, rect.width - 5f, rect.height);
-            Rect sorceriesRect = GenUI.DrawElementStack<Sorcery>(bounds, scale, sorceries, 
-                delegate (Rect r, Sorcery sorcery)
+            Rect sorceriesRect = GenUI.DrawElementStack<SorceryDef>(bounds, scale, sorceryDefs,
+                delegate (Rect r, SorceryDef sorceryDef)
                 {
+                    if (pawn.abilities.GetAbility(sorceryDef) != null) col = Color.white;
+                    else col = new Color(0.25f, 0.25f, 0.25f);
+
                     GUI.DrawTexture(r, BaseContent.ClearTex);
                     if (Mouse.IsOver(r))
                     {
                         Widgets.DrawHighlight(r);
                     }
-                    if (Widgets.ButtonImage(r, sorcery.def.uiIcon, false))
+                    if (Widgets.ButtonImage(r, sorceryDef.uiIcon, col, true))
                     {
-                        Find.WindowStack.Add(new Dialog_InfoCard(sorcery.def, null));
+                        Find.WindowStack.Add(new Dialog_InfoCard(sorceryDef, null));
                     }
                     if (Mouse.IsOver(r))
                     {
-                        Sorcery capture = sorcery;
-                        TipSignal tip = new TipSignal(() => capture.SorceryTooltip + "\n\n" + "ClickToLearnMore".Translate().Colorize(ColoredText.SubtleGrayColor), 
+                        Sorcery sorcery = AbilityUtility.MakeAbility(sorceryDef, pawn) as Sorcery;
+                        TipSignal tip = new TipSignal(() => sorcery.SorceryTooltip + "\n\n" + "ClickToLearnMore".Translate().Colorize(ColoredText.SubtleGrayColor),
                             (int)bounds.y * 37);
                         TooltipHandler.TipRegion(r, tip);
                     }
 
-                }, (Sorcery sorcery) => scale, 4f, 5f, true);
+                }, (SorceryDef sorceryDef) => scale, 4f, 5f, true);
 
             rect.yMin += sorceriesRect.height;
 
