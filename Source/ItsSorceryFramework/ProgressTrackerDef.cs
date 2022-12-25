@@ -71,8 +71,6 @@ namespace ItsSorceryFramework
                     return factor;
                 }
             }
-
-
             return null;
 		}
 

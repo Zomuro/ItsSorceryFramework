@@ -125,8 +125,6 @@ namespace ItsSorceryFramework
 
 		public List<NodeHediffProps> hediffAdjust = new List<NodeHediffProps>();
 
-		//public Dictionary<HediffDef, float> hediffAdjust = new Dictionary<HediffDef, float>();
-
 		public List<HediffDef> hediffRemove = new List<HediffDef>();
 
 		public List<StatModifier> statOffsets;

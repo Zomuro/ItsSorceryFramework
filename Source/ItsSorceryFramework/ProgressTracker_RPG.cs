@@ -91,8 +91,26 @@ namespace ItsSorceryFramework
         {
             HediffStage currStage = hediff.CurStage;
             //bool check = false;
-            
-            foreach(ProgressLevelModifier factor in def.levelFactors.OrderByDescending(x => x.level))
+
+            ProgressLevelModifier factor = def.getLevelFactor(sev);
+            if (factor != null)
+            {
+                adjustModifiers(factor);
+                adjustAbilities(factor);
+                adjustHediffs(factor);
+                points += factor.pointGain;
+            }
+
+            ProgressLevelModifier special = def.getLevelSpecific(sev);
+            if (special != null)
+            {
+                adjustModifiers(factor);
+                adjustAbilities(factor);
+                adjustHediffs(factor);
+                points += factor.pointGain;
+            }
+
+            /*foreach (ProgressLevelModifier factor in def.levelFactors.OrderByDescending(x => x.level))
             {
                 // if the level devided by the modulo leaves a remainder of 0
                 if(sev % factor.level == 0)
@@ -120,7 +138,7 @@ namespace ItsSorceryFramework
                     break;
                 }
             }
-            //if (!check) points += 1;
+            //if (!check) points += 1;*/
 
             hediff.curStage = refreshCurStage();
         }
@@ -198,6 +216,44 @@ namespace ItsSorceryFramework
             };
 
             return stage;
+        }
+
+        public virtual void adjustAbilities(ProgressLevelModifier modifier)
+        {
+            Pawn_AbilityTracker abilityTracker = this.pawn.abilities;
+
+            foreach (AbilityDef abilityDef in modifier.abilityGain)
+            {
+                abilityTracker.GainAbility(abilityDef);
+            }
+
+            foreach (AbilityDef abilityDef in modifier.abilityRemove)
+            {
+                abilityTracker.RemoveAbility(abilityDef);
+            }
+        }
+
+        public virtual void adjustHediffs(ProgressLevelModifier modifier)
+        {
+            Hediff hediff;
+            foreach (NodeHediffProps props in modifier.hediffAdd)
+            {
+                hediff = HediffMaker.MakeHediff(props.hediffDef, pawn, null);
+                hediff.Severity = props.severity;
+
+                pawn.health.AddHediff(hediff, null, null, null);
+            }
+
+            foreach (NodeHediffProps props in modifier.hediffAdjust)
+            {
+                HealthUtility.AdjustSeverity(pawn, props.hediffDef, props.severity);
+            }
+
+            foreach (HediffDef hediffDef in modifier.hediffRemove)
+            {
+                hediff = pawn.health.hediffSet.GetFirstHediffOfDef(hediffDef);
+                if (hediff != null) pawn.health.RemoveHediff(hediff);
+            }
         }
 
         public override void notifyTotalLevelUp(float orgSev)

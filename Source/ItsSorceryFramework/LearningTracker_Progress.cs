@@ -188,9 +188,9 @@ namespace ItsSorceryFramework
             }
 
             ProgressTrackerDef pDef = progressTracker.def;
-            IEnumerable<StatDrawEntry> mods;
             float projLevel = progressTracker.currLevel + 1;
 
+            if (projLevel > progressTracker.hediff.def.maxSeverity) return rect.yMin - yMin;
             Text.Font = GameFont.Medium;
             Widgets.LabelCacheHeight(ref rect, "Upcoming:", true, false);
             rect.yMin += rect.height;
@@ -200,29 +200,48 @@ namespace ItsSorceryFramework
             {
                 if (i > progressTracker.hediff.def.maxSeverity) break;
 
-                mods = pDef.specialDisplayMods(pDef.getLevelFactor(i));
-                tipString = TipStringExtra(mods);
-                mods = pDef.specialDisplayMods(pDef.getLevelSpecific(i));
-                tipString2 = TipStringExtra(mods);
+                ProgressLevelModifier factor = pDef.getLevelFactor(i);
+                tipString = TipStringExtra(factor);
+                ProgressLevelModifier special = pDef.getLevelSpecific(i);
+                tipString2 = TipStringExtra(special);
 
-                if (tipString.NullOrEmpty() && tipString2.NullOrEmpty()) continue;
+                if (tipString.NullOrEmpty() && !hyperlinkCheck(factor) && 
+                    tipString2.NullOrEmpty() && !hyperlinkCheck(special)) continue;
 
                 Text.Font = GameFont.Medium;
                 Widgets.LabelCacheHeight(ref rect, ("Level "+ i).Colorize(ColoredText.TipSectionTitleColor), true, false);
                 rect.yMin += rect.height;
                 Text.Font = GameFont.Small;
 
-                if (!tipString.NullOrEmpty())
+                Rect hyperlinkRect;
+
+                if (!tipString.NullOrEmpty() || hyperlinkCheck(factor))
                 {
                     Text.Font = GameFont.Small;
+                    Widgets.LabelCacheHeight(ref rect, "Normal".Colorize(ColoredText.SubtleGrayColor), true, false);
+                    rect.yMin += rect.height;
+
                     Widgets.LabelCacheHeight(ref rect, tipString, true, false);
                     rect.yMin += rect.height;
+
+                    rect.xMin += 6f;
+                    hyperlinkRect = new Rect(rect.x, rect.yMin, rect.width, 500f);
+                    rect.yMin += this.drawHyperlinks(hyperlinkRect, factor);
+                    rect.xMin -= 6f;
                 }
-                if (!tipString2.NullOrEmpty())
+                if (!tipString2.NullOrEmpty() || hyperlinkCheck(special))
                 {
                     Text.Font = GameFont.Small;
+                    Widgets.LabelCacheHeight(ref rect, "Special".Colorize(ColoredText.SubtleGrayColor), true, false);
+                    rect.yMin += rect.height;
+
                     Widgets.LabelCacheHeight(ref rect, tipString2, true, false);
                     rect.yMin += rect.height;
+
+                    rect.xMin += 6f;
+                    hyperlinkRect = new Rect(rect.x, rect.yMin, rect.width, 500f);
+                    rect.yMin += this.drawHyperlinks(hyperlinkRect, special);
+                    rect.xMin -= 6f;
                 }
 
             }
@@ -245,6 +264,20 @@ namespace ItsSorceryFramework
 
         public string TipStringExtra(IEnumerable<StatDrawEntry> entries)
         {
+            StringBuilder stringBuilder = new StringBuilder();
+            foreach (StatDrawEntry statDrawEntry in entries)
+            {
+                if (statDrawEntry.ShouldDisplay)
+                {
+                    stringBuilder.AppendInNewLine("  - " + statDrawEntry.LabelCap + ": " + statDrawEntry.ValueString);
+                }
+            }
+            return stringBuilder.ToString();
+        }
+
+        public string TipStringExtra(ProgressLevelModifier mods, string beginning = null)
+        {
+            IEnumerable<StatDrawEntry> entries = progressTracker.def.specialDisplayMods(mods);
             if (entries.EnumerableNullOrEmpty()) return null;
             StringBuilder stringBuilder = new StringBuilder();
             foreach (StatDrawEntry statDrawEntry in entries)
@@ -255,6 +288,124 @@ namespace ItsSorceryFramework
                 }
             }
             return stringBuilder.ToString();
+        }
+
+        private bool hyperlinkCheck(ProgressLevelModifier mod)
+        {
+            if (mod == null) return false;
+
+            if (mod.abilityGain.NullOrEmpty() && mod.abilityRemove.NullOrEmpty() && mod.hediffAdd.NullOrEmpty() &&
+                mod.hediffAdjust.NullOrEmpty() && mod.hediffRemove.NullOrEmpty()) return false;
+
+            return true;
+        }
+
+        private float drawHyperlinks(Rect rect, ProgressLevelModifier mod)
+        {
+            List<AbilityDef> abilityGain = mod.abilityGain;
+            List<AbilityDef> abilityRemove = mod.abilityRemove;
+            List<NodeHediffProps> hediffAdd = mod.hediffAdd;
+            List<NodeHediffProps> hediffAdjust = mod.hediffAdjust;
+            List<HediffDef> hediffRemove = mod.hediffRemove;
+
+            if (abilityGain.NullOrEmpty() && abilityRemove.NullOrEmpty() && hediffAdd.NullOrEmpty() && hediffAdjust.NullOrEmpty() &&
+                hediffRemove.NullOrEmpty())
+            {
+                return 0f;
+            }
+
+            float yMin = rect.yMin;
+            float x = rect.x;
+            Dialog_InfoCard.Hyperlink hyperlink;
+
+            if (!abilityGain.NullOrEmpty())
+            {
+                Widgets.LabelCacheHeight(ref rect, "Abilities gained:", true, false);
+                rect.yMin += rect.height;
+                rect.x += 6f;
+                foreach (AbilityDef abilityDef in abilityGain)
+                {
+                    Rect hyperRect = new Rect(rect.x, rect.yMin, rect.width, 24f);
+                    hyperlink = new Dialog_InfoCard.Hyperlink(abilityDef, -1);
+                    Widgets.HyperlinkWithIcon(hyperRect, hyperlink, null, 2f, 6f, new Color(0.8f, 0.85f, 1f), false);
+                    rect.yMin += 24f;
+                }
+                rect.x = x;
+            }
+
+            if (!abilityRemove.NullOrEmpty())
+            {
+                Widgets.LabelCacheHeight(ref rect, "Abilities removed:", true, false);
+                rect.yMin += rect.height;
+                rect.x += 6f;
+                foreach (AbilityDef abilityDef in abilityRemove)
+                {
+                    Rect hyperRect = new Rect(rect.x, rect.yMin, rect.width, 24f);
+                    hyperlink = new Dialog_InfoCard.Hyperlink(abilityDef, -1);
+                    Widgets.HyperlinkWithIcon(hyperRect, hyperlink, null, 2f, 6f, new Color(0.8f, 0.85f, 1f), false);
+                    rect.yMin += 24f;
+                }
+                rect.x = x;
+            }
+
+            if (!hediffAdd.NullOrEmpty())
+            {
+                Widgets.LabelCacheHeight(ref rect, "Hediffs added:", true, false);
+                rect.yMin += rect.height;
+                rect.x += 6f;
+                foreach (NodeHediffProps prop in hediffAdd)
+                {
+                    Rect hyperRect = new Rect(rect.x, rect.yMin, rect.width, 24f);
+                    HediffDef hediffDef = prop.hediffDef;
+                    string sev;
+
+                    sev = hediffDef.stages.NullOrEmpty() ? prop.severity.ToStringWithSign("F0") :
+                        hediffDef.stages[hediffDef.StageAtSeverity(prop.severity)].label;
+                    hyperlink = new Dialog_InfoCard.Hyperlink(hediffDef, -1);
+                    Widgets.HyperlinkWithIcon(hyperRect, hyperlink, hediffDef.LabelCap + " ({0})".Translate(sev),
+                        2f, 6f, new Color(0.8f, 0.85f, 1f), false);
+                    rect.yMin += 24f;
+
+                }
+                rect.x = x;
+            }
+
+            if (!hediffAdjust.NullOrEmpty())
+            {
+                Widgets.LabelCacheHeight(ref rect, "Hediff adjustments:", true, false);
+                rect.yMin += rect.height;
+                rect.x += 6f;
+                foreach (NodeHediffProps prop in hediffAdjust)
+                {
+                    Rect hyperRect = new Rect(rect.x, rect.yMin, rect.width, 24f);
+                    HediffDef hediffDef = prop.hediffDef;
+                    string sev;
+
+                    sev = prop.severity.ToStringWithSign("F0");
+                    hyperlink = new Dialog_InfoCard.Hyperlink(hediffDef, -1);
+                    Widgets.HyperlinkWithIcon(hyperRect, hyperlink, hediffDef.LabelCap + " ({0})".Translate(sev),
+                        2f, 6f, new Color(0.8f, 0.85f, 1f), false);
+                    rect.yMin += 24f;
+                }
+                rect.x = x;
+            }
+
+            if (!hediffRemove.NullOrEmpty())
+            {
+                Widgets.LabelCacheHeight(ref rect, "Hediffs removed:", true, false);
+                rect.yMin += rect.height;
+                rect.x += 6f;
+                foreach (HediffDef hediffDef in hediffRemove)
+                {
+                    Rect hyperRect = new Rect(rect.x, rect.yMin, rect.width, 24f);
+                    hyperlink = new Dialog_InfoCard.Hyperlink(hediffDef, -1);
+                    Widgets.HyperlinkWithIcon(hyperRect, hyperlink, null, 2f, 6f, new Color(0.8f, 0.85f, 1f), false);
+                    rect.yMin += 24f;
+                }
+                rect.x = x;
+            }
+
+            return rect.yMin - yMin;
         }
 
         private float drawSorceries(Rect rect)

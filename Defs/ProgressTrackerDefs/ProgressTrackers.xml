@@ -39,6 +39,9 @@
 						<offset>1</offset>
 					</li>
 				</capMods>
+				<abilityGain>
+					<li>testsorcerylevelup</li>
+				</abilityGain>
 			</li>
 		</levelSpecifics>
 	</ItsSorceryFramework.ProgressTrackerDef>
