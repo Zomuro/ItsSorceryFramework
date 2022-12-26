@@ -103,17 +103,14 @@ namespace ItsSorceryFramework
 
         public List<ProgressLevelModifier> levelSpecifics = new List<ProgressLevelModifier>();
 
-        public List<ProgressTrackerCompProperties> progressComps = new List<ProgressTrackerCompProperties>();
+        public List<ProgressCompProperties> progressComps = new List<ProgressCompProperties>();
 
         public string progressLevelUpTransKey = "levelup";
 
         public string progressLevelUpDescTransKey = "levelup";
     }
 
-    public class ProgressTrackerCompProperties : CompProperties
-    {
-
-    }
+    
 
 
 

@@ -34,6 +34,7 @@ namespace ItsSorceryFramework
 
         public override void Initialize()
         {
+            base.Initialize();
             if(pawn.health.hediffSet.GetFirstHediffOfDef(def.progressHediff) == null)
                 HealthUtility.AdjustSeverity(pawn, def.progressHediff, def.progressHediff.initialSeverity);
             hediff = pawn.health.hediffSet.GetFirstHediffOfDef(def.progressHediff) as Hediff_ProgressLevel;

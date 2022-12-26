@@ -49,11 +49,61 @@ namespace ItsSorceryFramework
 
             // probably will have to just cache this
 
+            // comp saving stuff
+            if (Scribe.mode == LoadSaveMode.LoadingVars)
+            {
+                this.InitializeComps();
+            }
+            if (this.comps != null)
+            {
+                foreach(ProgressComp comp in comps)
+                {
+                    comp.PostExposeData();
+                }
+            }
+
         }
 
         public virtual void Initialize()
         {
+            InitializeComps();
+        }
 
+        public void InitializeComps() // taken from ThingWithComps
+        {
+            if (this.def.progressComps.Any<ProgressCompProperties>())
+            {
+                this.comps = new List<ProgressComp>();
+                foreach(ProgressCompProperties prop in this.def.progressComps)
+                {
+                    ProgressComp progressComp = null;
+                    try
+                    {
+                        progressComp = (ProgressComp)Activator.CreateInstance(prop.compClass);
+                        progressComp.parent = this;
+                        this.comps.Add(progressComp);
+                        progressComp.Initialize(prop);
+                    }
+                    catch (Exception arg)
+                    {
+                        Log.Error("Could not instantiate or initialize a ProgressComp: " + arg);
+                        this.comps.Remove(progressComp);
+                    }
+                }
+            }
+        }
+
+        public PC GetProgressComp<PC>() where PC : ProgressComp // enables ability to get ProgressComps
+        {
+            if (this.comps != null)
+            {
+                foreach(ProgressComp comp in comps)
+                {
+                    PC pc = comp as PC;
+                    if (pc != null) return pc;
+                }
+            }
+            return default(PC);
         }
 
         public virtual void addExperience(float experience)
@@ -149,6 +199,8 @@ namespace ItsSorceryFramework
         public int usedPoints = 0;
 
         public int points = 0;
+
+        private List<ProgressComp> comps;
 
         
 
