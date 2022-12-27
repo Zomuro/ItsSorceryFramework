@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<Defs>
+
+	<ItsSorceryFramework.ProgressEXPDef>
+		<workerClass>ItsSorceryFramework.ProgressEXPWorker_CastEnergyCost</workerClass>
+		<defName>EXPTag_CastEnergyCost</defName>
+		<expFactor>1</expFactor>
+	</ItsSorceryFramework.ProgressEXPDef>
+	
+	<!--<ItsSorceryFramework.ProgressEXPDef>
+		<defName>ProgressEXPTag_OnDamage</defName>
+		<expFactor>1</expFactor>
+	</ItsSorceryFramework.ProgressEXPDef>
+	
+	<ItsSorceryFramework.ProgressEXPDef>
+		<defName>ProgressEXPTag_OnKill</defName>
+		<expFactor>1</expFactor>
+		<fixedEXP>100</fixedEXP>
+	</ItsSorceryFramework.ProgressEXPDef>
+	
+	<ItsSorceryFramework.ProgressEXPDef>
+		<defName>ProgressEXPTag_Passive</defName>
+		<fixedEXP>100</fixedEXP>
+	</ItsSorceryFramework.ProgressEXPDef>
+	
+	<ItsSorceryFramework.ProgressEXPDef>
+		<defName>ProgressEXPTag_DuringWork</defName>
+		<fixedEXP>100</fixedEXP>
+	</ItsSorceryFramework.ProgressEXPDef>
+	
+	<ItsSorceryFramework.ProgressEXPDef>
+		<defName>ProgressEXPTag_DuringMentalState</defName>
+		<fixedEXP>100</fixedEXP>
+	</ItsSorceryFramework.ProgressEXPDef>
+	
+	<ItsSorceryFramework.ProgressEXPDef>
+		<defName>ProgressEXPTag_UseItem</defName>
+		<expFactor>1</expFactor>
+	</ItsSorceryFramework.ProgressEXPDef>-->
+
+</Defs>

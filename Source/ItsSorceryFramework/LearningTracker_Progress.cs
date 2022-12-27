@@ -143,6 +143,19 @@ namespace ItsSorceryFramework
 
             Widgets.EndScrollView();
 
+            // all experience gain methods
+            Rect expRect = new Rect(rect.width / 4f, 0, rect.width / 4f, rect.height * 2f / 3f).ContractedBy(20f);
+            expRect.height += 20f;
+            Rect expRectView = new Rect(expRect.x, expRect.y, expRect.width - 20f, expScrollViewHeight);
+            Widgets.BeginScrollView(expRect, ref this.expScrollPosition, expRectView, true);
+
+            coordY = 0f;
+            Rect allEXPRect = new Rect(expRectView.x, expRectView.y + coordY, expRectView.width, 500f);
+            coordY += drawEXPMethods(allEXPRect);
+            expScrollViewHeight = coordY;
+
+            Widgets.EndScrollView();
+
             // all sorceries linked to this schema (and if you have them)
             Rect sorceryRect = new Rect(0, rect.height * 2f / 3f, rect.width / 2f, rect.height * 3f).ContractedBy(20f);
             sorceryRect.height += 20f;
@@ -208,10 +221,11 @@ namespace ItsSorceryFramework
                 if (tipString.NullOrEmpty() && !hyperlinkCheck(factor) && 
                     tipString2.NullOrEmpty() && !hyperlinkCheck(special)) continue;
 
-                Text.Font = GameFont.Medium;
+                Text.Font = GameFont.Small;
+                //Text.Font = GameFont.Medium;
                 Widgets.LabelCacheHeight(ref rect, ("Level "+ i).Colorize(ColoredText.TipSectionTitleColor), true, false);
                 rect.yMin += rect.height;
-                Text.Font = GameFont.Small;
+                //Text.Font = GameFont.Small;
 
                 Rect hyperlinkRect;
 
@@ -288,6 +302,26 @@ namespace ItsSorceryFramework
                 }
             }
             return stringBuilder.ToString();
+        }
+
+        private float drawEXPMethods(Rect rect)
+        {
+            float yMin = rect.yMin;
+            float x = rect.x;
+
+            Text.Font = GameFont.Medium;
+            Widgets.LabelCacheHeight(ref rect, "Experience:", true, false);
+            rect.yMin += rect.height;
+            //Text.Font = GameFont.Small;
+            rect.x += 22f;
+
+            if(schema.progressTracker.def.expTags.EnumerableNullOrEmpty()) return rect.yMin - yMin;
+            foreach (ProgressEXPDef expDef in schema.progressTracker.def.expTags)
+            {
+                rect.yMin += expDef.Worker.drawWorker(rect);
+            }
+
+            return rect.yMin - yMin;
         }
 
         private bool hyperlinkCheck(ProgressLevelModifier mod)
@@ -468,12 +502,16 @@ namespace ItsSorceryFramework
 
         private Vector2 modScrollPosition = Vector2.zero;
 
+        private Vector2 expScrollPosition = Vector2.zero;
+
         private Vector2 sorceryScrollPosition = Vector2.zero;
 
 
         private float leftScrollViewHeight;
 
         private float modScrollViewHeight;
+
+        private float expScrollViewHeight;
 
         private float sorceryScrollViewHeight;
 

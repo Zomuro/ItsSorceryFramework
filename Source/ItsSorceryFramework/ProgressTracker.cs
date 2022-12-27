@@ -106,6 +106,29 @@ namespace ItsSorceryFramework
             return default(PC);
         }
 
+        /*public List<ProgressEXPWorker> expWorkers
+        {
+            get
+            {
+                if (progressEXPWorkers == null)
+                {
+                    foreach (ProgressEXPDef expDef in def.expTags)
+                    {
+                        ProgressEXPWorker worker = (ProgressEXPWorker)Activator.CreateInstance(expDef.workerClass);
+                        worker.def = expDef;
+                        worker.schema = SorcerySchemaUtility.FindSorcerySchema(pawn, sorcerySchemaDef);
+                    }
+                }
+
+                return progressEXPWorkers;
+            }
+        }*/
+
+        public virtual void progressTick()
+        {
+
+        }
+
         public virtual void addExperience(float experience)
         {
 
@@ -199,6 +222,8 @@ namespace ItsSorceryFramework
         public int usedPoints = 0;
 
         public int points = 0;
+
+        private List<ProgressEXPWorker> progressEXPWorkers = new List<ProgressEXPWorker>();
 
         private List<ProgressComp> comps;
 

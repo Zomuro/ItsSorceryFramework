@@ -30,6 +30,18 @@ namespace ItsSorceryFramework
             Scribe_Defs.Look(ref this.sorceryDef, "sorceryDef");
         }
 
+        public SorcerySchema Schema
+        {
+            get
+            {
+                if(sorcerySchema == null)
+                {
+                    sorcerySchema = SorcerySchemaUtility.FindSorcerySchema(pawn, sorceryDef);
+                }
+                return sorcerySchema;
+            }
+        }
+
         public override bool Activate(GlobalTargetInfo target)
         {
             EnergyTracker energyTracker = SorcerySchemaUtility.FindSorcerySchema(pawn, sorceryDef).energyTracker;
@@ -40,7 +52,26 @@ namespace ItsSorceryFramework
             {
                 return false;
             }
-            Log.Message("cast: "+ sorceryDef.EnergyCost.ToString());
+
+            /*foreach (ProgressEXPWorker worker in Schema.progressTracker.expWorkers)
+            {
+                if(worker.GetType() == typeof(ProgressEXPWorker_CastEnergyCost))
+                {
+                    worker.TryExecute(Schema.progressTracker, sorceryDef.EnergyCost);
+                    break;
+                }
+            }*/
+
+            foreach (ProgressEXPDef expDef in Schema.progressTracker.def.expTags)
+            {
+                if (expDef.workerClass == typeof(ProgressEXPWorker_CastEnergyCost))
+                {
+                    expDef.Worker.TryExecute(Schema.progressTracker, sorceryDef.EnergyCost);
+                    break;
+                }
+            }
+
+            //Log.Message("cast: "+ sorceryDef.EnergyCost.ToString());
             return base.Activate(target);
             
         }
@@ -55,7 +86,17 @@ namespace ItsSorceryFramework
             {
                 return false;
             }
-            Log.Message("cast: " + (sorceryDef.EnergyCost * energyTracker.EnergyCostFactor).ToString());
+
+            foreach (ProgressEXPDef expDef in Schema.progressTracker.def.expTags)
+            {
+                if (expDef.workerClass == typeof(ProgressEXPWorker_CastEnergyCost))
+                {
+                    expDef.Worker.TryExecute(Schema.progressTracker, sorceryDef.EnergyCost);
+                    break;
+                }
+            }
+
+            //Log.Message("cast: " + (sorceryDef.EnergyCost * energyTracker.EnergyCostFactor).ToString());
             return base.Activate(target, dest);
         }
 
@@ -81,5 +122,7 @@ namespace ItsSorceryFramework
 
 
         public SorceryDef sorceryDef;
+
+        public SorcerySchema sorcerySchema;
     }
 }

@@ -44,6 +44,9 @@
 				</abilityGain>
 			</li>
 		</levelSpecifics>
+		<expTags>
+			<li>EXPTag_CastEnergyCost</li>
+		</expTags>
 	</ItsSorceryFramework.ProgressTrackerDef>
 	
 	<HediffDef Name="ProgressTrackerHediffBase"> 
