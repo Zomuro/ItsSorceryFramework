@@ -31,6 +31,8 @@ namespace ItsSorceryFramework
 
         public WorkTypeDef workTypeDef;
 
+		public DamageDef damageDef;
+
         public List<ThingDef> expItems = new List<ThingDef>();
 
         public ProgressEXPWorker progressEXPWorker;

@@ -23,6 +23,6 @@ namespace ItsSorceryFramework
 
         public ProgressEXPDef def;
 
-        public SorcerySchema schema;
+        //public SorcerySchema schema;
     }
 }

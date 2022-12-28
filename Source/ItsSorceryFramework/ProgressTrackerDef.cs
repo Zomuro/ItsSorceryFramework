@@ -89,6 +89,23 @@ namespace ItsSorceryFramework
             return null;
         }
 
+        public List<ProgressEXPWorker> Workers
+        {
+            get
+            {
+                if (progressEXPWorkers.NullOrEmpty())
+                {
+                    foreach(ProgressEXPDef tag in expTags)
+                    {
+                        ProgressEXPWorker progressEXPWorker = (ProgressEXPWorker)Activator.CreateInstance(tag.workerClass);
+                        progressEXPWorker.def = tag;
+                        progressEXPWorkers.Add(progressEXPWorker);
+                    }
+                }
+                return progressEXPWorkers;
+            }
+        }
+
         public Type progressTrackerClass = typeof(ProgressTracker);
 
         public HediffDef progressHediff;
@@ -110,6 +127,8 @@ namespace ItsSorceryFramework
         public string progressLevelUpTransKey = "levelup";
 
         public string progressLevelUpDescTransKey = "levelup";
+
+        private List<ProgressEXPWorker> progressEXPWorkers = new List<ProgressEXPWorker>();
     }
 
     

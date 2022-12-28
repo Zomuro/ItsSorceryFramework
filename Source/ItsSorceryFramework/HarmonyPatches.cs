@@ -30,6 +30,11 @@ namespace ItsSorceryFramework
             harmony.Patch(AccessTools.Method(typeof(Widgets), "DefIcon"), null,
                 new HarmonyMethod(typeof(HarmonyPatches), nameof(DefIconAbilities)));
 
+            // TakeDamage_AddEXP
+            // for every magic system with the correct EXP tag, give damage depending on damage
+            harmony.Patch(AccessTools.Method(typeof(Thing), "TakeDamage"), null,
+                new HarmonyMethod(typeof(HarmonyPatches), nameof(TakeDamage_AddEXP)));
+
 
         }
 
@@ -115,6 +120,43 @@ namespace ItsSorceryFramework
             }
 
             return;
+        }
+
+        // POSTFIX: if a pawn has a tag with the OnDamage or OnDamaged worker, add exp based on amount
+        public static void TakeDamage_AddEXP(Thing __instance, DamageInfo __0)
+        {
+            Pawn caster = null;
+            Pawn target = null;
+            if (__0.Def.ExternalViolenceFor(__instance))
+            {
+                if(__0.Instigator != null) caster = __0.Instigator as Pawn;
+                if(__0.IntendedTarget != null) target = __0.Instigator as Pawn;
+
+                if (caster != null) applyDamageEXP(caster, __0, typeof(ProgressEXPWorker_OnDamage));
+                if(target != null) applyDamageEXP(target, __0, typeof(ProgressEXPWorker_OnDamaged));
+            }
+
+            return;
+        }
+
+        public static bool applyDamageEXP(Pawn pawn, DamageInfo dinfo, Type progressWorkerClass)
+        {
+            List<SorcerySchema> schemas = SorcerySchemaUtility.GetSorcerySchemaList(pawn);
+
+            if (schemas.NullOrEmpty()) return false;
+            foreach (SorcerySchema schema in schemas)
+            {
+                if (schema.def.progressTrackerDef.Workers.NullOrEmpty()) continue;
+                foreach (var worker in schema.def.progressTrackerDef.Workers)
+                {
+                    if (worker.GetType() == progressWorkerClass)
+                    {
+                        if (worker.def.damageDef != null && worker.def.damageDef != dinfo.Def) continue;
+                        worker.TryExecute(schema.progressTracker, dinfo.Amount);
+                    }
+                }
+            }
+            return true;
         }
 
     }

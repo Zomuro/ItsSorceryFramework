@@ -46,6 +46,8 @@
 		</levelSpecifics>
 		<expTags>
 			<li>EXPTag_CastEnergyCost</li>
+			<li>EXPTag_OnDamage</li>
+			<li>EXPTag_OnDamaged</li>
 		</expTags>
 	</ItsSorceryFramework.ProgressTrackerDef>
 	

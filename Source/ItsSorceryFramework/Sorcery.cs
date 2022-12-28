@@ -53,23 +53,23 @@ namespace ItsSorceryFramework
                 return false;
             }
 
-            /*foreach (ProgressEXPWorker worker in Schema.progressTracker.expWorkers)
+            foreach (ProgressEXPWorker worker in Schema.progressTracker.def.Workers)
             {
                 if(worker.GetType() == typeof(ProgressEXPWorker_CastEnergyCost))
                 {
                     worker.TryExecute(Schema.progressTracker, sorceryDef.EnergyCost);
                     break;
                 }
-            }*/
+            }
 
-            foreach (ProgressEXPDef expDef in Schema.progressTracker.def.expTags)
+            /*foreach (ProgressEXPDef expDef in Schema.progressTracker.def.expTags)
             {
                 if (expDef.workerClass == typeof(ProgressEXPWorker_CastEnergyCost))
                 {
                     expDef.Worker.TryExecute(Schema.progressTracker, sorceryDef.EnergyCost);
                     break;
                 }
-            }
+            }*/
 
             //Log.Message("cast: "+ sorceryDef.EnergyCost.ToString());
             return base.Activate(target);

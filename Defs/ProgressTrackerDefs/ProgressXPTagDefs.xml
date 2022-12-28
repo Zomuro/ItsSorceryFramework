@@ -8,12 +8,19 @@
 		<expFactor>1</expFactor>
 	</ItsSorceryFramework.ProgressEXPDef>
 	
-	<!--<ItsSorceryFramework.ProgressEXPDef>
-		<defName>ProgressEXPTag_OnDamage</defName>
+	<ItsSorceryFramework.ProgressEXPDef>
+		<workerClass>ItsSorceryFramework.ProgressEXPWorker_OnDamage</workerClass>
+		<defName>EXPTag_OnDamage</defName>
 		<expFactor>1</expFactor>
 	</ItsSorceryFramework.ProgressEXPDef>
 	
 	<ItsSorceryFramework.ProgressEXPDef>
+		<workerClass>ItsSorceryFramework.ProgressEXPWorker_OnDamaged</workerClass>
+		<defName>EXPTag_OnDamaged</defName>
+		<expFactor>1</expFactor>
+	</ItsSorceryFramework.ProgressEXPDef>
+	
+	<!--<ItsSorceryFramework.ProgressEXPDef>
 		<defName>ProgressEXPTag_OnKill</defName>
 		<expFactor>1</expFactor>
 		<fixedEXP>100</fixedEXP>

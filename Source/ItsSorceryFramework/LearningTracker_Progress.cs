@@ -315,10 +315,16 @@ namespace ItsSorceryFramework
             //Text.Font = GameFont.Small;
             rect.x += 22f;
 
-            if(schema.progressTracker.def.expTags.EnumerableNullOrEmpty()) return rect.yMin - yMin;
+            /*if(schema.progressTracker.def.expTags.EnumerableNullOrEmpty()) return rect.yMin - yMin;
             foreach (ProgressEXPDef expDef in schema.progressTracker.def.expTags)
             {
                 rect.yMin += expDef.Worker.drawWorker(rect);
+            }*/
+
+            if(schema.progressTracker.def.Workers.NullOrEmpty()) return rect.yMin - yMin;
+            foreach (ProgressEXPWorker worker in schema.progressTracker.def.Workers)
+            {
+                rect.yMin += worker.drawWorker(rect);
             }
 
             return rect.yMin - yMin;

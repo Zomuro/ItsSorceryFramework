@@ -65,6 +65,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ProgressEXPWorker_OnDamaged.cs" />
     <Compile Include="ProgressEXPWorker_OnDamage.cs" />
     <Compile Include="ProgressEXPWorker_CastEnergyCost.cs" />
     <Compile Include="ProgressEXPWorker.cs" />
