@@ -31,9 +31,14 @@ namespace ItsSorceryFramework
                 new HarmonyMethod(typeof(HarmonyPatches), nameof(DefIconAbilities)));
 
             // TakeDamage_AddEXP
-            // for every magic system with the correct EXP tag, give damage depending on damage
+            // for every magic system with the correct EXP tag, give xp depending on damage
             harmony.Patch(AccessTools.Method(typeof(Thing), "TakeDamage"), null,
                 new HarmonyMethod(typeof(HarmonyPatches), nameof(TakeDamage_AddEXP)));
+
+            // SKillLearn_AddEXP
+            // for every magic system with the correct EXP tag, give xp depending on skill being learned
+            harmony.Patch(AccessTools.Method(typeof(SkillRecord), "Learn"), null,
+                new HarmonyMethod(typeof(HarmonyPatches), nameof(SKillLearn_AddEXP)));
 
 
         }
@@ -151,12 +156,33 @@ namespace ItsSorceryFramework
                 {
                     if (worker.GetType() == progressWorkerClass)
                     {
-                        if (worker.def.damageDef != null && worker.def.damageDef != dinfo.Def) continue;
+                        if (!worker.def.damageDefs.NullOrEmpty() && !worker.def.damageDefs.Contains(dinfo.Def)) continue;
                         worker.TryExecute(schema.progressTracker, dinfo.Amount);
                     }
                 }
             }
             return true;
+        }
+
+        // POSTFIX: if a pawn is practicing a skill, add exp based on amount
+        public static void SKillLearn_AddEXP(SkillRecord __instance, float __0)
+        {
+            if (__instance.Pawn == null) return;
+            List<SorcerySchema> schemas = SorcerySchemaUtility.GetSorcerySchemaList(__instance.Pawn);
+
+            if (schemas.NullOrEmpty()) return;
+            foreach (SorcerySchema schema in schemas)
+            {
+                if (schema.def.progressTrackerDef.Workers.NullOrEmpty()) continue;
+                foreach (var worker in schema.def.progressTrackerDef.Workers)
+                {
+                    if (worker.GetType() == typeof(ProgressEXPWorker_OnSkillEXP))
+                    {
+                        if (!worker.def.skillDefs.NullOrEmpty() && !worker.def.skillDefs.Contains(__instance.def)) continue;
+                        worker.TryExecute(schema.progressTracker, __0);
+                    }
+                }
+            }
         }
 
     }

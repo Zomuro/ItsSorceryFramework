@@ -87,11 +87,11 @@ namespace ItsSorceryFramework
                 return false;
             }
 
-            foreach (ProgressEXPDef expDef in Schema.progressTracker.def.expTags)
+            foreach (ProgressEXPWorker worker in Schema.progressTracker.def.Workers)
             {
-                if (expDef.workerClass == typeof(ProgressEXPWorker_CastEnergyCost))
+                if (worker.GetType() == typeof(ProgressEXPWorker_CastEnergyCost))
                 {
-                    expDef.Worker.TryExecute(Schema.progressTracker, sorceryDef.EnergyCost);
+                    worker.TryExecute(Schema.progressTracker, sorceryDef.EnergyCost);
                     break;
                 }
             }

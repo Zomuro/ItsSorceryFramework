@@ -21,7 +21,7 @@ namespace ItsSorceryFramework
 
             if (comp != null)
             {
-                return comp.schemaTracker.sorcerySchemas;
+                return comp?.schemaTracker?.sorcerySchemas ?? null;
             }
 
             return null;

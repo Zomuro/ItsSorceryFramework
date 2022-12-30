@@ -9,13 +9,11 @@ using UnityEngine;
 
 namespace ItsSorceryFramework
 {
-    public class ProgressEXPWorker_CastEnergyCost : ProgressEXPWorker
+    public class ProgressEXPWorker_Passive : ProgressEXPWorker
     {
         public override bool TryExecute(ProgressTracker progressTracker, float exp = 0)
-        {
-            if (exp == 0) return false;
-            
-            progressTracker.addExperience(Math.Abs(exp) * def.expFactor);
+        {          
+            progressTracker.addExperience(Math.Abs(def.fixedEXP));
             return true;
         }
 
@@ -25,11 +23,11 @@ namespace ItsSorceryFramework
             float x = rect.x;
 
             Text.Font = GameFont.Small;
-            Widgets.LabelCacheHeight(ref rect, "On cast:".Colorize(ColoredText.TipSectionTitleColor), true, false);
+            Widgets.LabelCacheHeight(ref rect, "Every second: ".Colorize(ColoredText.TipSectionTitleColor), true, false);
             rect.yMin += rect.height;
-            Widgets.LabelCacheHeight(ref rect, "Grant experience equal to " + 
-                def.expFactor.ToStringByStyle(ToStringStyle.FloatMaxTwo, ToStringNumberSense.Factor).Colorize(ColoredText.TipSectionTitleColor) +
-                " the base energy cost.", true, false);
+            Widgets.LabelCacheHeight(ref rect, "Grant " + 
+                def.fixedEXP.ToStringByStyle(ToStringStyle.FloatMaxTwo, ToStringNumberSense.Offset).Colorize(ColoredText.TipSectionTitleColor) +
+                " experience per second.", true, false);
             rect.yMin += rect.height;
 
             return rect.yMin - yMin;

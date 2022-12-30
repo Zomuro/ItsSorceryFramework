@@ -12,6 +12,11 @@
 		<workerClass>ItsSorceryFramework.ProgressEXPWorker_OnDamage</workerClass>
 		<defName>EXPTag_OnDamage</defName>
 		<expFactor>1</expFactor>
+		<damageDefs>
+			<li>Cut</li>
+			<li>Blunt</li>
+			<li>ArrowHighVelocity</li>
+		</damageDefs>
 	</ItsSorceryFramework.ProgressEXPDef>
 	
 	<ItsSorceryFramework.ProgressEXPDef>
@@ -19,6 +24,29 @@
 		<defName>EXPTag_OnDamaged</defName>
 		<expFactor>1</expFactor>
 	</ItsSorceryFramework.ProgressEXPDef>
+	
+	<ItsSorceryFramework.ProgressEXPDef>
+		<workerClass>ItsSorceryFramework.ProgressEXPWorker_OnSkillEXP</workerClass>
+		<defName>EXPTag_OnSkillEXP</defName>
+		<expFactor>1</expFactor>
+		<skillDefs>
+			<li>Melee</li>
+			<li>Shooting</li>
+		</skillDefs>
+	</ItsSorceryFramework.ProgressEXPDef>
+	
+	<ItsSorceryFramework.ProgressEXPDef>
+		<workerClass>ItsSorceryFramework.ProgressEXPWorker_Passive</workerClass>
+		<defName>EXPTag_Passive</defName>
+		<fixedEXP>1</fixedEXP>
+	</ItsSorceryFramework.ProgressEXPDef>
+	
+	<!--<ItsSorceryFramework.ProgressEXPDef>
+		<workerClass>ItsSorceryFramework.ProgressEXPWorker_DuringWork</workerClass>
+		<defName>EXPTag_DuringWork</defName>
+		<fixedEXP>5</fixedEXP>
+		<workGiverDef>HaulGeneral</workGiverDef>
+	</ItsSorceryFramework.ProgressEXPDef>-->
 	
 	<!--<ItsSorceryFramework.ProgressEXPDef>
 		<defName>ProgressEXPTag_OnKill</defName>

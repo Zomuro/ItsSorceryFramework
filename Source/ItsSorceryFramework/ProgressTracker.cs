@@ -124,7 +124,7 @@ namespace ItsSorceryFramework
             }
         }*/
 
-        public virtual void progressTick()
+        public virtual void ProgressTrackerTick()
         {
 
         }

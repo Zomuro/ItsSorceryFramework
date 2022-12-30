@@ -55,11 +55,28 @@ namespace ItsSorceryFramework
             hediff.curStage = newStage;
         }
 
+        public override void ProgressTrackerTick()
+        {
+            if(Find.TickManager.TicksGame % 60 == 0)
+            {               
+                if (def.Workers.NullOrEmpty()) return;
+                foreach (var worker in def.Workers)
+                {
+                    if (worker.GetType() == typeof(ProgressEXPWorker_Passive)) worker.TryExecute(this);
+                }
+            }
+
+            
+        }
+
         public override void addExperience(float experience)
         {
             float orgSev = currLevel;
             bool done = false;
             exp += experience;
+
+            MoteMaker.ThrowText(pawn.Position.ToVector3(), pawn.Map, 
+                experience.ToStringByStyle(ToStringStyle.FloatMaxTwo, ToStringNumberSense.Offset) + " EXP");
 
             while (!done)
             {
@@ -110,36 +127,6 @@ namespace ItsSorceryFramework
                 adjustHediffs(factor);
                 points += factor.pointGain;
             }
-
-            /*foreach (ProgressLevelModifier factor in def.levelFactors.OrderByDescending(x => x.level))
-            {
-                // if the level devided by the modulo leaves a remainder of 0
-                if(sev % factor.level == 0)
-                {
-                    adjustModifiers(factor); // alter the hediffstage's modifiers
-
-                    points += factor.pointGain; // add points
-                    //check = true;
-                    
-                    // end loop
-                    break;
-                }
-            }
-            foreach (ProgressLevelModifier special in def.levelSpecifics)
-            {
-                // if the new level == the level
-                if (sev == special.level)
-                {
-                    adjustModifiers(special); // alter the hediffstage's modifiers
-
-                    points += special.pointGain; // add points
-                    //check = true;
-
-                    // end loop
-                    break;
-                }
-            }
-            //if (!check) points += 1;*/
 
             hediff.curStage = refreshCurStage();
         }

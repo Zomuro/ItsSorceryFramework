@@ -10,7 +10,7 @@ namespace ItsSorceryFramework
 {
     public class ProgressEXPDef : Def
     {
-		public ProgressEXPWorker Worker
+		/*public ProgressEXPWorker Worker
 		{
 			get
 			{
@@ -21,7 +21,7 @@ namespace ItsSorceryFramework
 				}
 				return progressEXPWorker;
 			}
-		}
+		}*/
 
 		public Type workerClass = typeof(ProgressEXPWorker);
 
@@ -31,9 +31,18 @@ namespace ItsSorceryFramework
 
         public WorkTypeDef workTypeDef;
 
-		public DamageDef damageDef;
+		public WorkGiverDef workGiverDef;
 
-        public List<ThingDef> expItems = new List<ThingDef>();
+
+		//public List<JobDef> jobDefs = new List<JobDef>();
+
+		//public List<WorkTypeDef> workTypeDefs = new List<WorkTypeDef>();
+
+		public List<DamageDef> damageDefs = new List<DamageDef>();
+
+		public List<SkillDef> skillDefs = new List<SkillDef>();
+
+		public List<ThingDef> expItems = new List<ThingDef>();
 
         public ProgressEXPWorker progressEXPWorker;
 
