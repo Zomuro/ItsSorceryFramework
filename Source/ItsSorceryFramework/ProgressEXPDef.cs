@@ -33,6 +33,7 @@ namespace ItsSorceryFramework
 
 		public WorkGiverDef workGiverDef;
 
+		public List<EXPJobSet> jobSets = new List<EXPJobSet>();
 
 		//public List<JobDef> jobDefs = new List<JobDef>();
 
@@ -47,4 +48,11 @@ namespace ItsSorceryFramework
         public ProgressEXPWorker progressEXPWorker;
 
     }
+
+	public class EXPJobSet
+	{
+		public string label = "";
+
+		public List<JobDef> jobDefs = new List<JobDef>();
+	}
 }

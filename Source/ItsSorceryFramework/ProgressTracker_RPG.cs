@@ -63,6 +63,7 @@ namespace ItsSorceryFramework
                 foreach (var worker in def.Workers)
                 {
                     if (worker.GetType() == typeof(ProgressEXPWorker_Passive)) worker.TryExecute(this);
+                    else if (worker.GetType() == typeof(ProgressEXPWorker_DuringJob)) worker.TryExecute(this);
                 }
             }
 
@@ -75,8 +76,9 @@ namespace ItsSorceryFramework
             bool done = false;
             exp += experience;
 
-            MoteMaker.ThrowText(pawn.Position.ToVector3(), pawn.Map, 
-                experience.ToStringByStyle(ToStringStyle.FloatMaxTwo, ToStringNumberSense.Offset) + " EXP");
+            // maybe put this into exp workers
+            /*MoteMaker.ThrowText(pawn.Position.ToVector3(), pawn.Map, 
+                experience.ToStringByStyle(ToStringStyle.FloatMaxTwo, ToStringNumberSense.Offset) + " EXP");*/
 
             while (!done)
             {

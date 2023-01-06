@@ -65,6 +65,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ProgressEXPWorker_DuringJob.cs" />
     <Compile Include="ProgressEXPWorker_Passive.cs" />
     <Compile Include="ProgressEXPWorker_OnSkillEXP.cs" />
     <Compile Include="ProgressEXPWorker_OnDamaged.cs" />
