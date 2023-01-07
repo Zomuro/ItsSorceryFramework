@@ -35,10 +35,15 @@ namespace ItsSorceryFramework
             harmony.Patch(AccessTools.Method(typeof(Thing), "TakeDamage"), null,
                 new HarmonyMethod(typeof(HarmonyPatches), nameof(TakeDamage_AddEXP)));
 
-            // SKillLearn_AddEXP
+            // SkillLearn_AddEXP
             // for every magic system with the correct EXP tag, give xp depending on skill being learned
             harmony.Patch(AccessTools.Method(typeof(SkillRecord), "Learn"), null,
-                new HarmonyMethod(typeof(HarmonyPatches), nameof(SKillLearn_AddEXP)));
+                new HarmonyMethod(typeof(HarmonyPatches), nameof(SkillLearn_AddEXP)));
+
+            // DoKillSideEffects_AddEXP
+            // for every magic system with the correct EXP tag, give xp on kill
+            harmony.Patch(AccessTools.Method(typeof(Pawn), "DoKillSideEffects"), null,
+                new HarmonyMethod(typeof(HarmonyPatches), nameof(DoKillSideEffects_AddEXP)));
 
 
         }
@@ -165,7 +170,7 @@ namespace ItsSorceryFramework
         }
 
         // POSTFIX: if a pawn is practicing a skill, add exp based on amount
-        public static void SKillLearn_AddEXP(SkillRecord __instance, float __0)
+        public static void SkillLearn_AddEXP(SkillRecord __instance, float __0)
         {
             if (__instance.Pawn == null) return;
             List<SorcerySchema> schemas = SorcerySchemaUtility.GetSorcerySchemaList(__instance.Pawn);
@@ -180,6 +185,30 @@ namespace ItsSorceryFramework
                     {
                         if (!worker.def.skillDefs.NullOrEmpty() && !worker.def.skillDefs.Contains(__instance.def)) continue;
                         worker.TryExecute(schema.progressTracker, __0);
+                    }
+                }
+            }
+        }
+
+        // POSTFIX: if a pawn kills another pawn, execute the OnKill EXPWorker if their schema has the tag
+        public static void DoKillSideEffects_AddEXP(Pawn __instance, DamageInfo? __0)
+        {
+            if (__instance == null || __0 == null || __0.Value.Instigator == null) return;
+
+            Pawn killer = __0.Value.Instigator as Pawn;
+            if (killer == null) return;
+            List<SorcerySchema> schemas = SorcerySchemaUtility.GetSorcerySchemaList(killer);
+
+            if (schemas.NullOrEmpty()) return;
+            foreach (SorcerySchema schema in schemas)
+            {
+                if (schema.def.progressTrackerDef.Workers.NullOrEmpty()) continue;
+                foreach (var worker in schema.def.progressTrackerDef.Workers)
+                {
+                    if (worker.GetType() == typeof(ProgressEXPWorker_OnKill))
+                    {
+                        if (!worker.def.damageDefs.NullOrEmpty() && !worker.def.damageDefs.Contains(__0.Value.Def)) continue;
+                        worker.TryExecute(schema.progressTracker);
                     }
                 }
             }

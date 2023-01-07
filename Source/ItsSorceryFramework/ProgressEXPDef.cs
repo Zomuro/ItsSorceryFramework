@@ -29,23 +29,17 @@ namespace ItsSorceryFramework
 
         public float fixedEXP = 0f;
 
-        public WorkTypeDef workTypeDef;
-
-		public WorkGiverDef workGiverDef;
-
 		public List<EXPJobSet> jobSets = new List<EXPJobSet>();
-
-		//public List<JobDef> jobDefs = new List<JobDef>();
-
-		//public List<WorkTypeDef> workTypeDefs = new List<WorkTypeDef>();
 
 		public List<DamageDef> damageDefs = new List<DamageDef>();
 
 		public List<SkillDef> skillDefs = new List<SkillDef>();
 
-		public List<ThingDef> expItems = new List<ThingDef>();
+		//public List<ThingDef> expItems = new List<ThingDef>();
 
-        public ProgressEXPWorker progressEXPWorker;
+		public List<EXPConsumableItems> expItems = new List<EXPConsumableItems>();
+
+		public ProgressEXPWorker progressEXPWorker;
 
     }
 
@@ -54,5 +48,17 @@ namespace ItsSorceryFramework
 		public string label = "";
 
 		public List<JobDef> jobDefs = new List<JobDef>();
+	}
+
+	public class EXPConsumableItems
+    {
+		public ThingDef expItem;
+
+		public float exp;
+
+		public StatDef expFactorStat;
+
+		public string gainEXPTransKey = "ISF_UseEXPItem";
+
 	}
 }

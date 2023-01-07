@@ -9,14 +9,12 @@ using UnityEngine;
 
 namespace ItsSorceryFramework
 {
-    public class ProgressEXPWorker_OnDamage : ProgressEXPWorker
+    public class ProgressEXPWorker_OnKill : ProgressEXPWorker
     {
         public override bool TryExecute(ProgressTracker progressTracker, float exp = 0)
-        {
-            if (exp <= 0) return false;
-            
-            progressTracker.addExperience(Math.Abs(exp) * def.expFactor);
-            fireEXPMote(progressTracker.pawn, Math.Abs(exp) * def.expFactor);
+        {           
+            progressTracker.addExperience(def.fixedEXP);
+            fireEXPMote(progressTracker.pawn, def.fixedEXP);
             return true;
         }
 
@@ -28,11 +26,13 @@ namespace ItsSorceryFramework
             String allDamage = !def.damageDefs.NullOrEmpty() ? labelsFromDef(def.damageDefs).ToStringSafeEnumerable() : "";      
 
             Text.Font = GameFont.Small;
-            Widgets.LabelCacheHeight(ref rect, "On dealing damage: ".Colorize(ColoredText.TipSectionTitleColor) + allDamage, true, false);
+            if(allDamage != "") Widgets.LabelCacheHeight(ref rect, "On kill with damage: ".Colorize(ColoredText.TipSectionTitleColor) + allDamage, true, false);
+            else Widgets.LabelCacheHeight(ref rect, "On kill: ".Colorize(ColoredText.TipSectionTitleColor), true, false);
+
             rect.yMin += rect.height;
-            Widgets.LabelCacheHeight(ref rect, "Grant experience equal to " + 
-                def.expFactor.ToStringByStyle(ToStringStyle.FloatMaxTwo, ToStringNumberSense.Factor).Colorize(ColoredText.TipSectionTitleColor) +
-                " the damage dealt by this pawn.", true, false);
+            Widgets.LabelCacheHeight(ref rect, "Grant " + 
+                def.fixedEXP.ToStringByStyle(ToStringStyle.FloatMaxTwo, ToStringNumberSense.Factor).Colorize(ColoredText.TipSectionTitleColor) +
+                " experience.", true, false);
             rect.yMin += rect.height;
 
             return rect.yMin - yMin;

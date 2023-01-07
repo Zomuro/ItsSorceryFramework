@@ -31,6 +31,12 @@ namespace ItsSorceryFramework
             yield break;
         }
 
+        public virtual void fireEXPMote(Pawn pawn, float exp)
+        {
+            MoteMaker.ThrowText(pawn.Position.ToVector3(), pawn.Map,
+                exp.ToStringByStyle(ToStringStyle.FloatMaxTwo, ToStringNumberSense.Offset) + " EXP");
+        }
+
         public ProgressEXPDef def;
 
         //public SorcerySchema schema;
