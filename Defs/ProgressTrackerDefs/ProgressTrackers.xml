@@ -52,6 +52,7 @@
 			<!--<li>EXPTag_Passive</li>-->
 			<!--<li>EXPTag_DuringJob</li>-->
 			<li>EXPTag_OnKill</li>
+			<li>EXPTag_UseItem</li>
 		</expTags>
 	</ItsSorceryFramework.ProgressTrackerDef>
 	

@@ -31,7 +31,7 @@ namespace ItsSorceryFramework
 
             rect.yMin += rect.height;
             Widgets.LabelCacheHeight(ref rect, "Grant " + 
-                def.fixedEXP.ToStringByStyle(ToStringStyle.FloatMaxTwo, ToStringNumberSense.Factor).Colorize(ColoredText.TipSectionTitleColor) +
+                def.fixedEXP.ToStringByStyle(ToStringStyle.FloatMaxTwo, ToStringNumberSense.Absolute).Colorize(ColoredText.TipSectionTitleColor) +
                 " experience.", true, false);
             rect.yMin += rect.height;
 

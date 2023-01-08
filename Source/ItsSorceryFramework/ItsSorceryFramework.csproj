@@ -65,7 +65,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="JobDriver_GainEXP.cs" />
+    <Compile Include="JobGiver_GainEXP.cs" />
     <Compile Include="ProgressEXPWorker_DuringJob.cs" />
+    <Compile Include="ProgressEXPWorker_UseItem.cs" />
     <Compile Include="ProgressEXPWorker_OnKill.cs" />
     <Compile Include="ProgressEXPWorker_Passive.cs" />
     <Compile Include="ProgressEXPWorker_OnSkillEXP.cs" />

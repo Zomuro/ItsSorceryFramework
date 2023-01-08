@@ -52,9 +52,9 @@ namespace ItsSorceryFramework
 
 	public class EXPConsumableItems
     {
-		public ThingDef expItem;
+		public ThingDef thingDef;
 
-		public float exp;
+		public float exp = 100f;
 
 		public StatDef expFactorStat;
 

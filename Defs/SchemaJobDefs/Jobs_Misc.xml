@@ -8,5 +8,13 @@
 		<suspendable>false</suspendable>
 		<allowOpportunisticPrefix>true</allowOpportunisticPrefix>
 	</ItsSorceryFramework.SchemaJobDef>
+	
+	<ItsSorceryFramework.SchemaJobDef>
+		<defName>GainEXPSchema</defName>
+		<driverClass>ItsSorceryFramework.JobDriver_GainEXP</driverClass>
+		<reportString>gaining experience with TargetB.</reportString>
+		<suspendable>false</suspendable>
+		<allowOpportunisticPrefix>true</allowOpportunisticPrefix>
+	</ItsSorceryFramework.SchemaJobDef>
   
 </Defs>

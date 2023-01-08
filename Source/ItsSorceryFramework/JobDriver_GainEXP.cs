@@ -9,12 +9,14 @@ using Verse.AI;
 
 namespace ItsSorceryFramework
 {
-    public class JobDriver_Charge : JobDriver_Reload
+    public class JobDriver_GainEXP: JobDriver_Reload
     {
 		protected override IEnumerable<Toil> MakeNewToils()
 		{
 			SorcerySchemaDef schemaDef = (this.job.def as SchemaJobDef).schemaDef;
 			int count = job.count;
+			Log.Message(schemaDef.label);
+			Log.Message(count.ToString());
 			this.FailOnIncapable(PawnCapacityDefOf.Manipulation);
 			Toil getNextIngredient = Toils_General.Label();
 			yield return getNextIngredient;
@@ -24,7 +26,7 @@ namespace ItsSorceryFramework
 				FailOnDestroyedNullOrForbidden(TargetIndex.B);
 			yield return Toils_Jump.JumpIf(getNextIngredient, () => !this.job.GetTargetQueue(TargetIndex.B).NullOrEmpty<LocalTargetInfo>());
 			
-			foreach (Toil reloadToil in this.ChargeAsMuchAsPossible(schemaDef, count))
+			foreach (Toil reloadToil in this.GainEXPAsMuchAsPossible(schemaDef))
 			{
 				yield return reloadToil;
 			}
@@ -44,7 +46,7 @@ namespace ItsSorceryFramework
 			yield break;
 		}
 
-		public IEnumerable<Toil> ChargeAsMuchAsPossible(SorcerySchemaDef schemaDef, int count)
+		public IEnumerable<Toil> GainEXPAsMuchAsPossible(SorcerySchemaDef schemaDef)
 		{
 			Toil done = Toils_General.Label();
 			yield return Toils_Jump.JumpIf(done, () => this.pawn.carryTracker.CarriedThing == null || 
@@ -54,7 +56,7 @@ namespace ItsSorceryFramework
 			toil.initAction = delegate ()
 			{
 				Thing carriedThing = this.pawn.carryTracker.CarriedThing;
-				this.ChargeFrom(carriedThing, schemaDef, count);
+				this.GainEXPFrom(carriedThing, schemaDef);
 			};
 			toil.defaultCompleteMode = ToilCompleteMode.Instant;
 			yield return toil;
@@ -62,16 +64,30 @@ namespace ItsSorceryFramework
 			yield break;
 		}
 
-		public void ChargeFrom(Thing ammo, SorcerySchemaDef schemaDef, int count)
+		public void GainEXPFrom(Thing thing, SorcerySchemaDef schemaDef)
 		{
-			if (ammo.stackCount < count)
+			if (thing.stackCount < 1)
 			{
 				return;
 			}
-			Log.Message(count.ToString());
-			EnergyTracker et = SorcerySchemaUtility.FindSorcerySchema(pawn, schemaDef).energyTracker;
-			et.currentEnergy += Math.Min(count * et.def.sorceryAmmoDict[ammo.def], et.MaxEnergy - et.currentEnergy);
-			ammo.SplitOff(count).Destroy(DestroyMode.Vanish);
+			ProgressTracker pt = SorcerySchemaUtility.FindSorcerySchema(pawn, schemaDef).progressTracker;
+
+			foreach (var worker in pt.def.Workers)
+            {
+				if(worker.GetType() == typeof(ProgressEXPWorker_UseItem))
+                {
+					foreach(var item in worker.def.expItems)
+                    {
+						if (item.thingDef != thing.def) continue;
+						float factor = item.expFactorStat != null ? pawn.GetStatValue(item.expFactorStat) : 1f;
+						pt.addExperience(item.exp * factor);
+						MoteMaker.ThrowText(pawn.Position.ToVector3(), pawn.Map, (item.exp * factor).ToStringByStyle(ToStringStyle.FloatMaxTwo, ToStringNumberSense.Offset) + " EXP");
+						break;
+					}
+					break;
+                }
+            }
+			thing.SplitOff(1).Destroy(DestroyMode.Vanish);
 		}
 
 	}

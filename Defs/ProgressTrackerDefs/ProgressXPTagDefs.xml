@@ -54,7 +54,6 @@
 				</jobDefs>
 			</li>
 		</jobSets>
-		<workGiverDef>HaulGeneral</workGiverDef>
 	</ItsSorceryFramework.ProgressEXPDef>
 	
 	<ItsSorceryFramework.ProgressEXPDef>
@@ -68,15 +67,17 @@
 		</damageDefs>
 	</ItsSorceryFramework.ProgressEXPDef>
 	
-	<!--
 	<ItsSorceryFramework.ProgressEXPDef>
-		<defName>ProgressEXPTag_DuringMentalState</defName>
-		<fixedEXP>100</fixedEXP>
-	</ItsSorceryFramework.ProgressEXPDef>
-	
-	<ItsSorceryFramework.ProgressEXPDef>
-		<defName>ProgressEXPTag_UseItem</defName>
+		<workerClass>ItsSorceryFramework.ProgressEXPWorker_UseItem</workerClass>
+		<defName>EXPTag_UseItem</defName>
 		<expFactor>1</expFactor>
-	</ItsSorceryFramework.ProgressEXPDef>-->
+		<expItems>
+			<li>
+				<thingDef>Milk</thingDef>
+				<exp>50</exp>
+				<expFactorStat>MoveSpeed</expFactorStat>
+			</li>
+		</expItems>
+	</ItsSorceryFramework.ProgressEXPDef>
 
 </Defs>

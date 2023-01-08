@@ -13,6 +13,7 @@ namespace ItsSorceryFramework
     public static class SchemaJobDefOf
     {
         public static SchemaJobDef ChargeSchema;
+        public static SchemaJobDef GainEXPSchema;
 
         static SchemaJobDefOf()
         {
