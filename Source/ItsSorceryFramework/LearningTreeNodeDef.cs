@@ -27,6 +27,25 @@ namespace ItsSorceryFramework
 			}
 		}
 
+		/*public Texture2D Icon
+		{
+			get
+			{
+				if (this.uiIcon == null)
+				{
+					if (!iconPath.NullOrEmpty())
+					{
+						this.uiIcon = ContentFinder<Texture2D>.Get(iconPath, true);
+					}
+					else
+					{
+						this.uiIcon = BaseContent.BadTex;
+					}
+				}
+				return this.uiIcon;
+			}
+		}*/
+
 		public IEnumerable<StatDrawEntry> specialDisplayMods()
 		{
 			if (!capMods.NullOrEmpty())
@@ -94,12 +113,6 @@ namespace ItsSorceryFramework
             }
         }
 
-        public List<LearningTreeNodeDef> prereqs = new List<LearningTreeNodeDef>();
-
-		public List<ResearchProjectDef> prereqsResearch = new List<ResearchProjectDef>();
-
-		public Dictionary<HediffDef, float> prereqsHediff = new Dictionary<HediffDef, float>();
-
 		public LearningTrackerDef learningTracker;
 
 		public float coordX = 0;
@@ -112,8 +125,16 @@ namespace ItsSorceryFramework
 
 		public bool condVisiblePrereq = false;
 
-		[NoTranslate]
+		/*[NoTranslate]
 		public string iconPath;
+
+		private Texture2D uiIcon = null;*/
+
+		public List<LearningTreeNodeDef> prereqs = new List<LearningTreeNodeDef>();
+
+		public List<ResearchProjectDef> prereqsResearch = new List<ResearchProjectDef>();
+
+		public Dictionary<HediffDef, float> prereqsHediff = new Dictionary<HediffDef, float>();
 
 		public List<LearningTreeNodeDef> exclusiveNodes = new List<LearningTreeNodeDef>();
 

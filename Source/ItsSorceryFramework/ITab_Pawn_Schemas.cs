@@ -11,13 +11,13 @@ namespace ItsSorceryFramework
 {
     public class ITab_Pawn_Schemas : ITab
     {
+        // only humanlike pawns with the sorcery comp can even see the schema tab
         public override bool IsVisible
         {
             get
             {
-                return (!base.SelPawn.RaceProps.Animal || base.SelPawn.Faction != null) &&
-                    base.SelPawn.GetComp<Comp_ItsSorcery>() != null &&
-                    !base.SelPawn.GetComp<Comp_ItsSorcery>().schemaTracker.sorcerySchemas.NullOrEmpty();
+                return base.SelPawn.RaceProps.Humanlike &&
+                    SorceryComp != null /*&& !SorceryComp.schemaTracker.sorcerySchemas.NullOrEmpty()*/;
             }
         }
 
@@ -36,15 +36,16 @@ namespace ItsSorceryFramework
             Rect view = window.ContractedBy(10f);
             Rect schemaRect = view.ContractedBy(8f);
             schemaRect.height = 75f;
-            //view.height = view.height / 2;
 
-            List<EnergyTracker> energyTrackers = (from schema in SorcerySchemaUtility.GetSorcerySchemaList(this.SelPawn)
-                                                 select schema.energyTracker).ToList();
-            if (energyTrackers.NullOrEmpty())
+            // no magic systems => "no schemas"
+            if (SorceryComp.schemaTracker.sorcerySchemas.NullOrEmpty())
             {
                 Widgets.Label(view, "No schemas.");
                 return;
             }
+
+            List<EnergyTracker> energyTrackers = (from schema in SorceryComp.schemaTracker.sorcerySchemas
+                                                  select schema.energyTracker).ToList();
 
             int possibleSlots = (int) Math.Floor((size.y - 48) / 75f);
             int possiblePages = (int) Math.Ceiling((1f*energyTrackers.CountAllowNull()) / possibleSlots);
@@ -72,15 +73,25 @@ namespace ItsSorceryFramework
             {
                 et.DrawOnGUI(schemaRect);
                 schemaRect.y += schemaRect.height + 1;
-                //view.y += view.height;
             }
             Text.Font = GameFont.Small;
-
-
-
         }
 
-        
+        public Comp_ItsSorcery SorceryComp
+        {
+            get
+            {
+                if(sorceryComp == null)
+                {
+                    sorceryComp = base.SelPawn.GetComp<Comp_ItsSorcery>();
+                }
+
+                return sorceryComp;
+            }
+        }
+
+
+        private Comp_ItsSorcery sorceryComp = null;
 
         public int energyTrackerIndex = 0;
 

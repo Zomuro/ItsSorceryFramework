@@ -737,13 +737,6 @@ namespace ItsSorceryFramework
             return TexUI.DefaultBorderResearchColor;
         }
 
-        /*private Color selectionLineColor(LearningTreeNodeDef node)
-        {
-            if (selectedNode == node) return TexUI.HighlightLineResearchColor;
-
-            return TexUI.DefaultLineResearchColor;
-        }*/
-
         private Tuple<Color,float> selectionLineColor(LearningTreeNodeDef node, LearningTreeNodeDef prereq)
         {
             Color col = default(Color);
