@@ -130,12 +130,12 @@ namespace ItsSorceryFramework
 
         public override string DisableCommandReason()
         {
-            return def.DisableReasonTranslationKey ?? "CommandDisableReasonVancian_ISF";
+            return def.DisableReasonTranslationKey ?? "ISF_CommandDisableReasonVancian";
         }
 
         public override string TopRightLabel(SorceryDef sorceryDef)
         {
-            return (sorceryDef?.sorcerySchema.energyTrackerDef.energyLabelTranslationKey.Translate().CapitalizeFirst()[0]) + ": " +
+            return (sorceryDef?.sorcerySchema.energyTrackerDef.EnergyLabelTranslationKey.Translate().CapitalizeFirst()[0]) + ": " +
                 vancianCasts[sorceryDef].ToString() + "/" +
                 ((int) Math.Ceiling(sorceryDef.MaximumCasts * this.CastFactor)).ToString();
         }

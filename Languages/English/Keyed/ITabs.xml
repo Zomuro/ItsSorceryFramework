@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <LanguageData>
 
-	<TabSchemas_ItsSorcery>Schemas</TabSchemas_ItsSorcery>
+	<!-- ITab_Schemas -->
+	<ISF_TabSchemas>Schemas</ISF_TabSchemas>
 	
-	<EnergyTrackerVancianRefresh_ItsSorcery>Refresh casts in: {0}</EnergyTrackerVancianRefresh_ItsSorcery>
-	<EnergyTrackerVancianCastsLeft_ItsSorcery>Casts left: {0}/{1}</EnergyTrackerVancianCastsLeft_ItsSorcery>
-	
-	<EnergyTrackerCooldown_ItsSorcery>End schema cooldown in: {0}</EnergyTrackerCooldown_ItsSorcery>
+	<!-- EnergyTrackerDef -->
+	<ISF_EnergyTrackerVancianRefresh>Refresh casts in: {0}</ISF_EnergyTrackerVancianRefresh>
+	<ISF_EnergyTrackerVancianCastsLeft>Casts left: {0}/{1}</ISF_EnergyTrackerVancianCastsLeft>
+	<ISF_EnergyTrackerCooldown>End schema cooldown in: {0}</ISF_EnergyTrackerCooldown>
 	
 </LanguageData>

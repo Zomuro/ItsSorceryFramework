@@ -250,7 +250,7 @@ namespace ItsSorceryFramework
 
             if (!node.prereqs.NullOrEmpty()) 
             {
-                Widgets.LabelCacheHeight(ref rect, "LearningNodePrerequisites_ISF".Translate(), true, false);
+                Widgets.LabelCacheHeight(ref rect, "ISF_LearningNodePrereqs".Translate(), true, false);
                 rect.yMin += rect.height;
                 rect.xMin += 6f;
                 foreach (LearningTreeNodeDef prereq in node.prereqs)
@@ -285,7 +285,7 @@ namespace ItsSorceryFramework
 
             if (!node.prereqsHediff.NullOrEmpty())
             {
-                Widgets.LabelCacheHeight(ref rect, "Hediff requirements:", true, false);
+                Widgets.LabelCacheHeight(ref rect, "ISF_LearningNodeHediffReq".Translate(), true, false);
                 rect.yMin += rect.height;
                 rect.xMin += 6f;
                 Hediff hediff;
@@ -313,7 +313,7 @@ namespace ItsSorceryFramework
             float xMin = rect.xMin;
             float yMin = rect.yMin;
 
-            Widgets.LabelCacheHeight(ref rect, "Exclusive with: ", true, false);
+            Widgets.LabelCacheHeight(ref rect, "ISF_LearningNodeExclusive".Translate(), true, false);
             rect.yMin += rect.height;
             rect.xMin += 6f;
             foreach (LearningTreeNodeDef ex in exclusiveNodes[node])
@@ -349,7 +349,7 @@ namespace ItsSorceryFramework
 
             if (!abilityGain.NullOrEmpty())
             {
-                Widgets.LabelCacheHeight(ref rect, "Abilities gained:", true, false);
+                Widgets.LabelCacheHeight(ref rect, "ISF_LearningNodeAbilityGain".Translate(), true, false);
                 rect.yMin += rect.height;
                 rect.x += 6f;
                 foreach (AbilityDef abilityDef in abilityGain)
@@ -364,7 +364,7 @@ namespace ItsSorceryFramework
 
             if (!abilityRemove.NullOrEmpty())
             {
-                Widgets.LabelCacheHeight(ref rect, "Abilities removed:", true, false);
+                Widgets.LabelCacheHeight(ref rect, "ISF_LearningNodeAbilityRemove".Translate(), true, false);
                 rect.yMin += rect.height;
                 rect.x += 6f;
                 foreach (AbilityDef abilityDef in abilityRemove)
@@ -379,7 +379,7 @@ namespace ItsSorceryFramework
 
             if (!hediffAdd.NullOrEmpty())
             {
-                Widgets.LabelCacheHeight(ref rect, "Hediffs added:", true, false);
+                Widgets.LabelCacheHeight(ref rect, "ISF_LearningNodeHediffAdd".Translate(), true, false);
                 rect.yMin += rect.height;
                 rect.x += 6f;
                 foreach (NodeHediffProps prop in hediffAdd)
@@ -401,7 +401,7 @@ namespace ItsSorceryFramework
 
             if (!hediffAdjust.NullOrEmpty())
             {
-                Widgets.LabelCacheHeight(ref rect, "Hediff adjustments:", true, false);
+                Widgets.LabelCacheHeight(ref rect, "ISF_LearningNodeHediffAdjust".Translate(), true, false);
                 rect.yMin += rect.height;
                 rect.x += 6f;
                 foreach (NodeHediffProps prop in hediffAdjust)
@@ -421,7 +421,7 @@ namespace ItsSorceryFramework
 
             if (!hediffRemove.NullOrEmpty())
             {
-                Widgets.LabelCacheHeight(ref rect, "Hediffs removed:", true, false);
+                Widgets.LabelCacheHeight(ref rect, "ISF_LearningNodeHediffRemove".Translate(), true, false);
                 rect.yMin += rect.height;
                 rect.x += 6f;
                 foreach (HediffDef hediffDef in hediffRemove)
@@ -445,7 +445,7 @@ namespace ItsSorceryFramework
             String tipString = TipStringExtra(node);
             if (!tipString.NullOrEmpty()) 
             {
-                Widgets.LabelCacheHeight(ref rect, "Modifiers applied:", true, false);
+                Widgets.LabelCacheHeight(ref rect, "ISF_LearningNodeMods".Translate(), true, false);
                 rect.yMin += rect.height;
                 Widgets.LabelCacheHeight(ref rect, tipString, true, false);
                 rect.yMin += rect.height;

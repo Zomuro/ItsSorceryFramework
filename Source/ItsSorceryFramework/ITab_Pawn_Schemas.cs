@@ -24,8 +24,8 @@ namespace ItsSorceryFramework
         public ITab_Pawn_Schemas()
         {
             this.size = new Vector2(460f, 450f);
-            this.labelKey = "TabSchemas_ItsSorcery";
-            this.tutorTag = "TabSchemas_ItsSorcery";
+            this.labelKey = "ISF_TabSchemas";
+            this.tutorTag = "ISF_TabSchemas";
         }
 
         protected override void FillTab()

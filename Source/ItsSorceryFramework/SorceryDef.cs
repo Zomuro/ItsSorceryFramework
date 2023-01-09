@@ -33,7 +33,7 @@ namespace ItsSorceryFramework
 			if (this.EnergyCost != 0)
 			{
 				EnergyTracker energyTracker = SorcerySchemaUtility.FindSorcerySchema(forPawn, this).energyTracker;
-				yield return this.sorcerySchema.energyTrackerDef.energyLabelTranslationKey.Translate().CapitalizeFirst() + ": "+ 
+				yield return this.sorcerySchema.energyTrackerDef.EnergyLabelTranslationKey.Translate().CapitalizeFirst() + ": "+ 
 					Math.Round(this.EnergyCost * energyTracker.EnergyCostFactor, 2);
 			}
 			if (this.verbProperties.warmupTime > 1.401298E-45f)
