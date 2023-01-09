@@ -16,8 +16,7 @@ namespace ItsSorceryFramework
         {
             get
             {
-                return base.SelPawn.RaceProps.Humanlike &&
-                    SorceryComp != null /*&& !SorceryComp.schemaTracker.sorcerySchemas.NullOrEmpty()*/;
+                return base.SelPawn.RaceProps.Humanlike && SorceryComp != null;
             }
         }
 
@@ -38,40 +37,47 @@ namespace ItsSorceryFramework
             schemaRect.height = 75f;
 
             // no magic systems => "no schemas"
-            if (SorceryComp.schemaTracker.sorcerySchemas.NullOrEmpty())
+            if (Schemas.NullOrEmpty())
             {
                 Widgets.Label(view, "No schemas.");
                 return;
             }
 
-            List<EnergyTracker> energyTrackers = (from schema in SorceryComp.schemaTracker.sorcerySchemas
-                                                  select schema.energyTracker).ToList();
-
+            // calculate the number of "pages" and schemas we can fit into the itab
             int possibleSlots = (int) Math.Floor((size.y - 48) / 75f);
-            int possiblePages = (int) Math.Ceiling((1f*energyTrackers.CountAllowNull()) / possibleSlots);
+            int possiblePages = (int) Math.Ceiling((1f*Schemas.CountAllowNull()) / possibleSlots);
 
+            // sets current page
             int currentPage = energyTrackerIndex / possibleSlots + 1;
             Text.Font = GameFont.Small;
+
+            // buttons to change pages
             Rect button1 = new Rect(size.x / 2 - 25 - 50, 10, 50, 25);
             Rect button2 = new Rect(size.x / 2 + 25, 10, 50, 25);
             Rect pageLabel = new Rect(size.x / 2 - 25, 10, 50, 25);
+
+            // as long as it isn't the first page, go back
             if (currentPage > 1 && Widgets.ButtonText(button1, "<"))
             {
                 energyTrackerIndex -= possibleSlots;
             }
+            // as long as it isn't the last page, can move forwards
             if (currentPage < possiblePages && Widgets.ButtonText(button2, ">"))
             {
                 energyTrackerIndex += possibleSlots;
             }
 
+            // shows page counter
             Text.Anchor = TextAnchor.MiddleCenter;
             Widgets.Label(pageLabel, currentPage.ToString() + " / " + possiblePages.ToString());
             Text.Anchor = TextAnchor.UpperLeft;
 
-            foreach (EnergyTracker et in energyTrackers.GetRange(energyTrackerIndex,
-                Math.Min(energyTrackers.Count() - energyTrackerIndex, 5)))
+            // for every sorcery schema
+            foreach (SorcerySchema schema in Schemas.GetRange(energyTrackerIndex,
+                Math.Min(Schemas.Count() - energyTrackerIndex, 5)))
             {
-                et.DrawOnGUI(schemaRect);
+                // take the energy tracker and display it
+                schema.energyTracker.DrawOnGUI(schemaRect);
                 schemaRect.y += schemaRect.height + 1;
             }
             Text.Font = GameFont.Small;
@@ -90,6 +96,14 @@ namespace ItsSorceryFramework
             }
         }
 
+        public List<SorcerySchema> Schemas
+        {
+            get
+            {
+                if (SorceryComp == null) return null;
+                return SorceryComp.schemaTracker.sorcerySchemas;
+            }
+        }
 
         private Comp_ItsSorcery sorceryComp = null;
 
