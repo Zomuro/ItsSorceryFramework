@@ -8,5 +8,6 @@
 	
 	<ISF_UseEXPItemNoPath>No path: </ISF_UseEXPItemNoPath>
 	<ISF_UseEXPItem>Use {0} to gain {1} experience for {2}.</ISF_UseEXPItem>
+	<ISF_UseSchemaItemFail>{USER_labelShort} already knows {1}.</ISF_UseSchemaItemFail>
 
 </LanguageData>

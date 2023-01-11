@@ -16,7 +16,7 @@ namespace ItsSorceryFramework
         {
             get
             {
-                return base.SelPawn.RaceProps.Humanlike && SorceryComp != null;
+                return base.SelPawn.RaceProps.Humanlike && SorceryComp != null && !Schemas.NullOrEmpty();
             }
         }
 
@@ -37,11 +37,11 @@ namespace ItsSorceryFramework
             schemaRect.height = 75f;
 
             // no magic systems => "no schemas"
-            if (Schemas.NullOrEmpty())
+            /*if (Schemas.NullOrEmpty())
             {
                 Widgets.Label(view, "No schemas.");
                 return;
-            }
+            }*/
 
             // calculate the number of "pages" and schemas we can fit into the itab
             int possibleSlots = (int) Math.Floor((size.y - 48) / 75f);
