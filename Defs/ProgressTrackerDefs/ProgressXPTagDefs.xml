@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<Defs>
+
+	<ItsSorceryFramework.ProgressEXPDef>
+		<workerClass>ItsSorceryFramework.ProgressEXPWorker_CastEnergyCost</workerClass>
+		<defName>EXPTag_CastEnergyCost</defName>
+		<expFactor>1</expFactor>
+	</ItsSorceryFramework.ProgressEXPDef>
+	
+	<ItsSorceryFramework.ProgressEXPDef>
+		<workerClass>ItsSorceryFramework.ProgressEXPWorker_OnDamage</workerClass>
+		<defName>EXPTag_OnDamage</defName>
+		<expFactor>1</expFactor>
+		<damageDefs>
+			<li>Cut</li>
+			<li>Blunt</li>
+			<li>ArrowHighVelocity</li>
+		</damageDefs>
+	</ItsSorceryFramework.ProgressEXPDef>
+	
+	<ItsSorceryFramework.ProgressEXPDef>
+		<workerClass>ItsSorceryFramework.ProgressEXPWorker_OnDamaged</workerClass>
+		<defName>EXPTag_OnDamaged</defName>
+		<expFactor>1</expFactor>
+	</ItsSorceryFramework.ProgressEXPDef>
+	
+	<ItsSorceryFramework.ProgressEXPDef>
+		<workerClass>ItsSorceryFramework.ProgressEXPWorker_OnSkillEXP</workerClass>
+		<defName>EXPTag_OnSkillEXP</defName>
+		<expFactor>0.05</expFactor>
+		<skillDefs>
+			<li>Melee</li>
+			<li>Shooting</li>
+		</skillDefs>
+	</ItsSorceryFramework.ProgressEXPDef>
+	
+	<ItsSorceryFramework.ProgressEXPDef>
+		<workerClass>ItsSorceryFramework.ProgressEXPWorker_Passive</workerClass>
+		<defName>EXPTag_Passive</defName>
+		<fixedEXP>1</fixedEXP>
+	</ItsSorceryFramework.ProgressEXPDef>
+	
+	<ItsSorceryFramework.ProgressEXPDef>
+		<workerClass>ItsSorceryFramework.ProgressEXPWorker_DuringJob</workerClass>
+		<defName>EXPTag_DuringJob</defName>
+		<fixedEXP>5</fixedEXP>
+		<jobSets>
+			<li>
+				<label>Hauling</label>
+				<jobDefs>
+					<li>HaulToCell</li>
+					<li>HaulToContainer</li>
+				</jobDefs>
+			</li>
+		</jobSets>
+	</ItsSorceryFramework.ProgressEXPDef>
+	
+	<ItsSorceryFramework.ProgressEXPDef>
+		<workerClass>ItsSorceryFramework.ProgressEXPWorker_OnKill</workerClass>
+		<defName>EXPTag_OnKill</defName>
+		<fixedEXP>100</fixedEXP>
+		<damageDefs>
+			<li>Cut</li>
+			<li>Blunt</li>
+			<li>ArrowHighVelocity</li>
+		</damageDefs>
+	</ItsSorceryFramework.ProgressEXPDef>
+	
+	<ItsSorceryFramework.ProgressEXPDef>
+		<workerClass>ItsSorceryFramework.ProgressEXPWorker_UseItem</workerClass>
+		<defName>EXPTag_UseItem</defName>
+		<expFactor>1</expFactor>
+		<expItems>
+			<li>
+				<thingDef>Milk</thingDef>
+				<exp>50</exp>
+				<expFactorStat>MoveSpeed</expFactorStat>
+			</li>
+		</expItems>
+	</ItsSorceryFramework.ProgressEXPDef>
+
+</Defs>

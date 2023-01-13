@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <LanguageData>
 
-	<MessagePastLimit>{PAWN_labelShort} has exceeded his/her limits.</MessagePastLimit>
+	<ISF_MessagePastLimit>{0} has exceeded his/her limits.</ISF_MessagePastLimit>
 	
+	<ISF_UsedSchemaItem>{USER_labelShort} has learned {1}.</ISF_UsedSchemaItem>
 	
 </LanguageData>

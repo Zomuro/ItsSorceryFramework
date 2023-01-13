@@ -20,9 +20,9 @@ namespace ItsSorceryFramework
         public Type energyTrackerClass = typeof(EnergyTracker);
 
         // EnergyTracker unit variables
-        public string energyLabelTranslationKey = "EnergyTrackerEnergyLabel_ISF";
+        public string EnergyLabelTranslationKey = "ISF_EnergyTrackerUnitLabel";
 
-        public string EnergyDescTranslationKey = "EnergyStatDesc_ISF";
+        public string EnergyDescTranslationKey = "ISF_EnergyStatDesc";
 
         // EnergyTracker general stats
         public StatDef energyMaxStatDef;
@@ -44,23 +44,23 @@ namespace ItsSorceryFramework
         public HediffDef sideEffect;
 
         // TurnBased EnergyTrackers
-        public string TurnInfoTranslationKey = "EnergyTrackerTurnInfo_ISF";
+        public string TurnInfoTranslationKey = "ISF_EnergyTrackerTurnInfo";
 
-        public string TurnInfoDescTranslationKey = "EnergyTrackerTurnInfoDesc_ISF";
+        public string TurnInfoDescTranslationKey = "ISF_EnergyTrackerTurnInfoDesc";
 
         public int turnTicks = 60;
 
         // Vancian EnergyTracker Stats
-        public string RefreshNotifTranslationKey = "EnergyTrackerVancianRefresh_ItsSorcery";
+        public string RefreshNotifTranslationKey = "ISF_EnergyTrackerVancianRefresh";
 
-        public string RefreshInfoTranslationKey = "EnergyTrackerRefreshInfo_ISF";
+        public string RefreshInfoTranslationKey = "ISF_EnergyTrackerRefreshInfo";
 
-        public string RefreshInfoDescTranslationKey = "EnergyTrackerRefreshInfoDesc_ISF";
+        public string RefreshInfoDescTranslationKey = "ISF_EnergyTrackerRefreshInfoDesc";
 
         public int refreshTicks = 60000;
 
         //VancianLifetime EnergyTracker string
-        public string CastsCountTranslationKey = "EnergyTrackerVancianCastsLeft_ItsSorcery";
+        public string CastsCountTranslationKey = "ISF_EnergyTrackerVancianCastsLeft";
 
         // Command disable string
         public string DisableReasonTranslationKey;
@@ -69,7 +69,7 @@ namespace ItsSorceryFramework
         public Dictionary<ThingDef, float> sorceryAmmoDict;
 
         // Cooldown EnergyTracker string
-        public string CooldownTranslationKey = "EnergyTrackerCooldown_ItsSorcery";
+        public string CooldownTranslationKey = "ISF_EnergyTrackerCooldown";
 
 
     }

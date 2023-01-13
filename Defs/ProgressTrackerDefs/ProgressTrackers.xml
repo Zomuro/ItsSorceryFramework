@@ -7,15 +7,18 @@
 		<label>progress tracker test</label>
 		
 		<progressHediff>ProgressTrackerHediffDef</progressHediff>
-		<levelModulos>
+		<levelFactors>
 			<li>
-				<levelFactor>1</levelFactor>
+				<level>1</level>
 				<statOffsets>
 					<MoveSpeed>0.25</MoveSpeed>
 				</statOffsets>
+				<statFactorOffsets>
+					<MoveSpeed>0.25</MoveSpeed>
+				</statFactorOffsets>
 			</li>
 			<li>
-				<levelFactor>3</levelFactor>
+				<level>3</level>
 				<statOffsets>
 					<MoveSpeed>0.5</MoveSpeed>
 				</statOffsets>
@@ -25,9 +28,32 @@
 						<offset>0.5</offset>
 					</li>
 				</capMods>
-
 			</li>
-		</levelModulos>
+		</levelFactors>
+		<levelSpecifics>
+			<li>
+				<level>5</level>
+				<capMods>
+					<li>
+						<capacity>Manipulation</capacity>
+						<offset>1</offset>
+					</li>
+				</capMods>
+				<abilityGain>
+					<li>testsorcerylevelup</li>
+				</abilityGain>
+			</li>
+		</levelSpecifics>
+		<expTags>
+			<li>EXPTag_CastEnergyCost</li>
+			<!--<li>EXPTag_OnDamage</li>-->
+			<li>EXPTag_OnDamaged</li>
+			<!--<li>EXPTag_OnSkillEXP</li>-->
+			<!--<li>EXPTag_Passive</li>-->
+			<!--<li>EXPTag_DuringJob</li>-->
+			<li>EXPTag_OnKill</li>
+			<li>EXPTag_UseItem</li>
+		</expTags>
 	</ItsSorceryFramework.ProgressTrackerDef>
 	
 	<HediffDef Name="ProgressTrackerHediffBase"> 

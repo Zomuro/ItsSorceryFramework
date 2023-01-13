@@ -44,6 +44,11 @@ namespace ItsSorceryFramework
             {
                 energyTracker.EnergyTrackerTick();
             }
+
+            if(progressTracker != null)
+            {
+                progressTracker.ProgressTrackerTick();
+            }
             //Log.Message("how is it empty");
             
         }

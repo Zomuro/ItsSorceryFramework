@@ -34,14 +34,40 @@ namespace ItsSorceryFramework
 
         public override void Initialize()
         {
+            base.Initialize();
             if(pawn.health.hediffSet.GetFirstHediffOfDef(def.progressHediff) == null)
                 HealthUtility.AdjustSeverity(pawn, def.progressHediff, def.progressHediff.initialSeverity);
             hediff = pawn.health.hediffSet.GetFirstHediffOfDef(def.progressHediff) as Hediff_ProgressLevel;
             hediff.progressTracker = this;
-            HediffStage newStage = new HediffStage();
-            newStage.minSeverity = currLevel;
-            //newStage.label = "level " + currLevel.ToString() + "; " + currProgress.ToString("P2");
-            hediff.def.stages.Add(newStage);
+            setupHediffStage(hediff);
+        }
+
+        public void setupHediffStage(Hediff_ProgressLevel hediff)
+        {
+            if(hediff.CurStage != null) hediff.def.stages.Clear();
+
+            HediffStage newStage = new HediffStage() {
+                minSeverity = currLevel,
+                statOffsets = new List<StatModifier>(),
+                statFactors = new List<StatModifier>(),
+                capMods = new List<PawnCapacityModifier>()
+            };
+            hediff.curStage = newStage;
+        }
+
+        public override void ProgressTrackerTick()
+        {
+            if(Find.TickManager.TicksGame % 60 == 0)
+            {               
+                if (def.Workers.NullOrEmpty()) return;
+                foreach (var worker in def.Workers)
+                {
+                    if (worker.GetType() == typeof(ProgressEXPWorker_Passive)) worker.TryExecute(this);
+                    else if (worker.GetType() == typeof(ProgressEXPWorker_DuringJob)) worker.TryExecute(this);
+                }
+            }
+
+            
         }
 
         public override void addExperience(float experience)
@@ -49,6 +75,10 @@ namespace ItsSorceryFramework
             float orgSev = currLevel;
             bool done = false;
             exp += experience;
+
+            // maybe put this into exp workers
+            /*MoteMaker.ThrowText(pawn.Position.ToVector3(), pawn.Map, 
+                experience.ToStringByStyle(ToStringStyle.FloatMaxTwo, ToStringNumberSense.Offset) + " EXP");*/
 
             while (!done)
             {
@@ -79,31 +109,46 @@ namespace ItsSorceryFramework
 
         public override void notifyLevelUp(float sev)
         {
-            bool check = false;
-            foreach(ProgressLevelModulo modulo in def.levelModulos.OrderByDescending(x => x.levelFactor))
+            HediffStage currStage = hediff.CurStage;
+            //bool check = false;
+
+            ProgressLevelModifier factor = def.getLevelFactor(sev);
+            if (factor != null)
             {
-                if(sev % modulo.levelFactor == 0)
-                {
-                    adjustTotalStatMods(statOffsetsTotal, modulo.statOffsets);
-                    adjustTotalStatMods(statFactorsTotal, modulo.statFactors);
-                    adjustTotalCapMods(capModsTotal, modulo.capMods);
-
-                    points += modulo.pointGain;
-                    check = true;
-                    break;
-                }
+                adjustModifiers(factor);
+                adjustAbilities(factor);
+                adjustHediffs(factor);
+                points += factor.pointGain;
             }
-            if(!check) points += 1;
 
-            HediffStage newStage = new HediffStage();
-            newStage.minSeverity = sev;
-            newStage.statOffsets = createStatModifiers(statOffsetsTotal).ToList();
-            newStage.statFactors = createStatModifiers(statFactorsTotal).ToList();
-            newStage.capMods = capModsTotal.ToList();
-            hediff.def.stages.Add(newStage);
+            ProgressLevelModifier special = def.getLevelSpecific(sev);
+            if (special != null)
+            {
+                adjustModifiers(factor);
+                adjustAbilities(factor);
+                adjustHediffs(factor);
+                points += factor.pointGain;
+            }
+
+            hediff.curStage = refreshCurStage();
         }
 
-        public override void adjustTotalStatMods(Dictionary<StatDef, float> stats, List<StatModifier> statMods)
+        public void adjustModifiers(ProgressLevelModifier modulo)
+        {
+            adjustTotalStatMods(statOffsetsTotal, modulo.statOffsets);
+            adjustTotalStatMods(statFactorsTotal, modulo.statFactorOffsets, true);
+            adjustTotalCapMods(capModsTotal, modulo.capMods);
+        }
+
+        public override void adjustModifiers(List<StatModifier> offsets = null, List<StatModifier> factorOffsets = null, 
+            List<PawnCapacityModifier> capMods = null)
+        {
+            adjustTotalStatMods(statOffsetsTotal, offsets);
+            adjustTotalStatMods(statFactorsTotal, factorOffsets, true);
+            adjustTotalCapMods(capModsTotal, capMods);
+        }
+
+        public virtual void adjustTotalStatMods(Dictionary<StatDef, float> stats, List<StatModifier> statMods, bool factor = false)
         {
             if (statMods.NullOrEmpty()) return;
             
@@ -115,50 +160,96 @@ namespace ItsSorceryFramework
                     continue;
                 }
 
-                stats[statMod.stat] = statMod.value;
+                if(!factor) stats[statMod.stat] = statMod.value;
+                else stats[statMod.stat] = statMod.value + 1f;
             }
         }
 
-        // for later
-        public override void adjustTotalCapMods(List<PawnCapacityModifier> capModsTotal, List<PawnCapacityModifier> capMods)
+        public virtual void adjustTotalCapMods(Dictionary<PawnCapacityDef, float> caps, List<PawnCapacityModifier> capMods)
         {
             if (capMods.NullOrEmpty()) return;
-            List<PawnCapacityModifier> newCapMods = new List<PawnCapacityModifier>();
 
             foreach (PawnCapacityModifier capMod in capMods)
             {
-                PawnCapacityModifier relCapMod = capModsTotal.FirstOrDefault(x => x.capacity == capMod.capacity);
-                if(relCapMod != null)
+                if (caps.Keys.Contains(capMod.capacity))
                 {
-                    relCapMod.offset += capMod.offset;
-                    relCapMod.setMax += capMod.setMax;
-                    relCapMod.postFactor += capMod.postFactor;
+                    caps[capMod.capacity] += capMod.offset;
+                    continue;
                 }
-                else
-                {
-                    newCapMods.Add(capMod);
-                }
-            }
 
-            capModsTotal.AddRange(newCapMods);
+                caps[capMod.capacity] = capMod.offset != null ? capMod.offset : 0f;
+            }
         }
 
-        public override IEnumerable<StatModifier> createStatModifiers(Dictionary<StatDef, float> stats)
+        public virtual IEnumerable<StatModifier> createStatModifiers(Dictionary<StatDef, float> stats)
         {
-            StatModifier mod = new StatModifier();
-            foreach (var pair in stats)
-            {
-                mod.stat = pair.Key; mod.value = pair.Value;
-                yield return mod;
-            }
+            foreach (var pair in stats) yield return new StatModifier() { stat = pair.Key, value = pair.Value };
 
             yield break;
         }
 
+        public virtual IEnumerable<PawnCapacityModifier> createCapModifiers(Dictionary<PawnCapacityDef, float> caps)
+        {
+            foreach (var pair in caps) yield return new PawnCapacityModifier() { capacity = pair.Key, offset = pair.Value };
+
+            yield break;
+        }
+
+        public override HediffStage refreshCurStage()
+        {
+
+            HediffStage stage = new HediffStage()
+            {
+                statOffsets = createStatModifiers(statOffsetsTotal).ToList(),
+                statFactors = createStatModifiers(statFactorsTotal).ToList(),
+                capMods = createCapModifiers(capModsTotal).ToList()
+            };
+
+            return stage;
+        }
+
+        public virtual void adjustAbilities(ProgressLevelModifier modifier)
+        {
+            Pawn_AbilityTracker abilityTracker = this.pawn.abilities;
+
+            foreach (AbilityDef abilityDef in modifier.abilityGain)
+            {
+                abilityTracker.GainAbility(abilityDef);
+            }
+
+            foreach (AbilityDef abilityDef in modifier.abilityRemove)
+            {
+                abilityTracker.RemoveAbility(abilityDef);
+            }
+        }
+
+        public virtual void adjustHediffs(ProgressLevelModifier modifier)
+        {
+            Hediff hediff;
+            foreach (NodeHediffProps props in modifier.hediffAdd)
+            {
+                hediff = HediffMaker.MakeHediff(props.hediffDef, pawn, null);
+                hediff.Severity = props.severity;
+
+                pawn.health.AddHediff(hediff, null, null, null);
+            }
+
+            foreach (NodeHediffProps props in modifier.hediffAdjust)
+            {
+                HealthUtility.AdjustSeverity(pawn, props.hediffDef, props.severity);
+            }
+
+            foreach (HediffDef hediffDef in modifier.hediffRemove)
+            {
+                hediff = pawn.health.hediffSet.GetFirstHediffOfDef(hediffDef);
+                if (hediff != null) pawn.health.RemoveHediff(hediff);
+            }
+        }
+
         public override void notifyTotalLevelUp(float orgSev)
         {
-            Find.LetterStack.ReceiveLetter("Level up: "+ pawn.Name,
-                "This pawn has leveled up.", LetterDefOf.NeutralEvent, null);
+            Find.LetterStack.ReceiveLetter("ISF_LevelUp".Translate(pawn.Name),
+                "ISF_LevelUpMessage".Translate(orgSev.ToString(), currLevel.ToString()), LetterDefOf.NeutralEvent, null);
         }
 
         public override float currProgress

@@ -116,7 +116,7 @@ namespace ItsSorceryFramework
 
         public override string DisableCommandReason()
         {
-            return def.DisableReasonTranslationKey ?? "CommandDisableReasonCooldown_ISF";
+            return def.DisableReasonTranslationKey ?? "ISF_CommandDisableReasonCooldown";
         }
 
         public override string TopRightLabel(SorceryDef sorceryDef)

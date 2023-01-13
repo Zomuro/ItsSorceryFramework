@@ -18,6 +18,94 @@ namespace ItsSorceryFramework
             }
         }
 
+        public IEnumerable<StatDrawEntry> specialDisplayMods(ProgressLevelModifier levelMod)
+        {
+            if (levelMod == null) yield break;
+
+            if (!levelMod.capMods.NullOrEmpty())
+            {
+                foreach (PawnCapacityModifier capMod in levelMod.capMods)
+                {
+                    if (capMod.offset != 0f)
+                    {
+                        yield return new StatDrawEntry(StatCategoryDefOf.CapacityEffects,
+                            capMod.capacity.GetLabelFor(true, true).CapitalizeFirst(),
+                            (capMod.offset * 100f).ToString("+#;-#") + "%",
+                            capMod.capacity.description, 4060, null, null, false);
+                    }
+                }
+            }
+
+            if (!levelMod.statOffsets.NullOrEmpty())
+            {
+                foreach (StatModifier statMod in levelMod.statOffsets)
+                {
+                    yield return new StatDrawEntry(StatCategoryDefOf.CapacityEffects,
+                        statMod.stat.LabelCap, statMod.stat.Worker.ValueToString(statMod.value, false, ToStringNumberSense.Offset),
+                        statMod.stat.description, 4070, null, null, false);
+                }
+            }
+
+            if (!levelMod.statFactorOffsets.NullOrEmpty())
+            {
+                foreach (StatModifier statMod in levelMod.statFactorOffsets)
+                {
+                    yield return new StatDrawEntry(StatCategoryDefOf.CapacityEffects,
+                        statMod.stat.LabelCap, statMod.stat.Worker.ValueToString(statMod.value+1, false, ToStringNumberSense.Factor),
+                        statMod.stat.description, 4070, null, null, false);
+                }
+            }
+
+            yield break;
+        }
+
+        public ProgressLevelModifier getLevelFactor(float severity) 
+		{
+            if (levelFactors.NullOrEmpty()) return null;
+
+            foreach (ProgressLevelModifier factor in levelFactors.OrderByDescending(x => x.level))
+            {
+                // if the level devided by the modulo leaves a remainder of 0
+                if (severity % factor.level == 0)
+                {
+                    return factor;
+                }
+            }
+            return null;
+		}
+
+        public ProgressLevelModifier getLevelSpecific(float severity)
+        {
+            if (levelSpecifics.NullOrEmpty()) return null;
+
+            foreach (ProgressLevelModifier factor in levelSpecifics.OrderByDescending(x => x.level))
+            {
+                // if the level devided by the modulo leaves a remainder of 0
+                if (severity == factor.level)
+                {
+                    return factor;
+                }
+            }
+            return null;
+        }
+
+        public List<ProgressEXPWorker> Workers
+        {
+            get
+            {
+                if (progressEXPWorkers.NullOrEmpty())
+                {
+                    foreach(ProgressEXPDef tag in expTags)
+                    {
+                        ProgressEXPWorker progressEXPWorker = (ProgressEXPWorker)Activator.CreateInstance(tag.workerClass);
+                        progressEXPWorker.def = tag;
+                        progressEXPWorkers.Add(progressEXPWorker);
+                    }
+                }
+                return progressEXPWorkers;
+            }
+        }
+
         public Type progressTrackerClass = typeof(ProgressTracker);
 
         public HediffDef progressHediff;
@@ -28,32 +116,22 @@ namespace ItsSorceryFramework
 
         public float maxEXP = 1000f;
 
-        public List<ProgressLevelModulo> levelModulos = new List<ProgressLevelModulo>();
+        public List<ProgressLevelModifier> levelFactors = new List<ProgressLevelModifier>();
 
-        public List<ProgressTrackerCompProperties> progressComps = new List<ProgressTrackerCompProperties>();
+        public List<ProgressLevelModifier> levelSpecifics = new List<ProgressLevelModifier>();
+
+        public List<ProgressEXPDef> expTags = new List<ProgressEXPDef>();
+
+        public List<ProgressCompProperties> progressComps = new List<ProgressCompProperties>();
 
         public string progressLevelUpTransKey = "levelup";
 
         public string progressLevelUpDescTransKey = "levelup";
+
+        private List<ProgressEXPWorker> progressEXPWorkers = new List<ProgressEXPWorker>();
     }
 
-    public class ProgressLevelModulo
-    {
-        public int levelFactor = 1;
-
-        public List<StatModifier> statOffsets;
-
-        public List<StatModifier> statFactors;
-
-        public List<PawnCapacityModifier> capMods = new List<PawnCapacityModifier>();
-
-        public int pointGain = 1;
-    }
-
-    public class ProgressTrackerCompProperties : CompProperties
-    {
-
-    }
+    
 
 
 

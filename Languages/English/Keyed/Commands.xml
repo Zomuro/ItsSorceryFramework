@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <LanguageData>
 
-	<CommandDisableReasonBase_ISF>{0} does not possess enough energy to cast this.</CommandDisableReasonBase_ISF>
-	<CommandDisableReasonInvert_ISF>{0} cannot contain any more energy to cast this.</CommandDisableReasonInvert_ISF>
-	<CommandDisableReasonVancian_ISF>{0} has no more casts of this.</CommandDisableReasonVancian_ISF>
-	<CommandDisableReasonCooldown_ISF>{0} must wait longer to cast abilities.</CommandDisableReasonCooldown_ISF>
+	<ISF_CommandDisableReasonBase>{0} does not possess enough energy to cast this.</ISF_CommandDisableReasonBase>
+	<ISF_CommandDisableReasonInvert>{0} will start overloading to cast this.</ISF_CommandDisableReasonInvert>
+	<ISF_CommandDisableReasonVancian>{0} has no more casts of this.</ISF_CommandDisableReasonVancian>
+	<ISF_CommandDisableReasonCooldown>{0} must wait longer to cast abilities.</ISF_CommandDisableReasonCooldown>
 	
 </LanguageData>

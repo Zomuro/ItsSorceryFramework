@@ -150,7 +150,7 @@ namespace ItsSorceryFramework
 
         public virtual string DisableCommandReason()
         {
-            return "CommandDisableReasonBase_ISF";
+            return "ISF_CommandDisableReasonBase";
         }
 
         public virtual void DrawOnGUI(Rect rect)
@@ -165,11 +165,6 @@ namespace ItsSorceryFramework
 
         public void SchemaViewBox(Rect rect)
         {
-            /*if (Widgets.ButtonTextSubtle(rect, ""))
-            {
-                Find.WindowStack.Add(new Dialog_MessageBox("magic", null, null, null, null, null, false, null, null, WindowLayer.Dialog));
-            }*/
-
             // sets up outline of the sorcery schema in the itab
             Widgets.DrawBoxSolidWithOutline(rect, new Color(), Color.grey, 1);
 

@@ -31,6 +31,18 @@ namespace ItsSorceryFramework
             }
         }
 
+		public override HediffStage CurStage
+		{
+			get
+			{
+				if (curStage == null)
+				{
+					return progressTracker?.refreshCurStage() ?? new HediffStage();
+				}
+				return this.curStage;
+			}
+		}
+
 		public override void Tick()
 		{
 			base.Tick();
@@ -56,6 +68,8 @@ namespace ItsSorceryFramework
 		}
 
 		public ProgressTracker progressTracker;
+
+		public HediffStage curStage;
 
 		public string temp = " (level {0} | {1})";
 	}

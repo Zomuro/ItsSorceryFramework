@@ -65,6 +65,28 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CompSchemaItem.cs" />
+    <Compile Include="CompProperties_SchemaItem.cs" />
+    <Compile Include="CompProperties_UseEffectSchema.cs" />
+    <Compile Include="CompUseEffect_Schema.cs" />
+    <Compile Include="JobDriver_GainEXP.cs" />
+    <Compile Include="JobGiver_GainEXP.cs" />
+    <Compile Include="ProgressEXPWorker_DuringJob.cs" />
+    <Compile Include="ProgressEXPWorker_UseItem.cs" />
+    <Compile Include="ProgressEXPWorker_OnKill.cs" />
+    <Compile Include="ProgressEXPWorker_Passive.cs" />
+    <Compile Include="ProgressEXPWorker_OnSkillEXP.cs" />
+    <Compile Include="ProgressEXPWorker_OnDamaged.cs" />
+    <Compile Include="ProgressEXPWorker_OnDamage.cs" />
+    <Compile Include="ProgressEXPWorker_CastEnergyCost.cs" />
+    <Compile Include="ProgressEXPWorker.cs" />
+    <Compile Include="ProgressEXPDef.cs" />
+    <Compile Include="ProgressComp.cs" />
+    <Compile Include="ProgressCompProperties.cs" />
+    <Compile Include="LearningTracker_Progress.cs" />
+    <Compile Include="NodeCompletionUtility.cs" />
+    <Compile Include="ProgressLevelOption.cs" />
+    <Compile Include="ProgressLevelModifier.cs" />
     <Compile Include="CompAbilityEffect_AddEXP.cs" />
     <Compile Include="Hediff_ProgressLevel.cs" />
     <Compile Include="CompAbilityEffect_ForceLevelUp.cs" />

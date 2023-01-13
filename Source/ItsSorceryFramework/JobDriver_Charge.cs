@@ -15,8 +15,6 @@ namespace ItsSorceryFramework
 		{
 			SorcerySchemaDef schemaDef = (this.job.def as SchemaJobDef).schemaDef;
 			int count = job.count;
-			Log.Message(schemaDef.label);
-			Log.Message(count.ToString());
 			this.FailOnIncapable(PawnCapacityDefOf.Manipulation);
 			Toil getNextIngredient = Toils_General.Label();
 			yield return getNextIngredient;

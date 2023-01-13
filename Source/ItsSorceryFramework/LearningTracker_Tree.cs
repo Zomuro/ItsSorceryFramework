@@ -47,6 +47,41 @@ namespace ItsSorceryFramework
             }
         }
 
+        public Dictionary<LearningTreeNodeDef, List<LearningTreeNodeDef>> exclusiveNodes 
+        {
+            get
+            {
+                if(cacheExclusive == null)
+                {
+                    Dictionary<LearningTreeNodeDef, List<LearningTreeNodeDef>> exclusive = new Dictionary<LearningTreeNodeDef, List<LearningTreeNodeDef>>();
+                    foreach(LearningTreeNodeDef node in allNodes)
+                    {
+                        if (!exclusive.ContainsKey(node)) exclusive[node] = node.exclusiveNodes.Distinct().ToList();
+
+                        foreach(LearningTreeNodeDef conflict in node.exclusiveNodes)
+                        {
+                            if (!exclusive.ContainsKey(conflict)) exclusive[conflict] = new List<LearningTreeNodeDef>() { node };
+                            else exclusive[conflict].AddDistinct(node);
+                        }
+                    }
+
+                    cacheExclusive = exclusive;
+                }
+
+                return cacheExclusive;
+            }           
+        }
+
+        public Vector2 ViewSize
+        {
+            get
+            {
+                if (cachedViewSize == null || cachedViewSize == Vector2.zero) cachedViewSize = findViewSize();
+
+                return cachedViewSize;
+            }
+        }
+
         public SorcerySchema schema
         {
             get
@@ -77,35 +112,13 @@ namespace ItsSorceryFramework
 
         public override void DrawLeftGUI(Rect rect)
         {
-            /*if (selectedNode != null)
-            {
-                Text.Anchor = TextAnchor.UpperLeft;
-                Text.Font = GameFont.Medium;
-                Widgets.Label(rect, selectedNode.LabelCap);
-
-                rect.yMin += 32f;
-                Rect desc = new Rect(rect);
-                desc.yMax = rect.yMax - 50f;
-                Text.Font = GameFont.Small;
-                Widgets.Label(desc, selectedNode.description);
-
-                Text.Anchor = TextAnchor.MiddleCenter;
-                if (!completion[selectedNode] && prereqFufilled(selectedNode) && 
-                    Widgets.ButtonText(new Rect(rect.x, rect.yMax - 50f, 140, 50), "complete"))
-                {
-                    completion[selectedNode] = true;
-                    completionAbilities(selectedNode);
-                }
-                Text.Anchor = TextAnchor.UpperLeft;
-            }*/
-
             float outRectHeight = rect.height - (10f + leftStartAreaHeight) - 45f;
 
             Widgets.BeginGroup(rect);
             if (this.selectedNode != null)
             {
                 Rect outRect = new Rect(0f, 0f, rect.width, outRectHeight - leftViewDebugHeight);
-                Rect viewRect = new Rect(0f, 0f, outRect.width - 16f, leftScrollViewHeight);
+                Rect viewRect = new Rect(0f, 0f, outRect.width - 20f, leftScrollViewHeight);
                 Widgets.BeginScrollView(outRect, ref this.leftScrollPosition, viewRect, true);
                 
                 float coordY = 0f;
@@ -124,45 +137,44 @@ namespace ItsSorceryFramework
 
                 Rect prereqRect = new Rect(0f, coordY, viewRect.width, 500f);
                 coordY += this.drawNodePrereqs(this.selectedNode, prereqRect);
+
+                Rect exclusiveRect = new Rect(0f, coordY, viewRect.width, 500f);
+                coordY += this.drawExclusive(this.selectedNode, exclusiveRect);
+
                 Rect hyperlinkRect = new Rect(0f, coordY, viewRect.width, 500f);
                 coordY += this.drawHyperlinks(hyperlinkRect, selectedNode);
+
+                Rect statModRect = new Rect(0f, coordY, viewRect.width, 500f);
+                coordY += this.drawStatMods(statModRect, selectedNode);
 
                 Rect contentRect = new Rect(0f, coordY, viewRect.width, 500f);
                 coordY += this.drawContentSource(contentRect, selectedNode);
                 coordY += 3f;
                 this.leftScrollViewHeight = coordY;
                 Widgets.EndScrollView();
-                leftViewDebugHeight = 0f;
 
                 ProgressTracker progress = schema.progressTracker;
                 Rect confirmButton = new Rect(0f, outRect.yMax + 10f + this.leftViewDebugHeight, rect.width, this.leftStartAreaHeight);
                 string reason = "";
                 if (!completion[selectedNode] && prereqFufilled(selectedNode) && prereqResearchFufilled(selectedNode) &&
+                    prereqHediffFufilled(selectedNode) && exclusiveNodeFufilled(selectedNode) &&
                     selectedNode.pointReq + progress.usedPoints <= progress.points) 
                 {
                     if (Widgets.ButtonText(confirmButton, "complete: " + selectedNode.pointReq))
                     {
                         completion[selectedNode] = true;
                         completionAbilities(selectedNode);
-                        //progress.usedPoints += selectedNode.pointReq;
+                        completionModifiers(selectedNode);
+                        // add the hediff completion portion
+
                         schema.progressTracker.usedPoints += selectedNode.pointReq;
                     }
-
-                    /*
-                    if (prereqFufilled(selectedNode) && selectedNode.pointReq + progress.usedPoints <= progress.points &&
-                            Widgets.ButtonText(confirmButton, "complete: "+ selectedNode.pointReq))
-                    {
-                        completion[selectedNode] = true;
-                        completionAbilities(selectedNode);
-                    } */
                 }
                 else
                 {
                     Text.Anchor = TextAnchor.MiddleCenter;
-                    if (completion[selectedNode])
-                    {
-                        reason = "Completed.";
-                    }
+                    if (completion[selectedNode]) reason = "Completed.";
+                    else if (!exclusiveNodeFufilled(selectedNode)) reason = "Conflicts with another node.";
                     else
                     {
                         reason = "Locked:";
@@ -172,6 +184,8 @@ namespace ItsSorceryFramework
                         if (!prereqFufilled(selectedNode)) reason += "\nPrior nodes not completed.";
 
                         if (!prereqResearchFufilled(selectedNode)) reason += "\nResearch requirements not completed.";
+
+                        if (!prereqHediffFufilled(selectedNode)) reason += "\nHediff requirements not met.";
 
                         // if for exlusive nodes check
                     }
@@ -187,20 +201,27 @@ namespace ItsSorceryFramework
                 Text.Anchor = TextAnchor.MiddleCenter;
                 Widgets.Label(pointBar, (progress.points-progress.usedPoints).ToString("F0") + " / " + schema.progressTracker.points.ToString("F0"));
                 
-                /*Text.Anchor = TextAnchor.UpperLeft;
+                Text.Anchor = TextAnchor.UpperLeft;
                 this.leftViewDebugHeight = 0f;
-                if (Prefs.DevMode && this.selectedProject != Find.ResearchManager.currentProj && !this.selectedProject.IsFinished)
+                if (Prefs.DevMode && !completion[selectedNode])
                 {
                     Text.Font = GameFont.Tiny;
-                    Rect rect13 = new Rect(rect11.x, outRect.yMax, 120f, 30f);
-                    if (Widgets.ButtonText(rect13, "Debug: Finish now", true, true, true, null))
+                    Rect debugButton = new Rect(confirmButton.x, outRect.yMax, 120f, 30f);
+                    if (Widgets.ButtonText(debugButton, "Debug: Finish now", true, true, true, null))
                     {
-                        Find.ResearchManager.currentProj = this.selectedProject;
-                        Find.ResearchManager.FinishProject(this.selectedProject, false, null, true);
+                        // add the hediff completion portion
+                        completion[selectedNode] = true;
+                        completionAbilities(selectedNode);
+                        completionHediffs(selectedNode);
+                        completionModifiers(selectedNode);
+                        // add the hediff completion portion
+
+                        //schema.progressTracker.usedPoints += selectedNode.pointReq;
                     }
                     Text.Font = GameFont.Small;
-                    this.leftViewDebugHeight = rect13.height;
+                    this.leftViewDebugHeight = debugButton.height;
                 }
+                /*
                 if (Prefs.DevMode && !this.selectedProject.TechprintRequirementMet)
                 {
                     Text.Font = GameFont.Tiny;
@@ -220,36 +241,91 @@ namespace ItsSorceryFramework
 
         private float drawNodePrereqs(LearningTreeNodeDef node, Rect rect)
         {
-            if (node.prereqs.NullOrEmpty())
+            if (node.prereqs.NullOrEmpty() && node.prereqsResearch.NullOrEmpty())
             {
                 return 0f;
             }
             float xMin = rect.xMin;
             float yMin = rect.yMin;
 
-            Widgets.LabelCacheHeight(ref rect, "LearningNodePrerequisites_ISF".Translate() + ":", true, false);
-            rect.yMin += rect.height;
-            rect.xMin += 6f;
-            foreach (LearningTreeNodeDef prereq in node.prereqs)
+            if (!node.prereqs.NullOrEmpty()) 
             {
-                this.setPrereqStatusColor(completion[prereq], node);
-                Widgets.LabelCacheHeight(ref rect, prereq.LabelCap, true, false);
+                Widgets.LabelCacheHeight(ref rect, "ISF_LearningNodePrereqs".Translate(), true, false);
                 rect.yMin += rect.height;
+                rect.xMin += 6f;
+                foreach (LearningTreeNodeDef prereq in node.prereqs)
+                {
+                    this.setPrereqStatusColor(completion[prereq], node);
+                    Widgets.LabelCacheHeight(ref rect, prereq.LabelCap, true, false);
+                    if (Widgets.ButtonInvisible(rect, true))
+                    {
+                        SoundDefOf.Click.PlayOneShotOnCamera(null);
+                        this.selectedNode = prereq;
+                    }
+                    rect.yMin += rect.height;
+                }
+                rect.xMin = xMin;
+                GUI.color = Color.white;
             }
-            rect.xMin = xMin;
-            GUI.color = Color.white;
 
-            Widgets.LabelCacheHeight(ref rect, "ResearchPrerequisites".Translate() + ":", true, false);
+            if (!node.prereqsResearch.NullOrEmpty())
+            {
+                Widgets.LabelCacheHeight(ref rect, "ResearchPrerequisites".Translate() + ":", true, false);
+                rect.yMin += rect.height;
+                rect.xMin += 6f;
+                foreach (ResearchProjectDef prereq in node.prereqsResearch)
+                {
+                    this.setPrereqStatusColor(prereq.IsFinished, node);
+                    Widgets.LabelCacheHeight(ref rect, prereq.LabelCap, true, false);
+                    rect.yMin += rect.height;
+                }
+                GUI.color = Color.white;
+                rect.xMin = xMin;
+            }
+
+            if (!node.prereqsHediff.NullOrEmpty())
+            {
+                Widgets.LabelCacheHeight(ref rect, "ISF_LearningNodeHediffReq".Translate(), true, false);
+                rect.yMin += rect.height;
+                rect.xMin += 6f;
+                Hediff hediff;
+                String reqLabel;
+                foreach (var prereq in node.prereqsHediff)
+                {
+                    hediff = pawn.health.hediffSet.GetFirstHediffOfDef(prereq.Key);
+                    this.setPrereqStatusColor((hediff != null && hediff.Severity >= prereq.Value), node);
+                    reqLabel = !prereq.Key.stages.NullOrEmpty() ? 
+                        prereq.Key.stages[prereq.Key.StageAtSeverity(prereq.Value)].label : prereq.Value.ToString("F0");
+                    Widgets.LabelCacheHeight(ref rect, prereq.Key.LabelCap + " ({0})".Translate(reqLabel), true, false);
+                    rect.yMin += rect.height;
+                }
+                GUI.color = Color.white;
+                rect.xMin = xMin;
+            }
+
+            return rect.yMin - yMin;
+        }
+
+        private float drawExclusive(LearningTreeNodeDef node, Rect rect)
+        {
+            if (exclusiveNodes[node].NullOrEmpty()) return 0;
+
+            float xMin = rect.xMin;
+            float yMin = rect.yMin;
+
+            Widgets.LabelCacheHeight(ref rect, "ISF_LearningNodeExclusive".Translate(), true, false);
             rect.yMin += rect.height;
             rect.xMin += 6f;
-            foreach (ResearchProjectDef prereq in node.prereqsResearch)
+            foreach (LearningTreeNodeDef ex in exclusiveNodes[node])
             {
-                this.setPrereqStatusColor(prereq.IsFinished, node);
-                Widgets.LabelCacheHeight(ref rect, prereq.LabelCap, true, false);
+                if(completion[ex]) GUI.color = ColorLibrary.RedReadable;
+
+                Widgets.LabelCacheHeight(ref rect, ex.LabelCap, true, false);
                 rect.yMin += rect.height;
             }
             GUI.color = Color.white;
             rect.xMin = xMin;
+
             return rect.yMin - yMin;
         }
 
@@ -257,10 +333,12 @@ namespace ItsSorceryFramework
         {
             List<AbilityDef> abilityGain = node.abilityGain;
             List<AbilityDef> abilityRemove = node.abilityRemove;
-            Dictionary<HediffDef, float> hediffAdjust = node.hediffAdjust;
+            List<NodeHediffProps> hediffAdd = node.hediffAdd;
+            List<NodeHediffProps> hediffAdjust = node.hediffAdjust;
             List<HediffDef> hediffRemove = node.hediffRemove;
 
-            if (abilityGain.NullOrEmpty() && abilityRemove.NullOrEmpty() && hediffAdjust.NullOrEmpty() && hediffRemove.NullOrEmpty())
+            if (abilityGain.NullOrEmpty() && abilityRemove.NullOrEmpty() && hediffAdd.NullOrEmpty() && hediffAdjust.NullOrEmpty() &&
+                hediffRemove.NullOrEmpty())
             {
                 return 0f;
             }
@@ -271,7 +349,7 @@ namespace ItsSorceryFramework
 
             if (!abilityGain.NullOrEmpty())
             {
-                Widgets.LabelCacheHeight(ref rect, "Abilities gained:", true, false);
+                Widgets.LabelCacheHeight(ref rect, "ISF_LearningNodeAbilityGain".Translate(), true, false);
                 rect.yMin += rect.height;
                 rect.x += 6f;
                 foreach (AbilityDef abilityDef in abilityGain)
@@ -286,7 +364,7 @@ namespace ItsSorceryFramework
 
             if (!abilityRemove.NullOrEmpty())
             {
-                Widgets.LabelCacheHeight(ref rect, "Abilities removed:", true, false);
+                Widgets.LabelCacheHeight(ref rect, "ISF_LearningNodeAbilityRemove".Translate(), true, false);
                 rect.yMin += rect.height;
                 rect.x += 6f;
                 foreach (AbilityDef abilityDef in abilityRemove)
@@ -299,18 +377,43 @@ namespace ItsSorceryFramework
                 rect.x = x;
             }
 
-            if (!hediffAdjust.NullOrEmpty())
+            if (!hediffAdd.NullOrEmpty())
             {
-                Widgets.LabelCacheHeight(ref rect, "Hediffs added:", true, false);
+                Widgets.LabelCacheHeight(ref rect, "ISF_LearningNodeHediffAdd".Translate(), true, false);
                 rect.yMin += rect.height;
                 rect.x += 6f;
-                foreach (var pair in hediffAdjust)
+                foreach (NodeHediffProps prop in hediffAdd)
                 {
                     Rect hyperRect = new Rect(rect.x, rect.yMin, rect.width, 24f);
-                    HediffDef hediffDef = pair.Key;
-                    string stageName = hediffDef.stages[hediffDef.StageAtSeverity(pair.Value)].label;
+                    HediffDef hediffDef = prop.hediffDef;
+                    string sev;
+
+                    sev = hediffDef.stages.NullOrEmpty() ? prop.severity.ToStringWithSign("F0") :
+                        hediffDef.stages[hediffDef.StageAtSeverity(prop.severity)].label;
                     hyperlink = new Dialog_InfoCard.Hyperlink(hediffDef, -1);
-                    Widgets.HyperlinkWithIcon(hyperRect, hyperlink, hediffDef.LabelCap + "({0})".Translate(stageName), 2f, 6f, new Color(0.8f, 0.85f, 1f), false);
+                    Widgets.HyperlinkWithIcon(hyperRect, hyperlink, hediffDef.LabelCap + " ({0})".Translate(sev),
+                        2f, 6f, new Color(0.8f, 0.85f, 1f), false);
+                    rect.yMin += 24f;
+
+                }
+                rect.x = x;
+            }
+
+            if (!hediffAdjust.NullOrEmpty())
+            {
+                Widgets.LabelCacheHeight(ref rect, "ISF_LearningNodeHediffAdjust".Translate(), true, false);
+                rect.yMin += rect.height;
+                rect.x += 6f;
+                foreach (NodeHediffProps prop in hediffAdjust)
+                {
+                    Rect hyperRect = new Rect(rect.x, rect.yMin, rect.width, 24f);
+                    HediffDef hediffDef = prop.hediffDef;
+                    string sev;
+
+                    sev = prop.severity.ToStringWithSign("F0");
+                    hyperlink = new Dialog_InfoCard.Hyperlink(hediffDef, -1);
+                    Widgets.HyperlinkWithIcon(hyperRect, hyperlink, hediffDef.LabelCap + " ({0})".Translate(sev),
+                        2f, 6f, new Color(0.8f, 0.85f, 1f), false);
                     rect.yMin += 24f;
                 }
                 rect.x = x;
@@ -318,7 +421,7 @@ namespace ItsSorceryFramework
 
             if (!hediffRemove.NullOrEmpty())
             {
-                Widgets.LabelCacheHeight(ref rect, "Hediffs removed:", true, false);
+                Widgets.LabelCacheHeight(ref rect, "ISF_LearningNodeHediffRemove".Translate(), true, false);
                 rect.yMin += rect.height;
                 rect.x += 6f;
                 foreach (HediffDef hediffDef in hediffRemove)
@@ -333,6 +436,36 @@ namespace ItsSorceryFramework
 
             return rect.yMin - yMin;
         }
+
+        private float drawStatMods(Rect rect, LearningTreeNodeDef node)
+        {
+            float yMin = rect.yMin;
+            float x = rect.x;
+
+            String tipString = TipStringExtra(node);
+            if (!tipString.NullOrEmpty()) 
+            {
+                Widgets.LabelCacheHeight(ref rect, "ISF_LearningNodeMods".Translate(), true, false);
+                rect.yMin += rect.height;
+                Widgets.LabelCacheHeight(ref rect, tipString, true, false);
+                rect.yMin += rect.height;
+            }
+
+            return rect.yMin - yMin;
+        }
+
+        public string TipStringExtra(LearningTreeNodeDef node)
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+            foreach (StatDrawEntry statDrawEntry in node.specialDisplayMods()){
+                if (statDrawEntry.ShouldDisplay)
+                {
+                    stringBuilder.AppendInNewLine("  - " + statDrawEntry.LabelCap + ": " + statDrawEntry.ValueString);
+                }
+            }
+            return stringBuilder.ToString();
+        }
+
 
         // yeah i just copied this from MainTabWindow_Research
         private float drawContentSource(Rect rect, LearningTreeNodeDef node)
@@ -386,6 +519,31 @@ namespace ItsSorceryFramework
             return true;
         }
 
+        public bool prereqHediffFufilled(LearningTreeNodeDef node)
+        {
+            Hediff hediff;
+            foreach (var pair in node.prereqsHediff)
+            {
+                hediff = pawn.health.hediffSet.GetFirstHediffOfDef(pair.Key);
+                if (hediff == null) return false;
+                else if (hediff.Severity < pair.Value) return false;
+            }
+
+            return true;
+        }
+
+        public bool exclusiveNodeFufilled(LearningTreeNodeDef node)
+        {
+            if (!exclusiveNodes.ContainsKey(node)) return true;
+
+            foreach(LearningTreeNodeDef ex in exclusiveNodes[node])
+            {
+                if (completion[ex]) return false;
+            }
+
+            return true;
+        }
+
         public virtual void completionAbilities(LearningTreeNodeDef node)
         {
             Pawn_AbilityTracker abilityTracker = this.pawn.abilities;
@@ -401,49 +559,106 @@ namespace ItsSorceryFramework
             }
         }
 
+        public virtual void completionHediffs(LearningTreeNodeDef node)
+        {
+            Hediff hediff;
+            foreach (NodeHediffProps props in node.hediffAdd)
+            {
+                hediff = HediffMaker.MakeHediff(props.hediffDef, pawn, null);
+                hediff.Severity = props.severity;
+
+                pawn.health.AddHediff(hediff, null, null, null);
+            }
+
+            foreach (NodeHediffProps props in node.hediffAdjust)
+            {
+                HealthUtility.AdjustSeverity(pawn, props.hediffDef, props.severity);
+            }
+
+            foreach (HediffDef hediffDef in node.hediffRemove)
+            {
+                hediff = pawn.health.hediffSet.GetFirstHediffOfDef(hediffDef);
+                if (hediff != null) pawn.health.RemoveHediff(hediff);
+            }
+        }
+
+        public virtual void completionModifiers(LearningTreeNodeDef node)
+        {
+            ProgressTracker progressTracker = schema.progressTracker;
+            progressTracker.adjustModifiers(node.statOffsets, node.statFactors, node.capMods);
+            progressTracker.refreshCurStage();
+        }
+
         public override void DrawRightGUI(Rect rect)
         {
             rect.yMin += 32f;
 
             Rect outRect = rect.ContractedBy(10f);
-            Rect viewRect = outRect.ContractedBy(10f);
+            //Rect viewRect = outRect.ContractedBy(10f);
+            //Rect groupRect = viewRect.ContractedBy(10f);
+
+            Rect viewRect = new Rect(0f, 0f, ViewSize.x, ViewSize.y);
+            viewRect.ContractedBy(10f);
+            viewRect.width = ViewSize.x;
+            //Log.Message("nodecount: " + allNodes.Count().ToString());
+            //Log.Message(viewRect.width.ToString());
+            //Log.Message(viewRect.height.ToString());
             Rect groupRect = viewRect.ContractedBy(10f);
 
+            //this.scrollPositioner.ClearInterestRects();
+            Widgets.BeginScrollView(outRect, ref this.rightScrollPosition, viewRect, true);
+            Widgets.ScrollHorizontal(outRect, ref this.rightScrollPosition, viewRect, 20f);
+            Widgets.BeginGroup(groupRect);
 
-            //Widgets.ScrollHorizontal(outRect, ref this.rightScrollPosition, viewRect, 20f);
-			//Widgets.BeginScrollView(outRect, ref this.rightScrollPosition, viewRect, true);
-			Widgets.BeginGroup(groupRect);
-            
-            foreach (LearningTreeNodeDef ltnDef in allNodes)
+            // first pass- draw the lines for the node requirements
+            Rect nodeRect;
+            foreach (LearningTreeNodeDef node in allNodes)
             {
-                Rect nodeRect = getNodeRect(ltnDef);
+                if (!prereqFufilled(node) && node.condVisiblePrereq) continue;
 
-                /*Color BG = selectionBGColor(ltnDef);
-                Color border = selectionBorderColor(ltnDef);*/
+                nodeRect = getNodeRect(node);
+                foreach (LearningTreeNodeDef prereq in node.prereqs)
+                {
+                    Tuple<Vector2, Vector2> points = lineEnds(prereq, node, nodeRect);
+                    Tuple<Color, float> lineColor = selectionLineColor(node, prereq);
+                    //Widgets.DrawLine(points.Item1, points.Item2, selectionLineColor(node), 2f);
+                    Widgets.DrawLine(points.Item1, points.Item2, lineColor.Item1, lineColor.Item2);
+                }               
+            }
 
-                if (Widgets.CustomButtonText(ref nodeRect, "", selectionBGColor(ltnDef),
-                    new Color(0.8f, 0.85f, 1f), selectionBorderColor(ltnDef), false, 1, true, true))
+            // second pass- draw the nodes + label
+            foreach(LearningTreeNodeDef node in allNodes)
+            {
+                if (!prereqFufilled(node) && node.condVisiblePrereq) continue;
+
+                nodeRect = getNodeRect(node);
+
+                if (Widgets.CustomButtonText(ref nodeRect, "", selectionBGColor(node),
+                    new Color(0.8f, 0.85f, 1f), selectionBorderColor(node), false, 1, true, true))
                 {
                     SoundDefOf.Click.PlayOneShotOnCamera(null);
-                    this.selectedNode = ltnDef;
+                    this.selectedNode = node;
                 }
+
                 Text.Anchor = TextAnchor.UpperCenter;
-                Widgets.Label(nodeRect, ltnDef.LabelCap);
+                Widgets.LabelCacheHeight(ref nodeRect, node.LabelCap, true, false);
                 Text.Anchor = TextAnchor.UpperLeft;
 
-                foreach (LearningTreeNodeDef prereq in ltnDef.prereqs)
+                if (Mouse.IsOver(nodeRect))
                 {
-                    Tuple<Vector2, Vector2> points = lineEnds(prereq, ltnDef, nodeRect);
-                    Widgets.DrawLine(points.Item1, points.Item2, selectionLineColor(ltnDef), 2f);
+                    Widgets.DrawLightHighlight(nodeRect);
+                    TooltipHandler.TipRegion(nodeRect, node.GetTip());
                 }
-
             }
 
 			Widgets.EndGroup();
-			//Widgets.EndScrollView();
-			//this.scrollPositioner.ScrollHorizontally(ref this.rightScrollPosition, outRect.size);
+            Widgets.EndScrollView();
+            //this.scrollPositioner.ScrollHorizontally(ref this.rightScrollPosition, outRect.size);
 
-		}
+            //Widgets.EndScrollView();
+            //this.scrollPositioner.ScrollHorizontally(ref this.rightScrollPosition, outRect.size);
+
+        }
 
         private float CoordToPixelsX(float x)
         {
@@ -471,11 +686,32 @@ namespace ItsSorceryFramework
             return new Tuple<Vector2, Vector2>(prereq, current);
         }
 
+        private Vector2 findViewSize()
+        {
+            float x = 0f;
+            float y = 0f;
+            foreach (LearningTreeNodeDef node in allNodes)
+            { 
+                x = Mathf.Max(x, this.CoordToPixelsX(node.coordX) + 140f);
+                y = Mathf.Max(y, this.CoordToPixelsY(node.coordY) + 50f);
+            }
+
+            return new Vector2(x + 32f, y + 32f);
+        }
+
         private Color selectionBGColor(LearningTreeNodeDef node)
         {
-            Color baseCol = TexUI.AvailResearchColor;
+            Color baseCol = default(Color);
+
+            //Color baseCol2 = TexUI.AvailResearchColor;
 
             if (completion[node]) baseCol = TexUI.FinishedResearchColor;
+
+            else if (!exclusiveNodeFufilled(node)) baseCol = ColorLibrary.BrickRed;
+
+            else if (prereqFufilled(node) && prereqResearchFufilled(node)) baseCol = TexUI.AvailResearchColor;
+
+            else baseCol = TexUI.LockedResearchColor;
 
             // if the node is the selected one, change background to highlight
             if (selectedNode != null && selectedNode == node) return baseCol + TexUI.HighlightBgResearchColor;
@@ -501,16 +737,37 @@ namespace ItsSorceryFramework
             return TexUI.DefaultBorderResearchColor;
         }
 
-        private Color selectionLineColor(LearningTreeNodeDef node)
+        private Tuple<Color,float> selectionLineColor(LearningTreeNodeDef node, LearningTreeNodeDef prereq)
         {
-            if (selectedNode == node) return TexUI.HighlightLineResearchColor;
+            Color col = default(Color);
+            float width = 3f;
+            if (selectedNode == node)
+            {
+                if (completion[prereq])
+                {
+                    col = TexUI.HighlightLineResearchColor;
+                    return new Tuple<Color, float>(col, width);
+                }
 
-            return TexUI.DefaultLineResearchColor;
+                else 
+                {
+                    col = TexUI.DependencyOutlineResearchColor;
+                    return new Tuple<Color, float>(col, width);
+                } 
+            }   
+
+            col =  TexUI.DefaultLineResearchColor;
+            width = 2f;
+            return new Tuple<Color, float>(col, 2f );
         }
 
         public List<LearningTreeNodeDef> cachedAllNodes;
 
+        public Dictionary<LearningTreeNodeDef, List<LearningTreeNodeDef>> cacheExclusive; 
+
         public SorcerySchema cachedSchema;
+
+        public Vector2 cachedViewSize;
 
         public LearningTreeNodeDef selectedNode;
 

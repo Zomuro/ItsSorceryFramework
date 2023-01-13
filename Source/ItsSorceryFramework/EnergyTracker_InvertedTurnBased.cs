@@ -81,7 +81,7 @@ namespace ItsSorceryFramework
             barBox.y = labelBox.y;
             barBox.height = 22;
 
-            Widgets.Label(labelBox, sorcerySchemaDef.energyTrackerDef.energyLabelTranslationKey.Translate().CapitalizeFirst());
+            Widgets.Label(labelBox, sorcerySchemaDef.energyTrackerDef.EnergyLabelTranslationKey.Translate().CapitalizeFirst());
 
             if (this.EnergyRelativeValue < 0)
             {

@@ -159,7 +159,7 @@ namespace ItsSorceryFramework
 
             if (hediff != null && hediff.Severity >= hediff.def.maxSeverity)
             {
-                Messages.Message("MessagePastLimit".Translate(this.pawn.Named("PAWN")),
+                Messages.Message("ISF_MessagePastLimit".Translate(this.pawn.Named("PAWN")),
                     this.pawn, MessageTypeDefOf.NegativeEvent, true);
             }
 
@@ -180,7 +180,7 @@ namespace ItsSorceryFramework
             barBox.y = labelBox.y;
             barBox.height = 22;
 
-            Widgets.Label(labelBox, sorcerySchemaDef.energyTrackerDef.energyLabelTranslationKey.Translate().CapitalizeFirst());
+            Widgets.Label(labelBox, sorcerySchemaDef.energyTrackerDef.EnergyLabelTranslationKey.Translate().CapitalizeFirst());
 
             if(this.EnergyRelativeValue < 0)
             {
@@ -317,25 +317,25 @@ namespace ItsSorceryFramework
 
             //over and under bar drain multiplier
             yield return new StatDrawEntry(StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF,
-                    "EnergyTrackerUnderBarFactor_ISF".Translate(), (-1f * def.underBarRecoveryFactor).ToStringPercent(),
-                    "EnergyTrackerUnderBarFactorDesc_ISF".Translate(), 40, null, null, false);
+                    "ISF_EnergyTrackerUnderBarFactor".Translate(), (-1f * def.underBarRecoveryFactor).ToStringPercent(),
+                    "ISF_EnergyTrackerUnderBarFactorDesc".Translate(), 40, null, null, false);
 
             yield return new StatDrawEntry(StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF,
-                    "EnergyTrackerOverBarFactor_ISF".Translate(), def.overBarRecoveryFactor.ToStringPercent(),
-                    "EnergyTrackerOverBarFactorDesc_ISF".Translate(),
+                    "ISF_EnergyTrackerOverBarFactor".Translate(), def.overBarRecoveryFactor.ToStringPercent(),
+                    "ISF_EnergyTrackerOverBarFactorDesc".Translate(),
                     30, null, null, false);
 
         }
 
         public override string TopRightLabel(SorceryDef sorceryDef)
         {
-            return (sorceryDef?.sorcerySchema.energyTrackerDef.energyLabelTranslationKey.Translate().CapitalizeFirst()[0]) + ": " +
+            return (sorceryDef?.sorcerySchema.energyTrackerDef.EnergyLabelTranslationKey.Translate().CapitalizeFirst()[0]) + ": " +
                     Math.Round(sorceryDef.EnergyCost * this.EnergyCostFactor, 2).ToString();
         }
 
         public override string DisableCommandReason()
         {
-            return def.DisableReasonTranslationKey ?? "CommandDisableReasonInvert_ISF";
+            return def.DisableReasonTranslationKey ?? "ISF_CommandDisableReasonInvert";
         }
 
 

@@ -61,7 +61,7 @@ namespace ItsSorceryFramework
 
                 Text.Font = GameFont.Small;
                 Text.Anchor = TextAnchor.MiddleCenter;
-                Widgets.Label(rect, sorcerySchemaDef.energyTrackerDef.energyLabelTranslationKey.Translate().CapitalizeFirst() + ": " +
+                Widgets.Label(rect, sorcerySchemaDef.energyTrackerDef.EnergyLabelTranslationKey.Translate().CapitalizeFirst() + ": " +
                     currentEnergy);
             }
         }
@@ -107,8 +107,8 @@ namespace ItsSorceryFramework
             if (ammo == "") ammo = "None";
 
             yield return new StatDrawEntry(StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF,
-                    "EnergyTrackerAmmo_ISF".Translate(), ammo,
-                    "EnergyTrackerAmmoDesc_ISF".Translate(),
+                    "ISF_EnergyTrackerAmmo".Translate(), ammo,
+                    "ISF_EnergyTrackerAmmoDesc".Translate(),
                     10, null, null, false);
 
 
