@@ -183,6 +183,11 @@ namespace ItsSorceryFramework
             Widgets.Label(rect, sorcerySchemaDef.LabelCap.ToString());
         }
 
+        public virtual void DrawEnergyBar(Rect rect)
+        {
+
+        }
+
         public bool LearningTrackerButton(float x, float y, Pawn pawn, SorcerySchemaDef schemaDef)
         {
             if (cachedLearningTrackers.NullOrEmpty())

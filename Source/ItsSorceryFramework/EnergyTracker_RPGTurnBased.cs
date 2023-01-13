@@ -84,22 +84,8 @@ namespace ItsSorceryFramework
 
             Widgets.Label(labelBox, sorcerySchemaDef.energyTrackerDef.EnergyLabelTranslationKey.Translate().CapitalizeFirst());
 
-            if (this.EnergyRelativeValue < 0)
-            {
-                Widgets.FillableBar(barBox, Mathf.Min(this.EnergyRelativeValue + 1, 1f),
-                    GizmoTextureUtility.EmptyBarTex, GizmoTextureUtility.UnderBarTex, true);
-            }
-            else if (this.EnergyRelativeValue <= 1)
-            {
-                Widgets.FillableBar(barBox, Mathf.Min(this.EnergyRelativeValue, 1f), GizmoTextureUtility.BarTex,
-                    GizmoTextureUtility.EmptyBarTex, true);
-            }
-            else
-            {
-                Widgets.FillableBar(barBox, Mathf.Min((this.EnergyRelativeValue - 1), 1f),
-                    GizmoTextureUtility.OverBarTex,
-                    GizmoTextureUtility.BarTex, true);
-            }
+            // draws power bar
+            DrawEnergyBar(barBox);
 
             string energyLabel = this.currentEnergy.ToString("F0") + " / " + this.MaxEnergy.ToString("F0");
             string countdown = " ("+ (TurnTicks - countdownTick).ToStringSecondsFromTicks()+")";

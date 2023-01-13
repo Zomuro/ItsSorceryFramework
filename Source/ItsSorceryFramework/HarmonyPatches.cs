@@ -38,7 +38,7 @@ namespace ItsSorceryFramework
             // SkillLearn_AddEXP
             // for every magic system with the correct EXP tag, give xp depending on skill being learned
             harmony.Patch(AccessTools.Method(typeof(SkillRecord), "Learn"), null,
-                new HarmonyMethod(typeof(HarmonyPatches), nameof(SkillLearn_AddEXP)));
+                new HarmonyMethod(typeof(HarmonyPatches), nameof(Learn_AddEXP)));
 
             // DoKillSideEffects_AddEXP
             // for every magic system with the correct EXP tag, give xp on kill
@@ -174,26 +174,31 @@ namespace ItsSorceryFramework
             return true;
         }
 
-        // POSTFIX: if a pawn is practicing a skill, add exp based on amount
-        public static void SkillLearn_AddEXP(SkillRecord __instance, float __0)
+        public static void Learn_AddEXP(SkillRecord __instance, float __0)
         {
-            if (__instance.Pawn == null) return;
-            List<SorcerySchema> schemas = SorcerySchemaUtility.GetSorcerySchemaList(__instance.Pawn);
+            // player won't care if it isn't their own pawn getting skill exp, and they won't really notice.
+            if (!__instance.Pawn.IsColonist) return;
+            Log.Message("Pawn: " + __instance.Pawn.LabelShort);
 
-            if (schemas.NullOrEmpty()) return;
-            foreach (SorcerySchema schema in schemas)
+            Comp_ItsSorcery comp = SorcerySchemaUtility.GetSorceryComp(__instance.Pawn);
+            if (comp == null) return;
+
+            foreach (SorcerySchema schema in comp.schemaTracker.sorcerySchemas)
             {
+                Log.Message("workers: " + schema.def.progressTrackerDef.Workers.NullOrEmpty().ToString());
                 if (schema.def.progressTrackerDef.Workers.NullOrEmpty()) continue;
                 foreach (var worker in schema.def.progressTrackerDef.Workers)
                 {
                     if (worker.GetType() == typeof(ProgressEXPWorker_OnSkillEXP))
                     {
                         if (!worker.def.skillDefs.NullOrEmpty() && !worker.def.skillDefs.Contains(__instance.def)) continue;
+                        Log.Message("knife: "+ __0.ToString());
                         worker.TryExecute(schema.progressTracker, __0);
                     }
                 }
             }
         }
+
 
         // POSTFIX: if a pawn kills another pawn, execute the OnKill EXPWorker if their schema has the tag
         public static void DoKillSideEffects_AddEXP(Pawn __instance, DamageInfo? __0)

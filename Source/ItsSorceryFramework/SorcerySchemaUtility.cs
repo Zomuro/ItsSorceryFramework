@@ -15,6 +15,11 @@ namespace ItsSorceryFramework
             return new SorcerySchema(pawn, def);
         }
 
+        public static Comp_ItsSorcery GetSorceryComp(Pawn pawn)
+        {
+            return pawn.TryGetComp<Comp_ItsSorcery>();
+        }
+
         public static void AddSorcerySchema(Pawn pawn, SorcerySchemaDef def)
         {
             Comp_ItsSorcery schemaComp = GetSorceryComp(pawn);
@@ -27,11 +32,6 @@ namespace ItsSorceryFramework
             Comp_ItsSorcery schemaComp = GetSorceryComp(pawn);
             if (schemaComp.schemaTracker.sorcerySchemas.FirstOrDefault(x => x.def == def) == null) return;
             schemaComp.schemaTracker.sorcerySchemas.Remove(InitializeSorcerySchema(pawn, def));
-        }
-
-        public static Comp_ItsSorcery GetSorceryComp(Pawn pawn)
-        {
-            return pawn.TryGetComp<Comp_ItsSorcery>();
         }
 
         public static List<SorcerySchema> GetSorcerySchemaList(Pawn pawn)

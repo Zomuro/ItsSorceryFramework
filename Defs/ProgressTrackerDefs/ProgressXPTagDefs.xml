@@ -28,7 +28,7 @@
 	<ItsSorceryFramework.ProgressEXPDef>
 		<workerClass>ItsSorceryFramework.ProgressEXPWorker_OnSkillEXP</workerClass>
 		<defName>EXPTag_OnSkillEXP</defName>
-		<expFactor>0.05</expFactor>
+		<expFactor>0.1</expFactor>
 		<skillDefs>
 			<li>Melee</li>
 			<li>Shooting</li>

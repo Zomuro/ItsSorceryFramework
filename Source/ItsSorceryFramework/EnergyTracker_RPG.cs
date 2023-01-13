@@ -181,43 +181,57 @@ namespace ItsSorceryFramework
             barBox.y = labelBox.y;
             barBox.height = 22;
 
+            // SorcerySchema title
             Widgets.Label(labelBox, sorcerySchemaDef.energyTrackerDef.EnergyLabelTranslationKey.Translate().CapitalizeFirst());
 
-            if (this.EnergyRelativeValue < 0)
-            {
-                Widgets.FillableBar(barBox, Mathf.Min(this.EnergyRelativeValue + 1, 1f),
-                    GizmoTextureUtility.EmptyBarTex, GizmoTextureUtility.UnderBarTex, true);
-            }
-            else if (this.EnergyRelativeValue <= 1)
-            {
-                Widgets.FillableBar(barBox, Mathf.Min(this.EnergyRelativeValue, 1f), GizmoTextureUtility.BarTex,
-                    GizmoTextureUtility.EmptyBarTex, true);
-            }
-            else
-            {
-                Widgets.FillableBar(barBox, Mathf.Min((this.EnergyRelativeValue - 1), 1f), 
-                    GizmoTextureUtility.OverBarTex, 
-                    GizmoTextureUtility.BarTex, true);
-            }
+            // draws power bar
+            DrawEnergyBar(barBox);
 
             string energyLabel = this.currentEnergy.ToString("F0") + " / " + this.MaxEnergy.ToString("F0");
             Widgets.Label(barBox, energyLabel);
 
+            // outline the view box
             Widgets.DrawBoxSolidWithOutline(rect, Color.clear, Color.grey);
             Text.Anchor = TextAnchor.UpperLeft;
 
+            // highlight energy costs
             HightlightEnergyCost(barBox);
 
         }
 
+        public override void DrawEnergyBar(Rect rect)
+        {
+            if (this.EnergyRelativeValue < 0)
+            {
+                Widgets.FillableBar(rect, Mathf.Min(this.EnergyRelativeValue + 1, 1f),
+                    GizmoTextureUtility.EmptyBarTex, GizmoTextureUtility.UnderBarTex, true);
+            }
+            else if (this.EnergyRelativeValue <= 1)
+            {
+                Widgets.FillableBar(rect, Mathf.Min(this.EnergyRelativeValue, 1f), GizmoTextureUtility.BarTex,
+                    GizmoTextureUtility.EmptyBarTex, true);
+            }
+            else
+            {
+                Widgets.FillableBar(rect, Mathf.Min((this.EnergyRelativeValue - 1), 1f),
+                    GizmoTextureUtility.OverBarTex,
+                    GizmoTextureUtility.BarTex, true);
+            }
+        }
+
         public override void HightlightEnergyCost(Rect rect)
         {
+            // return if tabwindow is null
             MainTabWindow_Inspect mainTabWindow_Inspect = (MainTabWindow_Inspect)MainButtonDefOf.Inspect.TabWindow;
-            Command_Sorcery command_Sorcery = ((mainTabWindow_Inspect != null) ? mainTabWindow_Inspect.LastMouseoverGizmo : null) as Command_Sorcery;
-            SorceryDef sorceryDef = (command_Sorcery?.Ability as Sorcery)?.sorceryDef;
+            if (mainTabWindow_Inspect == null) return;
 
+            // return if hovered gizmo is null
+            Command_Sorcery command_Sorcery = ((mainTabWindow_Inspect != null) ? mainTabWindow_Inspect.LastMouseoverGizmo : null) as Command_Sorcery;
+            if (command_Sorcery == null) return;
+
+            // return if it isn't a sorceryDef or isn't the same energytracker
+            SorceryDef sorceryDef = (command_Sorcery?.Ability as Sorcery)?.sorceryDef;
             if (sorceryDef == null || sorceryDef.sorcerySchema.energyTrackerDef != this.def) return;
-            //Log.Message("test");
 
             Rect highlight = rect.ContractedBy(3f);
             float max = highlight.xMax;
@@ -251,8 +265,6 @@ namespace ItsSorceryFramework
                     highlight.xMin = Widgets.AdjustCoordToUIScalingFloor(min + normVal(relativeEnergyDiff) * width);
                     highlight.xMax = Widgets.AdjustCoordToUIScalingFloor(min + normVal(relativeEnergy) * width);
                 }
-                //rect6.xMin = Widgets.AdjustCoordToUIScalingFloor(rect6.xMin + num3 * width);
-                //rect6.width = Widgets.AdjustCoordToUIScalingFloor(Mathf.Max(Mathf.Min(num4, 1f) - num3, 0f) * width);
                 GUI.color = new Color(1f, 1f, 1f, num2 * 0.7f);
                 GenUI.DrawTextureWithMaterial(highlight, GizmoTextureUtility.UnderBarTex, null, default(Rect));
                 GUI.color = Color.white;
@@ -270,8 +282,6 @@ namespace ItsSorceryFramework
                     highlight.xMin = Widgets.AdjustCoordToUIScalingFloor(min + normVal(relativeEnergy, false) * width);
                     highlight.xMax = Widgets.AdjustCoordToUIScalingFloor(Math.Min(min + normVal(relativeEnergyDiff, false) * width, max));
                 }
-                //rect6.xMin = Widgets.AdjustCoordToUIScalingFloor(rect6.xMin + num3 * width);
-                //rect6.width = Widgets.AdjustCoordToUIScalingFloor(Mathf.Max(Mathf.Min(num4, 1f) - num3, 0f) * width);
                 GUI.color = new Color(1f, 1f, 1f, num2 * 0.7f);
                 GenUI.DrawTextureWithMaterial(highlight, GizmoTextureUtility.OverBarTex, null, default(Rect));
                 GUI.color = Color.white;

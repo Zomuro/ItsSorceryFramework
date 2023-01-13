@@ -48,11 +48,11 @@
 			<li>EXPTag_CastEnergyCost</li>
 			<!--<li>EXPTag_OnDamage</li>-->
 			<li>EXPTag_OnDamaged</li>
-			<!--<li>EXPTag_OnSkillEXP</li>-->
+			<li>EXPTag_OnSkillEXP</li>
 			<!--<li>EXPTag_Passive</li>-->
 			<!--<li>EXPTag_DuringJob</li>-->
-			<li>EXPTag_OnKill</li>
-			<li>EXPTag_UseItem</li>
+			<!--<li>EXPTag_OnKill</li>
+			<li>EXPTag_UseItem</li>-->
 		</expTags>
 	</ItsSorceryFramework.ProgressTrackerDef>
 	
