@@ -11,7 +11,7 @@
 	<ItsSorceryFramework.ProgressEXPDef>
 		<workerClass>ItsSorceryFramework.ProgressEXPWorker_OnDamage</workerClass>
 		<defName>EXPTag_OnDamage</defName>
-		<expFactor>1</expFactor>
+		<expFactor>0.25</expFactor>
 		<damageDefs>
 			<li>Cut</li>
 			<li>Blunt</li>

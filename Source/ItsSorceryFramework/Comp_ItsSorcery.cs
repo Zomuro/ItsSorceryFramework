@@ -28,7 +28,7 @@ namespace ItsSorceryFramework
 				if(schemaTracker is null) schemaTracker = new Pawn_SorcerySchemaTracker(pawn);
 
 				// temporary
-				if (schemaTracker.sorcerySchemas.NullOrEmpty() && pawn.IsColonist)
+				/*if (schemaTracker.sorcerySchemas.NullOrEmpty() && pawn.IsColonist)
 				{
 					Log.Message(pawn.LabelShort);
 					schemaTracker.sorcerySchemas.Add(SorcerySchemaUtility.InitializeSorcerySchema(pawn, SorcerySchemaDefOf.SorcerySchema_Base));
@@ -38,7 +38,7 @@ namespace ItsSorceryFramework
 					//schemaTracker.sorcerySchemas.Add(SorcerySchemaUtility.InitializeSorcerySchema(pawn, SorcerySchemaDefOf.SorcerySchema_Base5));
 					//schemaTracker.sorcerySchemas.Add(SorcerySchemaUtility.InitializeSorcerySchema(pawn, SorcerySchemaDefOf.SorcerySchema_Base6));
 					//schemaTracker.sorcerySchemas.Add(SorcerySchemaUtility.InitializeSorcerySchema(pawn, SorcerySchemaDefOf.SorcerySchema_Base7));
-				}
+				}*/
 				
 			}
 			
