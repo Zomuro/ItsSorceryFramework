@@ -27,17 +27,7 @@ namespace ItsSorceryFramework
 
         }
 
-        /*public Vector2 ViewSize
-        {
-            get
-            {
-                if (cachedViewSize == null || cachedViewSize == Vector2.zero) cachedViewSize = findViewSize();
-
-                return cachedViewSize;
-            }
-        }*/
-
-        public SorcerySchema schema
+        public SorcerySchema Schema
         {
             get
             {
@@ -47,20 +37,17 @@ namespace ItsSorceryFramework
             }
         }
 
-        public ProgressTracker progressTracker
+        public ProgressTracker ProgressTracker
         {
             get
             {
-                return schema.progressTracker;
+                return Schema.progressTracker;
             }
         }
 
         public override void ExposeData()
         {
             base.ExposeData();
-            //Scribe_Collections.Look(ref nodes, "nodes", LookMode.Def);
-            //Scribe_Collections.Look(ref completion, "completion", LookMode.Def, LookMode.Value);
-
         }
 
         public override void DrawLeftGUI(Rect rect)
@@ -84,18 +71,28 @@ namespace ItsSorceryFramework
             //GenUI.SetLabelAlign(TextAnchor.MiddleLeft);
 
             Rect labelRect = new Rect(0f, coordY, viewRect.width, 50f);
-            Widgets.LabelCacheHeight(ref labelRect, schema.def.LabelCap, true, false);
+            Widgets.LabelCacheHeight(ref labelRect, Schema.def.LabelCap, true, false);
             coordY += labelRect.height;
 
             Rect lvlRect = new Rect(0f, coordY, viewRect.width, 50f);
-            Widgets.LabelCacheHeight(ref lvlRect, 
-                "(lvl. "+ "{0}/{1})".Translate(progressTracker.currLevel, progressTracker.hediff.def.maxSeverity), true, false);
-            coordY += labelRect.height;
+
+            if (ProgressTracker.CurLevelLabel.NullOrEmpty())
+            {
+                Widgets.LabelCacheHeight(ref lvlRect,
+                    "ISF_LearningLevelLabel".Translate(ProgressTracker.currLevel), true, false);
+            }
+            else
+            {
+                Widgets.LabelCacheHeight(ref lvlRect,
+                    "ISF_LearningLevelLabelCustom".Translate(ProgressTracker.CurLevelLabel, ProgressTracker.currLevel), true, false);
+            }
+            coordY += lvlRect.height;
+            //coordY += labelRect.height;
 
             Rect xpBar = new Rect(0f, coordY + 10, rect.width, 35f);
-            Widgets.FillableBar(xpBar, progressTracker.currProgress);
+            Widgets.FillableBar(xpBar, ProgressTracker.currProgress);
             Text.Anchor = TextAnchor.MiddleCenter;
-            Widgets.Label(xpBar, (progressTracker.exp).ToString("F0") + " / " + progressTracker.currentLevelEXPReq.ToString("F0"));
+            Widgets.Label(xpBar, (ProgressTracker.exp).ToString("F0") + " / " + ProgressTracker.currentLevelEXPReq.ToString("F0"));
             coordY += xpBar.height * 1.5f;
 
             //viewRect
@@ -188,7 +185,7 @@ namespace ItsSorceryFramework
             //Text.Font = GameFont.Small;
             rect.x += 22f;
 
-            String tipString = TipStringExtra(progressTracker.hediff.CurStage);
+            String tipString = TipStringExtra(ProgressTracker.hediff.CurStage);
             String tipString2;
             if (!tipString.NullOrEmpty())
             {
@@ -200,10 +197,10 @@ namespace ItsSorceryFramework
                 rect.yMin += rect.height;
             }
 
-            ProgressTrackerDef pDef = progressTracker.def;
-            float projLevel = progressTracker.currLevel + 1;
+            ProgressTrackerDef pDef = ProgressTracker.def;
+            float projLevel = ProgressTracker.currLevel + 1;
 
-            if (projLevel > progressTracker.hediff.def.maxSeverity) return rect.yMin - yMin;
+            if (projLevel > ProgressTracker.hediff.def.maxSeverity) return rect.yMin - yMin;
             Text.Font = GameFont.Medium;
             Widgets.LabelCacheHeight(ref rect, "Upcoming:", true, false);
             rect.yMin += rect.height;
@@ -211,7 +208,7 @@ namespace ItsSorceryFramework
 
             for (int i = (int) projLevel; i < (int) projLevel + 5; i++)
             {
-                if (i > progressTracker.hediff.def.maxSeverity) break;
+                if (i > ProgressTracker.hediff.def.maxSeverity) break;
 
                 ProgressLevelModifier factor = pDef.getLevelFactor(i);
                 tipString = TipStringExtra(factor);
@@ -223,7 +220,10 @@ namespace ItsSorceryFramework
 
                 Text.Font = GameFont.Small;
                 //Text.Font = GameFont.Medium;
-                Widgets.LabelCacheHeight(ref rect, ("Level "+ i).Colorize(ColoredText.TipSectionTitleColor), true, false);
+                if(ProgressTracker.CurLevelLabel.NullOrEmpty())
+                    Widgets.LabelCacheHeight(ref rect, "ISF_LearningProgressLevel".Translate(i).Colorize(ColoredText.TipSectionTitleColor), true, false);
+                else
+                    Widgets.LabelCacheHeight(ref rect, "ISF_LearningProgressLevelCustom".Translate(i, ProgressTracker.GetProgressLevelLabel(i)).Colorize(ColoredText.TipSectionTitleColor), true, false);
                 rect.yMin += rect.height;
                 //Text.Font = GameFont.Small;
 
@@ -289,9 +289,9 @@ namespace ItsSorceryFramework
             return stringBuilder.ToString();
         }
 
-        public string TipStringExtra(ProgressLevelModifier mods, string beginning = null)
+        public string TipStringExtra(ProgressLevelModifier mods)
         {
-            IEnumerable<StatDrawEntry> entries = progressTracker.def.specialDisplayMods(mods);
+            IEnumerable<StatDrawEntry> entries = ProgressTracker.def.specialDisplayMods(mods);
             if (entries.EnumerableNullOrEmpty()) return null;
             StringBuilder stringBuilder = new StringBuilder();
             foreach (StatDrawEntry statDrawEntry in entries)
@@ -301,6 +301,8 @@ namespace ItsSorceryFramework
                     stringBuilder.AppendInNewLine("  - " + statDrawEntry.LabelCap + ": " + statDrawEntry.ValueString);
                 }
             }
+            if(mods.pointGain > 0) stringBuilder.AppendInNewLine("  - " + ProgressTracker.def.skillPointLabelKey.Translate().CapitalizeFirst() + ": " + 
+                mods.pointGain);
             return stringBuilder.ToString();
         }
 
@@ -321,8 +323,8 @@ namespace ItsSorceryFramework
                 rect.yMin += expDef.Worker.drawWorker(rect);
             }*/
 
-            if(schema.progressTracker.def.Workers.NullOrEmpty()) return rect.yMin - yMin;
-            foreach (ProgressEXPWorker worker in schema.progressTracker.def.Workers)
+            if(Schema.progressTracker.def.Workers.NullOrEmpty()) return rect.yMin - yMin;
+            foreach (ProgressEXPWorker worker in Schema.progressTracker.def.Workers)
             {
                 rect.yMin += worker.drawWorker(rect);
             }

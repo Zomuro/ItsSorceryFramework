@@ -29,4 +29,9 @@
 	<ISF_LearningNodeHediffRemove>Hediffs removed:</ISF_LearningNodeHediffRemove>
 	<ISF_LearningNodeMods>Modifiers applied:</ISF_LearningNodeMods>
 	
+	<ISF_LearningLevelLabel>Level {0}</ISF_LearningLevelLabel>
+	<ISF_LearningLevelLabelCustom>{0} (lvl. {1})</ISF_LearningLevelLabelCustom>
+	<ISF_LearningProgressLevel>Level {0}:</ISF_LearningProgressLevel>
+	<ISF_LearningProgressLevelCustom>Level {0} ({1}):</ISF_LearningProgressLevelCustom>
+	
 </LanguageData>

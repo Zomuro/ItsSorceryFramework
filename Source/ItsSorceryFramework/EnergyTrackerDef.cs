@@ -20,8 +20,10 @@ namespace ItsSorceryFramework
         public Type energyTrackerClass = typeof(EnergyTracker);
 
         // EnergyTracker unit variables
+        [MustTranslate]
         public string EnergyLabelTranslationKey = "ISF_EnergyTrackerUnitLabel";
 
+        [MustTranslate]
         public string EnergyDescTranslationKey = "ISF_EnergyStatDesc";
 
         // EnergyTracker general stats
@@ -44,22 +46,28 @@ namespace ItsSorceryFramework
         public HediffDef sideEffect;
 
         // TurnBased EnergyTrackers
+        [MustTranslate]
         public string TurnInfoTranslationKey = "ISF_EnergyTrackerTurnInfo";
 
+        [MustTranslate]
         public string TurnInfoDescTranslationKey = "ISF_EnergyTrackerTurnInfoDesc";
 
         public int turnTicks = 60;
 
         // Vancian EnergyTracker Stats
+        [MustTranslate]
         public string RefreshNotifTranslationKey = "ISF_EnergyTrackerVancianRefresh";
 
+        [MustTranslate]
         public string RefreshInfoTranslationKey = "ISF_EnergyTrackerRefreshInfo";
 
+        [MustTranslate]
         public string RefreshInfoDescTranslationKey = "ISF_EnergyTrackerRefreshInfoDesc";
 
         public int refreshTicks = 60000;
 
         //VancianLifetime EnergyTracker string
+        [MustTranslate]
         public string CastsCountTranslationKey = "ISF_EnergyTrackerVancianCastsLeft";
 
         // Command disable string
@@ -69,6 +77,7 @@ namespace ItsSorceryFramework
         public Dictionary<ThingDef, float> sorceryAmmoDict;
 
         // Cooldown EnergyTracker string
+        [MustTranslate]
         public string CooldownTranslationKey = "ISF_EnergyTrackerCooldown";
 
 

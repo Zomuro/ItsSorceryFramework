@@ -122,13 +122,27 @@ namespace ItsSorceryFramework
 
         public List<ProgressEXPDef> expTags = new List<ProgressEXPDef>();
 
-        public List<ProgressCompProperties> progressComps = new List<ProgressCompProperties>();
+        public List<ProgressLevelLabel> levelLabels = new List<ProgressLevelLabel>();
 
-        public string progressLevelUpTransKey = "levelup";
+        //public List<ProgressCompProperties> progressComps = new List<ProgressCompProperties>();
 
-        public string progressLevelUpDescTransKey = "levelup";
+        [MustTranslate]
+        public string progressLevelUpTransKey = "ISF_LevelUp";
+
+        [MustTranslate]
+        public string progressLevelUpDescTransKey = "ISF_LevelUpMessage";
+
+        [MustTranslate]
+        public string skillPointLabelKey = "ISF_SkillPointLabel";
 
         private List<ProgressEXPWorker> progressEXPWorkers = new List<ProgressEXPWorker>();
+    }
+
+    public class ProgressLevelLabel
+    {
+        public int level = 1;
+
+        public string label = "level";
     }
 
     

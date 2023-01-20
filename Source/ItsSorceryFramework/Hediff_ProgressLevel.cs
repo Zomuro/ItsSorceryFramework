@@ -17,9 +17,12 @@ namespace ItsSorceryFramework
 			{
 				if (progressTracker != null)
 				{
-					return this.def.label + temp.Translate(level.ToString(), progressTracker.currProgress.ToString("P2"));
+					if(progressTracker.CurLevelLabel.NullOrEmpty()) 
+						return def.label + " "+ "ISF_LevelLabel".Translate(level.ToString(), progressTracker.currProgress.ToString("P2"));
+
+					return def.label + " " + "ISF_LevelLabelCustom".Translate(progressTracker.CurLevelLabel, progressTracker.currProgress.ToString("P2"));
 				}
-				return this.def.label + " x" + this.level;
+				return def.label + " x" + this.level;
 			}
 		}
 

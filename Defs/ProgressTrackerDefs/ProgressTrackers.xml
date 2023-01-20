@@ -44,6 +44,11 @@
 				</abilityGain>
 			</li>
 		</levelSpecifics>
+		<levelLabels>
+			<li><level>1</level><label>start 1</label></li>
+			<li><level>2</level><label>start 2</label></li>		
+			<li><level>3</level><label>start 3</label></li>
+		</levelLabels>
 		<expTags>
 			<li>EXPTag_CastEnergyCost</li>
 			<li>EXPTag_OnDamage</li>

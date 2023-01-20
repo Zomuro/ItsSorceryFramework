@@ -50,7 +50,7 @@ namespace ItsSorceryFramework
             // probably will have to just cache this
 
             // comp saving stuff
-            if (Scribe.mode == LoadSaveMode.LoadingVars)
+            /*if (Scribe.mode == LoadSaveMode.LoadingVars)
             {
                 this.InitializeComps();
             }
@@ -60,16 +60,16 @@ namespace ItsSorceryFramework
                 {
                     comp.PostExposeData();
                 }
-            }
+            }*/
 
         }
 
         public virtual void Initialize()
         {
-            InitializeComps();
+            //InitializeComps();
         }
 
-        public void InitializeComps() // taken from ThingWithComps
+        /*public void InitializeComps() // taken from ThingWithComps
         {
             if (this.def.progressComps.Any<ProgressCompProperties>())
             {
@@ -91,9 +91,9 @@ namespace ItsSorceryFramework
                     }
                 }
             }
-        }
+        }*/
 
-        public PC GetProgressComp<PC>() where PC : ProgressComp // enables ability to get ProgressComps
+       /*ublic PC GetProgressComp<PC>() where PC : ProgressComp // enables ability to get ProgressComps
         {
             if (this.comps != null)
             {
@@ -104,7 +104,7 @@ namespace ItsSorceryFramework
                 }
             }
             return default(PC);
-        }
+        }*/
 
         /*public List<ProgressEXPWorker> expWorkers
         {
@@ -203,6 +203,45 @@ namespace ItsSorceryFramework
             return new HediffStage();
         }
 
+        // if the def has specific level labels, get the one for the current level
+        public string CurLevelLabel
+        {
+            get
+            {
+                if(cachedCurLevel != currLevel || cachedLevelLabel.NullOrEmpty())
+                {
+                    cachedLevelLabel = GetProgressLevelLabel(currLevel);
+                }
+
+                return cachedLevelLabel;
+            }
+        }
+
+        // get the list of level labels and sort by descending level
+        public List<ProgressLevelLabel> LevelLabelsDesc
+        {
+            get
+            {
+                if(cachedLevelLabels == null)
+                {
+                    cachedLevelLabels = def.levelLabels?.OrderByDescending(x => x.level).ToList();
+                }
+                return cachedLevelLabels;
+            }
+        }
+
+        // grab the level label at a specific level
+        public string GetProgressLevelLabel(int level)
+        {
+            if(def.levelLabels.NullOrEmpty()) return null;
+
+            foreach(var levelLabel in LevelLabelsDesc)
+            {
+                if (levelLabel.level <= level) return levelLabel.label;
+            }
+            return null;
+        }
+
         public Pawn pawn;
 
         public ProgressTrackerDef def;
@@ -223,11 +262,17 @@ namespace ItsSorceryFramework
 
         public int points = 0;
 
-        private List<ProgressEXPWorker> progressEXPWorkers = new List<ProgressEXPWorker>();
+        private int cachedCurLevel = 0;
 
-        private List<ProgressComp> comps;
+        private string cachedLevelLabel;
 
-        
+        private List<ProgressLevelLabel> cachedLevelLabels;
+
+        //private List<ProgressEXPWorker> progressEXPWorkers = new List<ProgressEXPWorker>();
+
+        //private List<ProgressComp> comps;
+
+
 
 
     }

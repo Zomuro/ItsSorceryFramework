@@ -160,10 +160,12 @@ namespace ItsSorceryFramework
                     prereqHediffFufilled(selectedNode) && exclusiveNodeFufilled(selectedNode) &&
                     selectedNode.pointReq + progress.usedPoints <= progress.points) 
                 {
-                    if (Widgets.ButtonText(confirmButton, "complete: " + selectedNode.pointReq))
+                    if (Widgets.ButtonText(confirmButton, "ISF_SkillPointUse".Translate(selectedNode.pointReq, 
+                        progress.def.skillPointLabelKey.Translate())))
                     {
                         completion[selectedNode] = true;
                         completionAbilities(selectedNode);
+                        completionHediffs(selectedNode);
                         completionModifiers(selectedNode);
                         // add the hediff completion portion
 
@@ -179,7 +181,8 @@ namespace ItsSorceryFramework
                     {
                         reason = "Locked:";
 
-                        if (selectedNode.pointReq + progress.usedPoints > progress.points) reason += "\nNot enough skill points.";
+                        if (selectedNode.pointReq + progress.usedPoints > progress.points) reason += "\nNot enough "+ 
+                                schemaDef.progressTrackerDef.skillPointLabelKey.Translate() +".";
 
                         if (!prereqFufilled(selectedNode)) reason += "\nPrior nodes not completed.";
 
