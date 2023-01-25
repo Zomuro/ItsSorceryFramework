@@ -60,7 +60,7 @@ namespace ItsSorceryFramework
 
                 this.currentEnergy = Math.Max(tempEnergy, MinEnergy);
 
-                if (Find.Selector.FirstSelectedObject == pawn && pawn.Drafted) Find.TickManager.Pause();
+                if (Find.Selector.FirstSelectedObject == pawn && pawn.Drafted && turnTimerOn) Find.TickManager.Pause();
                 
             }
 
@@ -70,6 +70,11 @@ namespace ItsSorceryFramework
         public override void DrawOnGUI(Rect rect)
         {
             this.SchemaViewBox(rect);
+
+            // draws limit toggle button
+            if (MinEnergy < 0) LimitButton(rect.x + rect.width - 5 - 24, rect.y + 5);
+            // draws turn pause toggle button
+            TurnButton(rect.x + rect.width - 5 - 24 - 24, rect.y + 5);
 
             Text.Font = GameFont.Small;
             Text.Anchor = TextAnchor.MiddleCenter;

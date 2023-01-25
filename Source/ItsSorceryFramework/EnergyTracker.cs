@@ -42,6 +42,8 @@ namespace ItsSorceryFramework
             Scribe_Defs.Look(ref def, "def");
             Scribe_Defs.Look(ref sorcerySchemaDef, "sorcerySchemaDef");
             Scribe_Values.Look<float>(ref this.currentEnergy, "currentEnergy", 0f, false);
+            Scribe_Values.Look<bool>(ref this.limitLocked, "limitLocked", true, false);
+            Scribe_Values.Look<bool>(ref this.turnTimerOn, "turnTimerOn", true, false);
         }
 
         public virtual float MaxEnergy
@@ -174,7 +176,10 @@ namespace ItsSorceryFramework
             sorcerySchemaDef.TempPawn = pawn;
 
             Widgets.InfoCardButton(rect.x + 5, rect.y + 5, tempSchemaDef);
-            LearningTrackerButton(rect.x + 5 + 24, rect.y + 5, pawn, sorcerySchemaDef);
+            LearningTrackerButton(rect.x + 5 + 24, rect.y + 5);
+            /*LimitButton(rect.x + rect.width - 5 - 24, rect.y + 5);
+            TurnButton(rect.x + rect.width - 5 - 24 - 24, rect.y + 5);*/
+
             tempSchemaDef.ClearCachedData();
 
             // shows the label of the sorcery schema in the itab
@@ -188,23 +193,64 @@ namespace ItsSorceryFramework
 
         }
 
-        public bool LearningTrackerButton(float x, float y, Pawn pawn, SorcerySchemaDef schemaDef)
+        public bool LearningTrackerButton(float x, float y)
         {
-            if (cachedLearningTrackers.NullOrEmpty())
+            /*if (cachedLearningTrackers.NullOrEmpty())
             {
                 cachedLearningTrackers = SorcerySchemaUtility.FindSorcerySchema(pawn, schemaDef).learningTrackers;
             }
-            if (cachedLearningTrackers.NullOrEmpty()) return false;
+            if (cachedLearningTrackers.NullOrEmpty()) return false;*/
+
+            if (LearningTrackers.NullOrEmpty()) return false;
             Rect rect = new Rect(x, y, 24f, 24f);
             MouseoverSounds.DoRegion(rect);
-            TooltipHandler.TipRegionByKey(rect, "DefInfoTip");
-            //bool result = Widgets.ButtonImage(rect, TexButton.Info, GUI.color, true);
-            UIHighlighter.HighlightOpportunity(rect, "InfoCard");
+            TooltipHandler.TipRegionByKey(rect, "ISF_ButtonLearningTrackers");
 
-            if (Widgets.ButtonImage(rect, TexButton.IconBook, GUI.color, true))
+            if (Widgets.ButtonImage(rect, TexButton.ToggleLog, GUI.color, true))
             {
                 Find.TickManager.Pause();
-                Find.WindowStack.Add(new Dialog_LearningTabs(cachedLearningTrackers));
+                Find.WindowStack.Add(new Dialog_LearningTabs(LearningTrackers));
+                return true;
+            }
+            return false;
+        }
+
+        public bool LimitButton(float x, float y)
+        {
+            Rect rect = new Rect(x, y, 24f, 24f);
+            MouseoverSounds.DoRegion(rect);
+            TooltipHandler.TipRegionByKey(rect, "ISF_ButtonLimit");
+
+            if (Widgets.ButtonImage(rect, limitLocked ? Widgets.CheckboxOnTex : Widgets.CheckboxOffTex, GUI.color, true))
+            {
+                limitLocked = !limitLocked;
+                return true;
+            }
+            return false;
+        }
+
+
+        // turn button check seperated into its own method to easily be harmony patched via postfix
+        // to allow modders to add in their own EnergyTracker classes to enable the turn button check
+        /*public bool TurnButtonCheck()
+        {
+            if (this.GetType() == typeof(EnergyTracker_InvertedTurnBased) || 
+                this.GetType() == typeof(EnergyTracker_RPGTurnBased)) return true;
+
+            return false;
+        }*/
+
+        public bool TurnButton(float x, float y)
+        {
+            //if (!TurnButtonCheck()) return false;
+
+            Rect rect = new Rect(x, y, 24f, 24f);
+            MouseoverSounds.DoRegion(rect);
+            TooltipHandler.TipRegionByKey(rect, "ISF_ButtonTurnTimer");
+
+            if (Widgets.ButtonImage(rect, turnTimerOn ? GizmoTextureUtility.PauseButton : GizmoTextureUtility.PlayButton, GUI.color, true))
+            {
+                turnTimerOn = !turnTimerOn;
                 return true;
             }
             return false;
@@ -261,16 +307,31 @@ namespace ItsSorceryFramework
             return "Energy class: "+ this.GetType().Name.ToString();
         }
 
+        public List<LearningTracker> LearningTrackers
+        {
+            get
+            {
+                if (cachedLearningTrackers.NullOrEmpty())
+                {
+                    cachedLearningTrackers = SorcerySchemaUtility.FindSorcerySchema(pawn, sorcerySchemaDef).learningTrackers;
+                }
+
+                return cachedLearningTrackers;
+            }
+        }
+
         public Pawn pawn;
 
         public EnergyTrackerDef def;
 
         public SorcerySchemaDef sorcerySchemaDef;
 
-        public List<LearningTracker> cachedLearningTrackers = new List<LearningTracker>();
+        private List<LearningTracker> cachedLearningTrackers = new List<LearningTracker>();
 
         public float currentEnergy;
 
         public bool limitLocked = true;
+
+        public bool turnTimerOn = true;
     }
 }

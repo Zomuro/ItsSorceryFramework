@@ -125,7 +125,7 @@ namespace ItsSorceryFramework
 
         public override bool WouldReachLimitEnergy(float energyCost, SorceryDef sorceryDef = null, Sorcery sorcery = null)
         {
-            if (currentEnergy + energyCost > OverMaxEnergy && limitLocked) return true;
+            if (currentEnergy + energyCost > MaxEnergy && limitLocked) return true;
             return false;
         }
 
@@ -168,6 +168,9 @@ namespace ItsSorceryFramework
         public override void DrawOnGUI(Rect rect)
         {
             this.SchemaViewBox(rect);
+
+            // draws limit toggle button
+            if (OverMaxEnergy > MaxEnergy) LimitButton(rect.x + rect.width - 5 - 24, rect.y + 5);
 
             Text.Font = GameFont.Small;
             Text.Anchor = TextAnchor.MiddleCenter;

@@ -34,4 +34,9 @@
 	<ISF_LearningProgressLevel>Level {0}:</ISF_LearningProgressLevel>
 	<ISF_LearningProgressLevelCustom>Level {0} ({1}):</ISF_LearningProgressLevelCustom>
 	
+	<!-- ITab_Schema Button Tooltips -->
+	<ISF_ButtonLearningTrackers>View various magic system aspects such as system summary, progression, abilities, etc.</ISF_ButtonLearningTrackers>
+	<ISF_ButtonLimit>Toggle whether this pawn can use energy beyond their limits.</ISF_ButtonLimit>
+	<ISF_ButtonTurnTimer>Toggle whether or not the game pauses at the end of this magic system's turn when this pawn is selected and drafted.</ISF_ButtonTurnTimer>
+	
 </LanguageData>

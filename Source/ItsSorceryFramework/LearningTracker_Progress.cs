@@ -52,8 +52,6 @@ namespace ItsSorceryFramework
 
         public override void DrawLeftGUI(Rect rect)
         {
-            //float outRectHeight = rect.height - (10f + leftStartAreaHeight) - 45f;
-
             Widgets.BeginGroup(rect);
 
             // add textures- no dice, dependent on size
@@ -68,7 +66,6 @@ namespace ItsSorceryFramework
 
             Text.Font = GameFont.Medium;
             Text.Anchor = TextAnchor.MiddleCenter;
-            //GenUI.SetLabelAlign(TextAnchor.MiddleLeft);
 
             Rect labelRect = new Rect(0f, coordY, viewRect.width, 50f);
             Widgets.LabelCacheHeight(ref labelRect, Schema.def.LabelCap, true, false);
@@ -87,7 +84,6 @@ namespace ItsSorceryFramework
                     "ISF_LearningLevelLabelCustom".Translate(ProgressTracker.CurLevelLabel, ProgressTracker.currLevel), true, false);
             }
             coordY += lvlRect.height;
-            //coordY += labelRect.height;
 
             Rect xpBar = new Rect(0f, coordY + 10, rect.width, 35f);
             Widgets.FillableBar(xpBar, ProgressTracker.currProgress);
@@ -95,22 +91,11 @@ namespace ItsSorceryFramework
             Widgets.Label(xpBar, (ProgressTracker.exp).ToString("F0") + " / " + ProgressTracker.currentLevelEXPReq.ToString("F0"));
             coordY += xpBar.height * 1.5f;
 
-            //viewRect
-            /*Rect outScrollRect = new Rect(outRect);
-            outScrollRect.yMin = coordY;
-            Rect viewScrollRect = new Rect(viewRect);
-            viewScrollRect.yMin = coordY;*/
-
-            //Widgets.BeginScrollView(outScrollRect, ref this.leftScrollPosition, viewScrollRect, true);
             GenUI.ResetLabelAlign();
             Text.Font = GameFont.Small;
             Rect descRect = new Rect(0f, coordY, viewRect.width, 0f);
-            //Rect descRect = new Rect(viewScrollRect);
             Widgets.LabelCacheHeight(ref descRect, schemaDef.description, true, false);
             coordY += descRect.height;
-
-            
-            //coordY += labelRect.height;
 
             this.leftScrollViewHeight = coordY;
             Widgets.EndScrollView();
