@@ -87,7 +87,7 @@ namespace ItsSorceryFramework
             barBox.y = labelBox.y;
             barBox.height = 22;
 
-            Widgets.Label(labelBox, sorcerySchemaDef.energyTrackerDef.EnergyLabelTranslationKey.Translate().CapitalizeFirst());
+            Widgets.Label(labelBox, sorcerySchemaDef.energyTrackerDef.energyLabelKey.Translate().CapitalizeFirst());
 
             // draws power bar
             DrawEnergyBar(barBox);
@@ -113,8 +113,8 @@ namespace ItsSorceryFramework
 
             // returns how long a "turn" takes (time before auto-pause when the pawn with this energytracker is drafted)
             yield return new StatDrawEntry(StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF,
-                    def.TurnInfoTranslationKey.Translate(), def.turnTicks.TicksToSeconds().ToString(),
-                    def.TurnInfoDescTranslationKey.Translate(),
+                    def.turnInfoKey.Translate(), def.turnTicks.TicksToSeconds().ToString(),
+                    def.turnInfoDescKey.Translate(),
                     20, null, null, false);
 
         }

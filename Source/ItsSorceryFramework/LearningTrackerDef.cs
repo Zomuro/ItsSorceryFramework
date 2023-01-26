@@ -34,7 +34,7 @@ namespace ItsSorceryFramework
 
         public string bgPath;
 
-		public Texture2D trackerBG;
+		private Texture2D trackerBG;
 
 
     }

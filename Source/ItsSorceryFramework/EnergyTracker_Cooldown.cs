@@ -76,7 +76,7 @@ namespace ItsSorceryFramework
             Text.Font = GameFont.Small;
             Text.Anchor = TextAnchor.MiddleCenter;
             
-            if(tickCount > 0) Widgets.Label(rect, def.CooldownTranslationKey.Translate(GenDate.ToStringTicksToPeriod(tickCount)));
+            if(tickCount > 0) Widgets.Label(rect, def.cooldownKey.Translate(GenDate.ToStringTicksToPeriod(tickCount)));
             else if (recentSorceries.NullOrEmpty())
             {
                 Widgets.Label(rect, "No sorceries cast yet.");
@@ -109,14 +109,14 @@ namespace ItsSorceryFramework
         public override IEnumerable<StatDrawEntry> SpecialDisplayStats(StatRequest req)
         {
             yield return new StatDrawEntry(StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF,
-                    def.RefreshInfoTranslationKey.Translate(), def.refreshTicks.TicksToSeconds().ToString(),
-                    def.RefreshInfoDescTranslationKey.Translate(),
+                    def.refreshInfoKey.Translate(), def.refreshTicks.TicksToSeconds().ToString(),
+                    def.refreshInfoDescKey.Translate(),
                     10, null, null, false);
         }
 
         public override string DisableCommandReason()
         {
-            return def.DisableReasonTranslationKey ?? "ISF_CommandDisableReasonCooldown";
+            return def.disableReasonKey ?? "ISF_CommandDisableReasonCooldown";
         }
 
         public override string TopRightLabel(SorceryDef sorceryDef)

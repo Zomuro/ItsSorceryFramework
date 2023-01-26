@@ -18,8 +18,14 @@
 	<ItsSorceryFramework.SorcerySchemaDef>
 		<defName>SorcerySchema_Base2</defName>
 		<label>Vex Sovereignty</label>
+		<description>for the chadest of all the artists i know, and the server fanfic :)</description>
 	
 		<energyTrackerDef>EnergyTracker_BaseRPGTurnBased</energyTrackerDef>
+		<learningTrackerDefs>
+			<li>LearningTracker_Progress</li>
+			<li>LearningTracker_Tree</li>
+		</learningTrackerDefs>
+		<progressTrackerDef>ProgressTracker_Base</progressTrackerDef>
 	</ItsSorceryFramework.SorcerySchemaDef>
 	
 	<ItsSorceryFramework.SorcerySchemaDef>

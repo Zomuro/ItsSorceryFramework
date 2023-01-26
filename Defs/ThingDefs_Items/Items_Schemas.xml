@@ -65,5 +65,40 @@
 			</li>
 		</comps>
 	</ThingDef>
+	
+	<ThingDef ParentName="SchemaItemBase">
+		<defName>ISF_TestSchemaItemTwo</defName>
+		<label>test schema item 2</label>
+		<description>you are gonna learn some magic boy/girl</description>
+		<graphicData>
+			<texPath>Things/Item/Artifact/PsychicAnimalPulser</texPath>
+			<graphicClass>Graphic_Single</graphicClass>
+		</graphicData>
+		<resourceReadoutPriority>Middle</resourceReadoutPriority>
+		<stackLimit>1</stackLimit>
+		<tradeNeverStack>true</tradeNeverStack>
+		<useHitPoints>true</useHitPoints>
+		<relicChance>0</relicChance>
+		<statBases>
+			<MarketValue>1000</MarketValue>
+			<MaxHitPoints>50</MaxHitPoints>
+		</statBases>
+		<drawGUIOverlay>false</drawGUIOverlay>
+		<comps>
+			<li Class="ItsSorceryFramework.CompProperties_SchemaItem">
+				<compClass>ItsSorceryFramework.CompSchemaItem</compClass>
+				<useJob>UseItem</useJob>
+				<useLabel>Learn {0}</useLabel>
+				<schemaDef>SorcerySchema_Base2</schemaDef>
+			</li>
+			<li Class="ItsSorceryFramework.CompProperties_UseEffectSchema">
+				<compClass>ItsSorceryFramework.CompUseEffect_Schema</compClass>
+				<schemaDef>SorcerySchema_Base2</schemaDef>
+			</li>
+			<li Class="CompProperties_UseEffectArtifact">
+				<sound>PsychicAnimalPulserCast</sound>
+			</li>
+		</comps>
+	</ThingDef>
   
 </Defs>

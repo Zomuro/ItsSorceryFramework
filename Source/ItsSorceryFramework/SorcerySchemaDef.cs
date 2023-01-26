@@ -37,8 +37,8 @@ namespace ItsSorceryFramework
 
             // more or less all energytrackers have a "unit" that is used
             yield return new StatDrawEntry(StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF,
-                    "ISF_EnergyTrackerUnit".Translate(), energyTrackerDef.EnergyLabelTranslationKey.Translate().CapitalizeFirst(),
-                    energyTrackerDef.EnergyDescTranslationKey.Translate(), 99999, null, null, false);
+                    "ISF_EnergyTrackerUnit".Translate(), energyTrackerDef.energyLabelKey.Translate().CapitalizeFirst(),
+                    energyTrackerDef.energyDescKey.Translate(), 99999, null, null, false);
 
             // depending on energytrackers, alter which ones show up
             Log.Message((SorcerySchemaUtility.FindSorcerySchema(TempPawn, this) == null).ToString());

@@ -61,7 +61,7 @@ namespace ItsSorceryFramework
 
                 Text.Font = GameFont.Small;
                 Text.Anchor = TextAnchor.MiddleCenter;
-                Widgets.Label(rect, sorcerySchemaDef.energyTrackerDef.EnergyLabelTranslationKey.Translate().CapitalizeFirst() + ": " +
+                Widgets.Label(rect, sorcerySchemaDef.energyTrackerDef.energyLabelKey.Translate().CapitalizeFirst() + ": " +
                     currentEnergy);
             }
         }

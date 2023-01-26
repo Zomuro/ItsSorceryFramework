@@ -97,7 +97,7 @@ namespace ItsSorceryFramework
                             text = "ISF_Charge".Translate(schema.def.LabelCap.ToString(), ammo.def.ToString())
                             + "ISF_ChargeCalc".Translate(ammo.stackCount, ammo.def.ToString(),
                                 ammo.stackCount * ammoRef[ammo.def],
-                                energyTracker.def.EnergyLabelTranslationKey.Translate());
+                                energyTracker.def.energyLabelKey.Translate());
                         }
                         else
                         {
@@ -106,7 +106,7 @@ namespace ItsSorceryFramework
                             gain = Math.Min(endcount * ammoRef[ammo.def], energyTracker.MaxEnergy - energyTracker.currentEnergy);
                             text = "ISF_Charge".Translate(schema.def.LabelCap.ToString(), ammo.def.ToString())
                             + "ISF_ChargeCalc".Translate(endcount, ammo.def.ToString(),
-                                gain, energyTracker.def.EnergyLabelTranslationKey.Translate());
+                                gain, energyTracker.def.energyLabelKey.Translate());
                         }
                             
                         Action chargeSchema = delegate ()

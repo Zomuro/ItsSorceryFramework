@@ -108,7 +108,7 @@ namespace ItsSorceryFramework
 
             Text.Font = GameFont.Small;
             Text.Anchor = TextAnchor.MiddleCenter;
-            Widgets.Label(rect, def.RefreshNotifTranslationKey.Translate(GenDate.ToStringTicksToPeriod(tickCount)));
+            Widgets.Label(rect, def.refreshNotifKey.Translate(GenDate.ToStringTicksToPeriod(tickCount)));
             
             Text.Anchor = TextAnchor.UpperLeft;
         }
@@ -123,19 +123,19 @@ namespace ItsSorceryFramework
                         statDef, pawn.GetStatValue(statDef), pawnReq, ToStringNumberSense.Undefined, statDef.displayPriorityInCategory, false);
 
             yield return new StatDrawEntry(StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF,
-                    def.RefreshInfoTranslationKey.Translate(), def.refreshTicks.TicksToSeconds().ToString(),
-                    def.RefreshInfoDescTranslationKey.Translate(),
+                    def.refreshInfoKey.Translate(), def.refreshTicks.TicksToSeconds().ToString(),
+                    def.refreshInfoDescKey.Translate(),
                     10, null, null, false); 
         }
 
         public override string DisableCommandReason()
         {
-            return def.DisableReasonTranslationKey ?? "ISF_CommandDisableReasonVancian";
+            return def.disableReasonKey ?? "ISF_CommandDisableReasonVancian";
         }
 
         public override string TopRightLabel(SorceryDef sorceryDef)
         {
-            return (sorceryDef?.sorcerySchema.energyTrackerDef.EnergyLabelTranslationKey.Translate().CapitalizeFirst()[0]) + ": " +
+            return (sorceryDef?.sorcerySchema.energyTrackerDef.energyLabelKey.Translate().CapitalizeFirst()[0]) + ": " +
                 vancianCasts[sorceryDef].ToString() + "/" +
                 ((int) Math.Ceiling(sorceryDef.MaximumCasts * this.CastFactor)).ToString();
         }

@@ -186,7 +186,7 @@ namespace ItsSorceryFramework
             barBox.height = 22;
 
             // SorcerySchema title
-            Widgets.Label(labelBox, sorcerySchemaDef.energyTrackerDef.EnergyLabelTranslationKey.Translate().CapitalizeFirst());
+            Widgets.Label(labelBox, sorcerySchemaDef.energyTrackerDef.energyLabelKey.Translate().CapitalizeFirst());
 
             // draws power bar
             DrawEnergyBar(barBox);
@@ -342,13 +342,13 @@ namespace ItsSorceryFramework
 
         public override string TopRightLabel(SorceryDef sorceryDef)
         {
-            return (sorceryDef?.sorcerySchema.energyTrackerDef.EnergyLabelTranslationKey.Translate().CapitalizeFirst()[0]) + ": " +
+            return (sorceryDef?.sorcerySchema.energyTrackerDef.energyLabelKey.Translate().CapitalizeFirst()[0]) + ": " +
                     Math.Round(sorceryDef.EnergyCost * this.EnergyCostFactor, 2).ToString();
         }
 
         public override string DisableCommandReason()
         {
-            return def.DisableReasonTranslationKey ?? "ISF_CommandDisableReasonBase";
+            return def.disableReasonKey ?? "ISF_CommandDisableReasonBase";
         }
 
 
