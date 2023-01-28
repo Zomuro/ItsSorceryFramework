@@ -48,12 +48,14 @@ namespace ItsSorceryFramework
 
         public static SorcerySchema FindSorcerySchema(Pawn pawn, SorceryDef def)
         {
+            if (pawn == null) return null;
             Comp_ItsSorcery comp = GetSorceryComp(pawn);
             return comp?.schemaTracker?.sorcerySchemas.FirstOrDefault(s => s.def == def.sorcerySchema);
         }
 
         public static SorcerySchema FindSorcerySchema(Pawn pawn, SorcerySchemaDef def)
         {
+            if (pawn == null) return null;
             Comp_ItsSorcery comp = GetSorceryComp(pawn);
             return comp?.schemaTracker?.sorcerySchemas.FirstOrDefault(s => s.def == def);
         }

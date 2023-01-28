@@ -121,7 +121,7 @@ namespace ItsSorceryFramework
 
         public override string TopRightLabel(SorceryDef sorceryDef)
         {
-            if (sorceryDef.verbProperties.defaultCooldownTime == null) return "";
+            if (sorceryDef.verbProperties.defaultCooldownTime <= 0) return "";
             return "T: " + sorceryDef.verbProperties.defaultCooldownTime;
         }
 

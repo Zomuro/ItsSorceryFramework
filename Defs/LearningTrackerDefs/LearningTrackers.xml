@@ -27,7 +27,7 @@
 	</ItsSorceryFramework.LearningTrackerDef>
 	
 	<ItsSorceryFramework.LearningTreeNodeDef Name = "BaseNode">
-		<learningTracker>LearningTracker_Tree</learningTracker>
+		<learningTrackerDef>LearningTracker_Tree</learningTrackerDef>
 		<defName>node1</defName>
 		<label>Birds and bees</label>
 		<description>The literal basics.</description>
@@ -179,7 +179,7 @@
 	<ItsSorceryFramework.LearningTreeNodeDef>
 		<defName>node12</defName>
 		<label>node12</label>
-		<learningTracker>LearningTracker_Tree2</learningTracker>
+		<learningTrackerDef>LearningTracker_Tree2</learningTrackerDef>
 		<description>it's happening all over again.</description>
 		<coordX>0</coordX>
 		<coordY>0</coordY>
@@ -188,7 +188,7 @@
 	<ItsSorceryFramework.LearningTreeNodeDef>
 		<defName>node22</defName>
 		<label>node22</label>
-		<learningTracker>LearningTracker_Tree2</learningTracker>
+		<learningTrackerDef>LearningTracker_Tree2</learningTrackerDef>
 		<description>absolut agony.</description>
 		<coordX>1</coordX>
 		<coordY>0</coordY>
@@ -197,7 +197,7 @@
 	<ItsSorceryFramework.LearningTreeNodeDef>
 		<defName>node32</defName>
 		<label>node32</label>
-		<learningTracker>LearningTracker_Tree2</learningTracker>
+		<learningTrackerDef>LearningTracker_Tree2</learningTrackerDef>
 		<description>who thought this was a good idea</description>
 		<coordX>1</coordX>
 		<coordY>1</coordY>

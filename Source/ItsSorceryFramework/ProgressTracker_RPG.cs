@@ -177,7 +177,7 @@ namespace ItsSorceryFramework
                     continue;
                 }
 
-                caps[capMod.capacity] = capMod.offset != null ? capMod.offset : 0f;
+                caps[capMod.capacity] = capMod.offset;
             }
         }
 

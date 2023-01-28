@@ -6,4 +6,6 @@
 	<ISF_CommandDisableReasonVancian>{0} has no more casts of this.</ISF_CommandDisableReasonVancian>
 	<ISF_CommandDisableReasonCooldown>{0} must wait longer to cast abilities.</ISF_CommandDisableReasonCooldown>
 	
+	<ISF_CommandDisableNoSchema>{0} does not possess the magic system {1}.</ISF_CommandDisableNoSchema>
+	
 </LanguageData>

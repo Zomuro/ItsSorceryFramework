@@ -8,7 +8,7 @@ using Verse;
 
 namespace ItsSorceryFramework
 {
-    public class ProgressEXPDef : Def
+    public class ProgressEXPTagDef : Def
     {
 		/*public ProgressEXPWorker Worker
 		{
@@ -39,7 +39,7 @@ namespace ItsSorceryFramework
 
 		public List<EXPConsumableItems> expItems = new List<EXPConsumableItems>();
 
-		public ProgressEXPWorker progressEXPWorker;
+		//public ProgressEXPTagWorker progressEXPWorker;
 
     }
 

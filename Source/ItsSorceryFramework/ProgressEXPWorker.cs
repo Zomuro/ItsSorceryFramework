@@ -37,7 +37,7 @@ namespace ItsSorceryFramework
                 exp.ToStringByStyle(ToStringStyle.FloatMaxTwo, ToStringNumberSense.Offset) + " EXP");
         }
 
-        public ProgressEXPDef def;
+        public ProgressEXPTagDef def;
 
         //public SorcerySchema schema;
     }

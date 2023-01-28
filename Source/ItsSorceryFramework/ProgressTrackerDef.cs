@@ -95,11 +95,11 @@ namespace ItsSorceryFramework
             {
                 if (progressEXPWorkers.NullOrEmpty())
                 {
-                    foreach(ProgressEXPDef tag in expTags)
+                    foreach(ProgressEXPTagDef tag in expTags)
                     {
-                        ProgressEXPWorker progressEXPWorker = (ProgressEXPWorker)Activator.CreateInstance(tag.workerClass);
-                        progressEXPWorker.def = tag;
-                        progressEXPWorkers.Add(progressEXPWorker);
+                        ProgressEXPWorker EXPWorker = (ProgressEXPWorker)Activator.CreateInstance(tag.workerClass);
+                        EXPWorker.def = tag;
+                        progressEXPWorkers.Add(EXPWorker);
                     }
                 }
                 return progressEXPWorkers;
@@ -120,7 +120,7 @@ namespace ItsSorceryFramework
 
         public List<ProgressLevelModifier> levelSpecifics = new List<ProgressLevelModifier>();
 
-        public List<ProgressEXPDef> expTags = new List<ProgressEXPDef>();
+        public List<ProgressEXPTagDef> expTags = new List<ProgressEXPTagDef>();
 
         public List<ProgressLevelLabel> levelLabels = new List<ProgressLevelLabel>();
 

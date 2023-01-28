@@ -2,13 +2,13 @@
 
 <Defs>
 
-	<ItsSorceryFramework.ProgressEXPDef>
+	<ItsSorceryFramework.ProgressEXPTagDef>
 		<workerClass>ItsSorceryFramework.ProgressEXPWorker_CastEnergyCost</workerClass>
 		<defName>EXPTag_CastEnergyCost</defName>
 		<expFactor>1</expFactor>
-	</ItsSorceryFramework.ProgressEXPDef>
+	</ItsSorceryFramework.ProgressEXPTagDef>
 	
-	<ItsSorceryFramework.ProgressEXPDef>
+	<ItsSorceryFramework.ProgressEXPTagDef>
 		<workerClass>ItsSorceryFramework.ProgressEXPWorker_OnDamage</workerClass>
 		<defName>EXPTag_OnDamage</defName>
 		<expFactor>0.25</expFactor>
@@ -17,15 +17,15 @@
 			<li>Blunt</li>
 			<li>ArrowHighVelocity</li>
 		</damageDefs>
-	</ItsSorceryFramework.ProgressEXPDef>
+	</ItsSorceryFramework.ProgressEXPTagDef>
 	
-	<ItsSorceryFramework.ProgressEXPDef>
+	<ItsSorceryFramework.ProgressEXPTagDef>
 		<workerClass>ItsSorceryFramework.ProgressEXPWorker_OnDamaged</workerClass>
 		<defName>EXPTag_OnDamaged</defName>
 		<expFactor>1</expFactor>
-	</ItsSorceryFramework.ProgressEXPDef>
+	</ItsSorceryFramework.ProgressEXPTagDef>
 	
-	<ItsSorceryFramework.ProgressEXPDef>
+	<ItsSorceryFramework.ProgressEXPTagDef>
 		<workerClass>ItsSorceryFramework.ProgressEXPWorker_OnSkillEXP</workerClass>
 		<defName>EXPTag_OnSkillEXP</defName>
 		<expFactor>0.1</expFactor>
@@ -33,15 +33,15 @@
 			<li>Melee</li>
 			<li>Shooting</li>
 		</skillDefs>
-	</ItsSorceryFramework.ProgressEXPDef>
+	</ItsSorceryFramework.ProgressEXPTagDef>
 	
-	<ItsSorceryFramework.ProgressEXPDef>
+	<ItsSorceryFramework.ProgressEXPTagDef>
 		<workerClass>ItsSorceryFramework.ProgressEXPWorker_Passive</workerClass>
 		<defName>EXPTag_Passive</defName>
 		<fixedEXP>1</fixedEXP>
-	</ItsSorceryFramework.ProgressEXPDef>
+	</ItsSorceryFramework.ProgressEXPTagDef>
 	
-	<ItsSorceryFramework.ProgressEXPDef>
+	<ItsSorceryFramework.ProgressEXPTagDef>
 		<workerClass>ItsSorceryFramework.ProgressEXPWorker_DuringJob</workerClass>
 		<defName>EXPTag_DuringJob</defName>
 		<fixedEXP>5</fixedEXP>
@@ -54,9 +54,9 @@
 				</jobDefs>
 			</li>
 		</jobSets>
-	</ItsSorceryFramework.ProgressEXPDef>
+	</ItsSorceryFramework.ProgressEXPTagDef>
 	
-	<ItsSorceryFramework.ProgressEXPDef>
+	<ItsSorceryFramework.ProgressEXPTagDef>
 		<workerClass>ItsSorceryFramework.ProgressEXPWorker_OnKill</workerClass>
 		<defName>EXPTag_OnKill</defName>
 		<fixedEXP>100</fixedEXP>
@@ -65,9 +65,9 @@
 			<li>Blunt</li>
 			<li>ArrowHighVelocity</li>
 		</damageDefs>
-	</ItsSorceryFramework.ProgressEXPDef>
+	</ItsSorceryFramework.ProgressEXPTagDef>
 	
-	<ItsSorceryFramework.ProgressEXPDef>
+	<ItsSorceryFramework.ProgressEXPTagDef>
 		<workerClass>ItsSorceryFramework.ProgressEXPWorker_UseItem</workerClass>
 		<defName>EXPTag_UseItem</defName>
 		<expFactor>1</expFactor>
@@ -78,6 +78,6 @@
 				<expFactorStat>MoveSpeed</expFactorStat>
 			</li>
 		</expItems>
-	</ItsSorceryFramework.ProgressEXPDef>
+	</ItsSorceryFramework.ProgressEXPTagDef>
 
 </Defs>

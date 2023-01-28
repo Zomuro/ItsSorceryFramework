@@ -27,26 +27,46 @@ namespace ItsSorceryFramework
 			}
 		}
 
+		public SorcerySchema Schema
+        {
+            get
+            {
+				if(cachedSchema == null)
+                {
+					cachedSchema = SorcerySchemaUtility.FindSorcerySchema(cachedTooltipPawn, this);
+				}
+
+				return cachedSchema;
+            }
+        }
+
 		public IEnumerable<string> SorceryStatSummary(Pawn forPawn = null)
 		{
-			//yield return  "Schema : " + this.sorcerySchema.label.CapitalizeFirst();
-			if (this.EnergyCost != 0)
+			if (this.EnergyCost != 0) // if the ability costs energy
 			{
-				EnergyTracker energyTracker = SorcerySchemaUtility.FindSorcerySchema(forPawn, this).energyTracker;
-				yield return this.sorcerySchema.energyTrackerDef.energyLabelKey.Translate().CapitalizeFirst() + ": "+ 
-					Math.Round(this.EnergyCost * energyTracker.EnergyCostFactor, 2);
+				if(Schema != null) // if the pawn has the appropiate magic system
+				{
+					yield return this.sorcerySchema.energyTrackerDef.energyLabelKey.Translate().CapitalizeFirst() + ": " +
+					Math.Round(this.EnergyCost * Schema.energyTracker.EnergyCostFactor, 2);
+				}
+				else // otherwise give the base energy cost
+				{
+					yield return this.sorcerySchema.energyTrackerDef.energyLabelKey.Translate().CapitalizeFirst() + ": " +
+						Math.Round(this.EnergyCost, 2);
+				}
 			}
-			if (this.verbProperties.warmupTime > 1.401298E-45f)
+			
+			if (this.verbProperties.warmupTime > 0) // if warmuptime > 0, display it
 			{
 				yield return "AbilityCastingTime".Translate() + ": " + this.verbProperties.warmupTime + "LetterSecond".Translate();
 			}
 			float num = this.EffectDuration(forPawn);
-			if (num > 1.401298E-45f)
+			if (num > 0) // if effect duration lasts > 0, show it
 			{
 				int num2 = num.SecondsToTicks();
 				yield return "AbilityDuration".Translate() + ": " + ((num2 >= 2500) ? num2.ToStringTicksToPeriod(true, false, true, true) : (num + "LetterSecond".Translate()));
 			}
-			if (this.HasAreaOfEffect)
+			if (this.HasAreaOfEffect) // if there's an aoe/radius to the ability, show it
 			{
 				yield return "AbilityEffectRadius".Translate() + ": " + Mathf.Ceil(this.EffectRadius);
 			}
@@ -84,6 +104,8 @@ namespace ItsSorceryFramework
 		public string cachedTooltip;
 
 		public Pawn cachedTooltipPawn;
+
+		private SorcerySchema cachedSchema;
 
 		
 	}

@@ -34,7 +34,7 @@ namespace ItsSorceryFramework
                 if (cachedAllNodes == null)
                 {
                     cachedAllNodes = new List<LearningTreeNodeDef>(from def in DefDatabase<LearningTreeNodeDef>.AllDefsListForReading
-                                                                   where def.learningTracker == this.def
+                                                                   where def.learningTrackerDef == this.def
                                                                    select def);
 
                     foreach (LearningTreeNodeDef node in cachedAllNodes)

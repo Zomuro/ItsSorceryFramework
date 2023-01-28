@@ -70,7 +70,10 @@ namespace ItsSorceryFramework
             // as long as it isn't the last page, can move forwards
             if (currentPage < possiblePages && Widgets.ButtonText(button2, ">")) energyTrackerIndex += possibleSlots;
 
-            // shows page counter
+            // if there is only one page, don't bother with the page number
+            if (possiblePages < 2) return;
+
+            // else show page counter
             Text.Anchor = TextAnchor.MiddleCenter;
             Widgets.Label(pageLabel, currentPage.ToString() + " / " + possiblePages.ToString());
             Text.Anchor = TextAnchor.UpperLeft;
