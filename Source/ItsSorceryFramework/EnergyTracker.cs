@@ -160,6 +160,11 @@ namespace ItsSorceryFramework
 
         }
 
+        public virtual float DrawOnGUI(ref Rect rect)
+        {
+            return 0;
+        }
+
         public virtual void HightlightEnergyCost(Rect rec)
         {
 
@@ -188,9 +193,50 @@ namespace ItsSorceryFramework
             Widgets.Label(rect, sorcerySchemaDef.LabelCap.ToString());
         }
 
+        public float SchemaViewBox(ref Rect rect)
+        {
+            //float yMin = rect.yMin;
+            float coordY = 0f;
+
+            // sets up outline of the sorcery schema in the itab
+            //Widgets.DrawBoxSolidWithOutline(rect, new Color(), Color.grey, 1);
+
+            // information button- shows important info about the sorcery schema
+            SorcerySchemaDef tempSchemaDef = sorcerySchemaDef;
+            tempSchemaDef.TempPawn = pawn;
+            sorcerySchemaDef.TempPawn = pawn;
+
+            Widgets.InfoCardButton(rect.x + 5, rect.y + 5, tempSchemaDef);
+            LearningTrackerButton(rect.x + 5 + 24, rect.y + 5);
+            /*LimitButton(rect.x + rect.width - 5 - 24, rect.y + 5);
+            TurnButton(rect.x + rect.width - 5 - 24 - 24, rect.y + 5);*/
+
+            tempSchemaDef.ClearCachedData();
+
+            // shows the label of the sorcery schema in the itab
+            Text.Font = GameFont.Medium;
+            Text.Anchor = TextAnchor.UpperCenter;
+
+            Rect titleRect = new Rect(rect.x, rect.y, rect.width, 50f);
+            Widgets.LabelCacheHeight(ref titleRect, sorcerySchemaDef.LabelCap.ToString());
+            coordY += titleRect.height;
+
+            Text.Anchor = TextAnchor.UpperLeft;
+
+            return coordY;
+        }
+
         public virtual void DrawEnergyBar(Rect rect)
         {
 
+        }
+
+        public void DrawOutline(Rect rect, Color outColor, int outThick = 1, Texture2D lineTex = null)
+        {
+            Color color = GUI.color;
+            GUI.color = outColor;
+            Widgets.DrawBox(rect, outThick, lineTex);
+            GUI.color = color;
         }
 
         public bool LearningTrackerButton(float x, float y)
