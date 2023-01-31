@@ -74,7 +74,7 @@ namespace ItsSorceryFramework
 
                     if (!__1.CanReach(ammo, PathEndMode.ClosestTouch, Danger.Deadly, false, false, TraverseMode.ByPawn))
                     {
-                        text = "ISF_Charge".Translate(schema.def.LabelCap.ToString(), ammo.def.LabelCap.ToString())
+                        text = "ISF_Charge".Translate(schema.def.LabelCap.ToString(), ammo.def.label)
                             + "ISF_ChargeNoPath".Translate();
                         __2.Add(new FloatMenuOption(text, null, MenuOptionPriority.Default,
                             null, null, 0f, null, null, true, 0));
@@ -82,7 +82,7 @@ namespace ItsSorceryFramework
                     else if (energyTracker.MaxEnergy != 0 &&
                         energyTracker.currentEnergy == energyTracker.MaxEnergy)
                     {
-                        text = "ISF_Charge".Translate(schema.def.LabelCap.ToString(), ammo.def.LabelCap.ToString())
+                        text = "ISF_Charge".Translate(schema.def.LabelCap.ToString(), ammo.def.label)
                             + "ISF_ChargeFull".Translate();
                         __2.Add(new FloatMenuOption(text, null, MenuOptionPriority.Default, 
                             null, null, 0f, null, null, true, 0));
@@ -94,8 +94,8 @@ namespace ItsSorceryFramework
                         float gain = endcount * ammoRef[ammo.def];
                         if (energyTracker.MaxEnergy == 0)
                         {
-                            text = "ISF_Charge".Translate(schema.def.LabelCap.ToString(), ammo.def.ToString())
-                            + "ISF_ChargeCalc".Translate(ammo.stackCount, ammo.def.ToString(),
+                            text = "ISF_Charge".Translate(schema.def.LabelCap.ToString(), ammo.def.label)
+                            + "ISF_ChargeCalc".Translate(ammo.stackCount, ammo.def.label,
                                 ammo.stackCount * ammoRef[ammo.def],
                                 energyTracker.def.energyLabelKey.Translate());
                         }
@@ -104,8 +104,8 @@ namespace ItsSorceryFramework
                             count = (int)Math.Ceiling((energyTracker.MaxEnergy - energyTracker.currentEnergy) / ammoRef[ammo.def]);
                             endcount = Math.Min(count, ammo.stackCount);
                             gain = Math.Min(endcount * ammoRef[ammo.def], energyTracker.MaxEnergy - energyTracker.currentEnergy);
-                            text = "ISF_Charge".Translate(schema.def.LabelCap.ToString(), ammo.def.ToString())
-                            + "ISF_ChargeCalc".Translate(endcount, ammo.def.ToString(),
+                            text = "ISF_Charge".Translate(schema.def.LabelCap.ToString(), ammo.def.label)
+                            + "ISF_ChargeCalc".Translate(endcount, ammo.def.label,
                                 gain, energyTracker.def.energyLabelKey.Translate());
                         }
                             

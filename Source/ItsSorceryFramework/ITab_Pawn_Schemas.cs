@@ -22,7 +22,7 @@ namespace ItsSorceryFramework
 
         public ITab_Pawn_Schemas()
         {
-            this.size = new Vector2(460f, 450f);
+            this.size = new Vector2(480f, 450f);
             this.labelKey = "ISF_TabSchemas";
             this.tutorTag = "ISF_TabSchemas";
         }
@@ -30,14 +30,26 @@ namespace ItsSorceryFramework
         protected override void FillTab()
         {
             Text.Font = GameFont.Medium;
+            Rect window = new Rect(0, 5, TabRect.width, TabRect.height - 5);
+            Widgets.BeginGroup(window);
 
-            Rect window = new Rect(0, 30, size.x, size.y);
-            Rect view = window.ContractedBy(10f);
+            Rect view = window.ContractedBy(15f);
+            view.yMin += 10;
+            view.xMax = window.xMax;
+
+            Color color = GUI.color;
+            GUI.color = Color.gray;
+            Widgets.DrawLineHorizontal(window.x, view.y, window.width);
+            GUI.color = color;
+
+            Rect viewSchema = view.ContractedBy(5f);
             Rect schemaRect = view.ContractedBy(8f);
+            schemaRect.width -= 20f;
             schemaRect.height = 75f;
 
+            Rect viewScroll = new Rect(viewSchema.x, viewSchema.y, viewSchema.width - 20, schemaScrollViewHeight + 10f);
             // calculate the number of "pages" and schemas we can fit into the itab
-            possibleSlots = (int) Math.Floor((size.y - 48) / 75f);
+            possibleSlots = 5;
             possiblePages = (int) Math.Ceiling((1f*Schemas.CountAllowNull()) / possibleSlots);
 
             // sets current page
@@ -47,24 +59,31 @@ namespace ItsSorceryFramework
             // draw page count and page change buttons
             DrawPageUI();
 
+            float totalSchemaHeight = 0;
+            
+            Widgets.BeginScrollView(viewSchema, ref this.schemaScrollPosition, viewScroll, true);
             // for every sorcery schema
-            float schemaHeight = 0f;
             foreach (SorcerySchema schema in Schemas.GetRange(energyTrackerIndex,
                 Math.Min(Schemas.Count() - energyTrackerIndex, 5)))
             {
                 // take the energy tracker and display it
                 //schema.energyTracker.DrawOnGUI(schemaRect);
-                schemaHeight = schema.energyTracker.DrawOnGUI(ref schemaRect);
+                float schemaHeight = schema.energyTracker.DrawOnGUI(ref schemaRect);
+                totalSchemaHeight += schemaHeight + 1;
                 schemaRect.y += schemaHeight + 1;
             }
             Text.Font = GameFont.Small;
+
+            schemaScrollViewHeight = totalSchemaHeight;
+            Widgets.EndScrollView();
+            Widgets.EndGroup();
         }
 
         public void DrawPageUI()
         {
-            Rect button1 = new Rect(size.x / 2 - 25 - 50, 10, 50, 25);
-            Rect button2 = new Rect(size.x / 2 + 25, 10, 50, 25);
-            Rect pageLabel = new Rect(size.x / 2 - 25, 10, 50, 25);
+            Rect button1 = new Rect(size.x / 2 - 25 - 50, 0, 50, 25);
+            Rect button2 = new Rect(size.x / 2 + 25, 0, 50, 25);
+            Rect pageLabel = new Rect(size.x / 2 - 25, 0, 50, 25);
 
             // as long as it isn't the first page, go back
             if (currentPage > 1 && Widgets.ButtonText(button1, "<")) energyTrackerIndex -= possibleSlots;
@@ -117,5 +136,9 @@ namespace ItsSorceryFramework
         public int possiblePages;
 
         public int possibleSlots;
+
+        private Vector2 schemaScrollPosition = Vector2.zero;
+
+        private float schemaScrollViewHeight;
     }
 }

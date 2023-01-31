@@ -109,7 +109,7 @@
 		</comps>
 	</ItsSorceryFramework.SorceryDef>
 	
-	<!--<ItsSorceryFramework.SorceryDef>
+	<ItsSorceryFramework.SorceryDef>
 		<abilityClass>ItsSorceryFramework.Sorcery</abilityClass>
 		<category>Sorcery</category>
 		<sorcerySchema>SorcerySchema_Base7</sorcerySchema>
@@ -149,6 +149,6 @@
 				<fleckDef>PsycastPsychicEffect</fleckDef>
 			</li>
 		</comps>
-	</ItsSorceryFramework.SorceryDef>-->
+	</ItsSorceryFramework.SorceryDef>
   
 </Defs>

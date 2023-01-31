@@ -82,6 +82,10 @@
 				<key>Chocolate</key>
 				<value>10.0</value>
 			</li>
+			<li>
+				<key>InsectJelly</key>
+				<value>15.0</value>
+			</li>
 		</sorceryAmmoDict>
 	</ItsSorceryFramework.EnergyTrackerDef>
 	

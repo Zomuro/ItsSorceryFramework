@@ -113,6 +113,39 @@ namespace ItsSorceryFramework
             Text.Anchor = TextAnchor.UpperLeft;
         }
 
+        public override float DrawOnGUI(ref Rect rect)
+        {
+            // get original rect
+            Rect orgRect = new Rect(rect);
+            float coordY = 0;
+
+            // draws info, learningtracker buttons + schema title
+            coordY += SchemaViewBox(ref rect);
+
+            // add space
+            coordY += 10;
+            rect.y += coordY;
+
+            // refresh label
+            Text.Font = GameFont.Small;
+            Text.Anchor = TextAnchor.MiddleCenter;
+            Widgets.LabelCacheHeight(ref rect, def.refreshNotifKey.Translate(GenDate.ToStringTicksToPeriod(tickCount)));
+            Text.Anchor = TextAnchor.UpperLeft;
+
+            // add label/barbox height + add a small boundary space for appearance
+            coordY += rect.height + 10;
+            // set rect y to original, and rect height to coordY
+            rect.y = orgRect.y;
+            rect.height = coordY;
+
+            // draw outline of the entire rectangle when it's all done
+            DrawOutline(rect, Color.grey, 1);
+            // reset rectangle
+            rect = orgRect;
+            // return accumulated height
+            return coordY;
+        }
+
         public override IEnumerable<StatDrawEntry> SpecialDisplayStats(StatRequest req)
         {
             StatDef statDef;

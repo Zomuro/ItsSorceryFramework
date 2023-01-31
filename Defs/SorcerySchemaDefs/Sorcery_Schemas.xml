@@ -31,36 +31,66 @@
 	<ItsSorceryFramework.SorcerySchemaDef>
 		<defName>SorcerySchema_Base3</defName>
 		<label>Royalty Inspiration</label>
+		<description>totally inspired by the Royalty DLC</description>
 	
 		<energyTrackerDef>EnergyTracker_BaseInverted</energyTrackerDef>
+		<learningTrackerDefs>
+			<li>LearningTracker_Progress</li>
+			<li>LearningTracker_Tree</li>
+		</learningTrackerDefs>
+		<progressTrackerDef>ProgressTracker_Base</progressTrackerDef>
 	</ItsSorceryFramework.SorcerySchemaDef>
 	
 	<ItsSorceryFramework.SorcerySchemaDef>
 		<defName>SorcerySchema_Base4</defName>
 		<label>Vancian 1: The Original</label>
+		<description>please god let there not be a sequel</description>
 	
 		<energyTrackerDef>EnergyTracker_BaseVancian</energyTrackerDef>
+		<learningTrackerDefs>
+			<li>LearningTracker_Progress</li>
+			<li>LearningTracker_Tree</li>
+		</learningTrackerDefs>
+		<progressTrackerDef>ProgressTracker_Base</progressTrackerDef>
 	</ItsSorceryFramework.SorcerySchemaDef>
 	
 	<ItsSorceryFramework.SorcerySchemaDef>
 		<defName>SorcerySchema_Base5</defName>
 		<label>Vancian 2: Electric Bungaloo</label>
+		<description>this sequel didn't need to exist</description>
 	
 		<energyTrackerDef>EnergyTracker_BaseVancianLifetime</energyTrackerDef>
+		<learningTrackerDefs>
+			<li>LearningTracker_Progress</li>
+			<li>LearningTracker_Tree</li>
+		</learningTrackerDefs>
+		<progressTrackerDef>ProgressTracker_Base</progressTrackerDef>
 	</ItsSorceryFramework.SorcerySchemaDef>
 	
 	<ItsSorceryFramework.SorcerySchemaDef>
 		<defName>SorcerySchema_Base6</defName>
 		<label>Coomsumerism</label>
+		<description>15 ranchers sucking cow-girl teats</description>
 	
 		<energyTrackerDef>EnergyTracker_BaseConsumable</energyTrackerDef>
+		<learningTrackerDefs>
+			<li>LearningTracker_Progress</li>
+			<li>LearningTracker_Tree</li>
+		</learningTrackerDefs>
+		<progressTrackerDef>ProgressTracker_Base</progressTrackerDef>
 	</ItsSorceryFramework.SorcerySchemaDef>
 	
 	<ItsSorceryFramework.SorcerySchemaDef>
 		<defName>SorcerySchema_Base7</defName>
 		<label>The Waiting Game</label>
+		<description>five seconds</description>
 	
 		<energyTrackerDef>EnergyTracker_BaseCooldown</energyTrackerDef>
+		<learningTrackerDefs>
+			<li>LearningTracker_Progress</li>
+			<li>LearningTracker_Tree</li>
+		</learningTrackerDefs>
+		<progressTrackerDef>ProgressTracker_Base</progressTrackerDef>
 	</ItsSorceryFramework.SorcerySchemaDef>
 
 </Defs>
