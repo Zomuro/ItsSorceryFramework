@@ -111,6 +111,7 @@
 	
 	<ItsSorceryFramework.SorceryDef>
 		<abilityClass>ItsSorceryFramework.Sorcery</abilityClass>
+		<gizmoClass>ItsSorceryFramework.Command_Sorcery</gizmoClass>
 		<category>Sorcery</category>
 		<sorcerySchema>SorcerySchema_Base7</sorcerySchema>
 		<defName>testsorcery4</defName>

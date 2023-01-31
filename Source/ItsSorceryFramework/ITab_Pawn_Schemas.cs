@@ -27,6 +27,12 @@ namespace ItsSorceryFramework
             this.tutorTag = "ISF_TabSchemas";
         }
 
+        public override void OnOpen()
+        {
+            base.OnOpen();
+            focusFilter = true;
+        }
+
         protected override void FillTab()
         {
             Text.Font = GameFont.Medium;
@@ -50,7 +56,7 @@ namespace ItsSorceryFramework
             Rect viewScroll = new Rect(viewSchema.x, viewSchema.y, viewSchema.width - 20, schemaScrollViewHeight + 10f);
             // calculate the number of "pages" and schemas we can fit into the itab
             possibleSlots = 5;
-            possiblePages = (int) Math.Ceiling((1f*Schemas.CountAllowNull()) / possibleSlots);
+            possiblePages = (int) Math.Ceiling((1f* filteredSchemas.CountAllowNull()) / possibleSlots);
 
             // sets current page
             currentPage = energyTrackerIndex / possibleSlots + 1;
@@ -58,13 +64,14 @@ namespace ItsSorceryFramework
 
             // draw page count and page change buttons
             DrawPageUI();
+            DrawSearchBar();
 
             float totalSchemaHeight = 0;
             
             Widgets.BeginScrollView(viewSchema, ref this.schemaScrollPosition, viewScroll, true);
             // for every sorcery schema
-            foreach (SorcerySchema schema in Schemas.GetRange(energyTrackerIndex,
-                Math.Min(Schemas.Count() - energyTrackerIndex, 5)))
+            foreach (SorcerySchema schema in filteredSchemas.GetRange(energyTrackerIndex,
+                Math.Min(filteredSchemas.Count() - energyTrackerIndex, 5)))
             {
                 // take the energy tracker and display it
                 //schema.energyTracker.DrawOnGUI(schemaRect);
@@ -105,6 +112,27 @@ namespace ItsSorceryFramework
             }
         }
 
+        public void DrawSearchBar()
+        {
+            Rect bar = new Rect(TabRect.x + 20, 0, TabRect.width / 3 - 20, 26);
+            GUI.SetNextControlName("SchemaFilter");
+
+            // if you press a keyboard button, end method and wait for the next pass
+            if (Event.current.type == EventType.KeyDown)
+            {
+                return;
+            }
+            this.filter = Widgets.TextField(bar, this.filter);
+
+            // when you close the itab, refresh the whole damn thing
+            if ((Event.current.type == EventType.KeyDown || Event.current.type == EventType.Repaint) && focusFilter)
+            {
+                GUI.FocusControl("SchemaFilter");
+                this.filter = "";
+                this.focusFilter = false;
+            }
+        }
+
         public Comp_ItsSorcery SorceryComp
         {
             get
@@ -127,7 +155,24 @@ namespace ItsSorceryFramework
             }
         }
 
+        // used in conjunction with the search bar component
+        public List<SorcerySchema> filteredSchemas
+        {
+            get
+            {
+                if (filter.NullOrEmpty()) return Schemas;
+                if (cachedFilterSchema == null || filter != cachedFilter)
+                {
+                    cachedFilterSchema = (from schema in Schemas where schema.def.label.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0 select schema).ToList();
+                    cachedFilter = filter;
+                }
+                return cachedFilterSchema;
+            }
+        }
+
         private Comp_ItsSorcery sorceryComp = null;
+
+        private List<SorcerySchema> cachedFilterSchema;
 
         public int energyTrackerIndex = 0;
 
@@ -140,5 +185,11 @@ namespace ItsSorceryFramework
         private Vector2 schemaScrollPosition = Vector2.zero;
 
         private float schemaScrollViewHeight;
+
+        private string filter = "";
+
+        private string cachedFilter = "";
+
+        private bool focusFilter;
     }
 }
