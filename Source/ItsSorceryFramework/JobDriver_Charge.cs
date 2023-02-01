@@ -70,7 +70,12 @@ namespace ItsSorceryFramework
 			}
 			Log.Message(count.ToString());
 			EnergyTracker et = SorcerySchemaUtility.FindSorcerySchema(pawn, schemaDef).energyTracker;
-			et.currentEnergy += Math.Min(count * et.def.sorceryAmmoDict[ammo.def], et.MaxEnergy - et.currentEnergy);
+			if (et == null || et.def.consumables.NullOrEmpty()) return;
+
+			EnergyConsumable consume = et.def.consumables.FirstOrDefault(x => x.thingDef == ammo.def);
+			if (consume is null) return;
+
+			et.currentEnergy += Math.Min(count * consume.exp, et.MaxEnergy - et.currentEnergy);
 			ammo.SplitOff(count).Destroy(DestroyMode.Vanish);
 		}
 

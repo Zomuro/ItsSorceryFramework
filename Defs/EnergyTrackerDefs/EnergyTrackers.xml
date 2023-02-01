@@ -73,20 +73,20 @@
 		<energyMaxStatDef>MaxEnergy_ItsSorcery</energyMaxStatDef>
 		<energyRecoveryStatDef>EnergyRecovery_ItsSorcery</energyRecoveryStatDef>
 		<refreshTicks>3000</refreshTicks>
-		<sorceryAmmoDict>
+		<consumables>
 			<li>
-				<key>Milk</key>
-				<value>5.0</value>
+				<thingDef>Milk</thingDef>
+				<exp>5.0</exp>
 			</li>
 			<li>
-				<key>Chocolate</key>
-				<value>10.0</value>
+				<thingDef>Chocolate</thingDef>
+				<exp>10.0</exp>
 			</li>
 			<li>
-				<key>InsectJelly</key>
-				<value>15.0</value>
+				<thingDef>InsectJelly</thingDef>
+				<exp>15.0</exp>
 			</li>
-		</sorceryAmmoDict>
+		</consumables>
 	</ItsSorceryFramework.EnergyTrackerDef>
 	
 	<ItsSorceryFramework.EnergyTrackerDef Name = "EnergyTrackerBaseCooldown">

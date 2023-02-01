@@ -74,12 +74,19 @@ namespace ItsSorceryFramework
         public string disableReasonKey;
 
         // Consumable EnerrgyTracker ammo dictionary
-        public Dictionary<ThingDef, float> sorceryAmmoDict;
+        public List<EnergyConsumable> consumables;
 
         // Cooldown EnergyTracker string
         [MustTranslate]
         public string cooldownKey = "ISF_EnergyTrackerCooldown";
 
 
+    }
+
+    public class EnergyConsumable
+    {
+        public ThingDef thingDef;
+
+        public float exp = 1f;
     }
 }

@@ -96,13 +96,13 @@ namespace ItsSorceryFramework
             }
 
             String ammo = "";
-            foreach(var item in def.sorceryAmmoDict)
+            foreach(var item in def.consumables)
             {
                 if(ammo == "")
                 {
-                    ammo = item.Key.LabelCap + " ({0})".Translate(item.Value);
+                    ammo = item.thingDef.LabelCap + " ({0})".Translate(item.exp);
                 }
-                else ammo = ammo + ", "+ item.Key.LabelCap + " ({0})".Translate(item.Value);
+                else ammo = ammo + ", "+ item.thingDef.LabelCap + " ({0})".Translate(item.exp);
             }
             if (ammo == "") ammo = "None";
 

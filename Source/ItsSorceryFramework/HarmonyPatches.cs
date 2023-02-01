@@ -63,10 +63,14 @@ namespace ItsSorceryFramework
                                          select schema)
             {
                 EnergyTracker energyTracker = schema.energyTracker;
-                Dictionary<ThingDef, float> ammoRef = schema.energyTracker.def.sorceryAmmoDict;
-                foreach (ThingDef thingDef in ammoRef.Keys)
+                if (energyTracker == null || energyTracker.def.consumables.NullOrEmpty()) continue;
+
+                List<EnergyConsumable> consumables = energyTracker.def.consumables;
+                //Dictionary<ThingDef, float> ammoRef = schema.energyTracker.def.sorceryAmmoDict;
+                //foreach (ThingDef thingDef in ammoRef.Keys)
+                foreach (var consume in consumables)
                 {
-                    Thing ammo = __0.ToIntVec3().GetFirstThing(__1.Map, thingDef);
+                    Thing ammo = __0.ToIntVec3().GetFirstThing(__1.Map, consume.thingDef);
                     if (ammo == null)
                     {
                         continue;
@@ -91,19 +95,19 @@ namespace ItsSorceryFramework
                     {
                         int count = 0;
                         int endcount = ammo.stackCount;
-                        float gain = endcount * ammoRef[ammo.def];
+                        float gain = endcount * consume.exp;
                         if (energyTracker.MaxEnergy == 0)
                         {
                             text = "ISF_Charge".Translate(schema.def.LabelCap.ToString(), ammo.def.label)
                             + "ISF_ChargeCalc".Translate(ammo.stackCount, ammo.def.label,
-                                ammo.stackCount * ammoRef[ammo.def],
+                                ammo.stackCount * consume.exp,
                                 energyTracker.def.energyLabelKey.Translate());
                         }
                         else
                         {
-                            count = (int)Math.Ceiling((energyTracker.MaxEnergy - energyTracker.currentEnergy) / ammoRef[ammo.def]);
+                            count = (int)Math.Ceiling((energyTracker.MaxEnergy - energyTracker.currentEnergy) / consume.exp);
                             endcount = Math.Min(count, ammo.stackCount);
-                            gain = Math.Min(endcount * ammoRef[ammo.def], energyTracker.MaxEnergy - energyTracker.currentEnergy);
+                            gain = Math.Min(endcount * consume.exp, energyTracker.MaxEnergy - energyTracker.currentEnergy);
                             text = "ISF_Charge".Translate(schema.def.LabelCap.ToString(), ammo.def.label)
                             + "ISF_ChargeCalc".Translate(endcount, ammo.def.label,
                                 gain, energyTracker.def.energyLabelKey.Translate());

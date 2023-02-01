@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using RimWorld;
 using Verse;
 using Verse.Sound;
@@ -31,7 +29,7 @@ namespace ItsSorceryFramework
         public override void OnOpen()
         {
             base.OnOpen();
-            focusFilter = true;
+            this.filter = "";
         }
 
         protected override void FillTab()
@@ -120,22 +118,12 @@ namespace ItsSorceryFramework
         {
             //Rect bar = new Rect(TabRect.x + 20, 0, TabRect.width / 3 - 20, 26);
             Rect bar = new Rect(xPos, 0, TabRect.width / 4 - (xPos - TabRect.x), 26);
-            GUI.SetNextControlName("SchemaFilter");
 
-            // if you press a keyboard button, end method and wait for the next pass
-            // may need to adjust this to work much better
-            if (Event.current.type == EventType.KeyDown && (KeyBindingDefOf.Dev_ToggleDebugSettingsMenu.KeyDownEvent || KeyBindingDefOf.Dev_ToggleDebugActionsMenu.KeyDownEvent))
-            {
-                return bar;
-            }
             this.filter = Widgets.TextField(bar, this.filter);
 
-            // when you close the itab, refresh the whole damn thing
-            if ((Event.current.type == EventType.KeyDown || Event.current.type == EventType.Repaint) && focusFilter)
+            if(Event.current.type == EventType.MouseDown || Event.current.keyCode == KeyCode.Escape)
             {
-                GUI.FocusControl("SchemaFilter");
-                this.filter = "";
-                this.focusFilter = false;
+                GUI.FocusControl(null);
             }
 
             return bar;
@@ -193,7 +181,9 @@ namespace ItsSorceryFramework
                 if (filter.NullOrEmpty()) return Schemas;
                 if (cachedFilterSchema == null || filter != cachedFilter)
                 {
-                    cachedFilterSchema = (from schema in Schemas where schema.def.label.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0 select schema).ToList();
+                    cachedFilterSchema = (from schema in Schemas 
+                                          where schema.def.label.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0 
+                                          select schema).ToList();
                     cachedFilter = filter;
                 }
                 return cachedFilterSchema;
@@ -207,7 +197,9 @@ namespace ItsSorceryFramework
                 if (filter.NullOrEmpty()) return FavSchemas;
                 if (cachedFilterFavSchema == null || filter != cachedFilter)
                 {
-                    cachedFilterFavSchema = (from schema in FilteredSchemas where schema.favorited select schema).ToList();
+                    cachedFilterFavSchema = (from schema in FilteredSchemas 
+                                             where schema.favorited 
+                                             select schema).ToList();
                     cachedFilter = filter;
                 }
                 return cachedFilterFavSchema;
@@ -235,8 +227,6 @@ namespace ItsSorceryFramework
         private string filter = "";
 
         private string cachedFilter = "";
-
-        private bool focusFilter;
 
         private bool favView = false;
     }
