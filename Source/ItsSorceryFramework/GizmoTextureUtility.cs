@@ -21,8 +21,8 @@ namespace ItsSorceryFramework
 
         public static readonly Texture2D UnderBarTex = SolidColorMaterials.NewSolidColorTexture(new Color(0.6f, 0f, 0f)); //RGB #990000 | crimson red (qi deprivation)
 
-        public static readonly Texture2D PauseButton = ContentFinder<Texture2D>.Get("UI/TimeControls/TimeSpeedButton_Pause", true);
+        public static readonly Texture2D StarEmpty = ContentFinder<Texture2D>.Get("UI/ITab_Schema/StarEmpty", true);
 
-        public static readonly Texture2D PlayButton = ContentFinder<Texture2D>.Get("UI/TimeControls/TimeSpeedButton_Normal", true);
+        public static readonly Texture2D StarFull = ContentFinder<Texture2D>.Get("UI/ITab_Schema/StarFull", true);
     }
 }

@@ -60,6 +60,7 @@ namespace ItsSorceryFramework
             Scribe_Deep.Look(ref energyTracker, "energyTracker", new object[] {pawn});
             Scribe_Collections.Look(ref learningTrackers, "learningTrackers", LookMode.Deep, new object[] { pawn });
             Scribe_Deep.Look(ref progressTracker, "progressTracker", new object[] { pawn });
+            Scribe_Values.Look(ref favorited, "favorited", false);
         }
 
         public Pawn pawn;
@@ -71,5 +72,7 @@ namespace ItsSorceryFramework
         public List<LearningTracker> learningTrackers = new List<LearningTracker>();
 
         public ProgressTracker progressTracker;
+
+        public bool favorited = false;
     }
 }

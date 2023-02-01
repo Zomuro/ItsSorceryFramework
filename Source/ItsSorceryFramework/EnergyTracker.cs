@@ -208,6 +208,7 @@ namespace ItsSorceryFramework
 
             Widgets.InfoCardButton(rect.x + 5, rect.y + 5, tempSchemaDef);
             LearningTrackerButton(rect.x + 5 + 24, rect.y + 5);
+            FavButton(rect.x + 5 + 48, rect.y + 5);
             /*LimitButton(rect.x + rect.width - 5 - 24, rect.y + 5);
             TurnButton(rect.x + rect.width - 5 - 24 - 24, rect.y + 5);*/
 
@@ -217,7 +218,7 @@ namespace ItsSorceryFramework
             Text.Font = GameFont.Medium;
             Text.Anchor = TextAnchor.UpperCenter;
 
-            Rect titleRect = new Rect(rect.x, rect.y, rect.width, 50f);
+            Rect titleRect = new Rect(rect.x + rect.width/5, rect.y, rect.width * 3/5, 50f);
             Widgets.LabelCacheHeight(ref titleRect, sorcerySchemaDef.LabelCap.ToString());
             coordY += titleRect.height;
 
@@ -241,12 +242,6 @@ namespace ItsSorceryFramework
 
         public bool LearningTrackerButton(float x, float y)
         {
-            /*if (cachedLearningTrackers.NullOrEmpty())
-            {
-                cachedLearningTrackers = SorcerySchemaUtility.FindSorcerySchema(pawn, schemaDef).learningTrackers;
-            }
-            if (cachedLearningTrackers.NullOrEmpty()) return false;*/
-
             if (LearningTrackers.NullOrEmpty()) return false;
             Rect rect = new Rect(x, y, 24f, 24f);
             MouseoverSounds.DoRegion(rect);
@@ -256,6 +251,20 @@ namespace ItsSorceryFramework
             {
                 Find.TickManager.Pause();
                 Find.WindowStack.Add(new Dialog_LearningTabs(LearningTrackers));
+                return true;
+            }
+            return false;
+        }
+
+        public bool FavButton(float x, float y)
+        {
+            Rect rect = new Rect(x, y, 24f, 24f);
+            MouseoverSounds.DoRegion(rect);
+            TooltipHandler.TipRegionByKey(rect, "ISF_ButtonFav");
+
+            if (Widgets.ButtonImage(rect, Schema.favorited ? GizmoTextureUtility.StarFull : GizmoTextureUtility.StarEmpty, GUI.color, true))
+            {
+                Schema.favorited = !Schema.favorited;
                 return true;
             }
             return false;
@@ -275,26 +284,13 @@ namespace ItsSorceryFramework
             return false;
         }
 
-
-        // turn button check seperated into its own method to easily be harmony patched via postfix
-        // to allow modders to add in their own EnergyTracker classes to enable the turn button check
-        /*public bool TurnButtonCheck()
-        {
-            if (this.GetType() == typeof(EnergyTracker_InvertedTurnBased) || 
-                this.GetType() == typeof(EnergyTracker_RPGTurnBased)) return true;
-
-            return false;
-        }*/
-
         public bool TurnButton(float x, float y)
         {
-            //if (!TurnButtonCheck()) return false;
-
             Rect rect = new Rect(x, y, 24f, 24f);
             MouseoverSounds.DoRegion(rect);
             TooltipHandler.TipRegionByKey(rect, "ISF_ButtonTurnTimer");
 
-            if (Widgets.ButtonImage(rect, turnTimerOn ? GizmoTextureUtility.PauseButton : GizmoTextureUtility.PlayButton, GUI.color, true))
+            if (Widgets.ButtonImage(rect, turnTimerOn ? TexButton.SpeedButtonTextures[0] : TexButton.SpeedButtonTextures[1], GUI.color, true))
             {
                 turnTimerOn = !turnTimerOn;
                 return true;
@@ -353,15 +349,26 @@ namespace ItsSorceryFramework
             return "Energy class: "+ this.GetType().Name.ToString();
         }
 
+        public SorcerySchema Schema
+        {
+            get
+            {
+                if(cachedSchema == null)
+                {
+                    cachedSchema = SorcerySchemaUtility.FindSorcerySchema(pawn, sorcerySchemaDef);
+                }
+                return cachedSchema;
+            }
+        }
+
         public List<LearningTracker> LearningTrackers
         {
             get
             {
-                if (cachedLearningTrackers.NullOrEmpty())
+                if (Schema == null || cachedLearningTrackers.NullOrEmpty())
                 {
-                    cachedLearningTrackers = SorcerySchemaUtility.FindSorcerySchema(pawn, sorcerySchemaDef).learningTrackers;
+                    cachedLearningTrackers = Schema.learningTrackers;
                 }
-
                 return cachedLearningTrackers;
             }
         }
@@ -371,6 +378,8 @@ namespace ItsSorceryFramework
         public EnergyTrackerDef def;
 
         public SorcerySchemaDef sorcerySchemaDef;
+
+        private SorcerySchema cachedSchema;
 
         private List<LearningTracker> cachedLearningTrackers = new List<LearningTracker>();
 

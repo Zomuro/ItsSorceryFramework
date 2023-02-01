@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using RimWorld;
 using Verse;
+using Verse.Sound;
 using UnityEngine;
 
 namespace ItsSorceryFramework
@@ -53,10 +54,12 @@ namespace ItsSorceryFramework
             schemaRect.width -= 20f;
             schemaRect.height = 75f;
 
+            List<SorcerySchema> viewedSchemas = favView ? FilteredFavSchemas : FilteredSchemas;
+
             Rect viewScroll = new Rect(viewSchema.x, viewSchema.y, viewSchema.width - 20, schemaScrollViewHeight + 10f);
             // calculate the number of "pages" and schemas we can fit into the itab
             possibleSlots = 5;
-            possiblePages = (int) Math.Ceiling((1f* filteredSchemas.CountAllowNull()) / possibleSlots);
+            possiblePages = (int) Math.Ceiling((1f* viewedSchemas.CountAllowNull()) / possibleSlots);
 
             // sets current page
             currentPage = energyTrackerIndex / possibleSlots + 1;
@@ -64,14 +67,15 @@ namespace ItsSorceryFramework
 
             // draw page count and page change buttons
             DrawPageUI();
-            DrawSearchBar();
+            Rect search = DrawSearchBar(schemaRect.x);
+            FavViewButton(search.xMax + 5, 0);
 
             float totalSchemaHeight = 0;
             
             Widgets.BeginScrollView(viewSchema, ref this.schemaScrollPosition, viewScroll, true);
             // for every sorcery schema
-            foreach (SorcerySchema schema in filteredSchemas.GetRange(energyTrackerIndex,
-                Math.Min(filteredSchemas.Count() - energyTrackerIndex, 5)))
+            foreach (SorcerySchema schema in viewedSchemas.GetRange(energyTrackerIndex,
+                Math.Min(viewedSchemas.Count() - energyTrackerIndex, 5)))
             {
                 // take the energy tracker and display it
                 //schema.energyTracker.DrawOnGUI(schemaRect);
@@ -112,15 +116,17 @@ namespace ItsSorceryFramework
             }
         }
 
-        public void DrawSearchBar()
+        public Rect DrawSearchBar(float xPos)
         {
-            Rect bar = new Rect(TabRect.x + 20, 0, TabRect.width / 3 - 20, 26);
+            //Rect bar = new Rect(TabRect.x + 20, 0, TabRect.width / 3 - 20, 26);
+            Rect bar = new Rect(xPos, 0, TabRect.width / 4 - (xPos - TabRect.x), 26);
             GUI.SetNextControlName("SchemaFilter");
 
             // if you press a keyboard button, end method and wait for the next pass
-            if (Event.current.type == EventType.KeyDown)
+            // may need to adjust this to work much better
+            if (Event.current.type == EventType.KeyDown && (KeyBindingDefOf.Dev_ToggleDebugSettingsMenu.KeyDownEvent || KeyBindingDefOf.Dev_ToggleDebugActionsMenu.KeyDownEvent))
             {
-                return;
+                return bar;
             }
             this.filter = Widgets.TextField(bar, this.filter);
 
@@ -131,6 +137,22 @@ namespace ItsSorceryFramework
                 this.filter = "";
                 this.focusFilter = false;
             }
+
+            return bar;
+        }
+
+        public bool FavViewButton(float x, float y)
+        {
+            Rect rect = new Rect(x, y, 26f, 26f);
+            MouseoverSounds.DoRegion(rect);
+            TooltipHandler.TipRegionByKey(rect, "ISF_ButtonFavView");
+
+            if (Widgets.ButtonImage(rect, favView ? GizmoTextureUtility.StarFull : GizmoTextureUtility.StarEmpty, GUI.color, true))
+            {
+                favView = !favView;
+                return true;
+            }
+            return false;
         }
 
         public Comp_ItsSorcery SorceryComp
@@ -155,8 +177,16 @@ namespace ItsSorceryFramework
             }
         }
 
+        public List<SorcerySchema> FavSchemas
+        {
+            get
+            {
+                return (from schema in Schemas where schema.favorited == true select schema).ToList() ?? new List<SorcerySchema>();
+            }
+        }
+
         // used in conjunction with the search bar component
-        public List<SorcerySchema> filteredSchemas
+        public List<SorcerySchema> FilteredSchemas
         {
             get
             {
@@ -170,9 +200,25 @@ namespace ItsSorceryFramework
             }
         }
 
+        public List<SorcerySchema> FilteredFavSchemas
+        {
+            get
+            {
+                if (filter.NullOrEmpty()) return FavSchemas;
+                if (cachedFilterFavSchema == null || filter != cachedFilter)
+                {
+                    cachedFilterFavSchema = (from schema in FilteredSchemas where schema.favorited select schema).ToList();
+                    cachedFilter = filter;
+                }
+                return cachedFilterFavSchema;
+            }
+        }
+
         private Comp_ItsSorcery sorceryComp = null;
 
         private List<SorcerySchema> cachedFilterSchema;
+
+        private List<SorcerySchema> cachedFilterFavSchema;
 
         public int energyTrackerIndex = 0;
 
@@ -191,5 +237,7 @@ namespace ItsSorceryFramework
         private string cachedFilter = "";
 
         private bool focusFilter;
+
+        private bool favView = false;
     }
 }
