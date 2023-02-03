@@ -42,10 +42,7 @@ namespace ItsSorceryFramework
             view.yMin += 10;
             view.xMax = window.xMax;
 
-            Color color = GUI.color;
-            GUI.color = Color.gray;
-            Widgets.DrawLineHorizontal(window.x, view.y, window.width);
-            GUI.color = color;
+            DrawDivider(window.x, view.y, window.width);
 
             Rect viewSchema = view.ContractedBy(5f);
             Rect schemaRect = view.ContractedBy(8f);
@@ -53,39 +50,28 @@ namespace ItsSorceryFramework
             schemaRect.height = 75f;
 
             List<SorcerySchema> viewedSchemas = favView ? FilteredFavSchemas : FilteredSchemas;
-
             Rect viewScroll = new Rect(viewSchema.x, viewSchema.y, viewSchema.width - 20, schemaScrollViewHeight + 10f);
-            // calculate the number of "pages" and schemas we can fit into the itab
+
+            // calculate the number of "pages" and schemas we can fit into the itab + sets current page
             possibleSlots = 5;
             possiblePages = (int) Math.Ceiling((1f* viewedSchemas.CountAllowNull()) / possibleSlots);
-
-            // sets current page
             currentPage = energyTrackerIndex / possibleSlots + 1;
             Text.Font = GameFont.Small;
 
-            // draw page count and page change buttons
+            // draw page count + searchbar and favorites button, page change buttons, favorites, and schemas
             DrawPageUI();
             Rect search = DrawSearchBar(schemaRect.x);
             FavViewButton(search.xMax + 5, 0);
-
-            float totalSchemaHeight = 0;
-            
-            Widgets.BeginScrollView(viewSchema, ref this.schemaScrollPosition, viewScroll, true);
-            // for every sorcery schema
-            foreach (SorcerySchema schema in viewedSchemas.GetRange(energyTrackerIndex,
-                Math.Min(viewedSchemas.Count() - energyTrackerIndex, 5)))
-            {
-                // take the energy tracker and display it
-                //schema.energyTracker.DrawOnGUI(schemaRect);
-                float schemaHeight = schema.energyTracker.DrawOnGUI(ref schemaRect);
-                totalSchemaHeight += schemaHeight + 1;
-                schemaRect.y += schemaHeight + 1;
-            }
-            Text.Font = GameFont.Small;
-
-            schemaScrollViewHeight = totalSchemaHeight;
-            Widgets.EndScrollView();
+            DrawSchemas(viewSchema, viewScroll, schemaRect, viewedSchemas);
             Widgets.EndGroup();
+        }
+
+        public void DrawDivider(float x, float y, float width)
+        {
+            Color color = GUI.color;
+            GUI.color = Color.gray;
+            Widgets.DrawLineHorizontal(x, y, width);
+            GUI.color = color;
         }
 
         public void DrawPageUI()
@@ -96,7 +82,6 @@ namespace ItsSorceryFramework
 
             // as long as it isn't the first page, go back
             if (currentPage > 1 && Widgets.ButtonText(button1, "<")) energyTrackerIndex -= possibleSlots;
-
             // as long as it isn't the last page, can move forwards
             if (currentPage < possiblePages && Widgets.ButtonText(button2, ">")) energyTrackerIndex += possibleSlots;
 
@@ -120,7 +105,6 @@ namespace ItsSorceryFramework
             Rect bar = new Rect(xPos, 0, TabRect.width / 4 - (xPos - TabRect.x), 26);
 
             this.filter = Widgets.TextField(bar, this.filter);
-
             if(Event.current.type == EventType.MouseDown || Event.current.keyCode == KeyCode.Escape)
             {
                 GUI.FocusControl(null);
@@ -143,11 +127,30 @@ namespace ItsSorceryFramework
             return false;
         }
 
+        public void DrawSchemas(Rect view, Rect viewScroll, Rect schemaRect, List<SorcerySchema> viewedSchemas)
+        {
+            float totalSchemaHeight = 0;
+            Widgets.BeginScrollView(view, ref schemaScrollPosition, viewScroll, true);
+            // for every sorcery schema
+            foreach (SorcerySchema schema in viewedSchemas.GetRange(energyTrackerIndex,
+                Math.Min(viewedSchemas.Count() - energyTrackerIndex, 5)))
+            {
+                // take the energy tracker and display it
+                float schemaHeight = schema.energyTracker.DrawOnGUI(ref schemaRect);
+                totalSchemaHeight += schemaHeight + 1;
+                schemaRect.y += schemaHeight + 1;
+            }
+            Text.Font = GameFont.Small;
+
+            schemaScrollViewHeight = totalSchemaHeight;
+            Widgets.EndScrollView();
+        }
+
         public Comp_ItsSorcery SorceryComp
         {
             get
             {
-                if(sorceryComp == null || sorceryComp.pawn != SelPawn)
+                if(sorceryComp is null || sorceryComp.pawn != SelPawn)
                 {
                     sorceryComp = SorcerySchemaUtility.GetSorceryComp(SelPawn);
                 }
@@ -160,7 +163,7 @@ namespace ItsSorceryFramework
         {
             get
             {
-                if (SorceryComp == null) return null;
+                if (SorceryComp is null) return null;
                 return SorceryComp.schemaTracker.sorcerySchemas;
             }
         }
@@ -179,7 +182,7 @@ namespace ItsSorceryFramework
             get
             {
                 if (filter.NullOrEmpty()) return Schemas;
-                if (cachedFilterSchema == null || filter != cachedFilter)
+                if (cachedFilterSchema is null || filter != cachedFilter)
                 {
                     cachedFilterSchema = (from schema in Schemas 
                                           where schema.def.label.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0 
@@ -195,7 +198,7 @@ namespace ItsSorceryFramework
             get
             {
                 if (filter.NullOrEmpty()) return FavSchemas;
-                if (cachedFilterFavSchema == null || filter != cachedFilter)
+                if (cachedFilterFavSchema is null || filter != cachedFilter)
                 {
                     cachedFilterFavSchema = (from schema in FilteredSchemas 
                                              where schema.favorited 

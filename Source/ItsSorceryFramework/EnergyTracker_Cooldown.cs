@@ -110,9 +110,7 @@ namespace ItsSorceryFramework
 
             // draws info, learningtracker buttons + schema title
             coordY += SchemaViewBox(ref rect);
-
-            // add space
-            coordY += 10;
+            coordY += 10; // add space
             rect.y += coordY;
 
             // refresh label
@@ -154,17 +152,13 @@ namespace ItsSorceryFramework
                 coordY += stackRect.height + 10;
             }
 
-            Text.Anchor = TextAnchor.UpperLeft;
             // set rect y to original, and rect height to coordY
+            Text.Anchor = TextAnchor.UpperLeft;
             rect.y = orgRect.y;
             rect.height = coordY;
-
-            // draw outline of the entire rectangle when it's all done
-            DrawOutline(rect, Color.grey, 1);
-            // reset rectangle
-            rect = orgRect;
-            // return accumulated height
-            return coordY;
+            DrawOutline(rect, Color.grey, 1); // draw outline of the entire rectangle when it's all done
+            rect = orgRect; // reset rectangle
+            return coordY; // return accumulated height
         }
 
         public override IEnumerable<StatDrawEntry> SpecialDisplayStats(StatRequest req)

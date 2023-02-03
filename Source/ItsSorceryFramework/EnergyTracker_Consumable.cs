@@ -107,9 +107,6 @@ namespace ItsSorceryFramework
                     "ISF_EnergyTrackerAmmo".Translate(), ammo,
                     "ISF_EnergyTrackerAmmoDesc".Translate(),
                     10, null, null, false);
-
-
-
         }
 
 

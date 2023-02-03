@@ -187,7 +187,6 @@ namespace ItsSorceryFramework
 
             // draws power bar
             DrawEnergyBar(barBox);
-
             string energyLabel = this.currentEnergy.ToString("F0") + " / " + this.MaxEnergy.ToString("F0");
             Widgets.Label(barBox, energyLabel);
 
@@ -197,7 +196,6 @@ namespace ItsSorceryFramework
 
             // highlight energy costs
             HightlightEnergyCost(barBox);
-
         }
 
         public override float DrawOnGUI(ref Rect rect)

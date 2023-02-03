@@ -109,11 +109,8 @@ namespace ItsSorceryFramework
             coordY += SchemaViewBox(ref rect);
             // if energy system allows for using more energy than usual, show toggle button
             if (MinEnergy < 0) LimitButton(rect.x + rect.width - 5 - 24, rect.y + 5);
-            // draws turn pause toggle button
-            TurnButton(rect.x + rect.width - 5 - 24 - 24, rect.y + 5);
-
-            // add space
-            coordY += 10;
+            TurnButton(rect.x + rect.width - 5 - 24 - 24, rect.y + 5); // draws turn pause toggle button
+            coordY += 10; // add space
             rect.y += coordY;
 
             // set up label and bar rects
@@ -140,28 +137,22 @@ namespace ItsSorceryFramework
 
             // highlight energy costs
             HightlightEnergyCost(barBox);
-
-            // add label/barbox height
-            coordY += labelBox.height;
-            // add a small boundary space for appearance
-            coordY += 10;
-            // set rect y to original, and rect height to coordY
-            rect.y = orgRect.y;
+            
+            coordY += labelBox.height; // add label/barbox height
+            coordY += 10; // add a small boundary space for appearance
+            rect.y = orgRect.y; // set rect y to original, and rect height to coordY
             rect.height = coordY;
 
             // draw outline of the entire rectangle when it's all done
             DrawOutline(rect, Color.grey, 1);
 
-            // reset rectangle
-            rect = orgRect;
-            // return accumulated height
-            return coordY;
+            rect = orgRect; // reset rectangle
+            return coordY; // return accumulated height
         }
 
         public override IEnumerable<StatDrawEntry> SpecialDisplayStats(StatRequest req)
         {
             // see EnergyTracker_RPG.SpecialDisplayStats(req)
-            // adds all the entries from that method into this one
             foreach (StatDrawEntry entry in base.SpecialDisplayStats(req))
             {
                 yield return entry;
