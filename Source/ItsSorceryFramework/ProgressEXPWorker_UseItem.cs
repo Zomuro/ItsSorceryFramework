@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RimWorld;
 using Verse;
 using UnityEngine;
 
@@ -12,9 +8,7 @@ namespace ItsSorceryFramework
     public class ProgressEXPWorker_UseItem: ProgressEXPWorker
     {
         public override bool TryExecute(ProgressTracker progressTracker, float exp = 0)
-        {
-            //if (progressTracker.pawn.GetWorkgiver() != def.workGiverDef) return false;
-           
+        {           
             progressTracker.addExperience(def.fixedEXP);
             return true;
         }
@@ -25,8 +19,6 @@ namespace ItsSorceryFramework
             float x = rect.x;
 
             if (def.expItems.NullOrEmpty()) return 0;
-
-            //String items = labelsFromEXPItems(def.expItems).ToStringSafeEnumerable();
 
             Text.Font = GameFont.Small;
             Widgets.LabelCacheHeight(ref rect, "On using items: ".Colorize(ColoredText.TipSectionTitleColor), true, false);

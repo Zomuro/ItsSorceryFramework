@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using RimWorld;
 using Verse;
 using UnityEngine;
@@ -76,10 +73,6 @@ namespace ItsSorceryFramework
             bool done = false;
             exp += experience;
 
-            // maybe put this into exp workers
-            /*MoteMaker.ThrowText(pawn.Position.ToVector3(), pawn.Map, 
-                experience.ToStringByStyle(ToStringStyle.FloatMaxTwo, ToStringNumberSense.Offset) + " EXP");*/
-
             while (!done)
             {
                 if(exp > currentLevelEXPReq)
@@ -109,8 +102,7 @@ namespace ItsSorceryFramework
 
         public override void notifyLevelUp(float sev)
         {
-            HediffStage currStage = hediff.CurStage;
-            //bool check = false;
+            //HediffStage currStage = hediff.CurStage;
 
             ProgressLevelModifier factor = def.getLevelFactor(sev);
             if (factor != null)

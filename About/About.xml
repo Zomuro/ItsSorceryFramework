@@ -5,17 +5,19 @@
 	<supportedVersions><li>1.4</li></supportedVersions>
 	<modDependencies>
 	</modDependencies>
-	<packageId>Zomuro.ItsSorcery.Framework</packageId>
-	<description>A general framework for magic systems in RimWorld! It offers a modular system that enables modders to more easily 
-design how magic works and is learned in game. How does it work?
+	<packageId>Zomuro.ItsSorceryFramework</packageId>
+	<description>A general framework for magic systems in RimWorld. It offers a modular system that enables modders to more easily design how magic works and is learned in game. 
+	
+How does it work?
 
-It's sorcery!
-*roll credits*
+It's sorcery! *roll credits*
 
 Warmest thanks go to:
 Gouda quiche, my C# mentor;
 Fraudecon, for his input and wisdom;
 Flango, for his contribution of skill trees to the learning system;
+Feldoh, for his wisdom;
+DetVisor, for his art contribution;
 and many others!
 
 

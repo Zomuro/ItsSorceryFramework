@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RimWorld;
 using Verse;
 using UnityEngine;
 
@@ -13,7 +10,6 @@ namespace ItsSorceryFramework
     {
         public override bool TryExecute(ProgressTracker progressTracker, float exp = 0)
         {
-            //Log.Message(def.workGiverDef.ToString());
             if (progressTracker.pawn.CurJobDef == null) return false;
 
             if (def.jobSets.NullOrEmpty()) return false;

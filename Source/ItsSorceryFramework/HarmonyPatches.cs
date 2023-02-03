@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Emit;
-using System.Text;
-using System.Threading.Tasks;
-using System.Reflection;
 using RimWorld;
 using Verse;
 using Verse.AI;
@@ -66,8 +62,6 @@ namespace ItsSorceryFramework
                 if (energyTracker == null || energyTracker.def.consumables.NullOrEmpty()) continue;
 
                 List<EnergyConsumable> consumables = energyTracker.def.consumables;
-                //Dictionary<ThingDef, float> ammoRef = schema.energyTracker.def.sorceryAmmoDict;
-                //foreach (ThingDef thingDef in ammoRef.Keys)
                 foreach (var consume in consumables)
                 {
                     Thing ammo = __0.ToIntVec3().GetFirstThing(__1.Map, consume.thingDef);

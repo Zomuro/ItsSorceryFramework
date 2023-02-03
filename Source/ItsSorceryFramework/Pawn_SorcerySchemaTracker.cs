@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RimWorld;
+﻿using System.Collections.Generic;
 using Verse;
-using UnityEngine;
 
 namespace ItsSorceryFramework
 {
@@ -23,8 +17,6 @@ namespace ItsSorceryFramework
             foreach (SorcerySchema schema in sorcerySchemas) 
             {
                 schema.SchemaTick();
-                //temporary
-                //Log.Message(schema.def.defName);
             }
         }
 
@@ -35,6 +27,8 @@ namespace ItsSorceryFramework
             {
                 this.pawn
             });
+            // save this concept for later - prevent a schema from being learned if another is there
+            // maybe even anti psycast option
             //Scribe_Collections.Look(ref incompatibleSchemas, "incompatibleSchemas", LookMode.Deep, LookMode.Deep);
         }
 

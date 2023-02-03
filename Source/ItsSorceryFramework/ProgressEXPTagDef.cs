@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using RimWorld;
 using Verse;
 
@@ -10,19 +7,6 @@ namespace ItsSorceryFramework
 {
     public class ProgressEXPTagDef : Def
     {
-		/*public ProgressEXPWorker Worker
-		{
-			get
-			{
-				if (progressEXPWorker == null)
-				{
-					progressEXPWorker = (ProgressEXPWorker)Activator.CreateInstance(workerClass);
-					progressEXPWorker.def = this;
-				}
-				return progressEXPWorker;
-			}
-		}*/
-
 		public Type workerClass = typeof(ProgressEXPWorker);
 
         public float expFactor = 1f;
@@ -35,11 +19,7 @@ namespace ItsSorceryFramework
 
 		public List<SkillDef> skillDefs = new List<SkillDef>();
 
-		//public List<ThingDef> expItems = new List<ThingDef>();
-
 		public List<EXPConsumableItems> expItems = new List<EXPConsumableItems>();
-
-		//public ProgressEXPTagWorker progressEXPWorker;
 
     }
 

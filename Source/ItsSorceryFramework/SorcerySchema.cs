@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RimWorld;
 using Verse;
 
 namespace ItsSorceryFramework
@@ -48,9 +44,7 @@ namespace ItsSorceryFramework
             if(progressTracker != null)
             {
                 progressTracker.ProgressTrackerTick();
-            }
-            //Log.Message("how is it empty");
-            
+            }            
         }
 
         public virtual void ExposeData()

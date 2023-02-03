@@ -22,7 +22,6 @@ namespace ItsSorceryFramework
             this.pawn = pawn;
             this.def = def;
             this.sorcerySchemaDef = null;
-            //Initialize();
         }
 
         public ProgressTracker(Pawn pawn, SorcerySchemaDef def)
@@ -30,7 +29,6 @@ namespace ItsSorceryFramework
             this.pawn = pawn;
             this.def = def.progressTrackerDef;
             this.sorcerySchemaDef = def;
-            //Initialize();
         }
 
         public virtual void ExposeData()
@@ -45,84 +43,12 @@ namespace ItsSorceryFramework
             Scribe_Collections.Look(ref statOffsetsTotal, "statOffsetsTotal", LookMode.Def, LookMode.Value);
             Scribe_Collections.Look(ref statFactorsTotal, "statFactorsTotal", LookMode.Def, LookMode.Value);
             Scribe_Collections.Look(ref capModsTotal, "capModsTotal", LookMode.Def, LookMode.Value);
-
-
-            // probably will have to just cache this
-
-            // comp saving stuff
-            /*if (Scribe.mode == LoadSaveMode.LoadingVars)
-            {
-                this.InitializeComps();
-            }
-            if (this.comps != null)
-            {
-                foreach(ProgressComp comp in comps)
-                {
-                    comp.PostExposeData();
-                }
-            }*/
-
         }
 
         public virtual void Initialize()
         {
-            //InitializeComps();
+
         }
-
-        /*public void InitializeComps() // taken from ThingWithComps
-        {
-            if (this.def.progressComps.Any<ProgressCompProperties>())
-            {
-                this.comps = new List<ProgressComp>();
-                foreach(ProgressCompProperties prop in this.def.progressComps)
-                {
-                    ProgressComp progressComp = null;
-                    try
-                    {
-                        progressComp = (ProgressComp)Activator.CreateInstance(prop.compClass);
-                        progressComp.parent = this;
-                        this.comps.Add(progressComp);
-                        progressComp.Initialize(prop);
-                    }
-                    catch (Exception arg)
-                    {
-                        Log.Error("Could not instantiate or initialize a ProgressComp: " + arg);
-                        this.comps.Remove(progressComp);
-                    }
-                }
-            }
-        }*/
-
-       /*ublic PC GetProgressComp<PC>() where PC : ProgressComp // enables ability to get ProgressComps
-        {
-            if (this.comps != null)
-            {
-                foreach(ProgressComp comp in comps)
-                {
-                    PC pc = comp as PC;
-                    if (pc != null) return pc;
-                }
-            }
-            return default(PC);
-        }*/
-
-        /*public List<ProgressEXPWorker> expWorkers
-        {
-            get
-            {
-                if (progressEXPWorkers == null)
-                {
-                    foreach (ProgressEXPDef expDef in def.expTags)
-                    {
-                        ProgressEXPWorker worker = (ProgressEXPWorker)Activator.CreateInstance(expDef.workerClass);
-                        worker.def = expDef;
-                        worker.schema = SorcerySchemaUtility.FindSorcerySchema(pawn, sorcerySchemaDef);
-                    }
-                }
-
-                return progressEXPWorkers;
-            }
-        }*/
 
         public virtual void ProgressTrackerTick()
         {
@@ -267,13 +193,5 @@ namespace ItsSorceryFramework
         private string cachedLevelLabel;
 
         private List<ProgressLevelLabel> cachedLevelLabels;
-
-        //private List<ProgressEXPWorker> progressEXPWorkers = new List<ProgressEXPWorker>();
-
-        //private List<ProgressComp> comps;
-
-
-
-
     }
 }

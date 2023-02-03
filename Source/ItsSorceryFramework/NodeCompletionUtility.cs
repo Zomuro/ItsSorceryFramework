@@ -8,14 +8,15 @@ using Verse;
 
 namespace ItsSorceryFramework
 {
+    // incomplete class- potentially work on this to implement cross-learning tracker completion for a pawn
 	public class NodeCompletionUtility : IExposable
 	{
 		public virtual void ExposeData()
         {
             Scribe_Collections.Look(ref completion, "completion", LookMode.Def, LookMode.Value);
-            //base.ExposeData();
         }
 
+        // this is unused for the time being: maybe implement another day.
         public List<LearningTreeNodeDef> allNodes
         {
             get

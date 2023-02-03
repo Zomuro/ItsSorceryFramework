@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -34,14 +31,6 @@ namespace ItsSorceryFramework
             //Scribe_Collections.Look(ref vancianCasts, "vancianCasts", LookMode.Def, LookMode.Value);
             Scribe_Values.Look(ref tickCount, "tickCount");
         }
-
-        /*public virtual int RefreshTick
-        {
-            get
-            {
-                return def.refreshTicks % 60000;
-            }
-        }*/
 
         public virtual int MaxCasts
         {

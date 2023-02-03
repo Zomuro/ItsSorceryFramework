@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using RimWorld;
 using Verse;
-using Verse.Sound;
 using UnityEngine;
 
 namespace ItsSorceryFramework
@@ -301,12 +299,6 @@ namespace ItsSorceryFramework
             rect.yMin += rect.height;
             //Text.Font = GameFont.Small;
             rect.x += 22f;
-
-            /*if(schema.progressTracker.def.expTags.EnumerableNullOrEmpty()) return rect.yMin - yMin;
-            foreach (ProgressEXPDef expDef in schema.progressTracker.def.expTags)
-            {
-                rect.yMin += expDef.Worker.drawWorker(rect);
-            }*/
 
             if(Schema.progressTracker.def.Workers.NullOrEmpty()) return rect.yMin - yMin;
             foreach (ProgressEXPWorker worker in Schema.progressTracker.def.Workers)

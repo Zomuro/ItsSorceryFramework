@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RimWorld;
+﻿using RimWorld;
 using RimWorld.Planet;
 using Verse;
-using UnityEngine;
 
 namespace ItsSorceryFramework
 {
@@ -61,17 +55,6 @@ namespace ItsSorceryFramework
                     break;
                 }
             }
-
-            /*foreach (ProgressEXPDef expDef in Schema.progressTracker.def.expTags)
-            {
-                if (expDef.workerClass == typeof(ProgressEXPWorker_CastEnergyCost))
-                {
-                    expDef.Worker.TryExecute(Schema.progressTracker, sorceryDef.EnergyCost);
-                    break;
-                }
-            }*/
-
-            //Log.Message("cast: "+ sorceryDef.EnergyCost.ToString());
             return base.Activate(target);
             
         }
@@ -95,8 +78,6 @@ namespace ItsSorceryFramework
                     break;
                 }
             }
-
-            //Log.Message("cast: " + (sorceryDef.EnergyCost * energyTracker.EnergyCostFactor).ToString());
             return base.Activate(target, dest);
         }
 

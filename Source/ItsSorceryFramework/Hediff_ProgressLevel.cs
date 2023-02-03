@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RimWorld;
+﻿using RimWorld;
 using Verse;
-using UnityEngine;
-
 namespace ItsSorceryFramework
 {
     public class Hediff_ProgressLevel : HediffWithComps

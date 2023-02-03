@@ -64,38 +64,15 @@ namespace ItsSorceryFramework
 				this.tabs.Add(new LearningTabRecord(lt, lt.def.LabelCap, delegate ()
 				{
 					this.CurTracker = lt;
-
-					/*LearningTracker_Tree ltTree = lt as LearningTracker_Tree;
-					if (ltTree != null)
-                    {
-						Log.Message(ltTree.completion.NullOrEmpty().ToString());
-						(lt as LearningTracker_Tree).refreshCompletion();
-						Log.Message(ltTree.completion.NullOrEmpty().ToString());
-					}*/
-
 				}, () => this.CurTracker == lt));
 			}
 
-			if (this.CurTracker == null) curTracker = tabs[0].tracker;
-
-			/*if (this.curTracker == null)
-			{
-				this.curTracker = tabs[0].tracker;
-			}*/
-			
+			if (this.CurTracker == null) curTracker = tabs[0].tracker;		
 		}
 
 		public override void PostOpen()
 		{
 			base.PostOpen();
-			/*this.tabs.Clear();
-			foreach(LearningTracker lt in learningTrackers)
-            {
-				this.tabs.Add(new LearningTabRecord(lt, lt.def.LabelCap, delegate ()
-				{
-					this.CurTab = lt;
-				}, () => this.CurTab == lt));
-			}*/
 		}
 
 		public override void DoWindowContents(Rect inRect)
@@ -107,20 +84,13 @@ namespace ItsSorceryFramework
 			Rect leftOutRect = new Rect(0f, 0f, width, inRect.height - 24f - 10f);
 			Rect searchRect = new Rect(0f, leftOutRect.yMax + 10f, width, 24f);
 			Rect rightOutRect = new Rect(leftOutRect.xMax + 10f, 0f, inRect.width - leftOutRect.width - 10f, inRect.height);
-			//this.DrawSearchRect(searchRect);
 			this.DrawLeftRect(leftOutRect);
 			this.DrawRightRect(rightOutRect);
 		}
 
 		private void DrawLeftRect(Rect leftOutRect)
 		{
-			//float num = leftOutRect.height - (10f + this.leftStartAreaHeight) - 45f;
-			Rect rect = leftOutRect;
-
 			if (CurTabRecord != null) CurTabRecord.tracker.DrawLeftGUI(leftOutRect);
-
-			//Widgets.BeginGroup(rect);
-			//Widgets.EndGroup();
 		}
 
 		private void DrawRightRect(Rect rightOutRect)
@@ -135,8 +105,6 @@ namespace ItsSorceryFramework
 		public LearningTracker curTracker;
 
 		public List<LearningTracker> learningTrackers;
-
-		//public LearningTabRecord curTab;
 
 		public List<LearningTabRecord> tabs = new List<LearningTabRecord>();
 

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using RimWorld;
 using Verse;
 using Verse.Sound;
@@ -167,8 +166,6 @@ namespace ItsSorceryFramework
                         completionAbilities(selectedNode);
                         completionHediffs(selectedNode);
                         completionModifiers(selectedNode);
-                        // add the hediff completion portion
-
                         schema.progressTracker.usedPoints += selectedNode.pointReq;
                     }
                 }
@@ -189,8 +186,6 @@ namespace ItsSorceryFramework
                         if (!prereqResearchFufilled(selectedNode)) reason += "\nResearch requirements not completed.";
 
                         if (!prereqHediffFufilled(selectedNode)) reason += "\nHediff requirements not met.";
-
-                        // if for exlusive nodes check
                     }
 
                     this.leftStartAreaHeight = Mathf.Max(Text.CalcHeight(reason, confirmButton.width - 10f) + 10f, 68f);
@@ -212,19 +207,16 @@ namespace ItsSorceryFramework
                     Rect debugButton = new Rect(confirmButton.x, outRect.yMax, 120f, 30f);
                     if (Widgets.ButtonText(debugButton, "Debug: Finish now", true, true, true, null))
                     {
-                        // add the hediff completion portion
                         completion[selectedNode] = true;
                         completionAbilities(selectedNode);
                         completionHediffs(selectedNode);
                         completionModifiers(selectedNode);
-                        // add the hediff completion portion
-
                         //schema.progressTracker.usedPoints += selectedNode.pointReq;
                     }
                     Text.Font = GameFont.Small;
                     this.leftViewDebugHeight = debugButton.height;
                 }
-                /*
+                /* modify this for items like techprints required for skill system
                 if (Prefs.DevMode && !this.selectedProject.TechprintRequirementMet)
                 {
                     Text.Font = GameFont.Tiny;
@@ -469,9 +461,7 @@ namespace ItsSorceryFramework
             return stringBuilder.ToString();
         }
 
-
-        // yeah i just copied this from MainTabWindow_Research
-        private float drawContentSource(Rect rect, LearningTreeNodeDef node)
+        private float drawContentSource(Rect rect, LearningTreeNodeDef node) // taken from research tab
         {
             if (node.modContentPack == null || node.modContentPack.IsCoreMod)
             {
@@ -656,10 +646,6 @@ namespace ItsSorceryFramework
 
 			Widgets.EndGroup();
             Widgets.EndScrollView();
-            //this.scrollPositioner.ScrollHorizontally(ref this.rightScrollPosition, outRect.size);
-
-            //Widgets.EndScrollView();
-            //this.scrollPositioner.ScrollHorizontally(ref this.rightScrollPosition, outRect.size);
 
         }
 
@@ -773,8 +759,6 @@ namespace ItsSorceryFramework
         public Vector2 cachedViewSize;
 
         public LearningTreeNodeDef selectedNode;
-
-        //public Color colorSelected = TexUI.DefaultBorderResearchColor;
 
         public Dictionary<LearningTreeNodeDef, bool> completion = new Dictionary<LearningTreeNodeDef, bool>();
 

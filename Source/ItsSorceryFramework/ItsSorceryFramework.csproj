@@ -113,7 +113,6 @@
     <Compile Include="EnergyTracker_RPG.cs" />
     <Compile Include="SorcerySchemaUtility.cs" />
     <Compile Include="Comp_ItsSorcery.cs" />
-    <Compile Include="SorcerySchemaDefOf.cs" />
     <Compile Include="StatDefOf_ItsSorcery.cs" />
     <Compile Include="EnergyTrackerDef.cs" />
     <Compile Include="LearningTrackerDef.cs" />

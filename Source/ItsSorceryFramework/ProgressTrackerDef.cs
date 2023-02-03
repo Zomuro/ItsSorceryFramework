@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using RimWorld;
 using Verse;
 
@@ -123,8 +121,6 @@ namespace ItsSorceryFramework
         public List<ProgressEXPTagDef> expTags = new List<ProgressEXPTagDef>();
 
         public List<ProgressLevelLabel> levelLabels = new List<ProgressLevelLabel>();
-
-        //public List<ProgressCompProperties> progressComps = new List<ProgressCompProperties>();
 
         [MustTranslate]
         public string progressLevelUpTransKey = "ISF_LevelUp";
