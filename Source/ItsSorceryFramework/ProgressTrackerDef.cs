@@ -91,18 +91,30 @@ namespace ItsSorceryFramework
         {
             get
             {
-                if (progressEXPWorkers.NullOrEmpty())
+                if (cachedEXPWorkers.NullOrEmpty())
                 {
                     foreach(ProgressEXPTagDef tag in expTags)
                     {
                         ProgressEXPWorker EXPWorker = (ProgressEXPWorker)Activator.CreateInstance(tag.workerClass);
                         EXPWorker.def = tag;
-                        progressEXPWorkers.Add(EXPWorker);
+                        cachedEXPWorkers.Add(EXPWorker);
                     }
                 }
-                return progressEXPWorkers;
+                return cachedEXPWorkers;
             }
         }
+
+        /*public IEnumerable<ProgressEXPWorker> SkillEXPWorkers
+        {
+            get
+            {
+                if(cachedSkillEXPWorkers is null)
+                {
+                    cachedSkillEXPWorkers = Workers.Where(x => x.GetType() == typeof(ProgressEXPWorker_OnSkillEXP));
+                }
+                return cachedSkillEXPWorkers;
+            }
+        }*/
 
         public Type progressTrackerClass = typeof(ProgressTracker);
 
@@ -131,7 +143,9 @@ namespace ItsSorceryFramework
         [MustTranslate]
         public string skillPointLabelKey = "ISF_SkillPointLabel";
 
-        private List<ProgressEXPWorker> progressEXPWorkers = new List<ProgressEXPWorker>();
+        private List<ProgressEXPWorker> cachedEXPWorkers = new List<ProgressEXPWorker>();
+
+        private IEnumerable<ProgressEXPWorker> cachedSkillEXPWorkers;
     }
 
     public class ProgressLevelLabel

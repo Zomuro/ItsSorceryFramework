@@ -135,18 +135,26 @@ namespace ItsSorceryFramework
             return;
         }
 
+        public static void CacheComp(Pawn pawn)
+        {
+            if (!cachedSchemaComps.ContainsKey(pawn))
+            {
+                cachedSchemaComps[pawn] = SorcerySchemaUtility.GetSorceryComp(pawn);
+            }
+        }
+
         // POSTFIX: if a pawn has a tag with the OnDamage or OnDamaged worker, add exp based on amount
         public static void TakeDamage_AddEXP(Thing __instance, DamageInfo __0)
         {
-            Pawn caster = null;
-            Pawn target = null;
             if (__0.Def.ExternalViolenceFor(__instance))
             {
-                if(__0.Instigator != null) caster = __0.Instigator as Pawn;
-                if(__0.IntendedTarget != null) target = __0.Instigator as Pawn;
+                Pawn caster;
+                if (__0.Instigator != null && (caster = __0.Instigator as Pawn) != null) 
+                    applyDamageEXP(caster, __0, typeof(ProgressEXPWorker_OnDamage));
 
-                if (caster != null) applyDamageEXP(caster, __0, typeof(ProgressEXPWorker_OnDamage));
-                if(target != null) applyDamageEXP(target, __0, typeof(ProgressEXPWorker_OnDamaged));
+                Pawn target;
+                if (__0.IntendedTarget != null && (target = __0.IntendedTarget as Pawn) != null) 
+                    applyDamageEXP(target, __0, typeof(ProgressEXPWorker_OnDamaged));
             }
 
             return;
@@ -154,10 +162,11 @@ namespace ItsSorceryFramework
 
         public static bool applyDamageEXP(Pawn pawn, DamageInfo dinfo, Type progressWorkerClass)
         {
-            List<SorcerySchema> schemas = SorcerySchemaUtility.GetSorcerySchemaList(pawn);
+            CacheComp(pawn);
+            Comp_ItsSorcery comp = cachedSchemaComps[pawn];
+            if (comp is null || comp.schemaTracker.sorcerySchemas.NullOrEmpty()) return false;
 
-            if (schemas.NullOrEmpty()) return false;
-            foreach (SorcerySchema schema in schemas)
+            foreach (var schema in comp.schemaTracker.sorcerySchemas)
             {
                 if (schema.def.progressTrackerDef.Workers.NullOrEmpty()) continue;
                 foreach (var worker in schema.def.progressTrackerDef.Workers)
@@ -175,22 +184,21 @@ namespace ItsSorceryFramework
         public static void Learn_AddEXP(SkillRecord __instance, float __0)
         {
             // player won't care if it isn't their own pawn getting skill exp, and they won't really notice.
-            if (!__instance.Pawn.IsColonist) return;
-            Log.Message("Pawn: " + __instance.Pawn.LabelShort);
+            // the patch should also not fire when the pawn is losing exp, only when gaining exp
+            if (!__instance.Pawn.IsColonist || __0 < 0) return;
 
-            Comp_ItsSorcery comp = SorcerySchemaUtility.GetSorceryComp(__instance.Pawn);
-            if (comp == null) return;
+            CacheComp(__instance.Pawn);
+            Comp_ItsSorcery comp = cachedSchemaComps[__instance.Pawn];
+            if (comp is null) return;
 
-            foreach (SorcerySchema schema in comp.schemaTracker.sorcerySchemas)
+            foreach (var schema in comp.schemaTracker.sorcerySchemas)
             {
-                Log.Message("workers: " + schema.def.progressTrackerDef.Workers.NullOrEmpty().ToString());
                 if (schema.def.progressTrackerDef.Workers.NullOrEmpty()) continue;
                 foreach (var worker in schema.def.progressTrackerDef.Workers)
                 {
                     if (worker.GetType() == typeof(ProgressEXPWorker_OnSkillEXP))
                     {
                         if (!worker.def.skillDefs.NullOrEmpty() && !worker.def.skillDefs.Contains(__instance.def)) continue;
-                        Log.Message("knife: "+ __0.ToString());
                         worker.TryExecute(schema.progressTracker, __0);
                     }
                 }
@@ -203,20 +211,22 @@ namespace ItsSorceryFramework
         {
             if (__instance == null || __0 == null || __0.Value.Instigator == null) return;
 
-            Pawn killer = __0.Value.Instigator as Pawn;
-            if (killer == null) return;
-            List<SorcerySchema> schemas = SorcerySchemaUtility.GetSorcerySchemaList(killer);
-
-            if (schemas.NullOrEmpty()) return;
-            foreach (SorcerySchema schema in schemas)
+            if ((__0.Value.Instigator as Pawn) != null)
             {
-                if (schema.def.progressTrackerDef.Workers.NullOrEmpty()) continue;
-                foreach (var worker in schema.def.progressTrackerDef.Workers)
+                CacheComp(__instance);
+                Comp_ItsSorcery comp = cachedSchemaComps[__instance];
+                if (comp is null) return;
+
+                foreach (var schema in comp.schemaTracker.sorcerySchemas)
                 {
-                    if (worker.GetType() == typeof(ProgressEXPWorker_OnKill))
+                    if (schema.def.progressTrackerDef.Workers.NullOrEmpty()) continue;
+                    foreach (var worker in schema.def.progressTrackerDef.Workers)
                     {
-                        if (!worker.def.damageDefs.NullOrEmpty() && !worker.def.damageDefs.Contains(__0.Value.Def)) continue;
-                        worker.TryExecute(schema.progressTracker);
+                        if (worker.GetType() == typeof(ProgressEXPWorker_OnKill))
+                        {
+                            if (!worker.def.damageDefs.NullOrEmpty() && !worker.def.damageDefs.Contains(__0.Value.Def)) continue;
+                            worker.TryExecute(schema.progressTracker);
+                        }
                     }
                 }
             }
@@ -267,6 +277,9 @@ namespace ItsSorceryFramework
 
             return;
         }
+
+        public static Dictionary<Pawn, Comp_ItsSorcery> cachedSchemaComps = new Dictionary<Pawn, Comp_ItsSorcery>();
+
 
     }
 }

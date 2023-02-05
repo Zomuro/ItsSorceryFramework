@@ -8,7 +8,6 @@ namespace ItsSorceryFramework
     {
         public override bool TryExecute(ProgressTracker progressTracker, float exp = 0)
         {
-            if (exp <= 0) return false;
             
             progressTracker.addExperience(exp * def.expFactor);
             return true;
