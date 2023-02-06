@@ -87,11 +87,11 @@ namespace ItsSorceryFramework
             return null;
         }
 
-        public List<ProgressEXPWorker> Workers
+        public HashSet<ProgressEXPWorker> Workers
         {
             get
             {
-                if (cachedEXPWorkers.NullOrEmpty())
+                if (cachedEXPWorkers.EnumerableNullOrEmpty())
                 {
                     foreach(ProgressEXPTagDef tag in expTags)
                     {
@@ -143,9 +143,11 @@ namespace ItsSorceryFramework
         [MustTranslate]
         public string skillPointLabelKey = "ISF_SkillPointLabel";
 
-        private List<ProgressEXPWorker> cachedEXPWorkers = new List<ProgressEXPWorker>();
+        //private List<ProgressEXPWorker> cachedEXPWorkers = new List<ProgressEXPWorker>();
 
-        private IEnumerable<ProgressEXPWorker> cachedSkillEXPWorkers;
+        private HashSet<ProgressEXPWorker> cachedEXPWorkers = new HashSet<ProgressEXPWorker>();
+
+        //private IEnumerable<ProgressEXPWorker> cachedSkillEXPWorkers;
     }
 
     public class ProgressLevelLabel

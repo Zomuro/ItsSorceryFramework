@@ -1,4 +1,7 @@
-﻿using RimWorld;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using RimWorld;
 using RimWorld.Planet;
 using Verse;
 
@@ -70,14 +73,8 @@ namespace ItsSorceryFramework
                 return false;
             }
 
-            foreach (ProgressEXPWorker worker in Schema.progressTracker.def.Workers)
-            {
-                if (worker.GetType() == typeof(ProgressEXPWorker_CastEnergyCost))
-                {
-                    worker.TryExecute(Schema.progressTracker, sorceryDef.EnergyCost);
-                    break;
-                }
-            }
+            var worker = Schema.progressTracker.def.Workers.FirstOrDefault(x => x.GetType() == typeof(ProgressEXPWorker_CastEnergyCost));
+            if(worker != null) worker.TryExecute(Schema.progressTracker, sorceryDef.EnergyCost);
             return base.Activate(target, dest);
         }
 

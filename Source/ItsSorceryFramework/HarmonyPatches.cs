@@ -149,11 +149,11 @@ namespace ItsSorceryFramework
             if (__0.Def.ExternalViolenceFor(__instance))
             {
                 Pawn caster;
-                if (__0.Instigator != null && (caster = __0.Instigator as Pawn) != null) 
+                if (__0.Instigator != null && (caster = __0.Instigator as Pawn) != null && caster.IsColonist) 
                     applyDamageEXP(caster, __0, typeof(ProgressEXPWorker_OnDamage));
 
                 Pawn target;
-                if (__0.IntendedTarget != null && (target = __0.IntendedTarget as Pawn) != null) 
+                if (__0.IntendedTarget != null && (target = __0.IntendedTarget as Pawn) != null && target.IsColonist) 
                     applyDamageEXP(target, __0, typeof(ProgressEXPWorker_OnDamaged));
             }
 
@@ -164,18 +164,17 @@ namespace ItsSorceryFramework
         {
             CacheComp(pawn);
             Comp_ItsSorcery comp = cachedSchemaComps[pawn];
+
+            //Comp_ItsSorcery comp = pawn.TryGetComp<Comp_ItsSorcery>() as Comp_ItsSorcery;
             if (comp is null || comp.schemaTracker.sorcerySchemas.NullOrEmpty()) return false;
 
             foreach (var schema in comp.schemaTracker.sorcerySchemas)
             {
-                if (schema.def.progressTrackerDef.Workers.NullOrEmpty()) continue;
-                foreach (var worker in schema.def.progressTrackerDef.Workers)
+                if (schema.def.progressTrackerDef.Workers.EnumerableNullOrEmpty()) continue;
+                foreach (var worker in schema.def.progressTrackerDef.Workers.Where(x => x.GetType() == progressWorkerClass))
                 {
-                    if (worker.GetType() == progressWorkerClass)
-                    {
-                        if (!worker.def.damageDefs.NullOrEmpty() && !worker.def.damageDefs.Contains(dinfo.Def)) continue;
-                        worker.TryExecute(schema.progressTracker, dinfo.Amount);
-                    }
+                    if (!worker.def.damageDefs.NullOrEmpty() && !worker.def.damageDefs.Contains(dinfo.Def)) continue;
+                    worker.TryExecute(schema.progressTracker, dinfo.Amount);
                 }
             }
             return true;
@@ -193,40 +192,35 @@ namespace ItsSorceryFramework
 
             foreach (var schema in comp.schemaTracker.sorcerySchemas)
             {
-                if (schema.def.progressTrackerDef.Workers.NullOrEmpty()) continue;
-                foreach (var worker in schema.def.progressTrackerDef.Workers)
+                if (schema.def.progressTrackerDef.Workers.EnumerableNullOrEmpty()) continue;
+                foreach (var worker in schema.def.progressTrackerDef.Workers.Where(x => x.GetType() == typeof(ProgressEXPWorker_OnSkillEXP)))
                 {
-                    if (worker.GetType() == typeof(ProgressEXPWorker_OnSkillEXP))
-                    {
-                        if (!worker.def.skillDefs.NullOrEmpty() && !worker.def.skillDefs.Contains(__instance.def)) continue;
-                        worker.TryExecute(schema.progressTracker, __0);
-                    }
+                    if (!worker.def.skillDefs.NullOrEmpty() && !worker.def.skillDefs.Contains(__instance.def)) continue;
+                    worker.TryExecute(schema.progressTracker, __0);
                 }
             }
         }
 
 
         // POSTFIX: if a pawn kills another pawn, execute the OnKill EXPWorker if their schema has the tag
-        public static void DoKillSideEffects_AddEXP(Pawn __instance, DamageInfo? __0)
+        public static void DoKillSideEffects_AddEXP(DamageInfo? __0)
         {
-            if (__instance == null || __0 == null || __0.Value.Instigator == null) return;
+            if (__0 == null || __0.Value.Instigator == null) return;
 
-            if ((__0.Value.Instigator as Pawn) != null)
+            Pawn killer;
+            if ((killer = __0.Value.Instigator as Pawn) != null && killer.IsColonist)
             {
-                CacheComp(__instance);
-                Comp_ItsSorcery comp = cachedSchemaComps[__instance];
+                CacheComp(killer);
+                Comp_ItsSorcery comp = cachedSchemaComps[killer];
                 if (comp is null) return;
 
                 foreach (var schema in comp.schemaTracker.sorcerySchemas)
                 {
-                    if (schema.def.progressTrackerDef.Workers.NullOrEmpty()) continue;
-                    foreach (var worker in schema.def.progressTrackerDef.Workers)
+                    if (schema.def.progressTrackerDef.Workers.EnumerableNullOrEmpty()) continue;
+                    foreach (var worker in schema.def.progressTrackerDef.Workers.Where(x => x.GetType() == typeof(ProgressEXPWorker_OnKill)))
                     {
-                        if (worker.GetType() == typeof(ProgressEXPWorker_OnKill))
-                        {
-                            if (!worker.def.damageDefs.NullOrEmpty() && !worker.def.damageDefs.Contains(__0.Value.Def)) continue;
-                            worker.TryExecute(schema.progressTracker);
-                        }
+                        if (!worker.def.damageDefs.NullOrEmpty() && !worker.def.damageDefs.Contains(__0.Value.Def)) continue;
+                        worker.TryExecute(schema.progressTracker);
                     }
                 }
             }
@@ -239,7 +233,7 @@ namespace ItsSorceryFramework
             String text;
             foreach (SorcerySchema schema in comp.schemaTracker.sorcerySchemas)
             {
-                if (schema.progressTracker.def.Workers.NullOrEmpty()) continue;
+                if (schema.progressTracker.def.Workers.EnumerableNullOrEmpty()) continue;
 
                 ProgressEXPWorker_UseItem itemWorker = schema.progressTracker.def.Workers.FirstOrDefault(x => x.GetType() == typeof(ProgressEXPWorker_UseItem)) as ProgressEXPWorker_UseItem;
                 if (itemWorker == null || itemWorker.def.expItems.NullOrEmpty()) continue;
@@ -279,7 +273,6 @@ namespace ItsSorceryFramework
         }
 
         public static Dictionary<Pawn, Comp_ItsSorcery> cachedSchemaComps = new Dictionary<Pawn, Comp_ItsSorcery>();
-
 
     }
 }

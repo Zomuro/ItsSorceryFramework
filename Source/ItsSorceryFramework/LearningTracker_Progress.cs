@@ -300,7 +300,7 @@ namespace ItsSorceryFramework
             //Text.Font = GameFont.Small;
             rect.x += 22f;
 
-            if(Schema.progressTracker.def.Workers.NullOrEmpty()) return rect.yMin - yMin;
+            if(Schema.progressTracker.def.Workers.EnumerableNullOrEmpty()) return rect.yMin - yMin;
             foreach (ProgressEXPWorker worker in Schema.progressTracker.def.Workers)
             {
                 rect.yMin += worker.drawWorker(rect);
