@@ -15,7 +15,7 @@ namespace ItsSorceryFramework
         {
             get
             {
-                return SorceryComp != null && !Schemas.NullOrEmpty();
+                return SelPawn.IsColonist && SorceryComp != null && !Schemas.NullOrEmpty();
             }
         }
 
@@ -49,19 +49,21 @@ namespace ItsSorceryFramework
             schemaRect.width -= 20f;
             schemaRect.height = 75f;
 
-            List<SorcerySchema> viewedSchemas = favView ? FilteredFavSchemas : FilteredSchemas;
+            //List<SorcerySchema> viewedSchemas = favView ? FilteredFavSchemas : FilteredSchemas;
+            HashSet<SorcerySchema> viewedSchemas = favView ? HashFilteredFavSchemas : HashFilteredSchemas;
             Rect viewScroll = new Rect(viewSchema.x, viewSchema.y, viewSchema.width - 20, schemaScrollViewHeight + 10f);
 
             // calculate the number of "pages" and schemas we can fit into the itab + sets current page
             possibleSlots = 5;
-            possiblePages = (int) Math.Ceiling((1f* viewedSchemas.CountAllowNull()) / possibleSlots);
+            possiblePages = (int) Math.Ceiling((1f* viewedSchemas.Count()) / possibleSlots);
             currentPage = energyTrackerIndex / possibleSlots + 1;
             Text.Font = GameFont.Small;
 
             // draw page count + searchbar and favorites button, page change buttons, favorites, and schemas
             DrawPageUI();
-            Rect search = DrawSearchBar(schemaRect.x);
-            FavViewButton(search.xMax + 5, 0);
+            /*Rect search = DrawSearchBar(schemaRect.x);
+            FavViewButton(search.xMax + 5, 0);*/
+            FavViewButton(DrawSearchBox(schemaRect.x) + 5, 0);
             DrawSchemas(viewSchema, viewScroll, schemaRect, viewedSchemas);
             Widgets.EndGroup();
         }
@@ -113,6 +115,21 @@ namespace ItsSorceryFramework
             return bar;
         }
 
+        public float DrawSearchBox(float xPos)
+        {
+            /*Rect bar = new Rect(xPos, 0, TabRect.width / 4 - (xPos - TabRect.x), 26);
+            this.filter = Widgets.TextField(bar, this.filter);*/
+
+
+            filter = Widgets.TextField(new Rect(xPos, 0, TabRect.width / 4 - (xPos - TabRect.x), 26), filter);
+            if (Event.current.type == EventType.MouseDown || Event.current.keyCode == KeyCode.Escape)
+            {
+                GUI.FocusControl(null);
+            }
+
+            return TabRect.width / 4 + TabRect.x;
+        }
+
         public bool FavViewButton(float x, float y)
         {
             Rect rect = new Rect(x, y, 26f, 26f);
@@ -137,6 +154,26 @@ namespace ItsSorceryFramework
             {
                 // take the energy tracker and display it
                 float schemaHeight = schema.energyTracker.DrawOnGUI(ref schemaRect);
+                totalSchemaHeight += schemaHeight + 1;
+                schemaRect.y += schemaHeight + 1;
+            }
+            Text.Font = GameFont.Small;
+
+            schemaScrollViewHeight = totalSchemaHeight;
+            Widgets.EndScrollView();
+        }
+
+        public void DrawSchemas(Rect view, Rect viewScroll, Rect schemaRect, HashSet<SorcerySchema> viewedSchemas)
+        {
+            float totalSchemaHeight = 0;
+            Widgets.BeginScrollView(view, ref schemaScrollPosition, viewScroll, true);
+
+            // for every sorcery schema
+            SorcerySchema[] schemas = viewedSchemas.ToArray();
+
+            for(int i = energyTrackerIndex; i <= energyTrackerIndex + Math.Min(schemas.Count() - energyTrackerIndex, 5) - 1; i++)
+            {
+                float schemaHeight = schemas[i].energyTracker.DrawOnGUI(ref schemaRect);
                 totalSchemaHeight += schemaHeight + 1;
                 schemaRect.y += schemaHeight + 1;
             }
@@ -209,11 +246,77 @@ namespace ItsSorceryFramework
             }
         }
 
+        public HashSet<SorcerySchema> HashSchemas
+        {
+            get
+            {
+                if (SorceryComp is null) return null;
+                if (cachedHashSchema is null && cacheCount != SorceryComp.schemaTracker.sorcerySchemas.Count())
+                {
+                    cachedHashSchema = new HashSet<SorcerySchema>(SorceryComp.schemaTracker.sorcerySchemas);
+                    cacheCount = cachedHashSchema.Count();
+                }
+                return cachedHashSchema;
+            }
+        }
+
+        public HashSet<SorcerySchema> HashFavSchemas
+        {
+            get
+            {
+                return HashSchemas.Where(x => x.favorited).ToHashSet() ?? new HashSet<SorcerySchema>();
+            }
+        }
+
+        public HashSet<SorcerySchema> HashFilteredSchemas
+        {
+            get
+            {
+                if (filter.NullOrEmpty()) return HashSchemas;
+                if (cachedHashFilterSchema is null || filter != cachedFilter)
+                {
+                    /*cachedFilterSchema = (from schema in Schemas
+                                          where schema.def.label.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0
+                                          select schema).ToList();*/
+
+                    cachedHashFilterSchema = HashSchemas.Where(x => x.def.label.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0).ToHashSet();
+                    cachedFilter = filter;
+                }
+                return cachedHashFilterSchema;
+            }
+        }
+
+        public HashSet<SorcerySchema> HashFilteredFavSchemas
+        {
+            get
+            {
+                if (filter.NullOrEmpty()) return HashFavSchemas;
+                if (cachedHashFilterFavSchema is null || filter != cachedFilter)
+                {
+                    cachedHashFilterFavSchema = HashFilteredSchemas.Where(x => x.favorited).ToHashSet();
+                    cachedFilter = filter;
+                }
+                return cachedHashFilterFavSchema;
+            }
+        }
+
         private Comp_ItsSorcery sorceryComp = null;
 
         private List<SorcerySchema> cachedFilterSchema;
 
         private List<SorcerySchema> cachedFilterFavSchema;
+
+
+        // Hashset versions
+        private HashSet<SorcerySchema> cachedHashSchema;
+
+        private int cacheCount = 0;
+
+        private HashSet<SorcerySchema> cachedHashFilterSchema;
+
+        private HashSet<SorcerySchema> cachedHashFilterFavSchema;
+
+        //private HashSet<SorcerySchema> cachedHashFavSchema;
 
         public int energyTrackerIndex = 0;
 
