@@ -15,7 +15,7 @@ namespace ItsSorceryFramework
         {
             get
             {
-                return SelPawn.IsColonist && SorceryComp != null && !Schemas.NullOrEmpty();
+                return SelPawn.IsColonist && SorceryComp != null && !HashSchemas.EnumerableNullOrEmpty();
             }
         }
 
@@ -41,7 +41,6 @@ namespace ItsSorceryFramework
             Rect view = window.ContractedBy(15f);
             view.yMin += 10;
             view.xMax = window.xMax;
-
             DrawDivider(window.x, view.y, window.width);
 
             Rect viewSchema = view.ContractedBy(5f);
@@ -49,7 +48,6 @@ namespace ItsSorceryFramework
             schemaRect.width -= 20f;
             schemaRect.height = 75f;
 
-            //List<SorcerySchema> viewedSchemas = favView ? FilteredFavSchemas : FilteredSchemas;
             HashSet<SorcerySchema> viewedSchemas = favView ? HashFilteredFavSchemas : HashFilteredSchemas;
             Rect viewScroll = new Rect(viewSchema.x, viewSchema.y, viewSchema.width - 20, schemaScrollViewHeight + 10f);
 
@@ -61,8 +59,6 @@ namespace ItsSorceryFramework
 
             // draw page count + searchbar and favorites button, page change buttons, favorites, and schemas
             DrawPageUI();
-            /*Rect search = DrawSearchBar(schemaRect.x);
-            FavViewButton(search.xMax + 5, 0);*/
             FavViewButton(DrawSearchBox(schemaRect.x) + 5, 0);
             DrawSchemas(viewSchema, viewScroll, schemaRect, viewedSchemas);
             Widgets.EndGroup();
@@ -101,7 +97,7 @@ namespace ItsSorceryFramework
             }
         }
 
-        public Rect DrawSearchBar(float xPos)
+        /*public Rect DrawSearchBar(float xPos)
         {
             //Rect bar = new Rect(TabRect.x + 20, 0, TabRect.width / 3 - 20, 26);
             Rect bar = new Rect(xPos, 0, TabRect.width / 4 - (xPos - TabRect.x), 26);
@@ -113,14 +109,10 @@ namespace ItsSorceryFramework
             }
 
             return bar;
-        }
+        }*/
 
         public float DrawSearchBox(float xPos)
         {
-            /*Rect bar = new Rect(xPos, 0, TabRect.width / 4 - (xPos - TabRect.x), 26);
-            this.filter = Widgets.TextField(bar, this.filter);*/
-
-
             filter = Widgets.TextField(new Rect(xPos, 0, TabRect.width / 4 - (xPos - TabRect.x), 26), filter);
             if (Event.current.type == EventType.MouseDown || Event.current.keyCode == KeyCode.Escape)
             {
@@ -144,7 +136,7 @@ namespace ItsSorceryFramework
             return false;
         }
 
-        public void DrawSchemas(Rect view, Rect viewScroll, Rect schemaRect, List<SorcerySchema> viewedSchemas)
+        /*public void DrawSchemas(Rect view, Rect viewScroll, Rect schemaRect, List<SorcerySchema> viewedSchemas)
         {
             float totalSchemaHeight = 0;
             Widgets.BeginScrollView(view, ref schemaScrollPosition, viewScroll, true);
@@ -161,7 +153,7 @@ namespace ItsSorceryFramework
 
             schemaScrollViewHeight = totalSchemaHeight;
             Widgets.EndScrollView();
-        }
+        }*/
 
         public void DrawSchemas(Rect view, Rect viewScroll, Rect schemaRect, HashSet<SorcerySchema> viewedSchemas)
         {
@@ -196,7 +188,7 @@ namespace ItsSorceryFramework
             }
         }
 
-        public List<SorcerySchema> Schemas
+        /*public List<SorcerySchema> Schemas
         {
             get
             {
@@ -244,14 +236,14 @@ namespace ItsSorceryFramework
                 }
                 return cachedFilterFavSchema;
             }
-        }
+        }*/
 
         public HashSet<SorcerySchema> HashSchemas
         {
             get
             {
                 if (SorceryComp is null) return null;
-                if (cachedHashSchema is null && cacheCount != SorceryComp.schemaTracker.sorcerySchemas.Count())
+                if (cachedHashSchema is null || cacheCount != SorceryComp.schemaTracker.sorcerySchemas.Count())
                 {
                     cachedHashSchema = new HashSet<SorcerySchema>(SorceryComp.schemaTracker.sorcerySchemas);
                     cacheCount = cachedHashSchema.Count();
@@ -275,10 +267,6 @@ namespace ItsSorceryFramework
                 if (filter.NullOrEmpty()) return HashSchemas;
                 if (cachedHashFilterSchema is null || filter != cachedFilter)
                 {
-                    /*cachedFilterSchema = (from schema in Schemas
-                                          where schema.def.label.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0
-                                          select schema).ToList();*/
-
                     cachedHashFilterSchema = HashSchemas.Where(x => x.def.label.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0).ToHashSet();
                     cachedFilter = filter;
                 }
@@ -291,12 +279,20 @@ namespace ItsSorceryFramework
             get
             {
                 if (filter.NullOrEmpty()) return HashFavSchemas;
-                if (cachedHashFilterFavSchema is null || filter != cachedFilter)
+                return HashFilteredSchemas.Where(x => x.favorited).ToHashSet();
+
+                /*if (cachedHashFilterFavSchema is null || filter != cachedFilter)
                 {
                     cachedHashFilterFavSchema = HashFilteredSchemas.Where(x => x.favorited).ToHashSet();
                     cachedFilter = filter;
                 }
-                return cachedHashFilterFavSchema;
+
+                return cachedHashFilterFavSchema;*/
+
+                /*else
+                {
+                    return HashFilteredSchemas.Where(x => x.favorited).ToHashSet();
+                }*/
             }
         }
 
@@ -333,6 +329,8 @@ namespace ItsSorceryFramework
         private string filter = "";
 
         private string cachedFilter = "";
+
+        private string cachedFavFilter = "";
 
         private bool favView = false;
     }

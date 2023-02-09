@@ -17,7 +17,19 @@ namespace ItsSorceryFramework
                 this.pawn = value;
             }
         }
-        
+
+        public SorcerySchema Schema
+        {
+            get
+            {
+                if(cachedSchema is null)
+                {
+                    cachedSchema = SorcerySchemaUtility.FindSorcerySchema(TempPawn, this);
+                }
+                return cachedSchema;
+            }
+        }
+
         public override IEnumerable<StatDrawEntry> SpecialDisplayStats(StatRequest req)
         {
             // no TempPawn in the def assigned = no special display stats.
@@ -33,8 +45,7 @@ namespace ItsSorceryFramework
                     energyTrackerDef.energyDescKey.Translate(), 99999, null, null, false);
 
             // depending on energytrackers, alter which ones show up
-            Log.Message((SorcerySchemaUtility.FindSorcerySchema(TempPawn, this) == null).ToString());
-            foreach(StatDrawEntry entry in SorcerySchemaUtility.FindSorcerySchema(TempPawn, this).energyTracker.SpecialDisplayStats(req))
+            foreach(StatDrawEntry entry in Schema.energyTracker.SpecialDisplayStats(req))
             {
                 yield return entry;
             }
@@ -57,6 +68,7 @@ namespace ItsSorceryFramework
 
         private Pawn pawn;
 
+        private SorcerySchema cachedSchema;
         
     }
 }

@@ -173,16 +173,16 @@ namespace ItsSorceryFramework
             Widgets.DrawBoxSolidWithOutline(rect, new Color(), Color.grey, 1);
 
             // information button- shows important info about the sorcery schema
-            SorcerySchemaDef tempSchemaDef = sorcerySchemaDef;
-            tempSchemaDef.TempPawn = pawn;
+            /*SorcerySchemaDef tempSchemaDef = sorcerySchemaDef;
+            tempSchemaDef.TempPawn = pawn;*/
             sorcerySchemaDef.TempPawn = pawn;
 
-            Widgets.InfoCardButton(rect.x + 5, rect.y + 5, tempSchemaDef);
+            Widgets.InfoCardButton(rect.x + 5, rect.y + 5, sorcerySchemaDef);
             LearningTrackerButton(rect.x + 5 + 24, rect.y + 5);
             /*LimitButton(rect.x + rect.width - 5 - 24, rect.y + 5);
             TurnButton(rect.x + rect.width - 5 - 24 - 24, rect.y + 5);*/
 
-            tempSchemaDef.ClearCachedData();
+            //tempSchemaDef.ClearCachedData();
 
             // shows the label of the sorcery schema in the itab
             Text.Font = GameFont.Medium;
