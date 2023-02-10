@@ -97,20 +97,6 @@ namespace ItsSorceryFramework
             }
         }
 
-        /*public Rect DrawSearchBar(float xPos)
-        {
-            //Rect bar = new Rect(TabRect.x + 20, 0, TabRect.width / 3 - 20, 26);
-            Rect bar = new Rect(xPos, 0, TabRect.width / 4 - (xPos - TabRect.x), 26);
-
-            this.filter = Widgets.TextField(bar, this.filter);
-            if(Event.current.type == EventType.MouseDown || Event.current.keyCode == KeyCode.Escape)
-            {
-                GUI.FocusControl(null);
-            }
-
-            return bar;
-        }*/
-
         public float DrawSearchBox(float xPos)
         {
             filter = Widgets.TextField(new Rect(xPos, 0, TabRect.width / 4 - (xPos - TabRect.x), 26), filter);
@@ -135,25 +121,6 @@ namespace ItsSorceryFramework
             }
             return false;
         }
-
-        /*public void DrawSchemas(Rect view, Rect viewScroll, Rect schemaRect, List<SorcerySchema> viewedSchemas)
-        {
-            float totalSchemaHeight = 0;
-            Widgets.BeginScrollView(view, ref schemaScrollPosition, viewScroll, true);
-            // for every sorcery schema
-            foreach (SorcerySchema schema in viewedSchemas.GetRange(energyTrackerIndex,
-                Math.Min(viewedSchemas.Count() - energyTrackerIndex, 5)))
-            {
-                // take the energy tracker and display it
-                float schemaHeight = schema.energyTracker.DrawOnGUI(ref schemaRect);
-                totalSchemaHeight += schemaHeight + 1;
-                schemaRect.y += schemaHeight + 1;
-            }
-            Text.Font = GameFont.Small;
-
-            schemaScrollViewHeight = totalSchemaHeight;
-            Widgets.EndScrollView();
-        }*/
 
         public void DrawSchemas(Rect view, Rect viewScroll, Rect schemaRect, HashSet<SorcerySchema> viewedSchemas)
         {
@@ -187,56 +154,6 @@ namespace ItsSorceryFramework
                 return sorceryComp;
             }
         }
-
-        /*public List<SorcerySchema> Schemas
-        {
-            get
-            {
-                if (SorceryComp is null) return null;
-                return SorceryComp.schemaTracker.sorcerySchemas;
-            }
-        }
-
-        public List<SorcerySchema> FavSchemas
-        {
-            get
-            {
-                return (from schema in Schemas where schema.favorited == true select schema).ToList() ?? new List<SorcerySchema>();
-            }
-        }
-
-        // used in conjunction with the search bar component
-        public List<SorcerySchema> FilteredSchemas
-        {
-            get
-            {
-                if (filter.NullOrEmpty()) return Schemas;
-                if (cachedFilterSchema is null || filter != cachedFilter)
-                {
-                    cachedFilterSchema = (from schema in Schemas 
-                                          where schema.def.label.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0 
-                                          select schema).ToList();
-                    cachedFilter = filter;
-                }
-                return cachedFilterSchema;
-            }
-        }
-
-        public List<SorcerySchema> FilteredFavSchemas
-        {
-            get
-            {
-                if (filter.NullOrEmpty()) return FavSchemas;
-                if (cachedFilterFavSchema is null || filter != cachedFilter)
-                {
-                    cachedFilterFavSchema = (from schema in FilteredSchemas 
-                                             where schema.favorited 
-                                             select schema).ToList();
-                    cachedFilter = filter;
-                }
-                return cachedFilterFavSchema;
-            }
-        }*/
 
         public HashSet<SorcerySchema> HashSchemas
         {
@@ -280,27 +197,10 @@ namespace ItsSorceryFramework
             {
                 if (filter.NullOrEmpty()) return HashFavSchemas;
                 return HashFilteredSchemas.Where(x => x.favorited).ToHashSet();
-
-                /*if (cachedHashFilterFavSchema is null || filter != cachedFilter)
-                {
-                    cachedHashFilterFavSchema = HashFilteredSchemas.Where(x => x.favorited).ToHashSet();
-                    cachedFilter = filter;
-                }
-
-                return cachedHashFilterFavSchema;*/
-
-                /*else
-                {
-                    return HashFilteredSchemas.Where(x => x.favorited).ToHashSet();
-                }*/
             }
         }
 
         private Comp_ItsSorcery sorceryComp = null;
-
-        private List<SorcerySchema> cachedFilterSchema;
-
-        private List<SorcerySchema> cachedFilterFavSchema;
 
 
         // Hashset versions
@@ -309,10 +209,6 @@ namespace ItsSorceryFramework
         private int cacheCount = 0;
 
         private HashSet<SorcerySchema> cachedHashFilterSchema;
-
-        private HashSet<SorcerySchema> cachedHashFilterFavSchema;
-
-        //private HashSet<SorcerySchema> cachedHashFavSchema;
 
         public int energyTrackerIndex = 0;
 
@@ -329,8 +225,6 @@ namespace ItsSorceryFramework
         private string filter = "";
 
         private string cachedFilter = "";
-
-        private string cachedFavFilter = "";
 
         private bool favView = false;
     }
