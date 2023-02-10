@@ -18,5 +18,10 @@ namespace ItsSorceryFramework
         public static readonly Texture2D StarEmpty = ContentFinder<Texture2D>.Get("UI/ITab_Schema/StarEmpty", true);
 
         public static readonly Texture2D StarFull = ContentFinder<Texture2D>.Get("UI/ITab_Schema/StarFull", true);
+
+        public static readonly Texture2D ButtonLeft = ContentFinder<Texture2D>.Get("UI/ITab_Schema/ButtonLeft", true);
+
+        public static readonly Texture2D ButtonRight = ContentFinder<Texture2D>.Get("UI/ITab_Schema/ButtonRight", true);
+
     }
 }
