@@ -11,6 +11,19 @@
 	<ThingDef ParentName="ResourceBase" Name="SchemaItemBase" Abstract="True">
 		<thingClass>ThingWithComps</thingClass>
 		<techLevel>Archotech</techLevel>
+		
+		<resourceReadoutPriority>Middle</resourceReadoutPriority>
+		<stackLimit>1</stackLimit>
+		<tradeNeverStack>true</tradeNeverStack>
+		<useHitPoints>true</useHitPoints>
+		<relicChance>0</relicChance>
+		<statBases>
+			<MarketValue>1000</MarketValue>
+			<MaxHitPoints>50</MaxHitPoints>
+			<Mass>0.5</Mass>
+		</statBases>
+		<drawGUIOverlay>false</drawGUIOverlay>
+		
 		<thingCategories>
 			<li>ISF_SchemaItems</li>
 		</thingCategories>
@@ -18,20 +31,13 @@
 			<li>ISF_SchemaItems</li>
 		</tradeTags>
 		<thingSetMakerTags><li>RewardStandardHighFreq</li></thingSetMakerTags>
-		<statBases>
-			<Mass>0.5</Mass>
-		</statBases>
+		
 		<comps>
-			<!--<li Class="ItsSorceryFramework.CompProperties_SchemaItem">
-				<compClass>ItsSorceryFramework.CompSchemaItem</compClass>
-				<useJob>UseItem</useJob>
-				<useLabel>Learn {0}</useLabel>
-			</li>-->
 			<li Class="CompProperties_UseEffectDestroySelf" />
 		</comps>
 	</ThingDef>
 	
-	<ThingDef ParentName="SchemaItemBase" Name="SchemaItemBaseTest" Abstract="True">
+	<!--<ThingDef ParentName="SchemaItemBase" Name="SchemaItemBaseTest" Abstract="True">
 		<graphicData>
 			<texPath>Things/Item/Artifact/PsychicAnimalPulser</texPath>
 			<graphicClass>Graphic_Single</graphicClass>
@@ -193,6 +199,6 @@
 				<sound>PsychicAnimalPulserCast</sound>
 			</li>
 		</comps>
-	</ThingDef>
+	</ThingDef>-->
   
 </Defs>

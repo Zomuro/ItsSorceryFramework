@@ -3,8 +3,8 @@
 	<name>It's Sorcery!</name>
 	<author>Zomuro</author>
 	<supportedVersions><li>1.4</li></supportedVersions>
-	<modDependencies>
-	</modDependencies>
+	<!--<modDependencies>
+	</modDependencies>-->
 	<packageId>Zomuro.ItsSorceryFramework</packageId>
 	<description>A general framework for magic systems in RimWorld. It offers a modular system that enables modders to more easily design how magic works and is learned in game. 
 	

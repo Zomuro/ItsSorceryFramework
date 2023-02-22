@@ -1,7 +1,35 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Defs>
 	<!-- Demostration + Testing LearningTracker def -->
-	<ItsSorceryFramework.LearningTrackerDef Name = "LearningTrackerBase">
+	<ItsSorceryFramework.LearningTrackerDef Abstract = "True" Name = "LearningTrackerBase">
+		<learningTrackerClass>ItsSorceryFramework.LearningTracker</learningTrackerClass>	
+	</ItsSorceryFramework.LearningTrackerDef>
+	
+	<ItsSorceryFramework.LearningTrackerDef Abstract = "True" ParentName = "LearningTrackerBase" Name = "LearningTrackerTree">
+		<learningTrackerClass>ItsSorceryFramework.LearningTracker_Tree</learningTrackerClass>	
+		<label>The base learning tree.</label>
+		<description>Adding a LearningTrackerDef using this as a parent to a SorcerySchemaDef will allow you to see a tree of nodes, which can be completed for various benefits.</description>
+	</ItsSorceryFramework.LearningTrackerDef>
+	
+	<ItsSorceryFramework.LearningTrackerDef Abstract = "True" ParentName = "LearningTrackerBase" Name = "LearningTrackerProgress">
+		<learningTrackerClass>ItsSorceryFramework.LearningTracker_Progress</learningTrackerClass>
+		<bgPath>UI/LearningTrackers/LogicaBG</bgPath>
+	</ItsSorceryFramework.LearningTrackerDef>
+	
+	<ItsSorceryFramework.LearningTreeNodeDef Abstract = "True" Name = "LearningTreeNodeBase">
+		<label>Birds and bees</label>
+		<description>The literal basics.</description>
+		
+		<!-- Define the LearningTracker_Tree this node is linked to.
+		<learningTrackerDef>LearningTracker_Tree</learningTrackerDef>-->
+		
+		<!-- use the coordinate system to place the nodes on the tree map.-->
+		<coordX>0</coordX>
+		<coordY>0</coordY>
+	</ItsSorceryFramework.LearningTreeNodeDef>
+	
+	
+	<!--<ItsSorceryFramework.LearningTrackerDef Name = "LearningTrackerBase">
 		<learningTrackerClass>ItsSorceryFramework.LearningTracker</learningTrackerClass>
 		<defName>LearningTracker_Base</defName>
 		<label>learning tracker test</label>
@@ -201,6 +229,6 @@
 		<description>who thought this was a good idea</description>
 		<coordX>1</coordX>
 		<coordY>1</coordY>
-	</ItsSorceryFramework.LearningTreeNodeDef>
+	</ItsSorceryFramework.LearningTreeNodeDef>-->
 	
 </Defs>
