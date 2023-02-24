@@ -3,7 +3,7 @@
 	<!-- Demostration + Testing ProgressTracker def -->
 	<ItsSorceryFramework.ProgressTrackerDef Abstract = "True" Name = "ProgressTrackerBase">
 		<progressTrackerClass>ItsSorceryFramework.ProgressTracker_RPG</progressTrackerClass>
-		<!--<progressHediff>ProgressTrackerHediffDef</progressHediff>-->
+		<progressHediff/>
 		<levelFactors/>
 		<levelSpecifics/>
 		<levelLabels/>
@@ -21,79 +21,5 @@
 		</stages>
 	</HediffDef>
 	
-	<!--<ItsSorceryFramework.ProgressTrackerDef Name = "ProgressTrackerBase">
-		<progressTrackerClass>ItsSorceryFramework.ProgressTracker_RPG</progressTrackerClass>
-		<defName>ProgressTracker_Base</defName>
-		<label>progress tracker test</label>
-		
-		<progressHediff>ProgressTrackerHediffDef</progressHediff>
-		<levelFactors>
-			<li>
-				<level>1</level>
-				<statOffsets>
-					<MoveSpeed>0.25</MoveSpeed>
-				</statOffsets>
-				<statFactorOffsets>
-					<MoveSpeed>0.25</MoveSpeed>
-				</statFactorOffsets>
-			</li>
-			<li>
-				<level>3</level>
-				<statOffsets>
-					<MoveSpeed>0.5</MoveSpeed>
-				</statOffsets>
-				<capMods>
-					<li>
-						<capacity>Manipulation</capacity>
-						<offset>0.5</offset>
-					</li>
-				</capMods>
-			</li>
-		</levelFactors>
-		<levelSpecifics>
-			<li>
-				<level>5</level>
-				<capMods>
-					<li>
-						<capacity>Manipulation</capacity>
-						<offset>1</offset>
-					</li>
-				</capMods>
-				<abilityGain>
-					<li>testsorcerylevelup</li>
-				</abilityGain>
-			</li>
-		</levelSpecifics>
-		<levelLabels>
-			<li><level>1</level><label>start 1</label></li>
-			<li><level>2</level><label>start 2</label></li>		
-			<li><level>3</level><label>start 3</label></li>
-		</levelLabels>
-		<expTags>
-			<li>EXPTag_CastEnergyCost</li>
-			<li>EXPTag_OnDamage</li>
-			<li>EXPTag_OnDamaged</li>
-			<li>EXPTag_OnSkillEXP</li>
-			<li>EXPTag_Passive</li>
-			<li>EXPTag_DuringJob</li>
-			<li>EXPTag_OnKill</li>
-			<li>EXPTag_UseItem</li>
-		</expTags>
-	</ItsSorceryFramework.ProgressTrackerDef>
-	
-	<HediffDef Name="ProgressTrackerHediffBase"> 
-		<defName>ProgressTrackerHediffDef</defName>
-		<hediffClass>ItsSorceryFramework.Hediff_ProgressLevel</hediffClass>
-		<label>Logic Gate</label>
-		<defaultLabelColor>(0.8314,0.6863,0.2157)</defaultLabelColor>
-		<description>Test.</description>
-		<initialSeverity>1</initialSeverity>
-		<minSeverity>0</minSeverity>
-		<maxSeverity>100</maxSeverity>
-		<countsAsAddedPartOrImplant>false</countsAsAddedPartOrImplant>
-		<stages>	
-		</stages>
-	</HediffDef>-->
-
 	
 </Defs>

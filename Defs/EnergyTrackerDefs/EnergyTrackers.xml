@@ -3,7 +3,7 @@
 	<!-- Demostration + Testing EnergyTracker def -->
 	
 	<ItsSorceryFramework.EnergyTrackerDef Abstract = "True" Name = "EnergyTrackerBase">
-		<energyTrackerClass>ItsSorceryFramework.EnergyTracker</energyTrackerClass>	
+		<energyTrackerClass>ItsSorceryFramework.EnergyTracker</energyTrackerClass>		
 	</ItsSorceryFramework.EnergyTrackerDef>
 	
 	<ItsSorceryFramework.EnergyTrackerDef Abstract = "True" ParentName = "EnergyTrackerBase" Name = "EnergyTrackerBaseRPG">
