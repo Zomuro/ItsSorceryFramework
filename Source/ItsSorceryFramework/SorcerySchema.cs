@@ -76,11 +76,12 @@ namespace ItsSorceryFramework
         {
             if (!energyTrackers.NullOrEmpty()) 
             {
-                foreach(var et in energyTrackers)
+                /*for (int i = 0; i < energyTrackers.Count; i++)
                 {
-                    et.EnergyTrackerTick();
-                }
-                
+                    energyTrackers[i].EnergyTrackerTick();
+                }*/
+
+                foreach(var et in energyTrackers) et.EnergyTrackerTick();
             }
 
             if(progressTracker != null)

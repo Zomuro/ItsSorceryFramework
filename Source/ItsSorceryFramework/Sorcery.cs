@@ -59,6 +59,21 @@ namespace ItsSorceryFramework
                     break;
                 }
             }*/
+
+            foreach (var et in Schema.energyTrackers)
+            {
+                if (!et.TryAlterEnergy(sorceryDef.statBases.GetStatValueFromList(et.def.energyUnitStatDef, 0f) * et.EnergyCostFactor)) return false;
+            }
+
+            var worker = Schema.progressTracker.def.Workers.FirstOrDefault(x => x.GetType() == typeof(ProgressEXPWorker_CastEnergyCost));
+            if (worker != null)
+            {
+                foreach (var et in Schema.energyTrackers)
+                {
+                    worker.TryExecute(Schema.progressTracker, sorceryDef.statBases.GetStatValueFromList(et.def.energyUnitStatDef, 0f));
+                }
+            }
+
             return base.Activate(target);
             
         }
@@ -76,6 +91,20 @@ namespace ItsSorceryFramework
 
             var worker = Schema.progressTracker.def.Workers.FirstOrDefault(x => x.GetType() == typeof(ProgressEXPWorker_CastEnergyCost));
             if(worker != null) worker.TryExecute(Schema.progressTracker, sorceryDef.EnergyCost);*/
+
+            foreach(var et in Schema.energyTrackers)
+            {
+                if (!et.TryAlterEnergy(sorceryDef.statBases.GetStatValueFromList(et.def.energyUnitStatDef, 0f) * et.EnergyCostFactor)) return false;
+            }
+
+            var worker = Schema.progressTracker.def.Workers.FirstOrDefault(x => x.GetType() == typeof(ProgressEXPWorker_CastEnergyCost));
+            if (worker != null)
+            {
+                foreach (var et in Schema.energyTrackers)
+                {
+                    worker.TryExecute(Schema.progressTracker, sorceryDef.statBases.GetStatValueFromList(et.def.energyUnitStatDef, 0f));
+                }
+            }
             return base.Activate(target, dest);
         }
 

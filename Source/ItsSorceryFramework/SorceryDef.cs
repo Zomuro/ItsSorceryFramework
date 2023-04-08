@@ -8,13 +8,13 @@ namespace ItsSorceryFramework
 {
     public class SorceryDef : AbilityDef
     {
-		public float EnergyCost
+		/*public float EnergyCost
 		{
 			get
 			{
 				return this.statBases.GetStatValueFromList(StatDefOf_ItsSorcery.Sorcery_EnergyCost, 0f);
 			}
-		}
+		}*/
 
 		public int MaximumCasts
 		{
@@ -37,9 +37,60 @@ namespace ItsSorceryFramework
             }
         }
 
+		/*public Dictionary<StatModifier, List<EnergyTracker>> EnergyCostDictionary
+        {
+            get
+            {
+				if(cachedEnergyTrackers is null)
+                {
+					if (Schema is null) cachedEnergyTrackers = null;
+					cachedEnergyTrackers = new Dictionary<StatModifier, List<EnergyTracker>>();
+					foreach (var statMod in statBases)
+					{
+						if (statMod.stat.category != StatCategoryDefOf_ItsSorcery.Sorcery_ISF) continue;
+						foreach (var et in Schema.energyTrackers)
+						{
+							if (et.def.energyUnitStatDef == statMod.stat)
+							{
+								if (!cachedEnergyTrackers.ContainsKey(statMod)) cachedEnergyTrackers.Add(statMod, new List<EnergyTracker>());
+								cachedEnergyTrackers[statMod].Add(et);
+							}
+						}
+					}
+
+				}
+				return cachedEnergyTrackers;
+            }
+        }
+
+		public Dictionary<StatModifier, List<EnergyTrackerDef>> EnergyDefCostDictionary
+		{
+			get
+			{
+				if (cachedEnergyTrackerDefs is null)
+				{
+					cachedEnergyTrackerDefs = new Dictionary<StatModifier, List<EnergyTrackerDef>>();
+					foreach (var statMod in statBases)
+					{
+						if (statMod.stat.category != StatCategoryDefOf_ItsSorcery.Sorcery_ISF) continue;
+						foreach (var et in sorcerySchema.energyTrackerDefs)
+						{
+							if (et.energyUnitStatDef == statMod.stat)
+							{
+								if (!cachedEnergyTrackerDefs.ContainsKey(statMod)) cachedEnergyTrackerDefs.Add(statMod, new List<EnergyTrackerDef>());
+								cachedEnergyTrackerDefs[statMod].Add(et);
+							}
+						}
+					}
+
+				}
+				return cachedEnergyTrackerDefs;
+			}
+		}*/
+
 		public IEnumerable<string> SorceryStatSummary(Pawn forPawn = null)
 		{
-			if (this.EnergyCost != 0) // if the ability costs energy
+			/*if (this.EnergyCost != 0) // if the ability costs energy
 			{
 				// temporarily comment this out- work on this later
 				/*
@@ -52,8 +103,59 @@ namespace ItsSorceryFramework
 				{
 					yield return this.sorcerySchema.energyTrackerDef.energyLabelKey.Translate().CapitalizeFirst() + ": " +
 						Math.Round(this.EnergyCost, 2);
-				}*/
+				}
+			}*/
+
+			float val = 0;
+			if(Schema != null)
+            {
+				foreach(var et in Schema.energyTrackers)
+                {
+					val = statBases.GetStatValueFromList(et.def.energyUnitStatDef, 0);
+					if (val == 0) continue;
+					yield return et.def.energyLabelKey.Translate().CapitalizeFirst() + ": " +
+						   Math.Round(val * et.EnergyCostFactor, 2);
+				}
+            }
+            else
+            {
+				foreach (var et in sorcerySchema.energyTrackerDefs)
+				{
+					val = statBases.GetStatValueFromList(et.energyUnitStatDef, 0);
+					if (val == 0) continue;
+					yield return et.energyLabelKey.Translate().CapitalizeFirst() + ": " +
+						   Math.Round(val, 2);
+				}
 			}
+
+
+            /*if (!EnergyCostDictionary.NullOrEmpty())
+            {
+				foreach (var pair in EnergyCostDictionary)
+                {
+					if (pair.Key.value == 0) continue;
+					foreach(var et in pair.Value)
+                    {
+						yield return et.def.energyLabelKey.Translate().CapitalizeFirst() + ": " +
+						   Math.Round(pair.Key.value * et.EnergyCostFactor, 2);
+					}
+					
+				}
+			}
+            else if (!EnergyDefCostDictionary.NullOrEmpty())
+			{
+				foreach (var pair in EnergyDefCostDictionary)
+				{
+					if (pair.Key.value == 0) continue;
+					foreach (var et in pair.Value)
+					{
+						yield return et.energyLabelKey.Translate().CapitalizeFirst() + ": " +
+						   Math.Round(pair.Key.value, 2);
+					}
+
+				}
+			}*/
+			
 			
 			if (this.verbProperties.warmupTime > 0) // if warmuptime > 0, display it
 			{
@@ -74,16 +176,16 @@ namespace ItsSorceryFramework
 
 		public string GetSorceryTooltip(Pawn pawn = null)
 		{
-			if (this.cachedTooltip == null || this.cachedTooltipPawn != pawn)
+			if (cachedTooltip == null || cachedTooltipPawn != pawn)
 			{
-				this.cachedTooltip = this.LabelCap.Colorize(ColoredText.TipSectionTitleColor) + "\n" + this.sorcerySchema.label.CapitalizeFirst() + 
-					((this.level > 0) ? ("\n" + "Level".Translate().CapitalizeFirst() + " " + this.level) : "") + 
-					"\n\n" +this.description;
-				this.cachedTooltipPawn = pawn;
-				string text = this.SorceryStatSummary(pawn).ToLineList(null, false);
+				cachedTooltip = LabelCap.Colorize(ColoredText.TipSectionTitleColor) + "\n" + sorcerySchema.label.CapitalizeFirst() + 
+					((level > 0) ? ("\n" + "Level".Translate().CapitalizeFirst() + " " + level) : "") + 
+					"\n\n" + description;
+				cachedTooltipPawn = pawn;
+				string text = SorceryStatSummary(pawn).ToLineList(null, false);
 				if (!text.NullOrEmpty())
 				{
-					this.cachedTooltip = this.cachedTooltip + "\n\n" + text;
+					cachedTooltip = cachedTooltip + "\n\n" + text;
 				}
 			}
 			
@@ -99,6 +201,10 @@ namespace ItsSorceryFramework
 		public SorcerySchemaDef sorcerySchema; // links sorcery to a magic system
 
 		public string cachedTooltip;
+
+		private Dictionary<StatModifier, List<EnergyTracker>> cachedEnergyTrackers;
+
+		private Dictionary<StatModifier, List<EnergyTrackerDef>> cachedEnergyTrackerDefs;
 
 		public Pawn cachedTooltipPawn;
 

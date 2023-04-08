@@ -29,7 +29,8 @@ namespace ItsSorceryFramework
         public override void OnOpen()
         {
             base.OnOpen();
-            this.filter = "";
+            filter = "";
+            ClearCaches(); // may need to check for performance stuff
         }
 
         protected override void FillTab()
@@ -200,6 +201,15 @@ namespace ItsSorceryFramework
                 if (filter.NullOrEmpty()) return HashFavSchemas;
                 return HashFilteredSchemas.Where(x => x.favorited).ToHashSet();
             }
+        }
+
+        public void ClearCaches()
+        {
+            cachedFilter = "";
+            cachedHashSchema = null;
+            cachedHashFilterSchema = null;
+            cacheCount = 0;
+            sorceryComp = null;
         }
 
         private Comp_ItsSorcery sorceryComp = null;

@@ -266,7 +266,7 @@ namespace ItsSorceryFramework
             float min = highlight.xMin;
             float width = highlight.width;
 
-            float relativeEnergyDiff = this.EnergyToRelativeValue(sorceryDef.EnergyCost * EnergyCostFactor);
+            float relativeEnergyDiff = this.EnergyToRelativeValue(sorceryDef.statBases.GetStatValueFromList(def.energyUnitStatDef, 0) * EnergyCostFactor);
             float relativeEnergy = this.EnergyRelativeValue;
 
             // used to make random blinking effect on highlight
@@ -281,7 +281,7 @@ namespace ItsSorceryFramework
                 num2 = 1f - (num - 0.25f) / 0.6f;
             }
 
-            if (sorceryDef.EnergyCost * EnergyCostFactor < 0f) // if current relative qi > after using ability
+            if (sorceryDef.statBases.GetStatValueFromList(def.energyUnitStatDef, 0) * EnergyCostFactor < 0f) // if current relative qi > after using ability
             {
                 if (findFloor(relativeEnergy) != findFloor(relativeEnergyDiff))
                 {
@@ -373,7 +373,7 @@ namespace ItsSorceryFramework
         public override string TopRightLabel(SorceryDef sorceryDef)
         {
             return (def.energyLabelKey.Translate().CapitalizeFirst()[0]) + ": " +
-                    Math.Round(sorceryDef.EnergyCost * this.EnergyCostFactor, 2).ToString();
+                    Math.Round(sorceryDef.statBases.GetStatValueFromList(def.energyUnitStatDef, 0) * this.EnergyCostFactor, 2).ToString();
         }
 
         public override string DisableCommandReason()
