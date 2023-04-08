@@ -23,6 +23,8 @@ namespace ItsSorceryFramework
         [MustTranslate]
         public string energyDescKey = "ISF_EnergyStatDesc";
 
+        public StatDef energyUnitStatDef;
+
         // EnergyTracker general stats
         public StatDef energyMaxStatDef;
 

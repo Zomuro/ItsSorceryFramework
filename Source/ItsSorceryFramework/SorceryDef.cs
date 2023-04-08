@@ -41,6 +41,8 @@ namespace ItsSorceryFramework
 		{
 			if (this.EnergyCost != 0) // if the ability costs energy
 			{
+				// temporarily comment this out- work on this later
+				/*
 				if(Schema != null) // if the pawn has the appropiate magic system
 				{
 					yield return this.sorcerySchema.energyTrackerDef.energyLabelKey.Translate().CapitalizeFirst() + ": " +
@@ -50,7 +52,7 @@ namespace ItsSorceryFramework
 				{
 					yield return this.sorcerySchema.energyTrackerDef.energyLabelKey.Translate().CapitalizeFirst() + ": " +
 						Math.Round(this.EnergyCost, 2);
-				}
+				}*/
 			}
 			
 			if (this.verbProperties.warmupTime > 0) // if warmuptime > 0, display it

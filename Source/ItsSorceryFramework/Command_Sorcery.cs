@@ -23,18 +23,15 @@ namespace ItsSorceryFramework
 				return;
 			}
 
-			EnergyTracker energyTracker = Schema.energyTracker;
-
-			/*Log.Message(energyTracker.ToString());
-			Log.Message((energyTracker.currentEnergy - def.EnergyCost).ToString());
-			Log.Message((energyTracker.WouldReachLimitEnergy(def.EnergyCost)).ToString());*/
+			// disabled for now - will work on later when properly costing
+			/*EnergyTracker energyTracker = Schema.energyTracker;
 
 			if (energyTracker.WouldReachLimitEnergy(def.EnergyCost, def))
             {
 				base.DisableWithReason(energyTracker.DisableCommandReason().Translate(pawn.NameFullColored));
 				// base.DisableWithReason(eg.DisableCommandReason().Translate(def));
 				return;
-			}
+			}*/
 
 			base.DisabledCheck();
 		}
@@ -61,7 +58,8 @@ namespace ItsSorceryFramework
 				}
                 else
                 {
-					text += Schema.energyTracker.TopRightLabel(def);
+					// disabled for now
+					/*text += Schema.energyTracker.TopRightLabel(def);*/
 					return text.TrimEndNewlines();
 				}
 
@@ -79,8 +77,11 @@ namespace ItsSorceryFramework
 
 		public string TempRightLabel(SorceryDef sorceryDef)
 		{
-			return (sorceryDef?.sorcerySchema.energyTrackerDef.energyLabelKey.Translate().CapitalizeFirst()[0]) + ": " +
-					Math.Round(sorceryDef.EnergyCost, 2).ToString();
+			// temporarily comment this out to solve getting energy properly costed
+			/*return (sorceryDef?.sorcerySchema.energyTrackerDef.energyLabelKey.Translate().CapitalizeFirst()[0]) + ": " +
+					Math.Round(sorceryDef.EnergyCost, 2).ToString();*/
+
+			return "";
 		}
 
 		public SorcerySchema Schema

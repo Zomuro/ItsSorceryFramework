@@ -16,6 +16,17 @@
 		<!--<sideEffect>test2hediff</sideEffect>-->
 	</ItsSorceryFramework.EnergyTrackerDef>
 	
+	<ItsSorceryFramework.EnergyTrackerDef Abstract = "True" ParentName = "EnergyTrackerBase" Name = "EnergyTrackerBaseRPGTurnBased">
+		<energyTrackerClass>ItsSorceryFramework.EnergyTracker_RPGTurnBased</energyTrackerClass>
+		<!--<defName>EnergyTracker_BaseRPGTurnBased</defName>
+		<label>energy tracker test RPG turn based</label>-->
+		
+		<energyMaxStatDef>MaxEnergy_ItsSorcery</energyMaxStatDef>
+		<energyMinStatDef>MinEnergy_ItsSorcery</energyMinStatDef>
+		<energyRecoveryStatDef>EnergyRecovery_ItsSorcery</energyRecoveryStatDef>
+		
+		<turnTicks>180</turnTicks>
+	</ItsSorceryFramework.EnergyTrackerDef>
 	
 	<!--<ItsSorceryFramework.EnergyTrackerDef Name = "EnergyTrackerBase">
 		<energyTrackerClass>ItsSorceryFramework.EnergyTracker</energyTrackerClass>

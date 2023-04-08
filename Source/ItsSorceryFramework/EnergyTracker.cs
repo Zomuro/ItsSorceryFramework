@@ -15,23 +15,23 @@ namespace ItsSorceryFramework
             this.pawn = pawn;
         }
 
-        public EnergyTracker(Pawn pawn, EnergyTrackerDef def) 
+        public EnergyTracker(Pawn pawn, EnergyTrackerDef def, SorcerySchemaDef schemaDef) 
         {
             this.pawn = pawn;
             this.def = def;
-            this.sorcerySchemaDef = null;
+            this.sorcerySchemaDef = schemaDef;
 
             // maybe put initalize gizmo here idunno
         }
 
-        public EnergyTracker(Pawn pawn, SorcerySchemaDef def)
+        /*public EnergyTracker(Pawn pawn, SorcerySchemaDef def)
         {
             this.pawn = pawn;
             this.def = def.energyTrackerDef;
             this.sorcerySchemaDef = def;
 
             // maybe put initalize gizmo here idunno
-        }
+        }*/
 
         public virtual void ExposeData()
         {
@@ -39,8 +39,24 @@ namespace ItsSorceryFramework
             Scribe_Defs.Look(ref def, "def");
             Scribe_Defs.Look(ref sorcerySchemaDef, "sorcerySchemaDef");
             Scribe_Values.Look<float>(ref this.currentEnergy, "currentEnergy", 0f, false);
-            Scribe_Values.Look<bool>(ref this.limitLocked, "limitLocked", true, false);
-            Scribe_Values.Look<bool>(ref this.turnTimerOn, "turnTimerOn", true, false);
+            /*Scribe_Values.Look<bool>(ref this.limitLocked, "limitLocked", true, false);
+            Scribe_Values.Look<bool>(ref this.turnTimerOn, "turnTimerOn", true, false);*/
+        }
+
+        public virtual bool HasLimit
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        public virtual bool HasTurn
+        {
+            get
+            {
+                return false;
+            }
         }
 
         public virtual float MaxEnergy
@@ -128,6 +144,7 @@ namespace ItsSorceryFramework
 
         public virtual bool WouldReachLimitEnergy(float energyCost, SorceryDef sorceryDef = null, Sorcery sorcery = null)
         {
+            if (currentEnergy - energyCost < 0) return true;
             return false;
         }
 
@@ -167,132 +184,9 @@ namespace ItsSorceryFramework
 
         }
 
-        public void SchemaViewBox(Rect rect)
-        {
-            // sets up outline of the sorcery schema in the itab
-            Widgets.DrawBoxSolidWithOutline(rect, new Color(), Color.grey, 1);
-
-            // information button- shows important info about the sorcery schema
-            /*SorcerySchemaDef tempSchemaDef = sorcerySchemaDef;
-            tempSchemaDef.TempPawn = pawn;*/
-            sorcerySchemaDef.TempPawn = pawn;
-
-            Widgets.InfoCardButton(rect.x + 5, rect.y + 5, sorcerySchemaDef);
-            LearningTrackerButton(rect.x + 5 + 24, rect.y + 5);
-            /*LimitButton(rect.x + rect.width - 5 - 24, rect.y + 5);
-            TurnButton(rect.x + rect.width - 5 - 24 - 24, rect.y + 5);*/
-
-            //tempSchemaDef.ClearCachedData();
-
-            // shows the label of the sorcery schema in the itab
-            Text.Font = GameFont.Medium;
-            Text.Anchor = TextAnchor.UpperCenter;
-            Widgets.Label(rect, sorcerySchemaDef.LabelCap.ToString());
-        }
-
-        public float SchemaViewBox(ref Rect rect)
-        {
-            //float yMin = rect.yMin;
-            float coordY = 0f;
-
-            // sets up outline of the sorcery schema in the itab
-            //Widgets.DrawBoxSolidWithOutline(rect, new Color(), Color.grey, 1);
-
-            // information button- shows important info about the sorcery schema
-            SorcerySchemaDef tempSchemaDef = sorcerySchemaDef;
-            tempSchemaDef.TempPawn = pawn;
-            sorcerySchemaDef.TempPawn = pawn;
-
-            Widgets.InfoCardButton(rect.x + 5, rect.y + 5, tempSchemaDef);
-            LearningTrackerButton(rect.x + 5 + 24, rect.y + 5);
-            FavButton(rect.x + 5 + 48, rect.y + 5);
-            /*LimitButton(rect.x + rect.width - 5 - 24, rect.y + 5);
-            TurnButton(rect.x + rect.width - 5 - 24 - 24, rect.y + 5);*/
-
-            tempSchemaDef.ClearCachedData();
-
-            // shows the label of the sorcery schema in the itab
-            Text.Font = GameFont.Medium;
-            Text.Anchor = TextAnchor.UpperCenter;
-
-            Rect titleRect = new Rect(rect.x + rect.width/5, rect.y, rect.width * 3/5, 50f);
-            Widgets.LabelCacheHeight(ref titleRect, sorcerySchemaDef.LabelCap.ToString());
-            coordY += titleRect.height;
-
-            Text.Anchor = TextAnchor.UpperLeft;
-
-            return coordY;
-        }
-
         public virtual void DrawEnergyBar(Rect rect)
         {
 
-        }
-
-        public void DrawOutline(Rect rect, Color outColor, int outThick = 1, Texture2D lineTex = null)
-        {
-            Color color = GUI.color;
-            GUI.color = outColor;
-            Widgets.DrawBox(rect, outThick, lineTex);
-            GUI.color = color;
-        }
-
-        public bool LearningTrackerButton(float x, float y)
-        {
-            if (LearningTrackers.NullOrEmpty()) return false;
-            Rect rect = new Rect(x, y, 24f, 24f);
-            MouseoverSounds.DoRegion(rect);
-            TooltipHandler.TipRegionByKey(rect, "ISF_ButtonLearningTrackers");
-
-            if (Widgets.ButtonImage(rect, TexButton.ToggleLog, GUI.color, true))
-            {
-                Find.TickManager.Pause();
-                Find.WindowStack.Add(new Dialog_LearningTabs(LearningTrackers));
-                return true;
-            }
-            return false;
-        }
-
-        public bool FavButton(float x, float y)
-        {
-            Rect rect = new Rect(x, y, 24f, 24f);
-            MouseoverSounds.DoRegion(rect);
-            TooltipHandler.TipRegionByKey(rect, "ISF_ButtonFav");
-
-            if (Widgets.ButtonImage(rect, Schema.favorited ? GizmoTextureUtility.StarFull : GizmoTextureUtility.StarEmpty, GUI.color, true))
-            {
-                Schema.favorited = !Schema.favorited;
-                return true;
-            }
-            return false;
-        }
-
-        public bool LimitButton(float x, float y)
-        {
-            Rect rect = new Rect(x, y, 24f, 24f);
-            MouseoverSounds.DoRegion(rect);
-            TooltipHandler.TipRegionByKey(rect, "ISF_ButtonLimit");
-
-            if (Widgets.ButtonImage(rect, limitLocked ? Widgets.CheckboxOnTex : Widgets.CheckboxOffTex, GUI.color, true))
-            {
-                limitLocked = !limitLocked;
-                return true;
-            }
-            return false;
-        }
-
-        public bool TurnButton(float x, float y)
-        {
-            Rect rect = new Rect(x, y, 24f, 24f);
-            MouseoverSounds.DoRegion(rect);
-            TooltipHandler.TipRegionByKey(rect, "ISF_ButtonTurnTimer");
-
-            if (Widgets.ButtonImage(rect, turnTimerOn ? TexButton.SpeedButtonTextures[0] : TexButton.SpeedButtonTextures[1], GUI.color, true))
-            {
-                turnTimerOn = !turnTimerOn;
-                return true;
-            }
-            return false;
         }
 
         // used to detect if two values are on different "bars"
@@ -382,8 +276,6 @@ namespace ItsSorceryFramework
 
         public float currentEnergy;
 
-        public bool limitLocked = true;
-
-        public bool turnTimerOn = true;
+        public StatCategoryDef tempStatCategory;
     }
 }

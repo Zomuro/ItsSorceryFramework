@@ -13,17 +13,17 @@ namespace ItsSorceryFramework
         {
         }
 
-        public EnergyTracker_VancianLifetime(Pawn pawn, EnergyTrackerDef def) : base(pawn, def)
+        public EnergyTracker_VancianLifetime(Pawn pawn, EnergyTrackerDef def, SorcerySchemaDef schemaDef) : base(pawn, def, schemaDef)
         {
             currentEnergy = MaxCasts;
             tickCount = def.refreshTicks;
         }
 
-        public EnergyTracker_VancianLifetime(Pawn pawn, SorcerySchemaDef def) : base(pawn, def)
+        /*public EnergyTracker_VancianLifetime(Pawn pawn, SorcerySchemaDef def) : base(pawn, def)
         {
             currentEnergy = MaxCasts;
             tickCount = this.def.refreshTicks;
-        }
+        }*/
 
         public override void ExposeData()
         {
@@ -86,20 +86,6 @@ namespace ItsSorceryFramework
             return false;
         }
 
-        public override void DrawOnGUI(Rect rect)
-        {
-            this.SchemaViewBox(rect);
-
-            Text.Font = GameFont.Small;
-            Text.Anchor = TextAnchor.MiddleCenter;
-            Widgets.Label(rect, def.refreshNotifKey.Translate(GenDate.ToStringTicksToPeriod(tickCount)));
-
-            Text.Anchor = TextAnchor.LowerCenter;
-            Widgets.Label(rect, def.castCountKey.Translate(currentCasts, MaxCasts));
-
-            Text.Anchor = TextAnchor.UpperLeft;
-        }
-
         public override float DrawOnGUI(ref Rect rect)
         {
             // get original rect
@@ -107,7 +93,7 @@ namespace ItsSorceryFramework
             float coordY = 0;
 
             // draws info, learningtracker buttons + schema title
-            coordY += SchemaViewBox(ref rect);
+            //coordY += SchemaViewBox(ref rect);
 
             // add space
             coordY += 10;
@@ -129,12 +115,12 @@ namespace ItsSorceryFramework
             
             // set rect y to original, and rect height to coordY
             rect.y = orgRect.y;
-            rect.height = coordY;
+            //rect.height = coordY;
 
             // draw outline of the entire rectangle when it's all done
-            DrawOutline(rect, Color.grey, 1);
+            //DrawOutline(rect, Color.grey, 1);
             // reset rectangle
-            rect = orgRect;
+            //rect = orgRect;
             // return accumulated height
             return coordY;
         }
@@ -145,21 +131,23 @@ namespace ItsSorceryFramework
 
             StatRequest pawnReq = StatRequest.For(pawn);
 
+            StatCategoryDef finalCat = tempStatCategory is null ? StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF : tempStatCategory;
+
             // shows the maximum energy of the whole sorcery schema
             statDef = def.energyMaxStatDef != null ? def.energyMaxStatDef : StatDefOf_ItsSorcery.MaxEnergy_ItsSorcery;
-            yield return new StatDrawEntry(StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF,
+            yield return new StatDrawEntry(finalCat,
                     statDef, pawn.GetStatValue(statDef), pawnReq, ToStringNumberSense.Undefined, statDef.displayPriorityInCategory, false);
 
             // show recovery amount per refresh period
             statDef = def.energyRecoveryStatDef != null ? def.energyRecoveryStatDef : StatDefOf_ItsSorcery.EnergyRecovery_ItsSorcery;
-            yield return new StatDrawEntry(StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF,
+            yield return new StatDrawEntry(finalCat,
                     statDef, pawn.GetStatValue(statDef), pawnReq, ToStringNumberSense.Undefined, statDef.displayPriorityInCategory, false);
 
             statDef = def.castFactorStatDef != null ? def.castFactorStatDef : StatDefOf_ItsSorcery.CastFactor_ItsSorcery;
-            yield return new StatDrawEntry(StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF,
+            yield return new StatDrawEntry(finalCat,
                         statDef, pawn.GetStatValue(statDef), pawnReq, ToStringNumberSense.Undefined, statDef.displayPriorityInCategory, false);
 
-            yield return new StatDrawEntry(StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF,
+            yield return new StatDrawEntry(finalCat,
                     def.refreshInfoKey.Translate(), def.refreshTicks.TicksToSeconds().ToString(),
                     def.refreshInfoDescKey.Translate(),
                     10, null, null, false);
@@ -167,7 +155,7 @@ namespace ItsSorceryFramework
 
         public override string TopRightLabel(SorceryDef sorceryDef)
         {
-            return (sorceryDef?.sorcerySchema.energyTrackerDef.energyLabelKey.Translate().CapitalizeFirst()[0]) + ": " +
+            return (def.energyLabelKey.Translate().CapitalizeFirst()[0]) + ": " +
                 currentCasts.ToString() + "/" + MaxCasts.ToString();
         }
 

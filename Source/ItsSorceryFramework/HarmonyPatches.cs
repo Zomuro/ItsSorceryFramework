@@ -52,7 +52,8 @@ namespace ItsSorceryFramework
         // POSTFIX: when right clicking items that can reload the schema, provide FloatMenu option to "reload" with them
         public static void AddHumanlikeOrders_EnergyTracker_Consumable(Vector3 __0, Pawn __1, List<FloatMenuOption> __2)
         {
-            Comp_ItsSorcery comp = __1.TryGetComp<Comp_ItsSorcery>() as Comp_ItsSorcery;
+            // Disable for now; need to properly get energytrackers
+            /*Comp_ItsSorcery comp = __1.TryGetComp<Comp_ItsSorcery>() as Comp_ItsSorcery;
             String text = "";
             foreach (SorcerySchema schema in from schema in comp.schemaTracker.sorcerySchemas
                                          where schema.energyTracker.GetType() == typeof(EnergyTracker_Consumable)
@@ -116,7 +117,7 @@ namespace ItsSorceryFramework
                             MenuOptionPriority.Default, null, null, 0f, null, null, true, 0), __1, ammo, "ReservedBy", null));
                     }
                 }
-            }
+            }*/
 
             return;
         }

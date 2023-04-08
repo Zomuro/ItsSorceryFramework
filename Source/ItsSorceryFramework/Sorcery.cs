@@ -41,7 +41,8 @@ namespace ItsSorceryFramework
 
         public override bool Activate(GlobalTargetInfo target)
         {
-            EnergyTracker energyTracker = SorcerySchemaUtility.FindSorcerySchema(pawn, sorceryDef).energyTracker;
+            // disable for now; get the proper energytrackers first
+            /*EnergyTracker energyTracker = SorcerySchemaUtility.FindSorcerySchema(pawn, sorceryDef).energyTracker;
 
             if (energyTracker == null) return false;
 
@@ -57,14 +58,14 @@ namespace ItsSorceryFramework
                     worker.TryExecute(Schema.progressTracker, sorceryDef.EnergyCost);
                     break;
                 }
-            }
+            }*/
             return base.Activate(target);
             
         }
 
         public override bool Activate(LocalTargetInfo target, LocalTargetInfo dest)
         {
-            EnergyTracker energyTracker = SorcerySchemaUtility.FindSorcerySchema(pawn, sorceryDef).energyTracker;
+            /*EnergyTracker energyTracker = SorcerySchemaUtility.FindSorcerySchema(pawn, sorceryDef).energyTracker;
             if (energyTracker == null) return false;
 
             float finalEnergyCost = sorceryDef.EnergyCost * energyTracker.EnergyCostFactor;
@@ -74,7 +75,7 @@ namespace ItsSorceryFramework
             }
 
             var worker = Schema.progressTracker.def.Workers.FirstOrDefault(x => x.GetType() == typeof(ProgressEXPWorker_CastEnergyCost));
-            if(worker != null) worker.TryExecute(Schema.progressTracker, sorceryDef.EnergyCost);
+            if(worker != null) worker.TryExecute(Schema.progressTracker, sorceryDef.EnergyCost);*/
             return base.Activate(target, dest);
         }
 

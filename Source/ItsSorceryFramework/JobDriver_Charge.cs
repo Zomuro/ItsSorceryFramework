@@ -62,7 +62,8 @@ namespace ItsSorceryFramework
 
 		public void ChargeFrom(Thing ammo, SorcerySchemaDef schemaDef, int count)
 		{
-			if (ammo.stackCount < count)
+			// temp disable for now
+			/*if (ammo.stackCount < count)
 			{
 				return;
 			}
@@ -74,7 +75,7 @@ namespace ItsSorceryFramework
 			if (consume is null) return;
 
 			et.currentEnergy += Math.Min(count * consume.exp, et.MaxEnergy - et.currentEnergy);
-			ammo.SplitOff(count).Destroy(DestroyMode.Vanish);
+			ammo.SplitOff(count).Destroy(DestroyMode.Vanish);*/
 		}
 
 	}

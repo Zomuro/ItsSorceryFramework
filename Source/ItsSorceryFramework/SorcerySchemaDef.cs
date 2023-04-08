@@ -39,6 +39,31 @@ namespace ItsSorceryFramework
 
             base.SpecialDisplayStats(req);
 
+            int i = 0;
+            foreach (var et in Schema.energyTrackers)
+            {
+                // creates temporary statcategeorydef to properly sort stats into their right place
+                StatCategoryDef tempCat = new StatCategoryDef();
+                tempCat.defName = StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF.defName + "_TEMP" + i;
+                tempCat.label = StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF.LabelCap + " (" + et.def.label + ")";
+                tempCat.displayOrder = StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF.displayOrder + i;
+
+                // more or less all energytrackers have a "unit" that is used
+                yield return new StatDrawEntry(tempCat,
+                        "ISF_EnergyTrackerUnit".Translate(), et.def.energyLabelKey.Translate().CapitalizeFirst(),
+                        et.def.energyDescKey.Translate(), 99999, null, null, false);
+
+                et.tempStatCategory = tempCat;
+                // depending on energytrackers, alter which ones show up
+                foreach (StatDrawEntry entry in et.SpecialDisplayStats(req))
+                {
+                    yield return entry;
+                }
+
+                i++;
+            }
+
+            /*
             // more or less all energytrackers have a "unit" that is used
             yield return new StatDrawEntry(StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF,
                     "ISF_EnergyTrackerUnit".Translate(), energyTrackerDef.energyLabelKey.Translate().CapitalizeFirst(),
@@ -48,7 +73,7 @@ namespace ItsSorceryFramework
             foreach(StatDrawEntry entry in Schema.energyTracker.SpecialDisplayStats(req))
             {
                 yield return entry;
-            }
+            }*/
 
             yield break;
         }
@@ -58,7 +83,9 @@ namespace ItsSorceryFramework
 
         //public StatDef energyStat; 
 
-        public EnergyTrackerDef energyTrackerDef;
+        public List<EnergyTrackerDef> energyTrackerDefs = new List<EnergyTrackerDef>();
+
+        //public EnergyTrackerDef energyTrackerDef;
 
         public List<LearningTrackerDef> learningTrackerDefs = new List<LearningTrackerDef>();
 

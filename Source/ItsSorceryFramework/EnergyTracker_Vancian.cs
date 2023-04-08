@@ -14,17 +14,17 @@ namespace ItsSorceryFramework
         {
         }
 
-        public EnergyTracker_Vancian(Pawn pawn, EnergyTrackerDef def) : base(pawn, def)
+        public EnergyTracker_Vancian(Pawn pawn, EnergyTrackerDef def, SorcerySchemaDef schemaDef) : base(pawn, def, schemaDef)
         {
             InitalizeSorceries();
             tickCount = def.refreshTicks;
         }
 
-        public EnergyTracker_Vancian(Pawn pawn, SorcerySchemaDef def) : base(pawn, def)
+        /*public EnergyTracker_Vancian(Pawn pawn, SorcerySchemaDef def) : base(pawn, def)
         {
             InitalizeSorceries();
             tickCount = this.def.refreshTicks;
-        }
+        }*/
 
         public override void ExposeData()
         {
@@ -36,7 +36,7 @@ namespace ItsSorceryFramework
         public virtual void InitalizeSorceries()
         {
             foreach(SorceryDef sd in from sorceryDef in DefDatabase<SorceryDef>.AllDefs 
-                                     where sorceryDef.sorcerySchema.energyTrackerDef == def
+                                     where sorceryDef.sorcerySchema.energyTrackerDefs.Contains(def)
                                      select sorceryDef)
             {
                 if(!vancianCasts.ContainsKey(sd)) vancianCasts.Add(sd, (int) Math.Ceiling(sd.MaximumCasts * CastFactor));
@@ -100,17 +100,6 @@ namespace ItsSorceryFramework
             return false;
         }
 
-        public override void DrawOnGUI(Rect rect)
-        {
-            this.SchemaViewBox(rect);
-
-            Text.Font = GameFont.Small;
-            Text.Anchor = TextAnchor.MiddleCenter;
-            Widgets.Label(rect, def.refreshNotifKey.Translate(GenDate.ToStringTicksToPeriod(tickCount)));
-            
-            Text.Anchor = TextAnchor.UpperLeft;
-        }
-
         public override float DrawOnGUI(ref Rect rect)
         {
             // get original rect
@@ -118,7 +107,7 @@ namespace ItsSorceryFramework
             float coordY = 0;
 
             // draws info, learningtracker buttons + schema title
-            coordY += SchemaViewBox(ref rect);
+            //coordY += SchemaViewBox(ref rect);
 
             // add space
             coordY += 10;
@@ -134,12 +123,12 @@ namespace ItsSorceryFramework
             coordY += rect.height + 10;
             // set rect y to original, and rect height to coordY
             rect.y = orgRect.y;
-            rect.height = coordY;
+            //rect.height = coordY;
 
             // draw outline of the entire rectangle when it's all done
-            DrawOutline(rect, Color.grey, 1);
+            //DrawOutline(rect, Color.grey, 1);
             // reset rectangle
-            rect = orgRect;
+            //rect = orgRect;
             // return accumulated height
             return coordY;
         }
@@ -149,11 +138,13 @@ namespace ItsSorceryFramework
             StatDef statDef;
             StatRequest pawnReq = StatRequest.For(pawn);
 
+            StatCategoryDef finalCat = tempStatCategory is null ? StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF : tempStatCategory;
+
             statDef = def.castFactorStatDef != null ? def.castFactorStatDef : StatDefOf_ItsSorcery.CastFactor_ItsSorcery;
-            yield return new StatDrawEntry(StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF,
+            yield return new StatDrawEntry(finalCat,
                         statDef, pawn.GetStatValue(statDef), pawnReq, ToStringNumberSense.Undefined, statDef.displayPriorityInCategory, false);
 
-            yield return new StatDrawEntry(StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF,
+            yield return new StatDrawEntry(finalCat,
                     def.refreshInfoKey.Translate(), def.refreshTicks.TicksToSeconds().ToString(),
                     def.refreshInfoDescKey.Translate(),
                     10, null, null, false); 
@@ -166,7 +157,7 @@ namespace ItsSorceryFramework
 
         public override string TopRightLabel(SorceryDef sorceryDef)
         {
-            return (sorceryDef?.sorcerySchema.energyTrackerDef.energyLabelKey.Translate().CapitalizeFirst()[0]) + ": " +
+            return (def.energyLabelKey.Translate().CapitalizeFirst()[0]) + ": " +
                 vancianCasts[sorceryDef].ToString() + "/" +
                 ((int) Math.Ceiling(sorceryDef.MaximumCasts * this.CastFactor)).ToString();
         }

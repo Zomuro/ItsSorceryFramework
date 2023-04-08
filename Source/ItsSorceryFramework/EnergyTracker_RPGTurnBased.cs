@@ -13,18 +13,26 @@ namespace ItsSorceryFramework
         {
         }
 
-        public EnergyTracker_RPGTurnBased(Pawn pawn, EnergyTrackerDef def) : base(pawn, def)
+        public EnergyTracker_RPGTurnBased(Pawn pawn, EnergyTrackerDef def, SorcerySchemaDef schemaDef) : base(pawn, def, schemaDef)
         {
         }
 
-        public EnergyTracker_RPGTurnBased(Pawn pawn, SorcerySchemaDef def) : base(pawn, def)
+        /*public EnergyTracker_RPGTurnBased(Pawn pawn, SorcerySchemaDef def) : base(pawn, def)
         {
-        }
+        }*/
 
         public override void ExposeData()
         {
             base.ExposeData();
             Scribe_Values.Look(ref countdownTick, "countdownTick");
+        }
+
+        public override bool HasTurn
+        {
+            get
+            {
+                return true;
+            }
         }
 
         public override int TurnTicks
@@ -57,46 +65,11 @@ namespace ItsSorceryFramework
 
                 this.currentEnergy = Math.Max(tempEnergy, MinEnergy);
 
-                if (Find.Selector.FirstSelectedObject == pawn && pawn.Drafted && turnTimerOn) Find.TickManager.Pause();
+                if (Find.Selector.FirstSelectedObject == pawn && pawn.Drafted && Schema.turnTimerOn) Find.TickManager.Pause();
                 
             }
 
             countdownTick = Find.TickManager.TicksGame % TurnTicks;
-        }
-
-        public override void DrawOnGUI(Rect rect)
-        {
-            this.SchemaViewBox(rect);
-
-            // draws limit toggle button
-            if (MinEnergy < 0) LimitButton(rect.x + rect.width - 5 - 24, rect.y + 5);
-            // draws turn pause toggle button
-            TurnButton(rect.x + rect.width - 5 - 24 - 24, rect.y + 5);
-
-            Text.Font = GameFont.Small;
-            Text.Anchor = TextAnchor.MiddleCenter;
-            Rect labelBox = new Rect(rect);
-            labelBox.width = rect.width / 2;
-            labelBox.y = rect.y + rect.height / 2;
-            labelBox.height = 22;
-            Rect barBox = new Rect(labelBox);
-            barBox.x = rect.width * 2 / 5 + rect.x;
-            barBox.y = labelBox.y;
-            barBox.height = 22;
-
-            Widgets.Label(labelBox, sorcerySchemaDef.energyTrackerDef.energyLabelKey.Translate().CapitalizeFirst());
-
-            // draws power bar
-            DrawEnergyBar(barBox);
-
-            string energyLabel = this.currentEnergy.ToString("F0") + " / " + this.MaxEnergy.ToString("F0");
-            string countdown = " ("+ (TurnTicks - countdownTick).ToStringSecondsFromTicks()+")";
-            Widgets.Label(barBox, energyLabel + countdown);
-
-            Widgets.DrawBoxSolidWithOutline(rect, Color.clear, Color.grey);
-            Text.Anchor = TextAnchor.UpperLeft;
-
-            HightlightEnergyCost(barBox);
         }
 
         public override float DrawOnGUI(ref Rect rect)
@@ -106,10 +79,10 @@ namespace ItsSorceryFramework
             float coordY = 0;
 
             // draws info, learningtracker buttons + schema title
-            coordY += SchemaViewBox(ref rect);
+            //coordY += SchemaViewBox(ref rect);
             // if energy system allows for using more energy than usual, show toggle button
-            if (MinEnergy < 0) LimitButton(rect.x + rect.width - 5 - 24, rect.y + 5);
-            TurnButton(rect.x + rect.width - 5 - 24 - 24, rect.y + 5); // draws turn pause toggle button
+            //if (MinEnergy < 0) LimitButton(rect.x + rect.width - 5 - 24, rect.y + 5);
+            //TurnButton(rect.x + rect.width - 5 - 24 - 24, rect.y + 5); // draws turn pause toggle button
             coordY += 10; // add space
             rect.y += coordY;
 
@@ -123,7 +96,7 @@ namespace ItsSorceryFramework
             barBox.x = rect.width * 2 / 5 + rect.x;
 
             // energy label
-            Widgets.LabelCacheHeight(ref labelBox, sorcerySchemaDef.energyTrackerDef.energyLabelKey.Translate().CapitalizeFirst());
+            Widgets.LabelCacheHeight(ref labelBox, def.energyLabelKey.Translate().CapitalizeFirst());
 
             // draws power bar
             barBox.height = labelBox.height; // set barbox to labelbox height for consistency
@@ -141,10 +114,10 @@ namespace ItsSorceryFramework
             coordY += labelBox.height; // add label/barbox height
             coordY += 10; // add a small boundary space for appearance
             rect.y = orgRect.y; // set rect y to original, and rect height to coordY
-            rect.height = coordY;
+            //rect.height = coordY;
 
             // draw outline of the entire rectangle when it's all done
-            DrawOutline(rect, Color.grey, 1);
+            //DrawOutline(rect, Color.grey, 1);
 
             rect = orgRect; // reset rectangle
             return coordY; // return accumulated height
@@ -152,14 +125,17 @@ namespace ItsSorceryFramework
 
         public override IEnumerable<StatDrawEntry> SpecialDisplayStats(StatRequest req)
         {
+
             // see EnergyTracker_RPG.SpecialDisplayStats(req)
             foreach (StatDrawEntry entry in base.SpecialDisplayStats(req))
             {
                 yield return entry;
             }
 
+            StatCategoryDef finalCat = tempStatCategory is null ? StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF : tempStatCategory;
+
             // returns how long a "turn" takes (time before auto-pause when the pawn with this energytracker is drafted)
-            yield return new StatDrawEntry(StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF,
+            yield return new StatDrawEntry(finalCat,
                     def.turnInfoKey.Translate(), def.turnTicks.TicksToSeconds().ToString(),
                     def.turnInfoDescKey.Translate(),
                     20, null, null, false);
