@@ -28,8 +28,8 @@ namespace ItsSorceryFramework
 
         public override void EnergyTrackerTick()
         {
-            float tempEnergy = Math.Min(currentEnergy - 1.TicksToSeconds() * EnergyRecoveryRate / def.refreshTicks, MaxEnergy);
-            this.currentEnergy = Math.Max(tempEnergy, 0);
+            float tempEnergy = Math.Min(currentEnergy + 1.TicksToSeconds() * EnergyRecoveryRate, MaxEnergy);
+            currentEnergy = Math.Max(tempEnergy, 0);
         }
 
         public override bool WouldReachLimitEnergy(float energyCost, SorceryDef sorceryDef = null, Sorcery sorcery = null)

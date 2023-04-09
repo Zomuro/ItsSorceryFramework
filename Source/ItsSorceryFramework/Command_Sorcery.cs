@@ -11,27 +11,34 @@ namespace ItsSorceryFramework
 			this.shrinkable = true;
 		}
 
+		// public method for later; clear string caches
+		public void ClearCachedStrings()
+        {
+
+        }
+
 		protected override void DisabledCheck()
 		{
+			// future zom's problem- created cached strings for this + whenever energycostfactor gets changed, clear cache of text constructed
+
 			SorceryDef def = (this.ability as Sorcery)?.sorceryDef;
 			Pawn pawn = this.ability.pawn;
 			this.disabled = false;
 
-			if(Schema == null)
+			if(Schema is null)
             {
 				base.DisableWithReason("ISF_CommandDisableNoSchema".Translate(pawn.LabelShort, def.sorcerySchema.LabelCap));
 				return;
 			}
 
-			// disabled for now - will work on later when properly costing
-			/*EnergyTracker energyTracker = Schema.energyTracker;
-
-			if (energyTracker.WouldReachLimitEnergy(def.EnergyCost, def))
+			foreach(var et in Schema.energyTrackers)
             {
-				base.DisableWithReason(energyTracker.DisableCommandReason().Translate(pawn.NameFullColored));
-				// base.DisableWithReason(eg.DisableCommandReason().Translate(def));
-				return;
-			}*/
+				if (et.WouldReachLimitEnergy(def.statBases.GetStatValueFromList(et.def.energyUnitStatDef, 0), def))
+				{
+					base.DisableWithReason(et.DisableCommandReason().Translate(pawn.NameFullColored));
+					return;
+				}
+			}
 
 			base.DisabledCheck();
 		}
@@ -48,6 +55,8 @@ namespace ItsSorceryFramework
 		{
 			get
 			{
+				// future zom's problem- created cached strings for this + whenever energycostfactor gets changed, clear cache of text constructed
+
 				string text = "";
 				SorceryDef def = (this.ability as Sorcery)?.sorceryDef;
 
@@ -58,30 +67,37 @@ namespace ItsSorceryFramework
 				}
                 else
                 {
-					// disabled for now
-					/*text += Schema.energyTracker.TopRightLabel(def);*/
+					foreach (var et in Schema.energyTrackers)
+					{
+						if(def.statBases.GetStatValueFromList(et.def.energyUnitStatDef, 0) != 0)
+							text += et.TopRightLabel(def) + "\n";
+					}
 					return text.TrimEndNewlines();
 				}
-
-				/*SorceryDef def = (this.ability as Sorcery)?.sorceryDef;
-				EnergyTracker energyTracker = Schema.energyTracker;
-				string text = "";
-				text += (def?.sorcerySchema.energyTrackerDef.energyStatLabel.CapitalizeFirst()[0]) + ": " + 
-					Math.Round(def.EnergyCost * energyTracker.EnergyCostFactor, 2).ToString();
-				//text = "R";
-				text += energyTracker.TopRightLabel(def);
-
-				return text.TrimEndNewlines();*/
 			}
 		}
 
 		public string TempRightLabel(SorceryDef sorceryDef)
 		{
-			// temporarily comment this out to solve getting energy properly costed
-			/*return (sorceryDef?.sorcerySchema.energyTrackerDef.energyLabelKey.Translate().CapitalizeFirst()[0]) + ": " +
-					Math.Round(sorceryDef.EnergyCost, 2).ToString();*/
+			// future zom's problem- created cached strings for this + whenever energycostfactor gets changed, clear cache of text constructed
 
-			return "";
+			string text = "";
+			float tempVal = 0;
+
+			foreach (var et in sorceryDef.sorcerySchema.energyTrackerDefs)
+			{
+				tempVal = sorceryDef.statBases.GetStatValueFromList(et.energyUnitStatDef, 0);
+				if (tempVal != 0)
+					text += TempRightLabelPart(et, tempVal)+ "\n";
+			}
+
+			return text.TrimEndNewlines();
+		}
+
+		public string TempRightLabelPart(EnergyTrackerDef energyTrackerDef, float value)
+        {
+			return (energyTrackerDef.energyLabelKey.Translate().CapitalizeFirst()[0]) + ": " +
+					Math.Round(value, 2).ToString();
 		}
 
 		public SorcerySchema Schema
