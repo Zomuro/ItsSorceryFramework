@@ -24,7 +24,5 @@ namespace ItsSorceryFramework
 			if (SchemaProps.schemaDef == null) return "Need to add a sorcery schema def.";
 			return string.Format(base.Props.useLabel, SchemaProps.schemaDef.label);
 		}
-
-		//public SorcerySchemaDef schemaDef;
 	}
 }

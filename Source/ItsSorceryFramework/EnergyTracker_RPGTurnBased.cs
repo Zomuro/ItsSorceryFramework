@@ -17,10 +17,6 @@ namespace ItsSorceryFramework
         {
         }
 
-        /*public EnergyTracker_RPGTurnBased(Pawn pawn, SorcerySchemaDef def) : base(pawn, def)
-        {
-        }*/
-
         public override void ExposeData()
         {
             base.ExposeData();
@@ -112,13 +108,6 @@ namespace ItsSorceryFramework
             HightlightEnergyCost(barBox);
             
             coordY += labelBox.height; // add label/barbox height
-            /*coordY += 10; // add a small boundary space for appearance
-            rect.y = orgRect.y; // set rect y to original, and rect height to coordY
-            //rect.height = coordY;
-
-            // draw outline of the entire rectangle when it's all done
-            //DrawOutline(rect, Color.grey, 1);*/
-
             rect = orgRect; // reset rectangle
             return coordY; // return accumulated height
         }

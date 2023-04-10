@@ -17,10 +17,6 @@ namespace ItsSorceryFramework
         {
         }
 
-        /*public EnergyTracker_Inverted(Pawn pawn, SorcerySchemaDef def) : base(pawn, def)
-        {
-        }*/
-
         public override void ExposeData()
         {
             base.ExposeData();
@@ -158,7 +154,6 @@ namespace ItsSorceryFramework
             Hediff hediff = pawn.health.hediffSet.GetFirstHediffOfDef(hediffDef);
             if (relVal > 1f)
             {
-                //Log.Message("test this thing god why aren't you working");
                 if (hediff == null) HealthUtility.AdjustSeverity(this.pawn, hediffDef, relValNorm / maxRelVal);
                 else if (relValNorm / maxRelVal > hediff.Severity) hediff.Severity = relValNorm / maxRelVal;
             }
@@ -176,11 +171,6 @@ namespace ItsSorceryFramework
             // get original rect
             Rect orgRect = new Rect(rect);
             float coordY = 0;
-
-            // draws info, learningtracker buttons + schema title
-            //coordY += SchemaViewBox(ref rect);
-            // draws limit toggle button
-            //if (OverMaxEnergy > MaxEnergy) LimitButton(rect.x + rect.width - 5 - 24, rect.y + 5);
 
             // add space
             coordY += 10;
@@ -212,14 +202,8 @@ namespace ItsSorceryFramework
 
             // add label/barbox height + add a small boundary space for appearance
             coordY += labelBox.height + 10;
-            // set rect y to original, and rect height to coordY
-            rect.y = orgRect.y;
-            //rect.height = coordY;
-
-            // draw outline of the entire rectangle when it's all done
-           // DrawOutline(rect, Color.grey, 1);
             // reset rectangle
-            //rect = orgRect;
+            rect = orgRect;
             // return accumulated height
             return coordY;
         }

@@ -17,10 +17,6 @@ namespace ItsSorceryFramework
         {
         }
 
-        /*public EnergyTracker_Consumable(Pawn pawn, SorcerySchemaDef def) : base(pawn, def)
-        {
-        }*/
-
         public override void ExposeData()
         {
             base.ExposeData();

@@ -17,10 +17,6 @@ namespace ItsSorceryFramework
         {
         }
 
-        /*public EnergyTracker_InvertedTurnBased(Pawn pawn, SorcerySchemaDef def) : base(pawn, def)
-        {
-        }*/
-
         public override void ExposeData()
         {
             base.ExposeData();
@@ -77,13 +73,6 @@ namespace ItsSorceryFramework
             Rect orgRect = new Rect(rect);
             float coordY = 0;
 
-            // draws info, learningtracker buttons + schema title
-            //coordY += SchemaViewBox(ref rect);
-            // draws limit toggle button
-            //if (OverMaxEnergy > MaxEnergy) LimitButton(rect.x + rect.width - 5 - 24, rect.y + 5);
-            // draws turn pause toggle button
-            //TurnButton(rect.x + rect.width - 5 - 24 - 24, rect.y + 5);
-
             // add space
             coordY += 10;
             rect.y += coordY;
@@ -115,14 +104,8 @@ namespace ItsSorceryFramework
 
             // add label/barbox height + add a small boundary space for appearance
             coordY += labelBox.height + 10;
-            // set rect y to original, and rect height to coordY
-            rect.y = orgRect.y;
-            //rect.height = coordY;
-
-            // draw outline of the entire rectangle when it's all done
-            //DrawOutline(rect, Color.grey, 1);
             // reset rectangle
-            //rect = orgRect;
+            rect = orgRect;
             // return accumulated height
             return coordY;
         }

@@ -19,12 +19,6 @@ namespace ItsSorceryFramework
             tickCount = def.refreshTicks;
         }
 
-        /*public EnergyTracker_VancianLifetime(Pawn pawn, SorcerySchemaDef def) : base(pawn, def)
-        {
-            currentEnergy = MaxCasts;
-            tickCount = this.def.refreshTicks;
-        }*/
-
         public override void ExposeData()
         {
             base.ExposeData();
@@ -92,9 +86,6 @@ namespace ItsSorceryFramework
             Rect orgRect = new Rect(rect);
             float coordY = 0;
 
-            // draws info, learningtracker buttons + schema title
-            //coordY += SchemaViewBox(ref rect);
-
             // add space
             coordY += 10;
             rect.y += coordY;
@@ -109,18 +100,12 @@ namespace ItsSorceryFramework
 
             // show total casts left
             Widgets.LabelCacheHeight(ref rect, def.castCountKey.Translate(currentCasts, MaxCasts));
+            Text.Anchor = TextAnchor.UpperLeft;
+
             // add label height + add a small boundary space for appearance
             coordY += rect.height + 10;
-            Text.Anchor = TextAnchor.UpperLeft;
-            
-            // set rect y to original, and rect height to coordY
-            rect.y = orgRect.y;
-            //rect.height = coordY;
-
-            // draw outline of the entire rectangle when it's all done
-            //DrawOutline(rect, Color.grey, 1);
             // reset rectangle
-            //rect = orgRect;
+            rect = orgRect;
             // return accumulated height
             return coordY;
         }

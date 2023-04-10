@@ -18,11 +18,6 @@ namespace ItsSorceryFramework
 
         }
 
-        /*public EnergyTracker_Cooldown(Pawn pawn, SorcerySchemaDef def) : base(pawn, def)
-        {
-
-        }*/
-
         public override void ExposeData()
         {
             base.ExposeData();
@@ -55,7 +50,6 @@ namespace ItsSorceryFramework
             if (!WouldReachLimitEnergy(energyCost, sorceryDef, sorcery))
             {
                 tickCount = this.def.refreshTicks;
-                //sorceryDef.uiIcon;
                 if (recentSorceries.Contains(sorcery)) recentSorceries.Remove(sorcery);
                 else if (recentSorceries.Count >= 6) recentSorceries.RemoveLast();
                 recentSorceries.Insert(0, sorcery);
@@ -71,8 +65,6 @@ namespace ItsSorceryFramework
             Rect orgRect = new Rect(rect);
             float coordY = 0;
 
-            // draws info, learningtracker buttons + schema title
-            //coordY += SchemaViewBox(ref rect);
             coordY += 10; // add space
             rect.y += coordY;
 
@@ -115,12 +107,8 @@ namespace ItsSorceryFramework
                 coordY += stackRect.height + 10;
             }
 
-            // set rect y to original, and rect height to coordY
             Text.Anchor = TextAnchor.UpperLeft;
-            rect.y = orgRect.y;
-            //rect.height = coordY;
-            //DrawOutline(rect, Color.grey, 1); // draw outline of the entire rectangle when it's all done
-            //rect = orgRect; // reset rectangle
+            rect = orgRect; // reset rectangle
             return coordY; // return accumulated height
         }
 

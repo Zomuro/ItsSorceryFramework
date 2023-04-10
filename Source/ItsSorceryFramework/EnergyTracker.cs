@@ -24,23 +24,12 @@ namespace ItsSorceryFramework
             // maybe put initalize gizmo here idunno
         }
 
-        /*public EnergyTracker(Pawn pawn, SorcerySchemaDef def)
-        {
-            this.pawn = pawn;
-            this.def = def.energyTrackerDef;
-            this.sorcerySchemaDef = def;
-
-            // maybe put initalize gizmo here idunno
-        }*/
-
         public virtual void ExposeData()
         {
             Scribe_References.Look(ref pawn, "pawn");
             Scribe_Defs.Look(ref def, "def");
             Scribe_Defs.Look(ref sorcerySchemaDef, "sorcerySchemaDef");
             Scribe_Values.Look(ref currentEnergy, "currentEnergy", 0f, false);
-            /*Scribe_Values.Look<bool>(ref this.limitLocked, "limitLocked", true, false);
-            Scribe_Values.Look<bool>(ref this.turnTimerOn, "turnTimerOn", true, false);*/
         }
 
         public virtual bool HasLimit

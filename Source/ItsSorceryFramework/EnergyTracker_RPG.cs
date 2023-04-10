@@ -17,10 +17,6 @@ namespace ItsSorceryFramework
         {
         }
 
-        /*public EnergyTracker_RPG(Pawn pawn, SorcerySchemaDef def) : base(pawn, def)
-        {
-        }*/
-
         public override void ExposeData()
         {
             base.ExposeData();
@@ -214,19 +210,8 @@ namespace ItsSorceryFramework
 
             // add label/barbox height
             coordY += labelBox.height;
-            // add a small boundary space for appearance // this is te fucking issue
-            //coordY += 10;
-            // set rect y to original, and rect height to coordY
-            //rect.y = orgRect.y;
-
-            /*rect.height = coordY;
-
-            // draw outline of the entire rectangle when it's all done
-            DrawOutline(rect, Color.grey, 1);*/
-
             // reset rectangle
             rect = orgRect;
-
             // return accumulated height
             return coordY;
         }

@@ -8,13 +8,13 @@ namespace ItsSorceryFramework
 {
     public class SorceryDef : AbilityDef
     {
-		public int MaximumCasts
+		/*public int MaximumCasts
 		{
 			get
 			{
 				return (int) this.statBases.GetStatValueFromList(StatDefOf_ItsSorcery.Sorcery_MaxCasts, 1);
 			}
-		}
+		}*/
 
 		public SorcerySchema Schema
         {

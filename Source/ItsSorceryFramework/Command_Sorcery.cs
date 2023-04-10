@@ -88,7 +88,9 @@ namespace ItsSorceryFramework
 			{
 				tempVal = sorceryDef.statBases.GetStatValueFromList(et.energyUnitStatDef, 0);
 				if (tempVal != 0)
-					text += TempRightLabelPart(et, tempVal)+ "\n";
+					if(et.energyTrackerClass == typeof(EnergyTracker_Vancian)) 
+						text += TempRightLabelPartVancian(et, tempVal, sorceryDef.statBases.GetStatValueFromList(et.energyMaxCastStatDef, 0)) + "\n"; // temp fix for the moment
+					else text += TempRightLabelPart(et, tempVal)+ "\n";
 			}
 
 			return text.TrimEndNewlines();
@@ -98,6 +100,12 @@ namespace ItsSorceryFramework
         {
 			return (energyTrackerDef.energyLabelKey.Translate().CapitalizeFirst()[0]) + ": " +
 					Math.Round(value, 2).ToString();
+		}
+
+		public string TempRightLabelPartVancian(EnergyTrackerDef energyTrackerDef, float value, float value2)
+		{
+			return (energyTrackerDef.energyLabelKey.Translate().CapitalizeFirst()[0]) + ": " +
+					Math.Round(value, 2).ToString() + "/" + Math.Round(value2, 2).ToString();
 		}
 
 		public SorcerySchema Schema
