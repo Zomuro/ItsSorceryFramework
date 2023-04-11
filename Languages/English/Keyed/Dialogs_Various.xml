@@ -4,6 +4,7 @@
 	<!-- SorcerySchemaDef Info window - Energy Trackers -->
 	<ISF_EnergyTrackerUnitLabel>energy</ISF_EnergyTrackerUnitLabel>
 	<ISF_EnergyTrackerUnit>Unit</ISF_EnergyTrackerUnit>
+	<ISF_EnergyTrackerMaxUnit>Unit maximum</ISF_EnergyTrackerMaxUnit>
 	
 	<ISF_EnergyTrackerUnderBarFactor>Underbar recovery factor</ISF_EnergyTrackerUnderBarFactor>
 	<ISF_EnergyTrackerOverBarFactor>Overbar recovery factor</ISF_EnergyTrackerOverBarFactor>

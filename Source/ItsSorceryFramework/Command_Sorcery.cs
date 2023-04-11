@@ -1,6 +1,7 @@
 ﻿using System;
 using RimWorld;
 using Verse;
+using UnityEngine;
 
 namespace ItsSorceryFramework
 {
@@ -88,8 +89,8 @@ namespace ItsSorceryFramework
 			{
 				tempVal = sorceryDef.statBases.GetStatValueFromList(et.energyUnitStatDef, 0);
 				if (tempVal != 0)
-					if(et.energyTrackerClass == typeof(EnergyTracker_Vancian)) 
-						text += TempRightLabelPartVancian(et, tempVal, sorceryDef.statBases.GetStatValueFromList(et.energyMaxCastStatDef, 0)) + "\n"; // temp fix for the moment
+					if(et.energyTrackerClass == typeof(EnergyTracker_Vancian)) // for vancian systems do the following
+						text += TempRightLabelPartVancian(et, sorceryDef.statBases.GetStatValueFromList(et.energyMaxCastStatDef, 0)) + "\n"; // temp fix for the moment
 					else text += TempRightLabelPart(et, tempVal)+ "\n";
 			}
 
@@ -102,10 +103,10 @@ namespace ItsSorceryFramework
 					Math.Round(value, 2).ToString();
 		}
 
-		public string TempRightLabelPartVancian(EnergyTrackerDef energyTrackerDef, float value, float value2)
+		public string TempRightLabelPartVancian(EnergyTrackerDef energyTrackerDef, float value)
 		{
 			return (energyTrackerDef.energyLabelKey.Translate().CapitalizeFirst()[0]) + ": " +
-					Math.Round(value, 2).ToString() + "/" + Math.Round(value2, 2).ToString();
+					Math.Round(value, 2).ToString() + "/" + Math.Round(value, 2).ToString();
 		}
 
 		public SorcerySchema Schema

@@ -25,7 +25,7 @@ namespace ItsSorceryFramework
 
         public StatDef energyUnitStatDef; // doubles as both energy cost AND cast cost
 
-        public StatDef energyMaxCastStatDef = StatDefOf_ItsSorcery.Sorcery_MaxCasts; // define the stat the energytracker uses to figure out max casts
+        public StatDef energyMaxCastStatDef; // define the stat the energytracker uses to figure out max casts
 
         // EnergyTracker general stats
         public StatDef energyMaxStatDef;

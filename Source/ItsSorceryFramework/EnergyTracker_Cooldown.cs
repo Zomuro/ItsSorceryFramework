@@ -25,15 +25,6 @@ namespace ItsSorceryFramework
             Scribe_Values.Look(ref tickCount, "tickCount");
         }
 
-
-        public virtual float CastFactor
-        {
-            get
-            {
-                return this.pawn.GetStatValue(def.castFactorStatDef ?? StatDefOf_ItsSorcery.CastFactor_ItsSorcery, true);
-            }
-        }
-
         public override void EnergyTrackerTick()
         {
             if (tickCount > 0) tickCount--;

@@ -42,7 +42,7 @@ namespace ItsSorceryFramework
             }
         }
 
-        public virtual int currentCasts
+        public virtual int CurrentCasts
         {
             get
             {
@@ -58,14 +58,14 @@ namespace ItsSorceryFramework
                 if(tickCount == 0)
                 {
                     tickCount = def.refreshTicks;
-                    currentEnergy = Math.Max(0, Math.Min(currentCasts + CastRecoveryRate, MaxCasts));
+                    currentEnergy = Math.Max(0, Math.Min(CurrentCasts + CastRecoveryRate, MaxCasts));
                 }
             }
         }
 
         public override bool WouldReachLimitEnergy(float energyCost, SorceryDef sorceryDef = null, Sorcery sorcery = null)
         {
-            if (currentCasts <= 0) return true;
+            if (CurrentCasts - energyCost <= 0) return true;
             return false;
         }
 
@@ -73,7 +73,7 @@ namespace ItsSorceryFramework
         {
             if (!WouldReachLimitEnergy(energyCost, sorceryDef))
             {
-                currentEnergy--;
+                currentEnergy -= energyCost;
                 return true;
             }
             
@@ -99,11 +99,11 @@ namespace ItsSorceryFramework
             rect.y += rect.height + 5;
 
             // show total casts left
-            Widgets.LabelCacheHeight(ref rect, def.castCountKey.Translate(currentCasts, MaxCasts));
+            Widgets.LabelCacheHeight(ref rect, def.castCountKey.Translate(CurrentCasts, MaxCasts));
             Text.Anchor = TextAnchor.UpperLeft;
 
             // add label height + add a small boundary space for appearance
-            coordY += rect.height + 10;
+            coordY += rect.height; // + 10;
             // reset rectangle
             rect = orgRect;
             // return accumulated height
@@ -141,7 +141,7 @@ namespace ItsSorceryFramework
         public override string TopRightLabel(SorceryDef sorceryDef)
         {
             return (def.energyLabelKey.Translate().CapitalizeFirst()[0]) + ": " +
-                currentCasts.ToString() + "/" + MaxCasts.ToString();
+                CurrentCasts.ToString() + "/" + MaxCasts.ToString();
         }
 
         public int tickCount = 0;

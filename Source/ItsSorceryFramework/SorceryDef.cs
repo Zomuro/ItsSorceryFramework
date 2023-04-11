@@ -8,14 +8,6 @@ namespace ItsSorceryFramework
 {
     public class SorceryDef : AbilityDef
     {
-		/*public int MaximumCasts
-		{
-			get
-			{
-				return (int) this.statBases.GetStatValueFromList(StatDefOf_ItsSorcery.Sorcery_MaxCasts, 1);
-			}
-		}*/
-
 		public SorcerySchema Schema
         {
             get
@@ -37,19 +29,54 @@ namespace ItsSorceryFramework
 				foreach(var et in Schema.energyTrackers)
                 {
 					val = statBases.GetStatValueFromList(et.def.energyUnitStatDef, 0);
-					if (val == 0) continue;
+					/*if (val != 0) 
+					{
+						if(et.GetType() == typeof(EnergyTracker_Vancian))
+                        {
+							
+							float val2 = statBases.GetStatValueFromList(et.def.energyMaxCastStatDef, 0);
+							yield return et.def.energyLabelKey.Translate().CapitalizeFirst() + ": " +
+							   (et as EnergyTracker_Vancian).vancianCasts[this] + "/" + Math.Round(val2 * et.CastFactor, 2);
+						}
+                        else
+                        {
+							yield return et.def.energyLabelKey.Translate().CapitalizeFirst() + ": " +
+								Math.Round(val * et.EnergyCostFactor, 2);
+						}
+					}*/
 					yield return et.def.energyLabelKey.Translate().CapitalizeFirst() + ": " +
-						   Math.Round(val * et.EnergyCostFactor, 2);
+						Math.Round(val * et.EnergyCostFactor, 2);
+					
 				}
             }
             else
             {
 				foreach (var et in sorcerySchema.energyTrackerDefs)
 				{
-					val = statBases.GetStatValueFromList(et.energyUnitStatDef, 0);
+					/*val = statBases.GetStatValueFromList(et.energyUnitStatDef, 0);
 					if (val == 0) continue;
 					yield return et.energyLabelKey.Translate().CapitalizeFirst() + ": " +
-						   Math.Round(val, 2);
+						   Math.Round(val, 2);*/
+
+					val = statBases.GetStatValueFromList(et.energyUnitStatDef, 0);
+					if (val != 0)
+					{
+						/*if (et.energyTrackerClass == typeof(EnergyTracker_Vancian))
+						{
+							float val2 = statBases.GetStatValueFromList(et.energyMaxCastStatDef, 0);
+							yield return et.energyLabelKey.Translate().CapitalizeFirst() + ": " +
+							   Math.Round(val, 2) + "/" + Math.Round(val2, 2);
+						}
+						else
+						{
+							
+						}*/
+
+						yield return et.energyLabelKey.Translate().CapitalizeFirst() + ": " +
+								Math.Round(val, 2);
+					}
+
+
 				}
 			}
 			

@@ -88,6 +88,14 @@ namespace ItsSorceryFramework
             }
         }
 
+        public virtual float CastFactor
+        {
+            get
+            {
+                return this.pawn.GetStatValue(def.castFactorStatDef ?? StatDefOf_ItsSorcery.CastFactor_ItsSorcery, true);
+            }
+        }
+
         public virtual float OverBarRecoveryFactor
         {
             get

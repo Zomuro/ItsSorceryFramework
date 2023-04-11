@@ -74,7 +74,7 @@ namespace ItsSorceryFramework
 
         public int SorceryDefMaxCasts(SorceryDef sorceryDef)
         {
-            return (int) Mathf.Ceil(sorceryDef.statBases.GetStatValueFromList(def.energyMaxCastStatDef, 0));
+            return (int) Mathf.Ceil(sorceryDef.statBases.GetStatValueFromList(def.energyMaxCastStatDef ?? StatDefOf_ItsSorcery.Sorcery_MaxCasts, 0));
         }
 
         public Dictionary<SorceryDef, int> CleanVancianCasts(Dictionary<SorceryDef, int> original)
@@ -87,14 +87,6 @@ namespace ItsSorceryFramework
             }
 
             return temp;
-        }
-
-        public virtual float CastFactor
-        {
-            get
-            {
-                return this.pawn.GetStatValue(def.castFactorStatDef ?? StatDefOf_ItsSorcery.CastFactor_ItsSorcery, true);
-            }
         }
 
         public override void EnergyTrackerTick()
@@ -130,7 +122,7 @@ namespace ItsSorceryFramework
 
         public override bool WouldReachLimitEnergy(float energyCost, SorceryDef sorceryDef = null, Sorcery sorcery = null)
         {
-            if (vancianCasts[sorceryDef] - (int) (energyCost * EnergyCostFactor) < 0) return true;
+            if (vancianCasts[sorceryDef] - (int) (energyCost) < 0) return true;
             return false;
         }
 
@@ -138,7 +130,7 @@ namespace ItsSorceryFramework
         {
             if (!WouldReachLimitEnergy(energyCost, sorceryDef))
             {
-                vancianCasts[sorceryDef] -= (int) (energyCost * EnergyCostFactor);
+                vancianCasts[sorceryDef] -= (int) (energyCost);
                 return true;
             }
             
@@ -162,7 +154,7 @@ namespace ItsSorceryFramework
             Text.Anchor = TextAnchor.UpperLeft;
 
             // add label/barbox height + add a small boundary space for appearance
-            coordY += rect.height + 10;
+            coordY += rect.height; // + 10;
             // reset rectangle
             rect = orgRect;
             // return accumulated height
@@ -175,6 +167,10 @@ namespace ItsSorceryFramework
             StatRequest pawnReq = StatRequest.For(pawn);
 
             StatCategoryDef finalCat = tempStatCategory is null ? StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF : tempStatCategory;
+
+            yield return new StatDrawEntry(finalCat,
+                        "ISF_EnergyTrackerMaxUnit".Translate(), def.energyMaxCastStatDef.LabelCap,
+                        def.energyMaxCastStatDef.description, 99999, null, null, false);
 
             statDef = def.castFactorStatDef != null ? def.castFactorStatDef : StatDefOf_ItsSorcery.CastFactor_ItsSorcery;
             yield return new StatDrawEntry(finalCat,
@@ -197,7 +193,7 @@ namespace ItsSorceryFramework
             if (vancianCasts.ContainsKey(sorceryDef))
             {
                 return (def.energyLabelKey.Translate().CapitalizeFirst()[0]) + ": " +
-                                (vancianCasts[sorceryDef] * EnergyCostFactor).ToString() + "/" +
+                                (vancianCasts[sorceryDef]).ToString() + "/" +
                                 ((int)Math.Ceiling(SorceryDefMaxCasts(sorceryDef) * CastFactor)).ToString();
             }
             else return "";
