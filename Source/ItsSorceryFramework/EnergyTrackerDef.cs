@@ -88,6 +88,6 @@ namespace ItsSorceryFramework
     {
         public ThingDef thingDef;
 
-        public float exp = 1f;
+        public float energy = 1f;
     }
 }

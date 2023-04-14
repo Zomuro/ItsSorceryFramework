@@ -81,9 +81,9 @@ namespace ItsSorceryFramework
             {
                 if(ammo == "")
                 {
-                    ammo = item.thingDef.LabelCap + " ({0})".Translate(item.exp);
+                    ammo = item.thingDef.LabelCap + " ({0})".Translate(item.energy);
                 }
-                else ammo = ammo + ", "+ item.thingDef.LabelCap + " ({0})".Translate(item.exp);
+                else ammo = ammo + ", "+ item.thingDef.LabelCap + " ({0})".Translate(item.energy);
             }
             if (ammo == "") ammo = "None";
 

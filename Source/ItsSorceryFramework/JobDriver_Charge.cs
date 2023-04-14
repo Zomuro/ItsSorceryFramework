@@ -75,7 +75,7 @@ namespace ItsSorceryFramework
 			EnergyConsumable consume = et.def.consumables.FirstOrDefault(x => x.thingDef == ammo.def);
 			if (consume is null) return;
 
-			et.currentEnergy += Math.Min(count * consume.exp, et.MaxEnergy - et.currentEnergy);
+			et.currentEnergy += Math.Min(count * consume.energy, et.MaxEnergy - et.currentEnergy);
 			ammo.SplitOff(count).Destroy(DestroyMode.Vanish);
 		}
 

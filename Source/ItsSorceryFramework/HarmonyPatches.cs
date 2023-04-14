@@ -166,19 +166,19 @@ namespace ItsSorceryFramework
                     {
                         int count = 0;
                         int endcount = ammo.stackCount;
-                        float gain = endcount * consume.exp;
+                        float gain = endcount * consume.energy;
                         if (energyTracker.MaxEnergy == 0)
                         {
                             text = "ISF_Charge".Translate(schema.def.LabelCap.ToString(), energyTracker.def.LabelCap, ammo.def.label)
                             + "ISF_ChargeCalc".Translate(ammo.stackCount, ammo.def.label,
-                                ammo.stackCount * consume.exp,
+                                ammo.stackCount * consume.energy,
                                 energyTracker.def.energyLabelKey.Translate());
                         }
                         else
                         {
-                            count = (int)Math.Ceiling((energyTracker.MaxEnergy - energyTracker.currentEnergy) / consume.exp);
+                            count = (int)Math.Ceiling((energyTracker.MaxEnergy - energyTracker.currentEnergy) / consume.energy);
                             endcount = Math.Min(count, ammo.stackCount);
-                            gain = Math.Min(endcount * consume.exp, energyTracker.MaxEnergy - energyTracker.currentEnergy);
+                            gain = Math.Min(endcount * consume.energy, energyTracker.MaxEnergy - energyTracker.currentEnergy);
                             text = "ISF_Charge".Translate(schema.def.LabelCap.ToString(), energyTracker.def.LabelCap, ammo.def.label)
                             + "ISF_ChargeCalc".Translate(endcount, ammo.def.label,
                                 gain, energyTracker.def.energyLabelKey.Translate());
