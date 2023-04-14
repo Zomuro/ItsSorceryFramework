@@ -27,8 +27,6 @@
 	
 	<ItsSorceryFramework.EnergyTrackerDef Abstract = "True" ParentName = "EnergyTrackerBase" Name = "EnergyTrackerBaseInverted">
 		<energyTrackerClass>ItsSorceryFramework.EnergyTracker_Inverted</energyTrackerClass>
-		<defName>EnergyTracker_BaseInverted</defName>
-		<label>energy tracker test RPG</label>
 		
 		<energyMaxStatDef>MaxEnergy_ItsSorcery</energyMaxStatDef>
 		<energyMinStatDef>MinEnergy_ItsSorcery</energyMinStatDef>
@@ -47,8 +45,6 @@
 	
 	<ItsSorceryFramework.EnergyTrackerDef Abstract = "True" ParentName = "EnergyTrackerBase" Name = "EnergyTrackerBaseVancian">
 		<energyTrackerClass>ItsSorceryFramework.EnergyTracker_Vancian</energyTrackerClass>
-		<defName>EnergyTracker_BaseVancian</defName>
-		<label>energy tracker test vancian</label>
 		
 		<refreshTicks>1500</refreshTicks>
 	</ItsSorceryFramework.EnergyTrackerDef>
@@ -71,8 +67,6 @@
 	
 	<ItsSorceryFramework.EnergyTrackerDef Abstract = "True" ParentName = "EnergyTrackerBase" Name = "EnergyTrackerBaseCooldown">
 		<energyTrackerClass>ItsSorceryFramework.EnergyTracker_Cooldown</energyTrackerClass>
-		<defName>EnergyTracker_BaseCooldown</defName>
-		<label>energy tracker test cooldown</label>
 		
 		<energyMaxStatDef>MaxEnergy_ItsSorcery</energyMaxStatDef>
 		<energyRecoveryStatDef>EnergyRecovery_ItsSorcery</energyRecoveryStatDef>
