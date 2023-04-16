@@ -51,7 +51,7 @@ namespace ItsSorceryFramework
         {
             get
             {
-                return Math.Min(Math.Max(MaxEnergy, this.pawn.GetStatValue(def.energyOverMaxStatDef ?? StatDefOf_ItsSorcery.OverMaxEnergy_ItsSorcery, true)), 
+                return Math.Min(Math.Max(MaxEnergy, pawn.GetStatValue(def.energyOverMaxStatDef ?? (def.energyMaxStatDef ?? StatDefOf_ItsSorcery.MaxEnergy_ItsSorcery), true)), 
                     MaxEnergy * 2f);
             }
         }
