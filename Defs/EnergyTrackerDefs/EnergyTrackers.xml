@@ -65,13 +65,10 @@
 		<consumables/>
 	</ItsSorceryFramework.EnergyTrackerDef>
 	
-	<ItsSorceryFramework.EnergyTrackerDef Abstract = "True" ParentName = "EnergyTrackerBase" Name = "EnergyTrackerBaseCooldown">
+	<!--<ItsSorceryFramework.EnergyTrackerDef Abstract = "True" ParentName = "EnergyTrackerBase" Name = "EnergyTrackerBaseCooldown">
 		<energyTrackerClass>ItsSorceryFramework.EnergyTracker_Cooldown</energyTrackerClass>
-		
-		<energyMaxStatDef>MaxEnergy_ItsSorcery</energyMaxStatDef>
-		<energyRecoveryStatDef>EnergyRecovery_ItsSorcery</energyRecoveryStatDef>
 		<refreshTicks>180</refreshTicks>
-	</ItsSorceryFramework.EnergyTrackerDef>
+	</ItsSorceryFramework.EnergyTrackerDef>-->
 	
 	<!--<ItsSorceryFramework.EnergyTrackerDef Name = "EnergyTrackerBase">
 		<energyTrackerClass>ItsSorceryFramework.EnergyTracker</energyTrackerClass>

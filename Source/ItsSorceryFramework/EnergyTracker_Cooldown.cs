@@ -5,6 +5,7 @@ using Verse;
 
 namespace ItsSorceryFramework
 {
+    // unused energytracker class- its role is basically made obselete by ability cooldowns.
     public class EnergyTracker_Cooldown : EnergyTracker
     {
         // initalizer- created via activator via SorcerySchema
@@ -119,8 +120,10 @@ namespace ItsSorceryFramework
 
         public override string TopRightLabel(SorceryDef sorceryDef)
         {
-            if (sorceryDef.verbProperties.defaultCooldownTime <= 0) return "";
-            return "T: " + sorceryDef.verbProperties.defaultCooldownTime;
+            /*if (sorceryDef.verbProperties.defaultCooldownTime <= 0) return "";
+            return "T: " + sorceryDef.verbProperties.defaultCooldownTime;*/
+
+            return "T: " + def.refreshTicks.TicksToSeconds();
         }
 
         public List<Sorcery> recentSorceries = new List<Sorcery> ();

@@ -102,8 +102,8 @@ namespace ItsSorceryFramework
             // highlight energy costs
             HightlightEnergyCost(barBox);
 
-            // add label/barbox height + add a small boundary space for appearance
-            coordY += labelBox.height + 10;
+            // add label/barbox height
+            coordY += labelBox.height;
             // reset rectangle
             rect = orgRect;
             // return accumulated height
