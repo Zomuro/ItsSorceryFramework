@@ -75,7 +75,7 @@ namespace ItsSorceryFramework
         {
             get
             {
-                if (cachedViewSize == null || cachedViewSize == Vector2.zero) cachedViewSize = findViewSize();
+                if (cachedViewSize == null || cachedViewSize == Vector2.zero) cachedViewSize = FindViewSize();
 
                 return cachedViewSize;
             }
@@ -138,19 +138,19 @@ namespace ItsSorceryFramework
                 coordY += DrawPointReq(selectedNode, pointRect);
 
                 Rect prereqRect = new Rect(0f, coordY, viewRect.width, 500f);
-                coordY += drawNodePrereqs(selectedNode, prereqRect);
+                coordY += DrawNodePrereqs(selectedNode, prereqRect);
 
                 Rect exclusiveRect = new Rect(0f, coordY, viewRect.width, 500f);
-                coordY += drawExclusive(selectedNode, exclusiveRect);
+                coordY += DrawExclusive(selectedNode, exclusiveRect);
 
                 Rect hyperlinkRect = new Rect(0f, coordY, viewRect.width, 500f);
-                coordY += drawHyperlinks(hyperlinkRect, selectedNode);
+                coordY += DrawHyperlinks(hyperlinkRect, selectedNode);
 
                 Rect statModRect = new Rect(0f, coordY, viewRect.width, 500f);
-                coordY += drawStatMods(statModRect, selectedNode);
+                coordY += DrawStatMods(statModRect, selectedNode);
 
                 Rect contentRect = new Rect(0f, coordY, viewRect.width, 500f);
-                coordY += drawContentSource(contentRect, selectedNode);
+                coordY += DrawContentSource(contentRect, selectedNode);
                 coordY += 3f;
                 leftScrollViewHeight = coordY;
                 Widgets.EndScrollView();
@@ -158,17 +158,17 @@ namespace ItsSorceryFramework
                 ProgressTracker progress = schema.progressTracker;
                 Rect confirmButton = new Rect(0f, outRect.yMax + 10f + this.leftViewDebugHeight, rect.width, this.leftStartAreaHeight);
                 string reason = "";
-                if (!completion[selectedNode] && prereqFufilled(selectedNode) && prereqResearchFufilled(selectedNode) &&
-                    prereqHediffFufilled(selectedNode) && exclusiveNodeFufilled(selectedNode) &&
+                if (!completion[selectedNode] && PrereqFufilled(selectedNode) && PrereqResearchFufilled(selectedNode) &&
+                    PrereqHediffFufilled(selectedNode) && ExclusiveNodeFufilled(selectedNode) &&
                     selectedNode.pointReq + progress.usedPoints <= progress.points) 
                 {
                     if (Widgets.ButtonText(confirmButton, "ISF_SkillPointUse".Translate(selectedNode.pointReq, 
                         progress.def.skillPointLabelKey.Translate())))
                     {
                         completion[selectedNode] = true;
-                        completionAbilities(selectedNode);
-                        completionHediffs(selectedNode);
-                        completionModifiers(selectedNode);
+                        CompletionAbilities(selectedNode);
+                        CompletionHediffs(selectedNode);
+                        CompletionModifiers(selectedNode);
                         schema.progressTracker.usedPoints += selectedNode.pointReq;
                     }
                 }
@@ -176,7 +176,7 @@ namespace ItsSorceryFramework
                 {
                     Text.Anchor = TextAnchor.MiddleCenter;
                     if (completion[selectedNode]) reason = "Completed.";
-                    else if (!exclusiveNodeFufilled(selectedNode)) reason = "Conflicts with another node.";
+                    else if (!ExclusiveNodeFufilled(selectedNode)) reason = "Conflicts with another node.";
                     else
                     {
                         reason = "Locked:";
@@ -184,11 +184,11 @@ namespace ItsSorceryFramework
                         if (selectedNode.pointReq + progress.usedPoints > progress.points) reason += "\nNot enough "+ 
                                 schemaDef.progressTrackerDef.skillPointLabelKey.Translate() +".";
 
-                        if (!prereqFufilled(selectedNode)) reason += "\nPrior nodes not completed.";
+                        if (!PrereqFufilled(selectedNode)) reason += "\nPrior nodes not completed.";
 
-                        if (!prereqResearchFufilled(selectedNode)) reason += "\nResearch requirements not completed.";
+                        if (!PrereqResearchFufilled(selectedNode)) reason += "\nResearch requirements not completed.";
 
-                        if (!prereqHediffFufilled(selectedNode)) reason += "\nHediff requirements not met.";
+                        if (!PrereqHediffFufilled(selectedNode)) reason += "\nHediff requirements not met.";
                     }
 
                     this.leftStartAreaHeight = Mathf.Max(Text.CalcHeight(reason, confirmButton.width - 10f) + 10f, 68f);
@@ -211,15 +211,14 @@ namespace ItsSorceryFramework
                     if (Widgets.ButtonText(debugButton, "Debug: Finish now", true, true, true, null))
                     {
                         completion[selectedNode] = true;
-                        completionAbilities(selectedNode);
-                        completionHediffs(selectedNode);
-                        completionModifiers(selectedNode);
-                        //schema.progressTracker.usedPoints += selectedNode.pointReq;
+                        CompletionAbilities(selectedNode);
+                        CompletionHediffs(selectedNode);
+                        CompletionModifiers(selectedNode);
                     }
                     Text.Font = GameFont.Small;
                     this.leftViewDebugHeight = debugButton.height;
                 }
-                /* modify this for items like techprints required for skill system
+                /* modify this for items like techprints required for skill system later
                 if (Prefs.DevMode && !this.selectedProject.TechprintRequirementMet)
                 {
                     Text.Font = GameFont.Tiny;
@@ -246,7 +245,7 @@ namespace ItsSorceryFramework
             return rect.yMin - yMin;
         }
 
-        private float drawNodePrereqs(LearningTreeNodeDef node, Rect rect)
+        private float DrawNodePrereqs(LearningTreeNodeDef node, Rect rect)
         {
             if (node.prereqs.NullOrEmpty() && node.prereqsResearch.NullOrEmpty())
             {
@@ -262,7 +261,7 @@ namespace ItsSorceryFramework
                 rect.xMin += 6f;
                 foreach (LearningTreeNodeDef prereq in node.prereqs)
                 {
-                    this.setPrereqStatusColor(completion[prereq], node);
+                    SetPrereqStatusColor(completion[prereq], node);
                     Widgets.LabelCacheHeight(ref rect, prereq.LabelCap, true, false);
                     if (Widgets.ButtonInvisible(rect, true))
                     {
@@ -282,7 +281,7 @@ namespace ItsSorceryFramework
                 rect.xMin += 6f;
                 foreach (ResearchProjectDef prereq in node.prereqsResearch)
                 {
-                    this.setPrereqStatusColor(prereq.IsFinished, node);
+                    SetPrereqStatusColor(prereq.IsFinished, node);
                     Widgets.LabelCacheHeight(ref rect, prereq.LabelCap, true, false);
                     rect.yMin += rect.height;
                 }
@@ -300,7 +299,7 @@ namespace ItsSorceryFramework
                 foreach (var prereq in node.prereqsHediff)
                 {
                     hediff = pawn.health.hediffSet.GetFirstHediffOfDef(prereq.Key);
-                    this.setPrereqStatusColor((hediff != null && hediff.Severity >= prereq.Value), node);
+                    SetPrereqStatusColor((hediff != null && hediff.Severity >= prereq.Value), node);
                     reqLabel = !prereq.Key.stages.NullOrEmpty() ? 
                         prereq.Key.stages[prereq.Key.StageAtSeverity(prereq.Value)].label : prereq.Value.ToString("F0");
                     Widgets.LabelCacheHeight(ref rect, prereq.Key.LabelCap + " ({0})".Translate(reqLabel), true, false);
@@ -313,7 +312,7 @@ namespace ItsSorceryFramework
             return rect.yMin - yMin;
         }
 
-        private float drawExclusive(LearningTreeNodeDef node, Rect rect)
+        private float DrawExclusive(LearningTreeNodeDef node, Rect rect)
         {
             if (exclusiveNodes[node].NullOrEmpty()) return 0;
 
@@ -336,7 +335,7 @@ namespace ItsSorceryFramework
             return rect.yMin - yMin;
         }
 
-        private float drawHyperlinks(Rect rect, LearningTreeNodeDef node)
+        private float DrawHyperlinks(Rect rect, LearningTreeNodeDef node)
         {
             List<AbilityDef> abilityGain = node.abilityGain;
             List<AbilityDef> abilityRemove = node.abilityRemove;
@@ -444,7 +443,7 @@ namespace ItsSorceryFramework
             return rect.yMin - yMin;
         }
 
-        private float drawStatMods(Rect rect, LearningTreeNodeDef node)
+        private float DrawStatMods(Rect rect, LearningTreeNodeDef node)
         {
             float yMin = rect.yMin;
             float x = rect.x;
@@ -473,7 +472,7 @@ namespace ItsSorceryFramework
             return stringBuilder.ToString();
         }
 
-        private float drawContentSource(Rect rect, LearningTreeNodeDef node) // taken from research tab
+        private float DrawContentSource(Rect rect, LearningTreeNodeDef node) // taken from research tab
         {
             if (node.modContentPack == null || node.modContentPack.IsCoreMod)
             {
@@ -490,7 +489,7 @@ namespace ItsSorceryFramework
             return rect.yMax - yMin;
         }
 
-        private void setPrereqStatusColor(bool compCheck, LearningTreeNodeDef node)
+        private void SetPrereqStatusColor(bool compCheck, LearningTreeNodeDef node)
         {
             if (completion[node])
             {
@@ -504,7 +503,7 @@ namespace ItsSorceryFramework
             GUI.color = ColorLibrary.RedReadable;
         }
 
-        public bool prereqFufilled(LearningTreeNodeDef node)
+        public bool PrereqFufilled(LearningTreeNodeDef node)
         {
             foreach(LearningTreeNodeDef prereq in node.prereqs)
             {
@@ -514,7 +513,7 @@ namespace ItsSorceryFramework
             return true;
         }
 
-        public bool prereqResearchFufilled(LearningTreeNodeDef node)
+        public bool PrereqResearchFufilled(LearningTreeNodeDef node)
         {
             foreach (ResearchProjectDef prereq in node.prereqsResearch)
             {
@@ -524,7 +523,7 @@ namespace ItsSorceryFramework
             return true;
         }
 
-        public bool prereqHediffFufilled(LearningTreeNodeDef node)
+        public bool PrereqHediffFufilled(LearningTreeNodeDef node)
         {
             Hediff hediff;
             foreach (var pair in node.prereqsHediff)
@@ -537,7 +536,7 @@ namespace ItsSorceryFramework
             return true;
         }
 
-        public bool exclusiveNodeFufilled(LearningTreeNodeDef node)
+        public bool ExclusiveNodeFufilled(LearningTreeNodeDef node)
         {
             if (!exclusiveNodes.ContainsKey(node)) return true;
 
@@ -549,7 +548,7 @@ namespace ItsSorceryFramework
             return true;
         }
 
-        public virtual void completionAbilities(LearningTreeNodeDef node)
+        public virtual void CompletionAbilities(LearningTreeNodeDef node)
         {
             Pawn_AbilityTracker abilityTracker = this.pawn.abilities;
 
@@ -564,7 +563,7 @@ namespace ItsSorceryFramework
             }
         }
 
-        public virtual void completionHediffs(LearningTreeNodeDef node)
+        public virtual void CompletionHediffs(LearningTreeNodeDef node)
         {
             Hediff hediff;
             foreach (NodeHediffProps props in node.hediffAdd)
@@ -587,11 +586,11 @@ namespace ItsSorceryFramework
             }
         }
 
-        public virtual void completionModifiers(LearningTreeNodeDef node)
+        public virtual void CompletionModifiers(LearningTreeNodeDef node)
         {
-            ProgressTracker progressTracker = schema.progressTracker;
-            progressTracker.adjustModifiers(node.statOffsets, node.statFactors, node.capMods);
-            progressTracker.refreshCurStage();
+            ProgressTracker progressTracker = schema.progressTracker; // get progresstracker
+            progressTracker.adjustModifiers(node.statOffsets, node.statFactors, node.capMods); // update list of statMods and capMods
+            progressTracker.hediff.curStage = progressTracker.refreshCurStage(); // rebuild hediffstage with adjusted stats & set hediff curstage to it
         }
 
         public override void DrawRightGUI(Rect rect)
@@ -619,13 +618,13 @@ namespace ItsSorceryFramework
             Rect nodeRect;
             foreach (LearningTreeNodeDef node in allNodes)
             {
-                if (!prereqFufilled(node) && node.condVisiblePrereq) continue;
+                if (!PrereqFufilled(node) && node.condVisiblePrereq) continue;
 
-                nodeRect = getNodeRect(node);
+                nodeRect = GetNodeRect(node);
                 foreach (LearningTreeNodeDef prereq in node.prereqs)
                 {
-                    Tuple<Vector2, Vector2> points = lineEnds(prereq, node, nodeRect);
-                    Tuple<Color, float> lineColor = selectionLineColor(node, prereq);
+                    Tuple<Vector2, Vector2> points = LineEnds(prereq, node, nodeRect);
+                    Tuple<Color, float> lineColor = SelectionLineColor(node, prereq);
                     //Widgets.DrawLine(points.Item1, points.Item2, selectionLineColor(node), 2f);
                     Widgets.DrawLine(points.Item1, points.Item2, lineColor.Item1, lineColor.Item2);
                 }               
@@ -634,12 +633,12 @@ namespace ItsSorceryFramework
             // second pass- draw the nodes + label
             foreach(LearningTreeNodeDef node in allNodes)
             {
-                if (!prereqFufilled(node) && node.condVisiblePrereq) continue;
+                if (!PrereqFufilled(node) && node.condVisiblePrereq) continue;
 
-                nodeRect = getNodeRect(node);
+                nodeRect = GetNodeRect(node);
 
-                if (Widgets.CustomButtonText(ref nodeRect, "", selectionBGColor(node),
-                    new Color(0.8f, 0.85f, 1f), selectionBorderColor(node), false, 1, true, true))
+                if (Widgets.CustomButtonText(ref nodeRect, "", SelectionBGColor(node),
+                    new Color(0.8f, 0.85f, 1f), SelectionBorderColor(node), false, 1, true, true))
                 {
                     SoundDefOf.Click.PlayOneShotOnCamera(null);
                     this.selectedNode = node;
@@ -671,12 +670,12 @@ namespace ItsSorceryFramework
             return y * 100f;
         }
 
-        private Rect getNodeRect(LearningTreeNodeDef nodeDef)
+        private Rect GetNodeRect(LearningTreeNodeDef nodeDef)
         {
             return new Rect(CoordToPixelsX(nodeDef.coordX), CoordToPixelsY(nodeDef.coordY), 140f, 50f);
         }
 
-        private Tuple<Vector2, Vector2> lineEnds(LearningTreeNodeDef start, LearningTreeNodeDef end, Rect nodeRef)
+        private Tuple<Vector2, Vector2> LineEnds(LearningTreeNodeDef start, LearningTreeNodeDef end, Rect nodeRef)
         {
             Vector2 prereq = new Vector2(CoordToPixelsX(start.coordX), CoordToPixelsY(start.coordY));
             prereq.x += nodeRef.width;
@@ -687,7 +686,7 @@ namespace ItsSorceryFramework
             return new Tuple<Vector2, Vector2>(prereq, current);
         }
 
-        private Vector2 findViewSize()
+        private Vector2 FindViewSize()
         {
             float x = 0f;
             float y = 0f;
@@ -700,7 +699,7 @@ namespace ItsSorceryFramework
             return new Vector2(x + 32f, y + 32f);
         }
 
-        private Color selectionBGColor(LearningTreeNodeDef node)
+        private Color SelectionBGColor(LearningTreeNodeDef node)
         {
             Color baseCol = default(Color);
 
@@ -708,9 +707,9 @@ namespace ItsSorceryFramework
 
             if (completion[node]) baseCol = TexUI.FinishedResearchColor;
 
-            else if (!exclusiveNodeFufilled(node)) baseCol = ColorLibrary.BrickRed;
+            else if (!ExclusiveNodeFufilled(node)) baseCol = ColorLibrary.BrickRed;
 
-            else if (prereqFufilled(node) && prereqResearchFufilled(node)) baseCol = TexUI.AvailResearchColor;
+            else if (PrereqFufilled(node) && PrereqResearchFufilled(node)) baseCol = TexUI.AvailResearchColor;
 
             else baseCol = TexUI.LockedResearchColor;
 
@@ -720,7 +719,7 @@ namespace ItsSorceryFramework
             return baseCol;
         }
 
-        private Color selectionBorderColor(LearningTreeNodeDef node)
+        private Color SelectionBorderColor(LearningTreeNodeDef node)
         {
             // if the node is the selected one OR a prerequisite, change border to highlight
             if (selectedNode != null)
@@ -738,28 +737,22 @@ namespace ItsSorceryFramework
             return TexUI.DefaultBorderResearchColor;
         }
 
-        private Tuple<Color,float> selectionLineColor(LearningTreeNodeDef node, LearningTreeNodeDef prereq)
+        private Tuple<Color,float> SelectionLineColor(LearningTreeNodeDef node, LearningTreeNodeDef prereq)
         {
-            Color col = default(Color);
-            float width = 3f;
+            //Color col = default(Color);
             if (selectedNode == node)
             {
                 if (completion[prereq])
                 {
-                    col = TexUI.HighlightLineResearchColor;
-                    return new Tuple<Color, float>(col, width);
+                    return new Tuple<Color, float>(TexUI.HighlightLineResearchColor, 3f);
                 }
 
                 else 
                 {
-                    col = TexUI.DependencyOutlineResearchColor;
-                    return new Tuple<Color, float>(col, width);
+                    return new Tuple<Color, float>(TexUI.DependencyOutlineResearchColor, 3f);
                 } 
             }   
-
-            col =  TexUI.DefaultLineResearchColor;
-            width = 2f;
-            return new Tuple<Color, float>(col, 2f );
+            return new Tuple<Color, float>(TexUI.DefaultLineResearchColor, 2f);
         }
 
         public List<LearningTreeNodeDef> cachedAllNodes;
