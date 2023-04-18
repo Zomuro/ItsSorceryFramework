@@ -124,5 +124,7 @@ namespace ItsSorceryFramework
 
 		private SorcerySchema cachedSchema;
 
+		private string cachedRightLabel;
+
 	}
 }

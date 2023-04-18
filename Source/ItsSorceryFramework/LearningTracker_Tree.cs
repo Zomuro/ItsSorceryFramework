@@ -125,31 +125,34 @@ namespace ItsSorceryFramework
                 Text.Font = GameFont.Medium;
                 GenUI.SetLabelAlign(TextAnchor.MiddleLeft);
                 Rect labelRect = new Rect(0f, coordY, viewRect.width, 50f);
-                Widgets.LabelCacheHeight(ref labelRect, this.selectedNode.LabelCap, true, false);
+                Widgets.LabelCacheHeight(ref labelRect, selectedNode.LabelCap, true, false);
                 GenUI.ResetLabelAlign();
                 Text.Font = GameFont.Small;
                 coordY += labelRect.height;
 
                 Rect descRect = new Rect(0f, coordY, viewRect.width, 0f);
-                Widgets.LabelCacheHeight(ref descRect, this.selectedNode.description, true, false);
+                Widgets.LabelCacheHeight(ref descRect, selectedNode.description, true, false);
                 coordY += descRect.height;
 
+                Rect pointRect = new Rect(0f, coordY, viewRect.width, 500f);
+                coordY += DrawPointReq(selectedNode, pointRect);
+
                 Rect prereqRect = new Rect(0f, coordY, viewRect.width, 500f);
-                coordY += this.drawNodePrereqs(this.selectedNode, prereqRect);
+                coordY += drawNodePrereqs(selectedNode, prereqRect);
 
                 Rect exclusiveRect = new Rect(0f, coordY, viewRect.width, 500f);
-                coordY += this.drawExclusive(this.selectedNode, exclusiveRect);
+                coordY += drawExclusive(selectedNode, exclusiveRect);
 
                 Rect hyperlinkRect = new Rect(0f, coordY, viewRect.width, 500f);
-                coordY += this.drawHyperlinks(hyperlinkRect, selectedNode);
+                coordY += drawHyperlinks(hyperlinkRect, selectedNode);
 
                 Rect statModRect = new Rect(0f, coordY, viewRect.width, 500f);
-                coordY += this.drawStatMods(statModRect, selectedNode);
+                coordY += drawStatMods(statModRect, selectedNode);
 
                 Rect contentRect = new Rect(0f, coordY, viewRect.width, 500f);
-                coordY += this.drawContentSource(contentRect, selectedNode);
+                coordY += drawContentSource(contentRect, selectedNode);
                 coordY += 3f;
-                this.leftScrollViewHeight = coordY;
+                leftScrollViewHeight = coordY;
                 Widgets.EndScrollView();
 
                 ProgressTracker progress = schema.progressTracker;
@@ -232,6 +235,15 @@ namespace ItsSorceryFramework
             }
             Widgets.EndGroup();
 
+        }
+
+        private float DrawPointReq(LearningTreeNodeDef node, Rect rect)
+        {
+            float yMin = rect.yMin;
+
+            Widgets.LabelCacheHeight(ref rect, "ISF_LearningNodeCost".Translate(schemaDef.progressTrackerDef.skillPointLabelKey.Translate().CapitalizeFirst(), node.pointReq));
+            rect.yMin += rect.height;
+            return rect.yMin - yMin;
         }
 
         private float drawNodePrereqs(LearningTreeNodeDef node, Rect rect)

@@ -112,7 +112,7 @@ namespace ItsSorceryFramework
         {
             get
             {
-                string text = this.sorceryDef.GetSorceryTooltip(this.pawn);
+                string text = sorceryDef.GetSorceryTooltip(this.pawn);
                 if (this.EffectComps != null)
                 {
                     foreach (CompAbilityEffect compAbilityEffect in this.EffectComps)

@@ -135,10 +135,10 @@ namespace ItsSorceryFramework
         public List<ProgressLevelLabel> levelLabels = new List<ProgressLevelLabel>();
 
         [MustTranslate]
-        public string progressLevelUpTransKey = "ISF_LevelUp";
+        public string progressLevelUpKey = "ISF_LevelUp";
 
         [MustTranslate]
-        public string progressLevelUpDescTransKey = "ISF_LevelUpMessage";
+        public string progressLevelUpDescKey = "ISF_LevelUpMessage";
 
         [MustTranslate]
         public string skillPointLabelKey = "ISF_SkillPointLabel";

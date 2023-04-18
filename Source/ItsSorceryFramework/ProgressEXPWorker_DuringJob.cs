@@ -10,6 +10,7 @@ namespace ItsSorceryFramework
     {
         public override bool TryExecute(ProgressTracker progressTracker, float exp = 0)
         {
+            if (progressTracker.Maxed) return false;
             if (progressTracker.pawn.CurJobDef == null) return false;
 
             if (def.jobSets.NullOrEmpty()) return false;

@@ -76,11 +76,6 @@ namespace ItsSorceryFramework
         {
             if (!energyTrackers.NullOrEmpty()) 
             {
-                /*for (int i = 0; i < energyTrackers.Count; i++)
-                {
-                    energyTrackers[i].EnergyTrackerTick();
-                }*/
-
                 foreach(var et in energyTrackers) et.EnergyTrackerTick();
             }
 
@@ -100,8 +95,13 @@ namespace ItsSorceryFramework
 
             // draws info, learningtracker buttons + schema title
             coordY += SchemaViewBox(ref rect);
-            if(hasLimits) LimitButton(rect.x + rect.width - 5 - 24, rect.y + 5); // draws limit toggle button
-            if (hasTurns) TurnButton(rect.x + rect.width - 5 - 24 - 24, rect.y + 5); // draws turn pause toggle button if schema should be pausable
+            float buttonRefPoint = rect.x + rect.width - 5 - 24;
+            if (hasLimits) // draws limit toggle button
+            {
+                LimitButton(buttonRefPoint, rect.y + 5);
+                buttonRefPoint -= 24;
+            }  
+            if (hasTurns) TurnButton(buttonRefPoint, rect.y + 5); // draws turn pause toggle button if schema should be pausable
 
             // temporary rect for plotting energytrackers
             Rect tempRect = new Rect(rect);
@@ -136,8 +136,6 @@ namespace ItsSorceryFramework
             Widgets.InfoCardButton(rect.x + 5, rect.y + 5, def);
             LearningTrackerButton(rect.x + 5 + 24, rect.y + 5);
             FavButton(rect.x + 5 + 48, rect.y + 5);
-            /*LimitButton(rect.x + rect.width - 5 - 24, rect.y + 5);
-            TurnButton(rect.x + rect.width - 5 - 24 - 24, rect.y + 5);*/
 
             def.ClearCachedData();
 
@@ -224,10 +222,8 @@ namespace ItsSorceryFramework
         {
             Scribe_References.Look(ref pawn, "pawn");
             Scribe_Defs.Look(ref def, "def");
-            //Scribe_Deep.Look(ref energyTracker, "energyTracker", new object[] {pawn});
 
             Scribe_Collections.Look(ref energyTrackers, "energyTrackers", LookMode.Deep, new object[] { pawn });
-
             Scribe_Collections.Look(ref learningTrackers, "learningTrackers", LookMode.Deep, new object[] { pawn });
             Scribe_Deep.Look(ref progressTracker, "progressTracker", new object[] { pawn });
             Scribe_Values.Look(ref favorited, "favorited", false);
@@ -242,8 +238,6 @@ namespace ItsSorceryFramework
         public Pawn pawn;
 
         public SorcerySchemaDef def;
-
-        //public EnergyTracker energyTracker;
 
         public List<EnergyTracker> energyTrackers = new List<EnergyTracker>();
 

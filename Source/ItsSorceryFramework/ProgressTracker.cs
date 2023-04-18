@@ -93,6 +93,14 @@ namespace ItsSorceryFramework
                 "This pawn has leveled up.", LetterDefOf.NeutralEvent, null);
         }
 
+        public bool Maxed
+        {
+            get
+            {
+                return (currLevel) >= hediff.def.maxSeverity;
+            }
+        }
+
         public int currLevel
         {
             get

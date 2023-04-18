@@ -20,6 +20,7 @@
 	<ISF_EnergyTrackerAmmoDesc>The source(s) of this schema's energy unit. Depending on schema, various sources can contribute differing amounts of energy units.</ISF_EnergyTrackerAmmoDesc>
 	
 	<!-- SorcerySchemaDef Info window - Learning Trackers -->
+	<ISF_LearningNodeCost>{0} required: {1}</ISF_LearningNodeCost>
 	<ISF_LearningNodePrereqs>Node prerequisites:</ISF_LearningNodePrereqs>
 	<ISF_LearningNodeHediffReq>Hediff requirements:</ISF_LearningNodeHediffReq>
 	<ISF_LearningNodeExclusive>Exclusive with:</ISF_LearningNodeExclusive>
@@ -32,6 +33,7 @@
 	
 	<ISF_LearningLevelLabel>Level {0}</ISF_LearningLevelLabel>
 	<ISF_LearningLevelLabelCustom>{0} (lvl. {1})</ISF_LearningLevelLabelCustom>
+	<ISF_LearningLevelLabelMax>Max</ISF_LearningLevelLabelMax>
 	<ISF_LearningProgressLevel>Level {0}:</ISF_LearningProgressLevel>
 	<ISF_LearningProgressLevelCustom>Level {0} ({1}):</ISF_LearningProgressLevelCustom>
 	
