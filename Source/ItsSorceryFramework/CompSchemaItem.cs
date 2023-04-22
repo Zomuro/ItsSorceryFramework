@@ -8,7 +8,6 @@ namespace ItsSorceryFramework
 		public override void PostExposeData()
 		{
 			base.PostExposeData();
-			//Scribe_Defs.Look<SorcerySchemaDef>(ref this.schemaDef, "schemaDef");
 		}
 
 		public CompProperties_SchemaItem SchemaProps

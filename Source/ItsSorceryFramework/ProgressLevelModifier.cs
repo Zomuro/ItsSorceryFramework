@@ -26,6 +26,7 @@ namespace ItsSorceryFramework
 
         public int pointGain = 1;
 
+        // unused for the moment
         public List<ProgressLevelOption> options = new List<ProgressLevelOption>();
     }
 }

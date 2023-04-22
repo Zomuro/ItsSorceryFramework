@@ -60,8 +60,6 @@ namespace ItsSorceryFramework
                 foreach (var worker in def.Workers.Where(x => x.GetType() == typeof(ProgressEXPWorker_Passive) || 
                     x.GetType() == typeof(ProgressEXPWorker_DuringJob)))
                 {
-                    /*if (worker.GetType() == typeof(ProgressEXPWorker_Passive)) worker.TryExecute(this);
-                    else if (worker.GetType() == typeof(ProgressEXPWorker_DuringJob)) worker.TryExecute(this);*/
                     worker.TryExecute(this);
                 }
             }

@@ -13,7 +13,6 @@ namespace ItsSorceryFramework
 			}
 		}
 
-		// Token: 0x060084FB RID: 34043 RVA: 0x002D4164 File Offset: 0x002D2364
 		public override void DoEffect(Pawn usedBy)
 		{
 			base.DoEffect(usedBy);
