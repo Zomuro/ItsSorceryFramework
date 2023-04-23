@@ -121,12 +121,12 @@ namespace ItsSorceryFramework
                     OverMaxEnergy);
             }
 
-            this.currentEnergy = Math.Max(tempEnergy, MinEnergy);
+            currentEnergy = Math.Max(tempEnergy, MinEnergy);
         }
 
         public override bool WouldReachLimitEnergy(float energyCost, SorceryDef sorceryDef = null, Sorcery sorcery = null)
         {
-            if (currentEnergy + energyCost > MaxEnergy && Schema.limitLocked) return true;
+            if ((currentEnergy + energyCost) > MaxEnergy && Schema.limitLocked) return true;
             return false;
         }
 
