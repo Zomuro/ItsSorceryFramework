@@ -3,14 +3,18 @@
 	<name>It's Sorcery!</name>
 	<author>Zomuro</author>
 	<supportedVersions><li>1.4</li></supportedVersions>
-	<!--<modDependencies>
-	</modDependencies>-->
-	<packageId>Zomuro.ItsSorceryFramework</packageId>
-	<description>A general framework for magic systems in RimWorld. It offers a modular system that enables modders to more easily design how magic works and is learned in game. 
+	<modDependencies>
+		<li>
+			<packageId>brrainz.harmony</packageId>
+			<displayName>Harmony</displayName>
+			<downloadUrl>https://github.com/pardeike/HarmonyRimWorld/releases</downloadUrl>
+			<steamWorkshopUrl>https://steamcommunity.com/workshop/filedetails/?id=2009463077</steamWorkshopUrl>
+		</li>
+	</modDependencies>
+	<packageId>Zomuro.ItsSorcery</packageId>
+	<description>A general framework for magic systems in RimWorld. It offers a modular system that enables modders to more easily design how magic works and is learned in-game. 
 	
-How does it work?
-
-It's sorcery! *roll credits*
+How does it work? It's sorcery! *roll credits*
 
 Warmest thanks go to:
 Gouda quiche, my C# mentor;
@@ -19,7 +23,5 @@ Flango, for his contribution of skill trees to the learning system;
 Feldoh, for his wisdom;
 DetVisor, for his art contribution;
 and many others!
-
-
 	</description>
 </ModMetaData>
