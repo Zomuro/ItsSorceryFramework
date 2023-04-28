@@ -70,27 +70,18 @@ namespace ItsSorceryFramework
 
         }
 
-        /*public virtual void adjustTotalStatMods(Dictionary<StatDef, float> stats, List<StatModifier> statMods, bool factor = false)
-        {
-            if (statMods.NullOrEmpty()) return;
-        }
-
-        // for later
-        public virtual void adjustTotalCapMods(Dictionary<PawnCapacityDef, float> caps, List<PawnCapacityModifier> capMods)
-        {
-            if (capMods.NullOrEmpty()) return;
-
-        }
-
-        public virtual IEnumerable<StatModifier> createStatModifiers(Dictionary<StatDef, float> stats)
-        {
-            yield break;
-        }*/
-
         public virtual void notifyTotalLevelUp(float orgSev)
         {
             Find.LetterStack.ReceiveLetter("Level up.",
                 "This pawn has leveled up.", LetterDefOf.NeutralEvent, null);
+        }
+
+        public bool Maxed
+        {
+            get
+            {
+                return (currLevel) >= hediff.def.maxSeverity;
+            }
         }
 
         public int currLevel

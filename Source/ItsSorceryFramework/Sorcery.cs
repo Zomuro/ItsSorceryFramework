@@ -41,7 +41,8 @@ namespace ItsSorceryFramework
 
         public override bool Activate(GlobalTargetInfo target)
         {
-            EnergyTracker energyTracker = SorcerySchemaUtility.FindSorcerySchema(pawn, sorceryDef).energyTracker;
+            // disable for now; get the proper energytrackers first
+            /*EnergyTracker energyTracker = SorcerySchemaUtility.FindSorcerySchema(pawn, sorceryDef).energyTracker;
 
             if (energyTracker == null) return false;
 
@@ -57,14 +58,29 @@ namespace ItsSorceryFramework
                     worker.TryExecute(Schema.progressTracker, sorceryDef.EnergyCost);
                     break;
                 }
+            }*/
+
+            foreach (var et in Schema.energyTrackers)
+            {
+                if (!et.TryAlterEnergy(sorceryDef.statBases.GetStatValueFromList(et.def.energyUnitStatDef, 0f) * et.EnergyCostFactor, sorceryDef)) return false;
             }
+
+            var worker = Schema.progressTracker.def.Workers.FirstOrDefault(x => x.GetType() == typeof(ProgressEXPWorker_CastEnergyCost));
+            if (worker != null)
+            {
+                foreach (var et in Schema.energyTrackers)
+                {
+                    worker.TryExecute(Schema.progressTracker, sorceryDef.statBases.GetStatValueFromList(et.def.energyUnitStatDef, 0f));
+                }
+            }
+
             return base.Activate(target);
             
         }
 
         public override bool Activate(LocalTargetInfo target, LocalTargetInfo dest)
         {
-            EnergyTracker energyTracker = SorcerySchemaUtility.FindSorcerySchema(pawn, sorceryDef).energyTracker;
+            /*EnergyTracker energyTracker = SorcerySchemaUtility.FindSorcerySchema(pawn, sorceryDef).energyTracker;
             if (energyTracker == null) return false;
 
             float finalEnergyCost = sorceryDef.EnergyCost * energyTracker.EnergyCostFactor;
@@ -74,7 +90,21 @@ namespace ItsSorceryFramework
             }
 
             var worker = Schema.progressTracker.def.Workers.FirstOrDefault(x => x.GetType() == typeof(ProgressEXPWorker_CastEnergyCost));
-            if(worker != null) worker.TryExecute(Schema.progressTracker, sorceryDef.EnergyCost);
+            if(worker != null) worker.TryExecute(Schema.progressTracker, sorceryDef.EnergyCost);*/
+
+            foreach(var et in Schema.energyTrackers)
+            {
+                if (!et.TryAlterEnergy(sorceryDef.statBases.GetStatValueFromList(et.def.energyUnitStatDef, 0f) * et.EnergyCostFactor, sorceryDef)) return false;
+            }
+
+            var worker = Schema.progressTracker.def.Workers.FirstOrDefault(x => x.GetType() == typeof(ProgressEXPWorker_CastEnergyCost));
+            if (worker != null)
+            {
+                foreach (var et in Schema.energyTrackers)
+                {
+                    worker.TryExecute(Schema.progressTracker, sorceryDef.statBases.GetStatValueFromList(et.def.energyUnitStatDef, 0f));
+                }
+            }
             return base.Activate(target, dest);
         }
 
@@ -82,7 +112,7 @@ namespace ItsSorceryFramework
         {
             get
             {
-                string text = this.sorceryDef.GetSorceryTooltip(this.pawn);
+                string text = sorceryDef.GetSorceryTooltip(this.pawn);
                 if (this.EffectComps != null)
                 {
                     foreach (CompAbilityEffect compAbilityEffect in this.EffectComps)

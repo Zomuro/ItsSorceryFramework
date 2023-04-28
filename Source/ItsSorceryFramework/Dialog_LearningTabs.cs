@@ -53,6 +53,8 @@ namespace ItsSorceryFramework
 		public Dialog_LearningTabs(List<LearningTracker> trackers)
 		{
 			learningTrackers = trackers;
+			forcePause = true;
+			resizeable = false;
 		}
 
 		public override void PreOpen()

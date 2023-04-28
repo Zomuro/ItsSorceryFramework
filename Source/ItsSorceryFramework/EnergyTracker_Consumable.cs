@@ -13,11 +13,7 @@ namespace ItsSorceryFramework
         {
         }
 
-        public EnergyTracker_Consumable(Pawn pawn, EnergyTrackerDef def) : base(pawn, def)
-        {
-        }
-
-        public EnergyTracker_Consumable(Pawn pawn, SorcerySchemaDef def) : base(pawn, def)
+        public EnergyTracker_Consumable(Pawn pawn, EnergyTrackerDef def, SorcerySchemaDef schemaDef) : base(pawn, def, schemaDef)
         {
         }
 
@@ -28,8 +24,8 @@ namespace ItsSorceryFramework
 
         public override void EnergyTrackerTick()
         {
-            float tempEnergy = Math.Min(currentEnergy - 1.TicksToSeconds() * EnergyRecoveryRate / def.refreshTicks, MaxEnergy);
-            this.currentEnergy = Math.Max(tempEnergy, 0);
+            float tempEnergy = Math.Min(currentEnergy + 1.TicksToSeconds() * EnergyRecoveryRate, MaxEnergy);
+            currentEnergy = Math.Max(tempEnergy, 0);
         }
 
         public override bool WouldReachLimitEnergy(float energyCost, SorceryDef sorceryDef = null, Sorcery sorcery = null)
@@ -49,36 +45,24 @@ namespace ItsSorceryFramework
             return false;
         }
 
-        public override void DrawOnGUI(Rect rect)
-        {
-            if (MaxEnergy > 0) base.DrawOnGUI(rect);
-            else
-            {
-                this.SchemaViewBox(rect);
-
-                Text.Font = GameFont.Small;
-                Text.Anchor = TextAnchor.MiddleCenter;
-                Widgets.Label(rect, sorcerySchemaDef.energyTrackerDef.energyLabelKey.Translate().CapitalizeFirst() + ": " +
-                    currentEnergy);
-            }
-        }
-
         public override IEnumerable<StatDrawEntry> SpecialDisplayStats(StatRequest req)
         {
             StatDef statDef;
 
             StatRequest pawnReq = StatRequest.For(pawn);
 
+            StatCategoryDef finalCat = tempStatCategory is null ? StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF : tempStatCategory;
+
             // shows the maximum energy of the whole sorcery schema if max > 0 (thus isn't uncapped)
             statDef = def.energyMaxStatDef != null ? def.energyMaxStatDef : StatDefOf_ItsSorcery.MaxEnergy_ItsSorcery;
             if (MaxEnergy > 0)
             {
-                yield return new StatDrawEntry(StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF,
+                yield return new StatDrawEntry(finalCat,
                         statDef, pawn.GetStatValue(statDef), pawnReq, ToStringNumberSense.Undefined, statDef.displayPriorityInCategory, false);
             }
             else
             {
-                yield return new StatDrawEntry(StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF,
+                yield return new StatDrawEntry(finalCat,
                     statDef.LabelForFullStatList, "∞",
                     statDef.description.Translate(),
                     statDef.displayPriorityInCategory, null, null, false);
@@ -88,7 +72,7 @@ namespace ItsSorceryFramework
             statDef = def.energyRecoveryStatDef != null ? def.energyRecoveryStatDef : StatDefOf_ItsSorcery.EnergyRecovery_ItsSorcery; 
             if(EnergyRecoveryRate != 0)
             {
-                yield return new StatDrawEntry(StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF,
+                yield return new StatDrawEntry(finalCat,
                     statDef, pawn.GetStatValue(statDef), pawnReq, ToStringNumberSense.Undefined, statDef.displayPriorityInCategory, false);
             }
 
@@ -97,13 +81,13 @@ namespace ItsSorceryFramework
             {
                 if(ammo == "")
                 {
-                    ammo = item.thingDef.LabelCap + " ({0})".Translate(item.exp);
+                    ammo = item.thingDef.LabelCap + " ({0})".Translate(item.energy);
                 }
-                else ammo = ammo + ", "+ item.thingDef.LabelCap + " ({0})".Translate(item.exp);
+                else ammo = ammo + ", "+ item.thingDef.LabelCap + " ({0})".Translate(item.energy);
             }
             if (ammo == "") ammo = "None";
 
-            yield return new StatDrawEntry(StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF,
+            yield return new StatDrawEntry(finalCat,
                     "ISF_EnergyTrackerAmmo".Translate(), ammo,
                     "ISF_EnergyTrackerAmmoDesc".Translate(),
                     10, null, null, false);

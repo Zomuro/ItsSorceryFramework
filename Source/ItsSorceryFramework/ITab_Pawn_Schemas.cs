@@ -29,7 +29,8 @@ namespace ItsSorceryFramework
         public override void OnOpen()
         {
             base.OnOpen();
-            this.filter = "";
+            filter = "";
+            ClearCaches(); // may need to check for performance stuff
         }
 
         protected override void FillTab()
@@ -54,7 +55,7 @@ namespace ItsSorceryFramework
             // calculate the number of "pages" and schemas we can fit into the itab + sets current page
             possibleSlots = 5;
             possiblePages = (int) Math.Ceiling((1f* viewedSchemas.Count()) / possibleSlots);
-            currentPage = energyTrackerIndex / possibleSlots + 1;
+            currentPage = schemaIndex / possibleSlots + 1;
             Text.Font = GameFont.Small;
 
             // draw page count + searchbar and favorites button, page change buttons, favorites, and schemas
@@ -79,9 +80,9 @@ namespace ItsSorceryFramework
             Rect pageLabel = new Rect(size.x / 2 - 25, 0, 50, 25);
 
             // as long as it isn't the first page, go back
-            if (currentPage > 1 && Widgets.ButtonText(button1, "<")) energyTrackerIndex -= possibleSlots;
+            if (currentPage > 1 && Widgets.ButtonText(button1, "<")) schemaIndex -= possibleSlots;
             // as long as it isn't the last page, can move forwards
-            if (currentPage < possiblePages && Widgets.ButtonText(button2, ">")) energyTrackerIndex += possibleSlots;
+            if (currentPage < possiblePages && Widgets.ButtonText(button2, ">")) schemaIndex += possibleSlots;
 
             Text.Anchor = TextAnchor.MiddleCenter;
             // if there is only one page, don't bother with the page number
@@ -130,9 +131,11 @@ namespace ItsSorceryFramework
             // for every sorcery schema
             SorcerySchema[] schemas = viewedSchemas.ToArray();
 
-            for(int i = energyTrackerIndex; i <= energyTrackerIndex + Math.Min(schemas.Count() - energyTrackerIndex, 5) - 1; i++)
+            for(int i = schemaIndex; i <= schemaIndex + Math.Min(schemas.Count() - schemaIndex, 5) - 1; i++)
             {
-                float schemaHeight = schemas[i].energyTracker.DrawOnGUI(ref schemaRect);
+                //float schemaHeight = schemas[i].energyTracker.DrawOnGUI(ref schemaRect);
+
+                float schemaHeight = schemas[i].DrawOnGUI(ref schemaRect);
                 totalSchemaHeight += schemaHeight + 1;
                 schemaRect.y += schemaHeight + 1;
             }
@@ -200,6 +203,15 @@ namespace ItsSorceryFramework
             }
         }
 
+        public void ClearCaches()
+        {
+            cachedFilter = "";
+            cachedHashSchema = null;
+            cachedHashFilterSchema = null;
+            cacheCount = 0;
+            sorceryComp = null;
+        }
+
         private Comp_ItsSorcery sorceryComp = null;
 
 
@@ -210,7 +222,9 @@ namespace ItsSorceryFramework
 
         private HashSet<SorcerySchema> cachedHashFilterSchema;
 
-        public int energyTrackerIndex = 0;
+        //public int energyTrackerIndex = 0;
+
+        public int schemaIndex = 0;
 
         public int currentPage;
 

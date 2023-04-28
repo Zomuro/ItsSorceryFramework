@@ -1,9 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-
-<Defs>
-
-	<ItsSorceryFramework.ProgressEXPTagDef Abstract = "True" Name = "EXPTagBase">
-		<workerClass/>
-	</ItsSorceryFramework.ProgressEXPTagDef>
-
-</Defs>

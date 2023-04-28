@@ -32,7 +32,7 @@
 	</StatCategoryDef>
 	
 	<StatCategoryDef>
-		<defName>Sorcery</defName>
+		<defName>Sorcery_ISF</defName>
 		<label>Sorcery</label>
 		<displayOrder>60</displayOrder>
 	</StatCategoryDef>

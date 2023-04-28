@@ -21,5 +21,16 @@ namespace ItsSorceryFramework
 			return job;
 		}
 
+		public static Job MakeChargeEnergyJob(Pawn pawn, SorcerySchema schema, EnergyTracker energyTracker, Thing target, int count)
+		{
+			SchemaJobDef schemaJobDef = SchemaJobDefOf.ChargeSchema;
+			schemaJobDef.schemaDef = schema.def;
+			schemaJobDef.energyTrackerDef = energyTracker.def;
+			Job job = JobMaker.MakeJob(schemaJobDef, pawn);
+			job.targetB = new LocalTargetInfo(target);
+			job.count = count;
+			return job;
+		}
+
 	}
 }

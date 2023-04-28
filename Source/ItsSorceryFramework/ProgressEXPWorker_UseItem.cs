@@ -8,7 +8,8 @@ namespace ItsSorceryFramework
     public class ProgressEXPWorker_UseItem: ProgressEXPWorker
     {
         public override bool TryExecute(ProgressTracker progressTracker, float exp = 0)
-        {           
+        {
+            if (progressTracker.Maxed) return false;
             progressTracker.addExperience(def.fixedEXP);
             return true;
         }

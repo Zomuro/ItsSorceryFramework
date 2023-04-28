@@ -104,18 +104,6 @@ namespace ItsSorceryFramework
             }
         }
 
-        /*public IEnumerable<ProgressEXPWorker> SkillEXPWorkers
-        {
-            get
-            {
-                if(cachedSkillEXPWorkers is null)
-                {
-                    cachedSkillEXPWorkers = Workers.Where(x => x.GetType() == typeof(ProgressEXPWorker_OnSkillEXP));
-                }
-                return cachedSkillEXPWorkers;
-            }
-        }*/
-
         public Type progressTrackerClass = typeof(ProgressTracker);
 
         public HediffDef progressHediff;
@@ -124,7 +112,7 @@ namespace ItsSorceryFramework
 
         public float scaling = 1.1f;
 
-        public float maxEXP = 1000f;
+        //public float maxEXP = 1000f;
 
         public List<ProgressLevelModifier> levelFactors = new List<ProgressLevelModifier>();
 
@@ -135,19 +123,15 @@ namespace ItsSorceryFramework
         public List<ProgressLevelLabel> levelLabels = new List<ProgressLevelLabel>();
 
         [MustTranslate]
-        public string progressLevelUpTransKey = "ISF_LevelUp";
+        public string progressLevelUpKey = "ISF_LevelUp";
 
         [MustTranslate]
-        public string progressLevelUpDescTransKey = "ISF_LevelUpMessage";
+        public string progressLevelUpDescKey = "ISF_LevelUpMessage";
 
         [MustTranslate]
         public string skillPointLabelKey = "ISF_SkillPointLabel";
 
-        //private List<ProgressEXPWorker> cachedEXPWorkers = new List<ProgressEXPWorker>();
-
         private HashSet<ProgressEXPWorker> cachedEXPWorkers = new HashSet<ProgressEXPWorker>();
-
-        //private IEnumerable<ProgressEXPWorker> cachedSkillEXPWorkers;
     }
 
     public class ProgressLevelLabel

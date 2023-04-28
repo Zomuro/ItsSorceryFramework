@@ -5,6 +5,7 @@ using Verse;
 
 namespace ItsSorceryFramework
 {
+    // unused energytracker class- its role is basically made obselete by ability cooldowns.
     public class EnergyTracker_Cooldown : EnergyTracker
     {
         // initalizer- created via activator via SorcerySchema
@@ -13,12 +14,7 @@ namespace ItsSorceryFramework
 
         }
 
-        public EnergyTracker_Cooldown(Pawn pawn, EnergyTrackerDef def) : base(pawn, def)
-        {
-
-        }
-
-        public EnergyTracker_Cooldown(Pawn pawn, SorcerySchemaDef def) : base(pawn, def)
+        public EnergyTracker_Cooldown(Pawn pawn, EnergyTrackerDef def, SorcerySchemaDef schemaDef) : base(pawn, def, schemaDef)
         {
 
         }
@@ -28,15 +24,6 @@ namespace ItsSorceryFramework
             base.ExposeData();
             Scribe_Collections.Look(ref recentSorceries, "recentSorceries", LookMode.Def);
             Scribe_Values.Look(ref tickCount, "tickCount");
-        }
-
-
-        public virtual float CastFactor
-        {
-            get
-            {
-                return this.pawn.GetStatValue(def.castFactorStatDef ?? StatDefOf_ItsSorcery.CastFactor_ItsSorcery, true);
-            }
         }
 
         public override void EnergyTrackerTick()
@@ -55,7 +42,6 @@ namespace ItsSorceryFramework
             if (!WouldReachLimitEnergy(energyCost, sorceryDef, sorcery))
             {
                 tickCount = this.def.refreshTicks;
-                //sorceryDef.uiIcon;
                 if (recentSorceries.Contains(sorcery)) recentSorceries.Remove(sorcery);
                 else if (recentSorceries.Count >= 6) recentSorceries.RemoveLast();
                 recentSorceries.Insert(0, sorcery);
@@ -65,51 +51,12 @@ namespace ItsSorceryFramework
             return false;
         }
 
-        public override void DrawOnGUI(Rect rect)
-        {
-            this.SchemaViewBox(rect);
-
-            Text.Font = GameFont.Small;
-            Text.Anchor = TextAnchor.MiddleCenter;
-            
-            if(tickCount > 0) Widgets.Label(rect, def.cooldownKey.Translate(GenDate.ToStringTicksToPeriod(tickCount)));
-            else if (recentSorceries.NullOrEmpty())
-            {
-                Widgets.Label(rect, "No sorceries cast yet.");
-            }
-            else
-            {
-                Rect stackRect = rect.ContractedBy(16f);
-                stackRect.yMin = rect.y + rect.height / 3 + 2;
-
-                GenUI.DrawElementStack<Sorcery>(stackRect, 32f, this.recentSorceries, delegate (Rect r, Sorcery sorcery)
-                {
-                    GUI.DrawTexture(r, BaseContent.ClearTex);
-                    if (Mouse.IsOver(r))
-                    {
-                        Widgets.DrawHighlight(r);
-                        TipSignal tip = new TipSignal(sorcery.SorceryTooltip);
-                        TooltipHandler.TipRegion(r, tip);
-                    }
-                    if (Widgets.ButtonImage(r, sorcery.def.uiIcon, false))
-                    {
-                        Find.WindowStack.Add(new Dialog_InfoCard(sorcery.sorceryDef, null));
-                    }
-                }, (Sorcery sorcery) => 32f, 10f, 10f, true);
-                GUI.color = Color.white;
-            }
-
-            Text.Anchor = TextAnchor.UpperLeft;
-        }
-
         public override float DrawOnGUI(ref Rect rect)
         {
             // get original rect
             Rect orgRect = new Rect(rect);
             float coordY = 0;
 
-            // draws info, learningtracker buttons + schema title
-            coordY += SchemaViewBox(ref rect);
             coordY += 10; // add space
             rect.y += coordY;
 
@@ -152,18 +99,15 @@ namespace ItsSorceryFramework
                 coordY += stackRect.height + 10;
             }
 
-            // set rect y to original, and rect height to coordY
             Text.Anchor = TextAnchor.UpperLeft;
-            rect.y = orgRect.y;
-            rect.height = coordY;
-            DrawOutline(rect, Color.grey, 1); // draw outline of the entire rectangle when it's all done
             rect = orgRect; // reset rectangle
             return coordY; // return accumulated height
         }
 
         public override IEnumerable<StatDrawEntry> SpecialDisplayStats(StatRequest req)
         {
-            yield return new StatDrawEntry(StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF,
+            StatCategoryDef finalCat = tempStatCategory is null ? StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF : tempStatCategory;
+            yield return new StatDrawEntry(finalCat,
                     def.refreshInfoKey.Translate(), def.refreshTicks.TicksToSeconds().ToString(),
                     def.refreshInfoDescKey.Translate(),
                     10, null, null, false);
@@ -176,8 +120,10 @@ namespace ItsSorceryFramework
 
         public override string TopRightLabel(SorceryDef sorceryDef)
         {
-            if (sorceryDef.verbProperties.defaultCooldownTime <= 0) return "";
-            return "T: " + sorceryDef.verbProperties.defaultCooldownTime;
+            /*if (sorceryDef.verbProperties.defaultCooldownTime <= 0) return "";
+            return "T: " + sorceryDef.verbProperties.defaultCooldownTime;*/
+
+            return "T: " + def.refreshTicks.TicksToSeconds();
         }
 
         public List<Sorcery> recentSorceries = new List<Sorcery> ();

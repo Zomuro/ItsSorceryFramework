@@ -23,6 +23,10 @@ namespace ItsSorceryFramework
         [MustTranslate]
         public string energyDescKey = "ISF_EnergyStatDesc";
 
+        public StatDef energyUnitStatDef; // doubles as both energy cost AND cast cost
+
+        public StatDef energyMaxCastStatDef; // define the stat the energytracker uses to figure out max casts
+
         // EnergyTracker general stats
         public StatDef energyMaxStatDef;
 
@@ -84,6 +88,6 @@ namespace ItsSorceryFramework
     {
         public ThingDef thingDef;
 
-        public float exp = 1f;
+        public float energy = 1f;
     }
 }

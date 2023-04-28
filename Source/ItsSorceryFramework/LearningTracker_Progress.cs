@@ -65,12 +65,14 @@ namespace ItsSorceryFramework
             Text.Font = GameFont.Medium;
             Text.Anchor = TextAnchor.MiddleCenter;
 
+            // title of sorcery schema
             Rect labelRect = new Rect(0f, coordY, viewRect.width, 50f);
             Widgets.LabelCacheHeight(ref labelRect, Schema.def.LabelCap, true, false);
             coordY += labelRect.height;
 
+            // level label
             Rect lvlRect = new Rect(0f, coordY, viewRect.width, 50f);
-
+            Text.Font = GameFont.Small;
             if (ProgressTracker.CurLevelLabel.NullOrEmpty())
             {
                 Widgets.LabelCacheHeight(ref lvlRect,
@@ -78,17 +80,41 @@ namespace ItsSorceryFramework
             }
             else
             {
-                Widgets.LabelCacheHeight(ref lvlRect,
-                    "ISF_LearningLevelLabelCustom".Translate(ProgressTracker.CurLevelLabel, ProgressTracker.currLevel), true, false);
+                if (ProgressTracker.Maxed)
+                {
+                    Widgets.LabelCacheHeight(ref lvlRect,
+                        "ISF_LearningLevelLabelCustom".Translate(ProgressTracker.CurLevelLabel, "ISF_LearningLevelLabelMax".Translate()), true, false);
+                }
+                else
+                {
+                    Widgets.LabelCacheHeight(ref lvlRect,
+                        "ISF_LearningLevelLabelCustom".Translate(ProgressTracker.CurLevelLabel, ProgressTracker.currLevel), true, false);
+                }
+                
             }
             coordY += lvlRect.height;
 
+            // xp bar
             Rect xpBar = new Rect(0f, coordY + 10, rect.width, 35f);
-            Widgets.FillableBar(xpBar, ProgressTracker.currProgress);
-            Text.Anchor = TextAnchor.MiddleCenter;
-            Widgets.Label(xpBar, (ProgressTracker.exp).ToString("F0") + " / " + ProgressTracker.currentLevelEXPReq.ToString("F0"));
+            if (ProgressTracker.Maxed) // if at max level, full xp bar + Maxed
+            {
+                Widgets.FillableBar(xpBar, 1);
+                Text.Font = GameFont.Medium;
+                Widgets.Label(xpBar, "ISF_LearningLevelLabelMax".Translate());
+            }
+            else // normal function
+            {
+                Widgets.FillableBar(xpBar, ProgressTracker.currProgress);
+                Text.Font = GameFont.Medium;
+                Widgets.Label(xpBar, (ProgressTracker.exp).ToString("F0") + " / " + ProgressTracker.currentLevelEXPReq.ToString("F0"));
+            }
+
+            /*Widgets.FillableBar(xpBar, ProgressTracker.currProgress);
+            Text.Font = GameFont.Medium;
+            Widgets.Label(xpBar, (ProgressTracker.exp).ToString("F0") + " / " + ProgressTracker.currentLevelEXPReq.ToString("F0"));*/
             coordY += xpBar.height * 1.5f;
 
+            // description
             GenUI.ResetLabelAlign();
             Text.Font = GameFont.Small;
             Rect descRect = new Rect(0f, coordY, viewRect.width, 0f);
@@ -151,7 +177,10 @@ namespace ItsSorceryFramework
 
             // background image
             Rect rightHalf = new Rect(rect.width / 2f, 0, rect.width / 2f, rect.height);
+            Color col = GUI.color;
+            GUI.color = Color.grey;
             Widgets.DrawLineVertical(rightHalf.x, rightHalf.y, rightHalf.height);
+            GUI.color = col;
 
             Widgets.DrawTextureFitted(rightHalf, def.BGIcon, 0.95f);
             Widgets.EndGroup();

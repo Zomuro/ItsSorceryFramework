@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using RimWorld;
 using Verse;
 
 namespace ItsSorceryFramework
@@ -54,6 +55,15 @@ namespace ItsSorceryFramework
             if (pawn == null) return null;
             Comp_ItsSorcery comp = GetSorceryComp(pawn);
             return comp?.schemaTracker?.sorcerySchemas.FirstOrDefault(s => s.def == def);
+        }
+
+        public static EnergyTracker GetEnergyTracker(SorcerySchema schema, StatDef unitStat)
+        {
+            foreach(var et in schema.energyTrackers)
+            {
+                if (et.def.energyUnitStatDef == unitStat) return et;
+            }
+            return null;
         }
 
     }

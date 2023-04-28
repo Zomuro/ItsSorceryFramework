@@ -60,8 +60,6 @@ namespace ItsSorceryFramework
                 foreach (var worker in def.Workers.Where(x => x.GetType() == typeof(ProgressEXPWorker_Passive) || 
                     x.GetType() == typeof(ProgressEXPWorker_DuringJob)))
                 {
-                    /*if (worker.GetType() == typeof(ProgressEXPWorker_Passive)) worker.TryExecute(this);
-                    else if (worker.GetType() == typeof(ProgressEXPWorker_DuringJob)) worker.TryExecute(this);*/
                     worker.TryExecute(this);
                 }
             }
@@ -240,8 +238,8 @@ namespace ItsSorceryFramework
 
         public override void notifyTotalLevelUp(float orgSev)
         {
-            Find.LetterStack.ReceiveLetter("ISF_LevelUp".Translate(pawn.Name),
-                "ISF_LevelUpMessage".Translate(orgSev.ToString(), currLevel.ToString()), LetterDefOf.NeutralEvent, null);
+            Find.LetterStack.ReceiveLetter(def.progressLevelUpKey.Translate(pawn.Name.ToStringShort),
+                def.progressLevelUpDescKey.Translate(orgSev.ToString(), currLevel.ToString()), LetterDefOf.NeutralEvent, null);
         }
 
         public override float currProgress

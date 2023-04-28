@@ -10,6 +10,8 @@ namespace ItsSorceryFramework
         public static StatCategoryDef LearningTracker_ISF;
         public static StatCategoryDef ProgressTracker_ISF;
 
+        public static StatCategoryDef Sorcery_ISF;
+
         static StatCategoryDefOf_ItsSorcery()
         {
             DefOfHelper.EnsureInitializedInCtor(typeof(StatCategoryDefOf_ItsSorcery));

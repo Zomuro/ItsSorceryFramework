@@ -8,7 +8,6 @@ namespace ItsSorceryFramework
 		public override void PostExposeData()
 		{
 			base.PostExposeData();
-			//Scribe_Defs.Look<SorcerySchemaDef>(ref this.schemaDef, "schemaDef");
 		}
 
 		public CompProperties_SchemaItem SchemaProps
@@ -24,7 +23,5 @@ namespace ItsSorceryFramework
 			if (SchemaProps.schemaDef == null) return "Need to add a sorcery schema def.";
 			return string.Format(base.Props.useLabel, SchemaProps.schemaDef.label);
 		}
-
-		//public SorcerySchemaDef schemaDef;
 	}
 }

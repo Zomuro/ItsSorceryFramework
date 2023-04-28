@@ -12,6 +12,7 @@ namespace ItsSorceryFramework
 		protected override IEnumerable<Toil> MakeNewToils()
 		{
 			SorcerySchemaDef schemaDef = (this.job.def as SchemaJobDef).schemaDef;
+			EnergyTrackerDef energyTrackerDef = (this.job.def as SchemaJobDef).energyTrackerDef;
 			int count = job.count;
 			this.FailOnIncapable(PawnCapacityDefOf.Manipulation);
 			Toil getNextIngredient = Toils_General.Label();
@@ -21,12 +22,12 @@ namespace ItsSorceryFramework
 			yield return Toils_Haul.StartCarryThing(TargetIndex.B, false, true, false, true).
 				FailOnDestroyedNullOrForbidden(TargetIndex.B);
 			yield return Toils_Jump.JumpIf(getNextIngredient, () => !this.job.GetTargetQueue(TargetIndex.B).NullOrEmpty<LocalTargetInfo>());
-			
-			foreach (Toil reloadToil in this.ChargeAsMuchAsPossible(schemaDef, count))
+
+			foreach (Toil reloadToil in ChargeAsMuchAsPossible(schemaDef, energyTrackerDef, count))
 			{
 				yield return reloadToil;
 			}
-		
+
 			Toil toil3 = ToilMaker.MakeToil("MakeNewToils");
 			toil3.initAction = delegate ()
 			{
@@ -42,17 +43,18 @@ namespace ItsSorceryFramework
 			yield break;
 		}
 
-		public IEnumerable<Toil> ChargeAsMuchAsPossible(SorcerySchemaDef schemaDef, int count)
+		public IEnumerable<Toil> ChargeAsMuchAsPossible(SorcerySchemaDef schemaDef, EnergyTrackerDef energyTrackerDef, int count)
 		{
 			Toil done = Toils_General.Label();
-			yield return Toils_Jump.JumpIf(done, () => this.pawn.carryTracker.CarriedThing == null || 
+			yield return Toils_Jump.JumpIf(done, () => this.pawn.carryTracker.CarriedThing == null ||
 				this.pawn.carryTracker.CarriedThing.stackCount < this.job.count);
 			yield return Toils_General.Wait(60, TargetIndex.None).WithProgressBarToilDelay(TargetIndex.A, false, -0.5f);
 			Toil toil = ToilMaker.MakeToil("ChargeAsMuchAsPossible");
 			toil.initAction = delegate ()
 			{
 				Thing carriedThing = this.pawn.carryTracker.CarriedThing;
-				this.ChargeFrom(carriedThing, schemaDef, count);
+				//ChargeFrom(carriedThing, schemaDef, count);
+				ChargeFrom(carriedThing, schemaDef, energyTrackerDef, count);
 			};
 			toil.defaultCompleteMode = ToilCompleteMode.Instant;
 			yield return toil;
@@ -60,20 +62,20 @@ namespace ItsSorceryFramework
 			yield break;
 		}
 
-		public void ChargeFrom(Thing ammo, SorcerySchemaDef schemaDef, int count)
+		public void ChargeFrom(Thing ammo, SorcerySchemaDef schemaDef, EnergyTrackerDef energyTrackerDef, int count)
 		{
+			// temp disable for now
 			if (ammo.stackCount < count)
 			{
 				return;
 			}
-			Log.Message(count.ToString());
-			EnergyTracker et = SorcerySchemaUtility.FindSorcerySchema(pawn, schemaDef).energyTracker;
+			EnergyTracker et = SorcerySchemaUtility.FindSorcerySchema(pawn, schemaDef).energyTrackers.FirstOrDefault(x => x.def == energyTrackerDef);
 			if (et == null || et.def.consumables.NullOrEmpty()) return;
 
 			EnergyConsumable consume = et.def.consumables.FirstOrDefault(x => x.thingDef == ammo.def);
 			if (consume is null) return;
 
-			et.currentEnergy += Math.Min(count * consume.exp, et.MaxEnergy - et.currentEnergy);
+			et.currentEnergy += Math.Min(count * consume.energy, et.MaxEnergy - et.currentEnergy);
 			ammo.SplitOff(count).Destroy(DestroyMode.Vanish);
 		}
 

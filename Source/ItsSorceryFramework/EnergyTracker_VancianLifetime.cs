@@ -13,16 +13,10 @@ namespace ItsSorceryFramework
         {
         }
 
-        public EnergyTracker_VancianLifetime(Pawn pawn, EnergyTrackerDef def) : base(pawn, def)
+        public EnergyTracker_VancianLifetime(Pawn pawn, EnergyTrackerDef def, SorcerySchemaDef schemaDef) : base(pawn, def, schemaDef)
         {
             currentEnergy = MaxCasts;
             tickCount = def.refreshTicks;
-        }
-
-        public EnergyTracker_VancianLifetime(Pawn pawn, SorcerySchemaDef def) : base(pawn, def)
-        {
-            currentEnergy = MaxCasts;
-            tickCount = this.def.refreshTicks;
         }
 
         public override void ExposeData()
@@ -48,7 +42,7 @@ namespace ItsSorceryFramework
             }
         }
 
-        public virtual int currentCasts
+        public virtual int CurrentCasts
         {
             get
             {
@@ -64,14 +58,14 @@ namespace ItsSorceryFramework
                 if(tickCount == 0)
                 {
                     tickCount = def.refreshTicks;
-                    currentEnergy = Math.Max(0, Math.Min(currentCasts + CastRecoveryRate, MaxCasts));
+                    currentEnergy = Math.Max(0, Math.Min(CurrentCasts + CastRecoveryRate, MaxCasts));
                 }
             }
         }
 
         public override bool WouldReachLimitEnergy(float energyCost, SorceryDef sorceryDef = null, Sorcery sorcery = null)
         {
-            if (currentCasts <= 0) return true;
+            if (CurrentCasts - energyCost <= 0) return true;
             return false;
         }
 
@@ -79,25 +73,11 @@ namespace ItsSorceryFramework
         {
             if (!WouldReachLimitEnergy(energyCost, sorceryDef))
             {
-                currentEnergy--;
+                currentEnergy -= energyCost;
                 return true;
             }
             
             return false;
-        }
-
-        public override void DrawOnGUI(Rect rect)
-        {
-            this.SchemaViewBox(rect);
-
-            Text.Font = GameFont.Small;
-            Text.Anchor = TextAnchor.MiddleCenter;
-            Widgets.Label(rect, def.refreshNotifKey.Translate(GenDate.ToStringTicksToPeriod(tickCount)));
-
-            Text.Anchor = TextAnchor.LowerCenter;
-            Widgets.Label(rect, def.castCountKey.Translate(currentCasts, MaxCasts));
-
-            Text.Anchor = TextAnchor.UpperLeft;
         }
 
         public override float DrawOnGUI(ref Rect rect)
@@ -105,9 +85,6 @@ namespace ItsSorceryFramework
             // get original rect
             Rect orgRect = new Rect(rect);
             float coordY = 0;
-
-            // draws info, learningtracker buttons + schema title
-            coordY += SchemaViewBox(ref rect);
 
             // add space
             coordY += 10;
@@ -122,17 +99,11 @@ namespace ItsSorceryFramework
             rect.y += rect.height + 5;
 
             // show total casts left
-            Widgets.LabelCacheHeight(ref rect, def.castCountKey.Translate(currentCasts, MaxCasts));
-            // add label height + add a small boundary space for appearance
-            coordY += rect.height + 10;
+            Widgets.LabelCacheHeight(ref rect, def.castCountKey.Translate(CurrentCasts, MaxCasts));
             Text.Anchor = TextAnchor.UpperLeft;
-            
-            // set rect y to original, and rect height to coordY
-            rect.y = orgRect.y;
-            rect.height = coordY;
 
-            // draw outline of the entire rectangle when it's all done
-            DrawOutline(rect, Color.grey, 1);
+            // add label height + add a small boundary space for appearance
+            coordY += rect.height; // + 10;
             // reset rectangle
             rect = orgRect;
             // return accumulated height
@@ -145,21 +116,23 @@ namespace ItsSorceryFramework
 
             StatRequest pawnReq = StatRequest.For(pawn);
 
+            StatCategoryDef finalCat = tempStatCategory is null ? StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF : tempStatCategory;
+
             // shows the maximum energy of the whole sorcery schema
             statDef = def.energyMaxStatDef != null ? def.energyMaxStatDef : StatDefOf_ItsSorcery.MaxEnergy_ItsSorcery;
-            yield return new StatDrawEntry(StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF,
+            yield return new StatDrawEntry(finalCat,
                     statDef, pawn.GetStatValue(statDef), pawnReq, ToStringNumberSense.Undefined, statDef.displayPriorityInCategory, false);
 
             // show recovery amount per refresh period
             statDef = def.energyRecoveryStatDef != null ? def.energyRecoveryStatDef : StatDefOf_ItsSorcery.EnergyRecovery_ItsSorcery;
-            yield return new StatDrawEntry(StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF,
+            yield return new StatDrawEntry(finalCat,
                     statDef, pawn.GetStatValue(statDef), pawnReq, ToStringNumberSense.Undefined, statDef.displayPriorityInCategory, false);
 
             statDef = def.castFactorStatDef != null ? def.castFactorStatDef : StatDefOf_ItsSorcery.CastFactor_ItsSorcery;
-            yield return new StatDrawEntry(StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF,
+            yield return new StatDrawEntry(finalCat,
                         statDef, pawn.GetStatValue(statDef), pawnReq, ToStringNumberSense.Undefined, statDef.displayPriorityInCategory, false);
 
-            yield return new StatDrawEntry(StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF,
+            yield return new StatDrawEntry(finalCat,
                     def.refreshInfoKey.Translate(), def.refreshTicks.TicksToSeconds().ToString(),
                     def.refreshInfoDescKey.Translate(),
                     10, null, null, false);
@@ -167,8 +140,8 @@ namespace ItsSorceryFramework
 
         public override string TopRightLabel(SorceryDef sorceryDef)
         {
-            return (sorceryDef?.sorcerySchema.energyTrackerDef.energyLabelKey.Translate().CapitalizeFirst()[0]) + ": " +
-                currentCasts.ToString() + "/" + MaxCasts.ToString();
+            return (def.energyLabelKey.Translate().CapitalizeFirst()[0]) + ": " +
+                CurrentCasts.ToString() + "/" + MaxCasts.ToString();
         }
 
         public int tickCount = 0;

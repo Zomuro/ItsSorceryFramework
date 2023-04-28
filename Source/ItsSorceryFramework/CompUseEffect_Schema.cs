@@ -5,8 +5,6 @@ namespace ItsSorceryFramework
 {
 	public class CompUseEffect_Schema : CompUseEffect
 	{
-		// Token: 0x17001769 RID: 5993
-		// (get) Token: 0x060084FA RID: 34042 RVA: 0x002D4155 File Offset: 0x002D2355
 		public CompProperties_UseEffectSchema Props
 		{
 			get
@@ -15,7 +13,6 @@ namespace ItsSorceryFramework
 			}
 		}
 
-		// Token: 0x060084FB RID: 34043 RVA: 0x002D4164 File Offset: 0x002D2364
 		public override void DoEffect(Pawn usedBy)
 		{
 			base.DoEffect(usedBy);

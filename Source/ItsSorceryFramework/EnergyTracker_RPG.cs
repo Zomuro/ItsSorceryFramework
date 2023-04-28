@@ -13,17 +13,22 @@ namespace ItsSorceryFramework
         {
         }
 
-        public EnergyTracker_RPG(Pawn pawn, EnergyTrackerDef def) : base(pawn, def)
-        {
-        }
-
-        public EnergyTracker_RPG(Pawn pawn, SorcerySchemaDef def) : base(pawn, def)
+        public EnergyTracker_RPG(Pawn pawn, EnergyTrackerDef def, SorcerySchemaDef schemaDef) : base(pawn, def, schemaDef)
         {
         }
 
         public override void ExposeData()
         {
             base.ExposeData();
+        }
+
+        public override bool HasLimit
+        {
+            get
+            {
+                if (MinEnergy < 0) return true;
+                return false;
+            }
         }
 
         public override float MaxEnergy
@@ -123,11 +128,11 @@ namespace ItsSorceryFramework
         }
 
         // just use the inherited one
-        /*public override bool WouldReachLimitEnergy(float energyCost, SorceryDef sorceryDef = null, Sorcery sorcery = null)
+        public override bool WouldReachLimitEnergy(float energyCost, SorceryDef sorceryDef = null, Sorcery sorcery = null)
         {
-            if (currentEnergy - energyCost < 0 && limitLocked) return true;
+            if (currentEnergy - energyCost < 0 && Schema.limitLocked) return true;
             return false;
-        }*/
+        }
 
         public override bool TryAlterEnergy(float energyCost, SorceryDef sorceryDef = null, Sorcery sorcery = null)
         {
@@ -164,40 +169,6 @@ namespace ItsSorceryFramework
 
         }
 
-        public override void DrawOnGUI(Rect rect)
-        {
-            this.SchemaViewBox(rect);
-
-            // draws limit toggle button
-            if (MinEnergy < 0) LimitButton(rect.x + rect.width - 5 - 24, rect.y + 5);
-
-            Text.Font = GameFont.Small;
-            Text.Anchor = TextAnchor.MiddleCenter;
-            Rect labelBox = new Rect(rect);
-            labelBox.width = rect.width / 2;
-            labelBox.y = rect.y + rect.height / 2;
-            labelBox.height = 22;
-            Rect barBox = new Rect(labelBox);
-            barBox.x = rect.width * 2 / 5 + rect.x;
-            barBox.y = labelBox.y;
-            barBox.height = 22;
-
-            // SorcerySchema title
-            Widgets.Label(labelBox, sorcerySchemaDef.energyTrackerDef.energyLabelKey.Translate().CapitalizeFirst());
-
-            // draws power bar
-            DrawEnergyBar(barBox);
-            string energyLabel = this.currentEnergy.ToString("F0") + " / " + this.MaxEnergy.ToString("F0");
-            Widgets.Label(barBox, energyLabel);
-
-            // outline the view box
-            Widgets.DrawBoxSolidWithOutline(rect, Color.clear, Color.grey);
-            Text.Anchor = TextAnchor.UpperLeft;
-
-            // highlight energy costs
-            HightlightEnergyCost(barBox);
-        }
-
         public override float DrawOnGUI(ref Rect rect)
         {
             // get original rect
@@ -205,9 +176,9 @@ namespace ItsSorceryFramework
             float coordY = 0;
 
             // draws info, learningtracker buttons + schema title
-            coordY += SchemaViewBox(ref rect);
+            //coordY += SchemaViewBox(ref rect);
             // if energy system allows for using more energy than usual, show toggle button
-            if (MinEnergy < 0) LimitButton(rect.x + rect.width - 5 - 24, rect.y + 5);
+            //if (MinEnergy < 0) LimitButton(rect.x + rect.width - 5 - 24, rect.y + 7);
 
             // add space
             coordY += 10;
@@ -223,7 +194,7 @@ namespace ItsSorceryFramework
             barBox.x = rect.width * 2 / 5 + rect.x;
 
             // energy label
-            Widgets.LabelCacheHeight(ref labelBox, sorcerySchemaDef.energyTrackerDef.energyLabelKey.Translate().CapitalizeFirst());
+            Widgets.LabelCacheHeight(ref labelBox, def.energyLabelKey.Translate().CapitalizeFirst());
 
             // draws power bar
             barBox.height = labelBox.height; // set barbox to labelbox height for consistency
@@ -239,15 +210,6 @@ namespace ItsSorceryFramework
 
             // add label/barbox height
             coordY += labelBox.height;
-            // add a small boundary space for appearance
-            coordY += 10;
-            // set rect y to original, and rect height to coordY
-            rect.y = orgRect.y;
-            rect.height = coordY;
-
-            // draw outline of the entire rectangle when it's all done
-            DrawOutline(rect, Color.grey, 1);
-
             // reset rectangle
             rect = orgRect;
             // return accumulated height
@@ -286,14 +248,14 @@ namespace ItsSorceryFramework
 
             // return if it isn't a sorceryDef or isn't the same energytracker
             SorceryDef sorceryDef = (command_Sorcery?.Ability as Sorcery)?.sorceryDef;
-            if (sorceryDef == null || sorceryDef.sorcerySchema.energyTrackerDef != this.def) return;
+            if (sorceryDef == null || !sorceryDef.sorcerySchema.energyTrackerDefs.Contains(def)) return;
 
             Rect highlight = rect.ContractedBy(3f);
             float max = highlight.xMax;
             float min = highlight.xMin;
             float width = highlight.width;
 
-            float relativeEnergyDiff = this.EnergyToRelativeValue(sorceryDef.EnergyCost * EnergyCostFactor);
+            float relativeEnergyDiff = this.EnergyToRelativeValue(sorceryDef.statBases.GetStatValueFromList(def.energyUnitStatDef, 0) * EnergyCostFactor);
             float relativeEnergy = this.EnergyRelativeValue;
 
             // used to make random blinking effect on highlight
@@ -308,7 +270,7 @@ namespace ItsSorceryFramework
                 num2 = 1f - (num - 0.25f) / 0.6f;
             }
 
-            if (sorceryDef.EnergyCost * EnergyCostFactor >= 0f) // if current relative qi > after using ability
+            if (sorceryDef.statBases.GetStatValueFromList(def.energyUnitStatDef, 0) * EnergyCostFactor >= 0f) // if current relative qi > after using ability
             {
                 if (findFloor(relativeEnergy) != findFloor(relativeEnergyDiff)) 
                 {
@@ -350,41 +312,43 @@ namespace ItsSorceryFramework
 
             StatRequest pawnReq = StatRequest.For(pawn);
 
+            StatCategoryDef finalCat = tempStatCategory is null ? StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF : tempStatCategory;
+
             // shows the maximum energy of the whole sorcery schema
             statDef = def.energyMaxStatDef != null ? def.energyMaxStatDef : StatDefOf_ItsSorcery.MaxEnergy_ItsSorcery;
-            yield return new StatDrawEntry(StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF,
+            yield return new StatDrawEntry(finalCat,
                     statDef, pawn.GetStatValue(statDef), pawnReq, ToStringNumberSense.Undefined, statDef.displayPriorityInCategory, false);
             
             if(OverMaxEnergy > MaxEnergy) // only show if there's a difference between overmax and max energy.
             {
                 statDef = def.energyOverMaxStatDef != null ? def.energyOverMaxStatDef : StatDefOf_ItsSorcery.OverMaxEnergy_ItsSorcery;
-                yield return new StatDrawEntry(StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF,
+                yield return new StatDrawEntry(finalCat,
                         statDef, pawn.GetStatValue(statDef), pawnReq, ToStringNumberSense.Undefined, statDef.displayPriorityInCategory, false);
             }
             
             if(MinEnergy < 0) // only show if there's a difference between min energy and 0.
             {
                 statDef = def.energyMinStatDef != null ? def.energyMinStatDef : StatDefOf_ItsSorcery.MinEnergy_ItsSorcery;
-                yield return new StatDrawEntry(StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF,
+                yield return new StatDrawEntry(finalCat,
                         statDef, pawn.GetStatValue(statDef), pawnReq, ToStringNumberSense.Undefined, statDef.displayPriorityInCategory, false);
             }
 
             // show recovery amount per second
             statDef = def.energyRecoveryStatDef != null ? def.energyRecoveryStatDef : StatDefOf_ItsSorcery.EnergyRecovery_ItsSorcery;
-            yield return new StatDrawEntry(StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF,
+            yield return new StatDrawEntry(finalCat,
                     statDef, pawn.GetStatValue(statDef), pawnReq, ToStringNumberSense.Undefined, statDef.displayPriorityInCategory, false);
 
             // shows a pawn's multiplier on relevant sorcery cost
             statDef = def.energyCostFactorStatDef != null ? def.energyCostFactorStatDef : StatDefOf_ItsSorcery.EnergyCostFactor_ItsSorcery;
-            yield return new StatDrawEntry(StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF,
+            yield return new StatDrawEntry(finalCat,
                     statDef, pawn.GetStatValue(statDef), pawnReq, ToStringNumberSense.Undefined, statDef.displayPriorityInCategory, false);
 
             //over and under bar drain multiplier
-            yield return new StatDrawEntry(StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF,
+            yield return new StatDrawEntry(finalCat,
                     "ISF_EnergyTrackerUnderBarFactor".Translate(), def.underBarRecoveryFactor.ToStringPercent(),
                     "ISF_EnergyTrackerUnderBarFactorDesc".Translate(), 40, null, null, false);
 
-            yield return new StatDrawEntry(StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF,
+            yield return new StatDrawEntry(finalCat,
                     "ISF_EnergyTrackerOverBarFactor".Translate(), (-1f * def.overBarRecoveryFactor).ToStringPercent(),
                     "ISF_EnergyTrackerOverBarFactorDesc".Translate(),
                     30, null, null, false);
@@ -393,8 +357,8 @@ namespace ItsSorceryFramework
 
         public override string TopRightLabel(SorceryDef sorceryDef)
         {
-            return (sorceryDef?.sorcerySchema.energyTrackerDef.energyLabelKey.Translate().CapitalizeFirst()[0]) + ": " +
-                    Math.Round(sorceryDef.EnergyCost * this.EnergyCostFactor, 2).ToString();
+            return (def.energyLabelKey.Translate().CapitalizeFirst()[0]) + ": " +
+                    Math.Round(sorceryDef.statBases.GetStatValueFromList(def.energyUnitStatDef, 0) * this.EnergyCostFactor, 2).ToString();
         }
 
         public override string DisableCommandReason()
