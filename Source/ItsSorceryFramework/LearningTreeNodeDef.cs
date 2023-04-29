@@ -129,6 +129,14 @@ namespace ItsSorceryFramework
 
 		private Texture2D uiIcon = null;*/
 
+		public LearningNodePrereqMode prereqMode = LearningNodePrereqMode.All;
+
+		public int prereqModeMin = 1;
+
+		public LearningNodePrereqMode prereqResearchMode = LearningNodePrereqMode.All;
+
+		public int prereqResearchModeMin = 1;
+
 		public List<LearningTreeNodeDef> prereqs = new List<LearningTreeNodeDef>();
 
 		public List<ResearchProjectDef> prereqsResearch = new List<ResearchProjectDef>();

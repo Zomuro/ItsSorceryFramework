@@ -254,9 +254,11 @@ namespace ItsSorceryFramework
             float xMin = rect.xMin;
             float yMin = rect.yMin;
 
+            Tuple<int, int> prereqsDone = PrereqsDone(node);
+
             if (!node.prereqs.NullOrEmpty()) 
             {
-                Widgets.LabelCacheHeight(ref rect, "ISF_LearningNodePrereqs".Translate(), true, false);
+                Widgets.LabelCacheHeight(ref rect, "ISF_LearningNodePrereqs".Translate() + PrereqsModeNotif(node.prereqMode, node.prereqModeMin, prereqsDone.Item1), true, false);
                 rect.yMin += rect.height;
                 rect.xMin += 6f;
                 foreach (LearningTreeNodeDef prereq in node.prereqs)
@@ -276,7 +278,7 @@ namespace ItsSorceryFramework
 
             if (!node.prereqsResearch.NullOrEmpty())
             {
-                Widgets.LabelCacheHeight(ref rect, "ResearchPrerequisites".Translate() + ":", true, false);
+                Widgets.LabelCacheHeight(ref rect, "ResearchPrerequisites".Translate() + ":" + PrereqsModeNotif(node.prereqResearchMode, node.prereqResearchModeMin, prereqsDone.Item2), true, false);
                 rect.yMin += rect.height;
                 rect.xMin += 6f;
                 foreach (ResearchProjectDef prereq in node.prereqsResearch)
@@ -505,22 +507,113 @@ namespace ItsSorceryFramework
 
         public bool PrereqFufilled(LearningTreeNodeDef node)
         {
+            switch(node.prereqMode){
+                case LearningNodePrereqMode.All:
+                    foreach (LearningTreeNodeDef prereq in node.prereqs)
+                    {
+                        if (!completion[prereq]) return false;
+                    }
+                    return true;
+                    //break;
+
+                case LearningNodePrereqMode.Or:
+                    foreach (LearningTreeNodeDef prereq in node.prereqs)
+                    {
+                        if (completion[prereq]) return true;
+                    }
+                    return false;
+                    //break;
+
+                case LearningNodePrereqMode.Min:
+                    if (node.prereqModeMin <= 0) return true;
+
+                    int count = 0;
+                    int check = Math.Min(node.prereqModeMin, node.prereqs.Count());
+                    foreach (LearningTreeNodeDef prereq in node.prereqs)
+                    {
+                        if (completion[prereq]) count++;
+                        if (count >= check) return true;
+                    }
+                    return false;
+                    //break;
+
+                default:
+                    break;
+            }
+
+            /*
             foreach(LearningTreeNodeDef prereq in node.prereqs)
             {
                 if (!completion[prereq]) return false;
-            }
+            }*/
 
             return true;
         }
 
         public bool PrereqResearchFufilled(LearningTreeNodeDef node)
         {
-            foreach (ResearchProjectDef prereq in node.prereqsResearch)
+            switch (node.prereqResearchMode)
             {
-                if (!prereq.IsFinished) return false;
+                case LearningNodePrereqMode.All:
+                    foreach (ResearchProjectDef prereq in node.prereqsResearch)
+                    {
+                        if (!prereq.IsFinished) return false;
+                    }
+                    return true;
+                //break;
+
+                case LearningNodePrereqMode.Or:
+                    foreach (ResearchProjectDef prereq in node.prereqsResearch)
+                    {
+                        if (prereq.IsFinished) return true;
+                    }
+                    return false;
+                //break;
+
+                case LearningNodePrereqMode.Min:
+                    if (node.prereqResearchModeMin <= 0) return true;
+
+                    int count = 0;
+                    int check = Math.Min(node.prereqResearchModeMin, node.prereqs.Count());
+                    foreach (ResearchProjectDef prereq in node.prereqsResearch)
+                    {
+                        if (prereq.IsFinished) count++;
+                        if (count >= check) return true;
+                    }
+                    return false;
+                //break;
+
+                default:
+                    break;
             }
 
+
+            /*foreach (ResearchProjectDef prereq in node.prereqsResearch)
+            {
+                if (!prereq.IsFinished) return false;
+            }*/
+
             return true;
+        }
+
+        public Tuple<int,int> PrereqsDone(LearningTreeNodeDef node)
+        {
+            int prereqCount = 0;
+            if (!node.prereqs.NullOrEmpty()) prereqCount = node.prereqs.Where(x => completion[x]).Count();
+
+            int prereqResearchCount = 0;
+            if (!node.prereqs.NullOrEmpty()) prereqResearchCount = node.prereqsResearch.Where(x => x.IsFinished).Count();
+
+            return new Tuple<int, int> (prereqCount, prereqResearchCount);
+        }
+
+        public string PrereqsModeNotif(LearningNodePrereqMode mode, int min = 0, int done = 0)
+        {
+            if (mode == LearningNodePrereqMode.Min && min > 0)
+                return " (" + done + "/" + min + ")";
+            if (mode == LearningNodePrereqMode.Or)
+                return " (" + done + "/1)";
+            return "";
         }
 
         public bool PrereqHediffFufilled(LearningTreeNodeDef node)
@@ -623,6 +716,7 @@ namespace ItsSorceryFramework
                 nodeRect = GetNodeRect(node);
                 foreach (LearningTreeNodeDef prereq in node.prereqs)
                 {
+                    if (prereq.learningTrackerDef != node.learningTrackerDef) continue;
                     Tuple<Vector2, Vector2> points = LineEnds(prereq, node, nodeRect);
                     Tuple<Color, float> lineColor = SelectionLineColor(node, prereq);
                     //Widgets.DrawLine(points.Item1, points.Item2, selectionLineColor(node), 2f);
