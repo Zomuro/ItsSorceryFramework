@@ -143,6 +143,8 @@ namespace ItsSorceryFramework
 
 		public Dictionary<HediffDef, float> prereqsHediff = new Dictionary<HediffDef, float>();
 
+		public List<NodeStatReqs> prereqsStats = new List<NodeStatReqs>();
+
 		public List<LearningTreeNodeDef> exclusiveNodes = new List<LearningTreeNodeDef>();
 
 		public List<AbilityDef> abilityGain = new List<AbilityDef>();
@@ -171,4 +173,11 @@ namespace ItsSorceryFramework
 
 		public float severity = 1;
     }
+
+	public class NodeStatReqs
+	{
+		public List<StatModifier> statReqs;
+
+		public LearningNodeStatPrereqMode mode = LearningNodeStatPrereqMode.Greater;
+	}
 }

@@ -65,6 +65,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LearningNodeStatPrereqMode.cs" />
     <Compile Include="LearningNodePrereqMode.cs" />
     <Compile Include="CompSchemaItem.cs" />
     <Compile Include="CompProperties_SchemaItem.cs" />

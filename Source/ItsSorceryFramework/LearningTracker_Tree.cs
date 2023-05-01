@@ -159,7 +159,7 @@ namespace ItsSorceryFramework
                 Rect confirmButton = new Rect(0f, outRect.yMax + 10f + this.leftViewDebugHeight, rect.width, this.leftStartAreaHeight);
                 string reason = "";
                 if (!completion[selectedNode] && PrereqFufilled(selectedNode) && PrereqResearchFufilled(selectedNode) &&
-                    PrereqHediffFufilled(selectedNode) && ExclusiveNodeFufilled(selectedNode) &&
+                    PrereqStatFufilled(selectedNode) && PrereqHediffFufilled(selectedNode) && ExclusiveNodeFufilled(selectedNode) &&
                     selectedNode.pointReq + progress.usedPoints <= progress.points) 
                 {
                     if (Widgets.ButtonText(confirmButton, "ISF_SkillPointUse".Translate(selectedNode.pointReq, 
@@ -187,6 +187,8 @@ namespace ItsSorceryFramework
                         if (!PrereqFufilled(selectedNode)) reason += "\nPrior nodes not completed.";
 
                         if (!PrereqResearchFufilled(selectedNode)) reason += "\nResearch requirements not completed.";
+
+                        if(!PrereqStatFufilled(selectedNode)) reason += "\nStat requirements not fufilled.";
 
                         if (!PrereqHediffFufilled(selectedNode)) reason += "\nHediff requirements not met.";
                     }
@@ -286,6 +288,25 @@ namespace ItsSorceryFramework
                     SetPrereqStatusColor(prereq.IsFinished, node);
                     Widgets.LabelCacheHeight(ref rect, prereq.LabelCap, true, false);
                     rect.yMin += rect.height;
+                }
+                GUI.color = Color.white;
+                rect.xMin = xMin;
+            }
+
+            if (!node.prereqsStats.NullOrEmpty())
+            {
+                Widgets.LabelCacheHeight(ref rect, "ISF_LearningNodeStatReq".Translate(), true, false);
+                rect.yMin += rect.height;
+                rect.xMin += 6f;
+                foreach (var prereqsStatCase in node.prereqsStats)
+                {
+                    foreach(var statMod in prereqsStatCase.statReqs)
+                    {
+                        SetPrereqStatusColor(!PrereqFailStatCase(statMod, prereqsStatCase.mode), node);
+                        Widgets.LabelCacheHeight(ref rect, statMod.stat.LabelCap + PrereqsStatsModeNotif(prereqsStatCase.mode) +
+                            statMod.stat.ValueToString(statMod.value, ToStringNumberSense.Absolute, !statMod.stat.formatString.NullOrEmpty()), true, false);
+                        rect.yMin += rect.height;
+                    }
                 }
                 GUI.color = Color.white;
                 rect.xMin = xMin;
@@ -514,7 +535,6 @@ namespace ItsSorceryFramework
                         if (!completion[prereq]) return false;
                     }
                     return true;
-                    //break;
 
                 case LearningNodePrereqMode.Or:
                     foreach (LearningTreeNodeDef prereq in node.prereqs)
@@ -522,7 +542,6 @@ namespace ItsSorceryFramework
                         if (completion[prereq]) return true;
                     }
                     return false;
-                    //break;
 
                 case LearningNodePrereqMode.Min:
                     if (node.prereqModeMin <= 0) return true;
@@ -535,17 +554,10 @@ namespace ItsSorceryFramework
                         if (count >= check) return true;
                     }
                     return false;
-                    //break;
 
                 default:
                     break;
             }
-
-            /*
-            foreach(LearningTreeNodeDef prereq in node.prereqs)
-            {
-                if (!completion[prereq]) return false;
-            }*/
 
             return true;
         }
@@ -560,7 +572,6 @@ namespace ItsSorceryFramework
                         if (!prereq.IsFinished) return false;
                     }
                     return true;
-                //break;
 
                 case LearningNodePrereqMode.Or:
                     foreach (ResearchProjectDef prereq in node.prereqsResearch)
@@ -568,7 +579,6 @@ namespace ItsSorceryFramework
                         if (prereq.IsFinished) return true;
                     }
                     return false;
-                //break;
 
                 case LearningNodePrereqMode.Min:
                     if (node.prereqResearchModeMin <= 0) return true;
@@ -581,17 +591,10 @@ namespace ItsSorceryFramework
                         if (count >= check) return true;
                     }
                     return false;
-                //break;
 
                 default:
                     break;
             }
-
-
-            /*foreach (ResearchProjectDef prereq in node.prereqsResearch)
-            {
-                if (!prereq.IsFinished) return false;
-            }*/
 
             return true;
         }
@@ -613,6 +616,82 @@ namespace ItsSorceryFramework
                 return " (" + done + "/" + min + ")";
             if (mode == LearningNodePrereqMode.Or)
                 return " (" + done + "/1)";
+            return "";
+        }
+
+        public bool PrereqStatFufilled(LearningTreeNodeDef node)
+        {
+            if (node.prereqsStats.NullOrEmpty()) return true;
+            foreach (var statReqsCase in node.prereqsStats)
+            {
+                foreach(var statMod in statReqsCase.statReqs)
+                {
+                    if (PrereqFailStatCase(statMod, statReqsCase.mode)) return false;
+                }
+            }
+
+            return true;
+        }
+
+        public bool PrereqFailStatCase(StatModifier statMod, LearningNodeStatPrereqMode mode)
+        {
+            switch(mode){
+                case LearningNodeStatPrereqMode.Equal:
+                    if (pawn.GetStatValue(statMod.stat) != statMod.value) return true;
+                    break;
+
+                case LearningNodeStatPrereqMode.NotEqual:
+                    if (pawn.GetStatValue(statMod.stat) == statMod.value) return true;
+                    break;
+
+                case LearningNodeStatPrereqMode.Greater:
+                    if (pawn.GetStatValue(statMod.stat) <= statMod.value) return true;
+                    break;
+
+                case LearningNodeStatPrereqMode.GreaterEqual:
+                    if (pawn.GetStatValue(statMod.stat) < statMod.value) return true;
+                    break;
+
+                case LearningNodeStatPrereqMode.Lesser:
+                    if (pawn.GetStatValue(statMod.stat) >= statMod.value) return true;
+                    break;
+
+                case LearningNodeStatPrereqMode.LesserEqual:
+                    if (pawn.GetStatValue(statMod.stat) > statMod.value) return true;
+                    break;
+
+                default:
+                    break;
+            }
+
+            return false;
+        }
+
+        public string PrereqsStatsModeNotif(LearningNodeStatPrereqMode mode)
+        {
+            switch (mode)
+            {
+                case LearningNodeStatPrereqMode.Equal:
+                    return " = ";
+
+                case LearningNodeStatPrereqMode.NotEqual:
+                    return " != ";
+
+                case LearningNodeStatPrereqMode.Greater:
+                    return " > ";
+
+                case LearningNodeStatPrereqMode.GreaterEqual:
+                    return " >= ";
+
+                case LearningNodeStatPrereqMode.Lesser:
+                    return " < ";
+
+                case LearningNodeStatPrereqMode.LesserEqual:
+                    return " <= ";
+
+                default:
+                    break;
+            }
             return "";
         }
 
