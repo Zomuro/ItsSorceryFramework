@@ -36,15 +36,15 @@ namespace ItsSorceryFramework
                 HealthUtility.AdjustSeverity(pawn, def.progressHediff, def.progressHediff.initialSeverity);
             hediff = pawn.health.hediffSet.GetFirstHediffOfDef(def.progressHediff) as Hediff_ProgressLevel;
             hediff.progressTracker = this;
-            setupHediffStage(hediff);
+            SetupHediffStage(hediff);
         }
 
-        public void setupHediffStage(Hediff_ProgressLevel hediff)
+        public void SetupHediffStage(Hediff_ProgressLevel hediff)
         {
             if(hediff.CurStage != null) hediff.def.stages.Clear();
 
             HediffStage newStage = new HediffStage() {
-                minSeverity = currLevel,
+                minSeverity = CurrLevel,
                 statOffsets = new List<StatModifier>(),
                 statFactors = new List<StatModifier>(),
                 capMods = new List<PawnCapacityModifier>()
@@ -65,19 +65,19 @@ namespace ItsSorceryFramework
             }
         }
 
-        public override void addExperience(float experience)
+        public override void AddExperience(float experience)
         {
-            float orgSev = currLevel;
+            float orgSev = CurrLevel;
             bool done = false;
             exp += experience;
 
             while (!done)
             {
-                if(exp > currentLevelEXPReq)
+                if(exp > CurrentLevelEXPReq)
                 {
-                    exp -= currentLevelEXPReq;
+                    exp -= CurrentLevelEXPReq;
                     hediff.Severity += 1;
-                    notifyLevelUp(hediff.Severity);
+                    NotifyLevelUp(hediff.Severity);
                 }
                 else
                 {
@@ -85,60 +85,67 @@ namespace ItsSorceryFramework
                 }
             }
 
-            if(currLevel > orgSev)
+            if(CurrLevel > orgSev)
             {
-                notifyTotalLevelUp(orgSev);
+                NotifyTotalLevelUp(orgSev);
             }
         }
 
-        public override void forceLevelUp()
+        public override void ForceLevelUp()
         {
             if (hediff == null) return;
             hediff.Severity += 1;
-            notifyLevelUp(hediff.Severity);
+            NotifyLevelUp(hediff.Severity);
         }
 
-        public override void notifyLevelUp(float sev)
+        public override void NotifyLevelUp(float sev)
         {
             //HediffStage currStage = hediff.CurStage;
 
             ProgressLevelModifier factor = def.getLevelFactor(sev);
             if (factor != null)
             {
-                adjustModifiers(factor);
-                adjustAbilities(factor);
-                adjustHediffs(factor);
+                AdjustModifiers(factor);
+                AdjustAbilities(factor);
+                AdjustHediffs(factor);
                 points += factor.pointGain;
             }
 
             ProgressLevelModifier special = def.getLevelSpecific(sev);
             if (special != null)
             {
-                adjustModifiers(factor);
-                adjustAbilities(factor);
-                adjustHediffs(factor);
-                points += factor.pointGain;
+                AdjustModifiers(special);
+                AdjustAbilities(special);
+                AdjustHediffs(special);
+                points += special.pointGain;
             }
 
-            hediff.curStage = refreshCurStage();
+            hediff.curStage = RefreshCurStage();
         }
 
-        public void adjustModifiers(ProgressLevelModifier modulo)
+        public void AdjustModifiers(ProgressLevelModifier modulo)
         {
-            adjustTotalStatMods(statOffsetsTotal, modulo.statOffsets);
-            adjustTotalStatMods(statFactorsTotal, modulo.statFactorOffsets, true);
-            adjustTotalCapMods(capModsTotal, modulo.capMods);
+            AdjustTotalStatMods(statOffsetsTotal, modulo.statOffsets);
+            AdjustTotalStatMods(statFactorsTotal, modulo.statFactorOffsets, true);
+            AdjustTotalCapMods(capModsTotal, modulo.capMods);
         }
 
-        public override void adjustModifiers(List<StatModifier> offsets = null, List<StatModifier> factorOffsets = null, 
+        public void AdjustModifiers(ProgressLevelOption option)
+        {
+            AdjustTotalStatMods(statOffsetsTotal, option.statOffsets);
+            AdjustTotalStatMods(statFactorsTotal, option.statFactorOffsets, true);
+            AdjustTotalCapMods(capModsTotal, option.capMods);
+        }
+
+        public override void AdjustModifiers(List<StatModifier> offsets = null, List<StatModifier> factorOffsets = null, 
             List<PawnCapacityModifier> capMods = null)
         {
-            adjustTotalStatMods(statOffsetsTotal, offsets);
-            adjustTotalStatMods(statFactorsTotal, factorOffsets, true);
-            adjustTotalCapMods(capModsTotal, capMods);
+            AdjustTotalStatMods(statOffsetsTotal, offsets);
+            AdjustTotalStatMods(statFactorsTotal, factorOffsets, true);
+            AdjustTotalCapMods(capModsTotal, capMods);
         }
 
-        public virtual void adjustTotalStatMods(Dictionary<StatDef, float> stats, List<StatModifier> statMods, bool factor = false)
+        public virtual void AdjustTotalStatMods(Dictionary<StatDef, float> stats, List<StatModifier> statMods, bool factor = false)
         {
             if (statMods.NullOrEmpty()) return;
             
@@ -155,7 +162,7 @@ namespace ItsSorceryFramework
             }
         }
 
-        public virtual void adjustTotalCapMods(Dictionary<PawnCapacityDef, float> caps, List<PawnCapacityModifier> capMods)
+        public virtual void AdjustTotalCapMods(Dictionary<PawnCapacityDef, float> caps, List<PawnCapacityModifier> capMods)
         {
             if (capMods.NullOrEmpty()) return;
 
@@ -171,34 +178,34 @@ namespace ItsSorceryFramework
             }
         }
 
-        public virtual IEnumerable<StatModifier> createStatModifiers(Dictionary<StatDef, float> stats)
+        public virtual IEnumerable<StatModifier> CreateStatModifiers(Dictionary<StatDef, float> stats)
         {
             foreach (var pair in stats) yield return new StatModifier() { stat = pair.Key, value = pair.Value };
 
             yield break;
         }
 
-        public virtual IEnumerable<PawnCapacityModifier> createCapModifiers(Dictionary<PawnCapacityDef, float> caps)
+        public virtual IEnumerable<PawnCapacityModifier> CreateCapModifiers(Dictionary<PawnCapacityDef, float> caps)
         {
             foreach (var pair in caps) yield return new PawnCapacityModifier() { capacity = pair.Key, offset = pair.Value };
 
             yield break;
         }
 
-        public override HediffStage refreshCurStage()
+        public override HediffStage RefreshCurStage()
         {
 
             HediffStage stage = new HediffStage()
             {
-                statOffsets = createStatModifiers(statOffsetsTotal).ToList(),
-                statFactors = createStatModifiers(statFactorsTotal).ToList(),
-                capMods = createCapModifiers(capModsTotal).ToList()
+                statOffsets = CreateStatModifiers(statOffsetsTotal).ToList(),
+                statFactors = CreateStatModifiers(statFactorsTotal).ToList(),
+                capMods = CreateCapModifiers(capModsTotal).ToList()
             };
 
             return stage;
         }
 
-        public virtual void adjustAbilities(ProgressLevelModifier modifier)
+        public virtual void AdjustAbilities(ProgressLevelModifier modifier)
         {
             Pawn_AbilityTracker abilityTracker = this.pawn.abilities;
 
@@ -213,7 +220,22 @@ namespace ItsSorceryFramework
             }
         }
 
-        public virtual void adjustHediffs(ProgressLevelModifier modifier)
+        public virtual void AdjustAbilities(ProgressLevelOption option)
+        {
+            Pawn_AbilityTracker abilityTracker = pawn.abilities;
+
+            foreach (AbilityDef abilityDef in option.abilityGain)
+            {
+                abilityTracker.GainAbility(abilityDef);
+            }
+
+            foreach (AbilityDef abilityDef in option.abilityRemove)
+            {
+                abilityTracker.RemoveAbility(abilityDef);
+            }
+        }
+
+        public virtual void AdjustHediffs(ProgressLevelModifier modifier)
         {
             Hediff hediff;
             foreach (NodeHediffProps props in modifier.hediffAdd)
@@ -236,25 +258,48 @@ namespace ItsSorceryFramework
             }
         }
 
-        public override void notifyTotalLevelUp(float orgSev)
+        public virtual void AdjustHediffs(ProgressLevelOption option)
         {
-            Find.LetterStack.ReceiveLetter(def.progressLevelUpKey.Translate(pawn.Name.ToStringShort),
-                def.progressLevelUpDescKey.Translate(orgSev.ToString(), currLevel.ToString()), LetterDefOf.NeutralEvent, null);
-        }
-
-        public override float currProgress
-        {
-            get
+            Hediff hediff;
+            foreach (NodeHediffProps props in option.hediffAdd)
             {
-                return exp / currentLevelEXPReq;
+                hediff = HediffMaker.MakeHediff(props.hediffDef, pawn, null);
+                hediff.Severity = props.severity;
+
+                pawn.health.AddHediff(hediff, null, null, null);
+            }
+
+            foreach (NodeHediffProps props in option.hediffAdjust)
+            {
+                HealthUtility.AdjustSeverity(pawn, props.hediffDef, props.severity);
+            }
+
+            foreach (HediffDef hediffDef in option.hediffRemove)
+            {
+                hediff = pawn.health.hediffSet.GetFirstHediffOfDef(hediffDef);
+                if (hediff != null) pawn.health.RemoveHediff(hediff);
             }
         }
 
-        public override float currentLevelEXPReq
+        public override void NotifyTotalLevelUp(float orgSev)
+        {
+            Find.LetterStack.ReceiveLetter(def.progressLevelUpKey.Translate(pawn.Name.ToStringShort),
+                def.progressLevelUpDescKey.Translate(orgSev.ToString(), CurrLevel.ToString()), LetterDefOf.NeutralEvent, null);
+        }
+
+        public override float CurrProgress
         {
             get
             {
-                return def.baseEXP * Mathf.Pow(def.scaling, currLevel - 1f);
+                return exp / CurrentLevelEXPReq;
+            }
+        }
+
+        public override float CurrentLevelEXPReq
+        {
+            get
+            {
+                return def.baseEXP * Mathf.Pow(def.scaling, CurrLevel - 1f);
             }
         }      
 

@@ -11,9 +11,9 @@ namespace ItsSorceryFramework
 				if (progressTracker != null)
 				{
 					if(progressTracker.CurLevelLabel.NullOrEmpty()) 
-						return def.label + " "+ "ISF_LevelLabel".Translate(level.ToString(), progressTracker.currProgress.ToString("P2"));
+						return def.label + " "+ "ISF_LevelLabel".Translate(level.ToString(), progressTracker.CurrProgress.ToString("P2"));
 
-					return def.label + " " + "ISF_LevelLabelCustom".Translate(progressTracker.CurLevelLabel, progressTracker.currProgress.ToString("P2"));
+					return def.label + " " + "ISF_LevelLabelCustom".Translate(progressTracker.CurLevelLabel, progressTracker.CurrProgress.ToString("P2"));
 				}
 				return def.label + " x" + this.level;
 			}
@@ -33,7 +33,7 @@ namespace ItsSorceryFramework
 			{
 				if (curStage == null)
 				{
-					return progressTracker?.refreshCurStage() ?? new HediffStage();
+					return progressTracker?.RefreshCurStage() ?? new HediffStage();
 				}
 				return this.curStage;
 			}

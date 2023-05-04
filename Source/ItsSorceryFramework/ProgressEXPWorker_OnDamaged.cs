@@ -11,7 +11,7 @@ namespace ItsSorceryFramework
             if (progressTracker.Maxed) return false;
             if (exp <= 0) return false;
             
-            progressTracker.addExperience(Math.Abs(exp) * def.expFactor);
+            progressTracker.AddExperience(Math.Abs(exp) * def.expFactor);
             fireEXPMote(progressTracker.pawn, Math.Abs(exp) * def.expFactor);
             return true;
         }

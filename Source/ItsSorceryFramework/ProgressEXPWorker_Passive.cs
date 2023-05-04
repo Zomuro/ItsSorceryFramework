@@ -9,7 +9,7 @@ namespace ItsSorceryFramework
         public override bool TryExecute(ProgressTracker progressTracker, float exp = 0)
         {
             if (progressTracker.Maxed) return false;
-            progressTracker.addExperience(Math.Abs(def.fixedEXP));
+            progressTracker.AddExperience(Math.Abs(def.fixedEXP));
             return true;
         }
 

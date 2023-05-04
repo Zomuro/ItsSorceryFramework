@@ -761,8 +761,8 @@ namespace ItsSorceryFramework
         public virtual void CompletionModifiers(LearningTreeNodeDef node)
         {
             ProgressTracker progressTracker = schema.progressTracker; // get progresstracker
-            progressTracker.adjustModifiers(node.statOffsets, node.statFactors, node.capMods); // update list of statMods and capMods
-            progressTracker.hediff.curStage = progressTracker.refreshCurStage(); // rebuild hediffstage with adjusted stats & set hediff curstage to it
+            progressTracker.AdjustModifiers(node.statOffsets, node.statFactors, node.capMods); // update list of statMods and capMods
+            progressTracker.hediff.curStage = progressTracker.RefreshCurStage(); // rebuild hediffstage with adjusted stats & set hediff curstage to it
         }
 
         public override void DrawRightGUI(Rect rect)

@@ -55,22 +55,22 @@ namespace ItsSorceryFramework
 
         }
 
-        public virtual void addExperience(float experience)
+        public virtual void AddExperience(float experience)
         {
 
         }
 
-        public virtual void forceLevelUp()
+        public virtual void ForceLevelUp()
         {
 
         }
 
-        public virtual void notifyLevelUp(float sev)
+        public virtual void NotifyLevelUp(float sev)
         {
 
         }
 
-        public virtual void notifyTotalLevelUp(float orgSev)
+        public virtual void NotifyTotalLevelUp(float orgSev)
         {
             Find.LetterStack.ReceiveLetter("Level up.",
                 "This pawn has leveled up.", LetterDefOf.NeutralEvent, null);
@@ -80,11 +80,11 @@ namespace ItsSorceryFramework
         {
             get
             {
-                return (currLevel) >= hediff.def.maxSeverity;
+                return (CurrLevel) >= hediff.def.maxSeverity;
             }
         }
 
-        public int currLevel
+        public int CurrLevel
         {
             get
             {
@@ -92,16 +92,16 @@ namespace ItsSorceryFramework
             }
         }
 
-        public virtual float currProgress
+        public virtual float CurrProgress
         {
             get
             {
-                return exp / currentLevelEXPReq;
+                return exp / CurrentLevelEXPReq;
             }
             
         }
 
-        public virtual float currentLevelEXPReq
+        public virtual float CurrentLevelEXPReq
         {
             get
             {
@@ -109,13 +109,13 @@ namespace ItsSorceryFramework
             }
         }
 
-        public virtual void adjustModifiers(List<StatModifier> offsets = null, List<StatModifier> factorOffsets = null,
+        public virtual void AdjustModifiers(List<StatModifier> offsets = null, List<StatModifier> factorOffsets = null,
             List<PawnCapacityModifier> capMods = null)
         {
 
         }
 
-        public virtual HediffStage refreshCurStage()
+        public virtual HediffStage RefreshCurStage()
         {
             return new HediffStage();
         }
@@ -125,9 +125,9 @@ namespace ItsSorceryFramework
         {
             get
             {
-                if(cachedCurLevel != currLevel || cachedLevelLabel.NullOrEmpty())
+                if(cachedCurLevel != CurrLevel || cachedLevelLabel.NullOrEmpty())
                 {
-                    cachedLevelLabel = GetProgressLevelLabel(currLevel);
+                    cachedLevelLabel = GetProgressLevelLabel(CurrLevel);
                 }
 
                 return cachedLevelLabel;

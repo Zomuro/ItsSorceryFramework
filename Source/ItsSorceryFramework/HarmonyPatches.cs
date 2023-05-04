@@ -242,8 +242,6 @@ namespace ItsSorceryFramework
         {
             CacheComp(pawn);
             Comp_ItsSorcery comp = cachedSchemaComps[pawn];
-
-            //Comp_ItsSorcery comp = pawn.TryGetComp<Comp_ItsSorcery>() as Comp_ItsSorcery;
             if (comp is null || comp.schemaTracker.sorcerySchemas.NullOrEmpty()) return false;
 
             foreach (var schema in comp.schemaTracker.sorcerySchemas)

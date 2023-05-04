@@ -76,7 +76,7 @@ namespace ItsSorceryFramework
             if (ProgressTracker.CurLevelLabel.NullOrEmpty())
             {
                 Widgets.LabelCacheHeight(ref lvlRect,
-                    "ISF_LearningLevelLabel".Translate(ProgressTracker.currLevel), true, false);
+                    "ISF_LearningLevelLabel".Translate(ProgressTracker.CurrLevel), true, false);
             }
             else
             {
@@ -88,7 +88,7 @@ namespace ItsSorceryFramework
                 else
                 {
                     Widgets.LabelCacheHeight(ref lvlRect,
-                        "ISF_LearningLevelLabelCustom".Translate(ProgressTracker.CurLevelLabel, ProgressTracker.currLevel), true, false);
+                        "ISF_LearningLevelLabelCustom".Translate(ProgressTracker.CurLevelLabel, ProgressTracker.CurrLevel), true, false);
                 }
                 
             }
@@ -104,9 +104,9 @@ namespace ItsSorceryFramework
             }
             else // normal function
             {
-                Widgets.FillableBar(xpBar, ProgressTracker.currProgress);
+                Widgets.FillableBar(xpBar, ProgressTracker.CurrProgress);
                 Text.Font = GameFont.Medium;
-                Widgets.Label(xpBar, (ProgressTracker.exp).ToString("F0") + " / " + ProgressTracker.currentLevelEXPReq.ToString("F0"));
+                Widgets.Label(xpBar, (ProgressTracker.exp).ToString("F0") + " / " + ProgressTracker.CurrentLevelEXPReq.ToString("F0"));
             }
 
             /*Widgets.FillableBar(xpBar, ProgressTracker.currProgress);
@@ -210,7 +210,7 @@ namespace ItsSorceryFramework
             }
 
             ProgressTrackerDef pDef = ProgressTracker.def;
-            float projLevel = ProgressTracker.currLevel + 1;
+            float projLevel = ProgressTracker.CurrLevel + 1;
 
             if (projLevel > ProgressTracker.hediff.def.maxSeverity) return rect.yMin - yMin;
             Text.Font = GameFont.Medium;
