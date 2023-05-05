@@ -18,7 +18,7 @@ namespace ItsSorceryFramework
             {
                 if (sets.jobDefs.Contains(progressTracker.pawn.CurJobDef))
                 {
-                    progressTracker.addExperience(def.fixedEXP);
+                    progressTracker.AddExperience(def.fixedEXP);
                     fireEXPMote(progressTracker.pawn, def.fixedEXP);
                     return true;
                 }

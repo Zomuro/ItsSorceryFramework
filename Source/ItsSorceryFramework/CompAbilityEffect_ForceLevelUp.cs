@@ -17,7 +17,7 @@ namespace ItsSorceryFramework
 
 				SorcerySchema schema = SorcerySchemaUtility.FindSorcerySchema(caster, sorcery.sorceryDef.sorcerySchema);
 
-				schema.progressTracker.forceLevelUp();
+				schema.progressTracker.ForceLevelUp();
 
 				Log.Message(schema.progressTracker.hediff.Severity.ToString());
 				Log.Message(caster.health.hediffSet.GetFirstHediffOfDef(schema.progressTracker.hediff.def).Severity.ToString());

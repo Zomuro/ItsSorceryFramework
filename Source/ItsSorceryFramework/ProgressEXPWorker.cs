@@ -11,7 +11,7 @@ namespace ItsSorceryFramework
         public virtual bool TryExecute(ProgressTracker progressTracker, float exp = 0)
         {
             if (progressTracker.Maxed) return false;
-            progressTracker.addExperience(Math.Abs(exp));
+            progressTracker.AddExperience(Math.Abs(exp));
             return true;
         }
 

@@ -228,23 +228,21 @@ namespace ItsSorceryFramework
             {
                 Pawn caster;
                 if (__0.Instigator != null && (caster = __0.Instigator as Pawn) != null && caster.IsColonist) 
-                    applyDamageEXP(caster, __0, typeof(ProgressEXPWorker_OnDamage));
+                    applyDamageEXP(caster, __0, typeof(ProgressEXPWorker_OnDamage)); 
 
                 Pawn target;
-                if (__0.IntendedTarget != null && (target = __0.IntendedTarget as Pawn) != null && target.IsColonist) 
+                if ((target = __instance as Pawn) != null && target.IsColonist)
                     applyDamageEXP(target, __0, typeof(ProgressEXPWorker_OnDamaged));
             }
 
             return;
         }
 
-        public static bool applyDamageEXP(Pawn pawn, DamageInfo dinfo, Type progressWorkerClass)
+        public static void applyDamageEXP(Pawn pawn, DamageInfo dinfo, Type progressWorkerClass)
         {
             CacheComp(pawn);
             Comp_ItsSorcery comp = cachedSchemaComps[pawn];
-
-            //Comp_ItsSorcery comp = pawn.TryGetComp<Comp_ItsSorcery>() as Comp_ItsSorcery;
-            if (comp is null || comp.schemaTracker.sorcerySchemas.NullOrEmpty()) return false;
+            if (comp is null || comp.schemaTracker.sorcerySchemas.NullOrEmpty()) return;
 
             foreach (var schema in comp.schemaTracker.sorcerySchemas)
             {
@@ -255,7 +253,7 @@ namespace ItsSorceryFramework
                     worker.TryExecute(schema.progressTracker, dinfo.Amount);
                 }
             }
-            return true;
+            return;
         }
 
         public static void Learn_AddEXP(SkillRecord __instance, float __0)

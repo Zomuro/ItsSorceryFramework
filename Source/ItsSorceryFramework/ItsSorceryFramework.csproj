@@ -65,6 +65,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Dialog_ProgressLevelOptions.cs" />
+    <Compile Include="LearningNodeStatPrereqMode.cs" />
+    <Compile Include="LearningNodePrereqMode.cs" />
     <Compile Include="CompSchemaItem.cs" />
     <Compile Include="CompProperties_SchemaItem.cs" />
     <Compile Include="CompProperties_UseEffectSchema.cs" />

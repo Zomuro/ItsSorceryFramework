@@ -129,11 +129,21 @@ namespace ItsSorceryFramework
 
 		private Texture2D uiIcon = null;*/
 
+		public LearningNodePrereqMode prereqMode = LearningNodePrereqMode.All;
+
+		public int prereqModeMin = 1;
+
+		public LearningNodePrereqMode prereqResearchMode = LearningNodePrereqMode.All;
+
+		public int prereqResearchModeMin = 1;
+
 		public List<LearningTreeNodeDef> prereqs = new List<LearningTreeNodeDef>();
 
 		public List<ResearchProjectDef> prereqsResearch = new List<ResearchProjectDef>();
 
 		public Dictionary<HediffDef, float> prereqsHediff = new Dictionary<HediffDef, float>();
+
+		public List<NodeStatReqs> prereqsStats = new List<NodeStatReqs>();
 
 		public List<LearningTreeNodeDef> exclusiveNodes = new List<LearningTreeNodeDef>();
 
@@ -163,4 +173,11 @@ namespace ItsSorceryFramework
 
 		public float severity = 1;
     }
+
+	public class NodeStatReqs
+	{
+		public List<StatModifier> statReqs;
+
+		public LearningNodeStatPrereqMode mode = LearningNodeStatPrereqMode.Greater;
+	}
 }

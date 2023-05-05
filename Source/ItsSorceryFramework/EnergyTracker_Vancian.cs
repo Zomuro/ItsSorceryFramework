@@ -32,25 +32,8 @@ namespace ItsSorceryFramework
             }
         }
 
-        /*public StatDef MaxCastStatDef
-        {
-            get
-            {
-                return def.energyMaxCastStatDef is null ? StatDefOf_ItsSorcery.Sorcery_MaxCasts : def.energyMaxCastStatDef;
-            }
-        }*/
-
         public virtual void InitalizeSorceries()
         {
-            /*foreach(SorceryDef sd in from sorceryDef in DefDatabase<SorceryDef>.AllDefs 
-                                     where sorceryDef.sorcerySchema.energyTrackerDefs.Contains(def)
-                                     select sorceryDef)
-            {
-                if(!vancianCasts.ContainsKey(sd)) vancianCasts.Add(sd, (int) Math.Ceiling(sd.MaximumCasts * CastFactor));
-            }*/
-
-            //float maxCastsTemp = 0;
-
             foreach(var sorceryDef in from sorceryDef in DefDatabase<SorceryDef>.AllDefs
                                       where sorceryDef.sorcerySchema == sorcerySchemaDef && SorceryDefMaxCasts(sorceryDef) > 0
                                       select sorceryDef)
@@ -62,14 +45,6 @@ namespace ItsSorceryFramework
             }
 
             vancianCasts = CleanVancianCasts(vancianCasts);
-
-            Log.Message("count all: " + DefDatabase<SorceryDef>.AllDefs.Count());
-            foreach(var sorcery in DefDatabase<SorceryDef>.AllDefs)
-            {
-                Log.Message(sorcery.label + " same schema: " + (sorcery.sorcerySchema == sorcerySchemaDef));
-                Log.Message(sorcery.label + " max casts: " + SorceryDefMaxCasts(sorcery));
-            }
-            Log.Message("all sorceries: " + vancianCasts.Count);
         }
 
         public int SorceryDefMaxCasts(SorceryDef sorceryDef)
@@ -105,12 +80,6 @@ namespace ItsSorceryFramework
         public virtual void RefreshAllCasts()
         {
             Dictionary<SorceryDef, int> refreshed = new Dictionary<SorceryDef, int>();
-            //int count = vancianCasts.Count();
-
-            /*while(count > 0)
-            {
-
-            }*/
 
             foreach (var pair in vancianCasts)
             {

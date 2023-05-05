@@ -17,7 +17,7 @@ namespace ItsSorceryFramework
 
 				SorcerySchema schema = SorcerySchemaUtility.FindSorcerySchema(caster, sorcery.sorceryDef.sorcerySchema);
 
-				schema.progressTracker.addExperience(Props.severity);
+				schema.progressTracker.AddExperience(Props.severity);
 
 			}
 
