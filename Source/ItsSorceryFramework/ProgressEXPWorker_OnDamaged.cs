@@ -8,6 +8,7 @@ namespace ItsSorceryFramework
     {
         public override bool TryExecute(ProgressTracker progressTracker, float exp = 0)
         {
+            Log.Message("test: " + exp);
             if (progressTracker.Maxed) return false;
             if (exp <= 0) return false;
             

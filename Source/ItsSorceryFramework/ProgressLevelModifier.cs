@@ -8,6 +8,8 @@ namespace ItsSorceryFramework
     {
         public int level = 1;
 
+        public int pointGain = 1;
+
         public List<StatModifier> statOffsets;
 
         public List<StatModifier> statFactorOffsets;
@@ -24,9 +26,10 @@ namespace ItsSorceryFramework
 
         public List<HediffDef> hediffRemove = new List<HediffDef>();
 
-        public int pointGain = 1;
-
-        // unused for the moment
         public List<ProgressLevelOption> options = new List<ProgressLevelOption>();
+
+        public int optionChoices = -1;
+
+               
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
 using Verse;
@@ -109,6 +110,7 @@ namespace ItsSorceryFramework
                 AdjustAbilities(factor);
                 AdjustHediffs(factor);
                 points += factor.pointGain;
+                ApplyOptions(factor);
             }
 
             ProgressLevelModifier special = def.getLevelSpecific(sev);
@@ -118,9 +120,45 @@ namespace ItsSorceryFramework
                 AdjustAbilities(special);
                 AdjustHediffs(special);
                 points += special.pointGain;
+                ApplyOptions(special);
             }
 
             hediff.curStage = RefreshCurStage();
+        }
+
+        public void ApplyOptions(ProgressLevelModifier modifier)
+        {
+            int select = Math.Min(modifier.optionChoices, modifier.options.Count);
+
+            if (modifier.options.NullOrEmpty() || select == 0) return; // empty options -> skip rest
+            if (modifier.options.Count == 1) // only one option = autoselect that option
+            {
+                AdjustModifiers(modifier.options[0]);
+                AdjustAbilities(modifier.options[0]);
+                AdjustHediffs(modifier.options[0]);
+                points += modifier.options[0].pointGain;
+                return;
+            }
+
+            // if there's a proper list of 2+ options for the progresslevelmodifier, create a window for selection.
+            List<DebugMenuOption> options;
+            if (select < 0 || select > modifier.options.Count) options = LevelOptions(modifier).ToList();
+            else options = LevelOptions(modifier).OrderBy(x => rand.Next()).Take(select).ToList();
+            Find.WindowStack.Add(new Dialog_ProgressLevelOptions(options, this));
+        }
+
+        public IEnumerable<DebugMenuOption> LevelOptions(ProgressLevelModifier modifier)
+        {
+            foreach(var option in modifier.options)
+            {
+                yield return new DebugMenuOption(option.label.CapitalizeFirst(), DebugMenuOptionMode.Action, delegate ()
+                {
+                    Dialog_ProgressLevelOptions optionsDialog = (Find.WindowStack.currentlyDrawnWindow as Dialog_ProgressLevelOptions);
+                    if (optionsDialog is null) return;
+                    optionsDialog.selectedOption = option;
+                });
+            }
+            yield break;
         }
 
         public void AdjustModifiers(ProgressLevelModifier modulo)
@@ -301,7 +339,9 @@ namespace ItsSorceryFramework
             {
                 return def.baseEXP * Mathf.Pow(def.scaling, CurrLevel - 1f);
             }
-        }      
+        }
+
+        public System.Random rand = new System.Random();
 
 
     }

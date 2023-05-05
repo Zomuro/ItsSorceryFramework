@@ -52,10 +52,6 @@ namespace ItsSorceryFramework
         {
             Widgets.BeginGroup(rect);
 
-            // add textures- no dice, dependent on size
-            /*Rect uvRect = rect.ContractedBy(25f);
-            Widgets.DrawTextureFitted(rect, def.BGIcon, 0.8f);*/
-
             Rect outRect = new Rect(0f, 0f, rect.width, rect.height);
             Rect viewRect = new Rect(0f, 0f, outRect.width - 20f, leftScrollViewHeight);
             Widgets.BeginScrollView(outRect, ref this.leftScrollPosition, viewRect, true);
@@ -109,9 +105,6 @@ namespace ItsSorceryFramework
                 Widgets.Label(xpBar, (ProgressTracker.exp).ToString("F0") + " / " + ProgressTracker.CurrentLevelEXPReq.ToString("F0"));
             }
 
-            /*Widgets.FillableBar(xpBar, ProgressTracker.currProgress);
-            Text.Font = GameFont.Medium;
-            Widgets.Label(xpBar, (ProgressTracker.exp).ToString("F0") + " / " + ProgressTracker.currentLevelEXPReq.ToString("F0"));*/
             coordY += xpBar.height * 1.5f;
 
             // description
@@ -131,10 +124,6 @@ namespace ItsSorceryFramework
         {
             Widgets.BeginGroup(rect);
             Rect leftHalf = new Rect(0, 0, rect.width/2f, rect.height);
-            Rect leftHalfView = leftHalf.ContractedBy(10);
-
-
-            float coordY = 0f;
 
             // current and upcoming modifiers for hediff
             Rect modRect = new Rect(0, 0, rect.width / 4f, rect.height * 2f / 3f).ContractedBy(20f);
@@ -142,7 +131,7 @@ namespace ItsSorceryFramework
             Rect modRectView = new Rect(modRect.x, modRect.y, modRect.width - 20f, modScrollViewHeight);
             Widgets.BeginScrollView(modRect, ref this.modScrollPosition, modRectView, true);
 
-            coordY = 0f;
+            float coordY = 0f;
             Rect allModRect = new Rect(modRectView.x, modRectView.y + coordY, modRectView.width, 500f);
             coordY += drawModifiers(allModRect);
             modScrollViewHeight = coordY;
