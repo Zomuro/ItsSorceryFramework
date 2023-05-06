@@ -2,7 +2,7 @@
 using Verse;
 namespace ItsSorceryFramework
 {
-    public class Hediff_ProgressLevel : HediffWithComps
+    public class Hediff_ProgressLevel : Hediff_Progress
 	{
 		public override string Label
 		{
@@ -23,7 +23,7 @@ namespace ItsSorceryFramework
         {
             get
             {
-				return (int) this.Severity;
+				return (int) Severity;
             }
         }
 
@@ -35,7 +35,7 @@ namespace ItsSorceryFramework
 				{
 					return progressTracker?.RefreshCurStage() ?? new HediffStage();
 				}
-				return this.curStage;
+				return curStage;
 			}
 		}
 
@@ -53,7 +53,7 @@ namespace ItsSorceryFramework
 		{
 			get
 			{
-				return this.Severity <= 0;
+				return Severity <= 0;
 			}
 		}
 
@@ -62,10 +62,6 @@ namespace ItsSorceryFramework
 			base.ExposeData();
 			Scribe_Deep.Look(ref progressTracker, "progressTracker", new object[] { pawn });
 		}
-
-		public ProgressTracker progressTracker;
-
-		public HediffStage curStage;
 
 		public string temp = " (level {0} | {1})";
 	}

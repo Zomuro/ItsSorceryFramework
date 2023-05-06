@@ -28,10 +28,8 @@ namespace ItsSorceryFramework
 			}
 		}
 
-		public Dialog_ProgressLevelOptions(IEnumerable<DebugMenuOption> options, ProgressTracker_RPG progressTracker) : base(options)
+		public Dialog_ProgressLevelOptions(IEnumerable<DebugMenuOption> options, ProgressTracker progressTracker) : base(options)
 		{
-			//selectableCache = options.ToList();
-			/*options = SelectableIncidents;*/
 			tracker = progressTracker;
 			closeOnClickedOutside = false;
 			forcePause = true;
@@ -342,6 +340,6 @@ namespace ItsSorceryFramework
 
 		private float optionViewHeight;
 
-		public ProgressTracker_RPG tracker;
+		public ProgressTracker tracker;
 	}
 }
