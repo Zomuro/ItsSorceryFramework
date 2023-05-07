@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
 using Verse;
+using UnityEngine;
 
 namespace ItsSorceryFramework
 {
@@ -104,7 +105,30 @@ namespace ItsSorceryFramework
             }
         }
 
+        public Texture2D BGIcon
+        {
+            get
+            {
+                if (trackerBG == null)
+                {
+                    if (!bgPath.NullOrEmpty())
+                    {
+                        trackerBG = ContentFinder<Texture2D>.Get(bgPath, true);
+                    }
+                    else
+                    {
+                        trackerBG = BaseContent.BadTex;
+                    }
+                }
+                return trackerBG;
+            }
+        }
+
         public Type progressTrackerClass = typeof(ProgressTracker);
+
+        public string bgPath;
+
+        private Texture2D trackerBG;
 
         public HediffDef progressHediff;
 
