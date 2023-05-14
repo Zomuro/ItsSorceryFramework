@@ -96,6 +96,7 @@
     <Compile Include="LearningTracker_Tree.cs" />
     <Compile Include="LearningTreeNodeDef.cs" />
     <Compile Include="EnergyTracker_Cooldown.cs" />
+    <Compile Include="ProgressTracker_Roguelike.cs" />
     <Compile Include="ProgressTracker_Level.cs" />
     <Compile Include="SchemaJobDefOf.cs" />
     <Compile Include="SchemaJobDef.cs" />

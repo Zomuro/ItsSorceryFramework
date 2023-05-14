@@ -27,18 +27,6 @@ namespace ItsSorceryFramework
             }
         }
 
-		public override HediffStage CurStage
-		{
-			get
-			{
-				if (curStage == null)
-				{
-					return progressTracker?.RefreshCurStage() ?? new HediffStage();
-				}
-				return curStage;
-			}
-		}
-
 		public override void Tick()
 		{
 			base.Tick();
@@ -60,7 +48,7 @@ namespace ItsSorceryFramework
 		public override void ExposeData()
 		{
 			base.ExposeData();
-			Scribe_Deep.Look(ref progressTracker, "progressTracker", new object[] { pawn });
+			
 		}
 
 		public string temp = " (level {0} | {1})";

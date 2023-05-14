@@ -21,7 +21,7 @@ namespace ItsSorceryFramework
 				{
 					return progressTracker?.RefreshCurStage() ?? new HediffStage();
 				}
-				return this.curStage;
+				return curStage;
 			}
 		}
 
@@ -39,13 +39,14 @@ namespace ItsSorceryFramework
 		{
 			get
 			{
-				return this.Severity <= 0;
+				return Severity <= 0;
 			}
 		}
 
 		public override void ExposeData()
 		{
 			base.ExposeData();
+			Scribe_Deep.Look(ref progressTracker, "progressTracker", new object[] { pawn });
 		}
 
 		public ProgressTracker progressTracker;

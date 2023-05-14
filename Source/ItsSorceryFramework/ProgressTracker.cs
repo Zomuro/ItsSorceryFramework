@@ -60,6 +60,20 @@ namespace ItsSorceryFramework
 
         }
 
+        public virtual void SetupHediffStage(Hediff_Progress hediff)
+        {
+            if (hediff.CurStage != null) hediff.def.stages.Clear();
+
+            HediffStage newStage = new HediffStage()
+            {
+                minSeverity = CurrLevel,
+                statOffsets = new List<StatModifier>(),
+                statFactors = new List<StatModifier>(),
+                capMods = new List<PawnCapacityModifier>()
+            };
+            hediff.curStage = newStage;
+        }
+
         public virtual void ProgressTrackerTick()
         {
 

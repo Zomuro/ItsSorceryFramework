@@ -4,4 +4,7 @@
 	<ISF_LevelUp>Level up: {0}</ISF_LevelUp>
 	<ISF_LevelUpMessage>This pawn has leveled up from {0} to {1}.</ISF_LevelUpMessage>
 	
+	<ISF_LevelUpRoguelike>Power up: {0}</ISF_LevelUpRoguelike>
+	<ISF_LevelUpRoguelikeMessage>This pawn has gained new power.</ISF_LevelUpRoguelikeMessage>
+	
 </LanguageData>

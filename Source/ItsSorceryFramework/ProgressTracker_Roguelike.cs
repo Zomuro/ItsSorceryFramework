@@ -8,20 +8,20 @@ using UnityEngine;
 
 namespace ItsSorceryFramework
 {
-    public class ProgressTracker_Level : ProgressTracker
+    public class ProgressTracker_Roguelike : ProgressTracker
     {
         // initalizer- created via activator via SorcerySchema
-        public ProgressTracker_Level(Pawn pawn) : base(pawn)
+        public ProgressTracker_Roguelike(Pawn pawn) : base(pawn)
         {
 
         }
 
-        public ProgressTracker_Level(Pawn pawn, ProgressTrackerDef def) : base(pawn, def)
+        public ProgressTracker_Roguelike(Pawn pawn, ProgressTrackerDef def) : base(pawn, def)
         {
             Initialize();
         }
 
-        public ProgressTracker_Level(Pawn pawn, SorcerySchemaDef def) : base(pawn, def)
+        public ProgressTracker_Roguelike(Pawn pawn, SorcerySchemaDef def) : base(pawn, def)
         {
             Initialize();
         }
@@ -43,35 +43,12 @@ namespace ItsSorceryFramework
 
         public override void ProgressTrackerTick()
         {
-            if(Find.TickManager.TicksGame % 60 == 0)
-            {               
-                if (def.Workers.EnumerableNullOrEmpty()) return;
-                foreach (var worker in def.Workers.Where(x => x.GetType() == typeof(ProgressEXPWorker_Passive) || 
-                    x.GetType() == typeof(ProgressEXPWorker_DuringJob)))
-                {
-                    worker.TryExecute(this);
-                }
-            }
+
         }
 
         public override void AddExperience(float experience)
         {
-            float orgSev = CurrLevel;
-            bool done = false;
-            exp += experience;
-
-            while (!done)
-            {
-                if(exp > CurrentLevelEXPReq)
-                {
-                    exp -= CurrentLevelEXPReq;
-                    hediff.Severity += 1;
-                    NotifyLevelUp(hediff.Severity);
-                }
-                else done = true;
-            }
-
-            if(CurrLevel > orgSev) NotifyTotalLevelUp(orgSev);
+            // this system doesn't really use experience- instead, use ForceLevelUp to cause changes
         }
 
         public override void ForceLevelUp()
@@ -122,23 +99,7 @@ namespace ItsSorceryFramework
         public override void NotifyTotalLevelUp(float orgSev)
         {
             Find.LetterStack.ReceiveLetter(def.progressLevelUpKey.Translate(pawn.Name.ToStringShort),
-                def.progressLevelUpDescKey.Translate(orgSev.ToString(), CurrLevel.ToString()), LetterDefOf.NeutralEvent, null);
-        }
-
-        public override float CurrProgress
-        {
-            get
-            {
-                return exp / CurrentLevelEXPReq;
-            }
-        }
-
-        public override float CurrentLevelEXPReq
-        {
-            get
-            {
-                return def.baseEXP * Mathf.Pow(def.scaling, CurrLevel - 1f);
-            }
+                def.progressLevelUpDescKey.Translate(), LetterDefOf.NeutralEvent, null);
         }
 
         public override void DrawLeftGUI(Rect rect)
@@ -160,7 +121,7 @@ namespace ItsSorceryFramework
             coordY += labelRect.height;
 
             // level label
-            Rect lvlRect = new Rect(0f, coordY, viewRect.width, 50f);
+            /*Rect lvlRect = new Rect(0f, coordY, viewRect.width, 50f);
             Text.Font = GameFont.Small;
             if (CurLevelLabel.NullOrEmpty())
             {
@@ -181,24 +142,7 @@ namespace ItsSorceryFramework
                 }
 
             }
-            coordY += lvlRect.height;
-
-            // xp bar
-            Rect xpBar = new Rect(0f, coordY + 10, rect.width, 35f);
-            if (Maxed) // if at max level, full xp bar + Maxed
-            {
-                Widgets.FillableBar(xpBar, 1);
-                Text.Font = GameFont.Medium;
-                Widgets.Label(xpBar, "ISF_LearningLevelLabelMax".Translate());
-            }
-            else // normal function
-            {
-                Widgets.FillableBar(xpBar, CurrProgress);
-                Text.Font = GameFont.Medium;
-                Widgets.Label(xpBar, exp.ToString("F0") + " / " + CurrentLevelEXPReq.ToString("F0"));
-            }
-
-            coordY += xpBar.height * 1.5f;
+            coordY += lvlRect.height;*/
 
             // description
             GenUI.ResetLabelAlign();
@@ -313,16 +257,9 @@ namespace ItsSorceryFramework
                     tipString2.NullOrEmpty() && !HyperlinkCheck(special)) continue;
 
                 Text.Font = GameFont.Small;
-                //Text.Font = GameFont.Medium;
-                if (CurLevelLabel.NullOrEmpty())
-                    Widgets.LabelCacheHeight(ref rect, "ISF_LearningProgressLevel".Translate(i).Colorize(ColoredText.TipSectionTitleColor), true, false);
-                else
-                    Widgets.LabelCacheHeight(ref rect, "ISF_LearningProgressLevelCustom".Translate(i, GetProgressLevelLabel(i)).Colorize(ColoredText.TipSectionTitleColor), true, false);
-                rect.yMin += rect.height;
-                //Text.Font = GameFont.Small;
+                Widgets.LabelCacheHeight(ref rect, "ISF_LearningProgressLevelBoundary".Translate().Colorize(ColoredText.TipSectionTitleColor), true, false);
 
                 Rect hyperlinkRect;
-
                 if (!tipString.NullOrEmpty() || HyperlinkCheck(factor))
                 {
                     Text.Font = GameFont.Small;
@@ -334,7 +271,7 @@ namespace ItsSorceryFramework
 
                     rect.xMin += 6f;
                     hyperlinkRect = new Rect(rect.x, rect.yMin, rect.width, 500f);
-                    rect.yMin += this.DrawHyperlinks(hyperlinkRect, factor);
+                    rect.yMin += DrawHyperlinks(hyperlinkRect, factor);
                     rect.xMin -= 6f;
                 }
                 if (!tipString2.NullOrEmpty() || HyperlinkCheck(special))
