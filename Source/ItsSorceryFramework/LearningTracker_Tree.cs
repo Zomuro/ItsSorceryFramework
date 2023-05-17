@@ -104,7 +104,6 @@ namespace ItsSorceryFramework
         public override void ExposeData()
         {
             base.ExposeData();
-            //Scribe_Collections.Look(ref nodes, "nodes", LookMode.Def);
             Scribe_Collections.Look(ref completion, "completion", LookMode.Def, LookMode.Value);
 
         }

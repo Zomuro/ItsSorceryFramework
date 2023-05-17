@@ -25,7 +25,7 @@ namespace ItsSorceryFramework
             Scribe_References.Look(ref pawn, "pawn");
             Scribe_Collections.Look(ref sorcerySchemas, "sorcerySchemas", LookMode.Deep, new object[]
             {
-                this.pawn
+                pawn
             });
             // save this concept for later - prevent a schema from being learned if another is there
             // maybe even anti psycast option
