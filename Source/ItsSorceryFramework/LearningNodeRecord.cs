@@ -8,7 +8,7 @@ using Verse;
 
 namespace ItsSorceryFramework
 {
-	public class NodeCompletionUtility : IExposable
+	public class LearningNodeRecord : IExposable
 	{
         /// <summary>
         /// Used to keep a record of node completion across a schema's trackers for a pawn.
@@ -18,25 +18,22 @@ namespace ItsSorceryFramework
         /// 2) Prevents duplicate nodes from interacting with each other- by design, all nodes are unique within a schema.
         /// </summary>
 
-        public NodeCompletionUtility(Pawn pawn)
+        public LearningNodeRecord(Pawn pawn)
         {
             this.pawn = pawn;
-            Initialize();
         }
 
-        public NodeCompletionUtility(Pawn pawn, SorcerySchemaDef schemaDef)
+        public LearningNodeRecord(Pawn pawn, SorcerySchemaDef schemaDef)
         {
             this.pawn = pawn;
             this.schemaDef = schemaDef;
-            Initialize();
         }
 
-        public NodeCompletionUtility(Pawn pawn, SorcerySchema schema) // temp for now to test initalizing and saving
+        public LearningNodeRecord(Pawn pawn, SorcerySchema schema) // temp for now to test initalizing and saving
         {
             this.pawn = pawn;
             schemaDef = schema.def;
             cachedSchema = schema;
-            Initialize();
         }
 
         public virtual void Initialize()

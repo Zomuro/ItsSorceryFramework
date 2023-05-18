@@ -101,15 +101,26 @@ namespace ItsSorceryFramework
         {
             base.ResolveReferences();
 
-			if(learningTrackerDef == null) Log.Error("The LearningTrackerDef cannot be null.");
+			bool error = false;
 
-			foreach(LearningTreeNodeDef node in prereqs)
+			if(learningTrackerDef == null)
+            {
+				error = true;
+				Log.Message("The LearningTrackerDef cannot be null.");
+			}
+				
+				
+
+			/*foreach(LearningTreeNodeDef node in prereqs)
             {
 				if(node.learningTrackerDef != this.learningTrackerDef)
                 {
-					Log.Error("Prerequisite nodes must be in the same learning tracker. Error on: "+ node.defName);
+					Log.Message("Prerequisite nodes must be in the same schema. Error on: "+ node.defName);
 				}
-            }
+            }*/
+
+			if(error) Log.Error("The LearningTrackerDef " + defName + " has errors.");
+
 		}
 
 		public LearningTrackerDef learningTrackerDef;

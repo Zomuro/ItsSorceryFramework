@@ -20,7 +20,7 @@ namespace ItsSorceryFramework
             this.pawn = pawn;
             this.def = def;
             InitializeTrackers(); // setup energy, learning, and progress trackers
-            //InitializeNodeCompletion(); // setup record of learning nodes
+            InitializeNodeCompletion(); // setup record of learning nodes
             DetermineHasLimits();
             DetermineHasTurns();
         }
@@ -71,7 +71,19 @@ namespace ItsSorceryFramework
 
         public virtual void InitializeNodeCompletion()
         {
-            nodeTracker = new NodeCompletionUtility(pawn, this); //testing initalization of node completion and saving
+            learningNodeRecord = new LearningNodeRecord(pawn, def); //testing initalization of node completion and saving
+        }
+
+        public Dictionary<LearningTreeNodeDef, bool> NodeCompletion
+        {
+            get
+            {
+                if(learningNodeRecord is null)
+                {
+                    learningNodeRecord = new LearningNodeRecord(pawn, def);
+                }
+                return learningNodeRecord.completion;
+            }
         }
 
         public virtual void SchemaTick()
@@ -228,7 +240,7 @@ namespace ItsSorceryFramework
             Scribe_Collections.Look(ref energyTrackers, "energyTrackers", LookMode.Deep, new object[] { pawn });
             Scribe_Collections.Look(ref learningTrackers, "learningTrackers", LookMode.Deep, new object[] { pawn });
             Scribe_Deep.Look(ref progressTracker, "progressTracker", new object[] { pawn });
-            Scribe_Deep.Look(ref nodeTracker, "nodeTracker", new object[] { pawn });
+            Scribe_Deep.Look(ref learningNodeRecord, "nodeTracker", new object[] { pawn });
             Scribe_Values.Look(ref favorited, "favorited", false);
 
             Scribe_Values.Look(ref hasLimits, "hasLimits", false);
@@ -246,9 +258,9 @@ namespace ItsSorceryFramework
 
         public List<LearningTracker> learningTrackers = new List<LearningTracker>();
 
-        public ProgressTracker progressTracker;
+        public LearningNodeRecord learningNodeRecord;
 
-        public NodeCompletionUtility nodeTracker;
+        public ProgressTracker progressTracker;
 
         public bool favorited = false;
 

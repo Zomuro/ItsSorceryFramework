@@ -15,7 +15,19 @@ namespace ItsSorceryFramework
         {
             get
             {
-                return SelPawn.IsColonist && SorceryComp != null && !HashSchemas.EnumerableNullOrEmpty();
+                return SorceryComp != null && SelPawn.IsColonist && !HashSchemas.EnumerableNullOrEmpty();
+            }
+        }
+
+        protected override bool StillValid // if player selects another pawn, should properly refresh the cached stuff
+        {
+            get
+            {
+                if(SelPawn != cachedPawn)
+                {
+                    ClearCaches();
+                }
+                return true;
             }
         }
 
@@ -30,7 +42,7 @@ namespace ItsSorceryFramework
         {
             base.OnOpen();
             filter = "";
-            ClearCaches(); // may need to check for performance stuff
+            ClearCaches();
         }
 
         protected override void FillTab()
@@ -210,10 +222,12 @@ namespace ItsSorceryFramework
             cachedHashFilterSchema = null;
             cacheCount = 0;
             sorceryComp = null;
+            cachedPawn = null;
         }
 
         private Comp_ItsSorcery sorceryComp = null;
 
+        private Pawn cachedPawn;
 
         // Hashset versions
         private HashSet<SorcerySchema> cachedHashSchema;

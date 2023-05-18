@@ -26,34 +26,57 @@ namespace ItsSorceryFramework
 
         }
 
-        public List<LearningTreeNodeDef> allNodes
+        public List<LearningTreeNodeDef> AllRelativeNodes
         {
+            /// <summary>
+            /// Gets all relative nodes; learning nodes only relevant to the currently viewed LearningTracker_Tree.
+            /// </summary>
+
             get
             {
                 if (cachedAllNodes == null)
                 {
-                    cachedAllNodes = new List<LearningTreeNodeDef>(from def in DefDatabase<LearningTreeNodeDef>.AllDefsListForReading
+                    /*cachedAllNodes = new List<LearningTreeNodeDef>(from def in DefDatabase<LearningTreeNodeDef>.AllDefsListForReading
+                                                                   where def.learningTrackerDef == this.def
+                                                                   select def);*/
+
+                    cachedAllNodes = new List<LearningTreeNodeDef>(from def in Schema.learningNodeRecord.AllNodes
                                                                    where def.learningTrackerDef == this.def
                                                                    select def);
 
-                    foreach (LearningTreeNodeDef node in cachedAllNodes)
+                    /*foreach (LearningTreeNodeDef node in cachedAllNodes)
                     {
-                        if (!completion.Keys.Contains(node)) completion[node] = false;
-                    }
+                        if (!Schema.nodeTracker.completion.Keys.Contains(node)) Schema.nodeTracker.completion[node] = false;
+                    }*/
+
+                    
                 }
 
                 return cachedAllNodes;
             }
         }
 
-        public Dictionary<LearningTreeNodeDef, List<LearningTreeNodeDef>> exclusiveNodes 
+        public void RefreshRelativeNodes()
         {
+            /// <summary>
+            /// Empties cached relative nodes, allowing the displayed nodes to refresh properly.
+            /// </summary>
+
+            cachedAllNodes = null;
+        }
+
+        public Dictionary<LearningTreeNodeDef, List<LearningTreeNodeDef>> ExclusiveNodes 
+        {
+            /// <summary>
+            /// Creates a list of learning nodes that are incompatible with each other, so that only one of the nodes within a pairing can be completed.
+            /// </summary>
+
             get
             {
                 if(cacheExclusive == null)
                 {
                     Dictionary<LearningTreeNodeDef, List<LearningTreeNodeDef>> exclusive = new Dictionary<LearningTreeNodeDef, List<LearningTreeNodeDef>>();
-                    foreach(LearningTreeNodeDef node in allNodes)
+                    foreach(LearningTreeNodeDef node in AllRelativeNodes)
                     {
                         if (!exclusive.ContainsKey(node)) exclusive[node] = node.exclusiveNodes.Distinct().ToList();
 
@@ -71,6 +94,15 @@ namespace ItsSorceryFramework
             }           
         }
 
+        public void RefreshExclusiveNodes()
+        {
+            /// <summary>
+            /// Empties cached exclusive nodes, allowing the system to recalculate them.
+            /// </summary>
+
+            cacheExclusive = null;
+        }
+
         public Vector2 ViewSize
         {
             get
@@ -81,7 +113,7 @@ namespace ItsSorceryFramework
             }
         }
 
-        public SorcerySchema schema
+        public SorcerySchema Schema
         {
             get
             {
@@ -91,11 +123,11 @@ namespace ItsSorceryFramework
             }
         }
 
-        public float pointUsePercent
+        public float PointUsePercent
         {
             get
             {
-                ProgressTracker progress = schema.progressTracker;
+                ProgressTracker progress = Schema.progressTracker;
                 if (progress.points == 0) return 0;
                 return (float) (progress.points - progress.usedPoints) / progress.points;
             }
@@ -104,7 +136,7 @@ namespace ItsSorceryFramework
         public override void ExposeData()
         {
             base.ExposeData();
-            Scribe_Collections.Look(ref completion, "completion", LookMode.Def, LookMode.Value);
+            //Scribe_Collections.Look(ref completion, "completion", LookMode.Def, LookMode.Value);
 
         }
 
@@ -154,27 +186,27 @@ namespace ItsSorceryFramework
                 leftScrollViewHeight = coordY;
                 Widgets.EndScrollView();
 
-                ProgressTracker progress = schema.progressTracker;
+                ProgressTracker progress = Schema.progressTracker;
                 Rect confirmButton = new Rect(0f, outRect.yMax + 10f + this.leftViewDebugHeight, rect.width, this.leftStartAreaHeight);
                 string reason = "";
-                if (!completion[selectedNode] && PrereqFufilled(selectedNode) && PrereqResearchFufilled(selectedNode) &&
+                if (!Schema.learningNodeRecord.Schema.learningNodeRecord.completion[selectedNode] && PrereqFufilled(selectedNode) && PrereqResearchFufilled(selectedNode) &&
                     PrereqStatFufilled(selectedNode) && PrereqHediffFufilled(selectedNode) && ExclusiveNodeFufilled(selectedNode) &&
                     selectedNode.pointReq + progress.usedPoints <= progress.points) 
                 {
                     if (Widgets.ButtonText(confirmButton, "ISF_SkillPointUse".Translate(selectedNode.pointReq, 
                         progress.def.skillPointLabelKey.Translate())))
                     {
-                        completion[selectedNode] = true;
+                        Schema.learningNodeRecord.completion[selectedNode] = true;
                         CompletionAbilities(selectedNode);
                         CompletionHediffs(selectedNode);
                         CompletionModifiers(selectedNode);
-                        schema.progressTracker.usedPoints += selectedNode.pointReq;
+                        Schema.progressTracker.usedPoints += selectedNode.pointReq;
                     }
                 }
                 else
                 {
                     Text.Anchor = TextAnchor.MiddleCenter;
-                    if (completion[selectedNode]) reason = "Completed.";
+                    if (Schema.learningNodeRecord.completion[selectedNode]) reason = "Completed.";
                     else if (!ExclusiveNodeFufilled(selectedNode)) reason = "Conflicts with another node.";
                     else
                     {
@@ -199,19 +231,19 @@ namespace ItsSorceryFramework
                 }
                 
                 Rect pointBar = new Rect(0f, confirmButton.yMax + 10f, rect.width, 35f);
-                Widgets.FillableBar(pointBar, pointUsePercent);
+                Widgets.FillableBar(pointBar, PointUsePercent);
                 Text.Anchor = TextAnchor.MiddleCenter;
-                Widgets.Label(pointBar, (progress.points-progress.usedPoints).ToString("F0") + " / " + schema.progressTracker.points.ToString("F0"));
+                Widgets.Label(pointBar, (progress.points-progress.usedPoints).ToString("F0") + " / " + Schema.progressTracker.points.ToString("F0"));
                 
                 Text.Anchor = TextAnchor.UpperLeft;
                 this.leftViewDebugHeight = 0f;
-                if (Prefs.DevMode && !completion[selectedNode])
+                if (Prefs.DevMode && !Schema.learningNodeRecord.completion[selectedNode])
                 {
                     Text.Font = GameFont.Tiny;
                     Rect debugButton = new Rect(confirmButton.x, outRect.yMax, 120f, 30f);
                     if (Widgets.ButtonText(debugButton, "Debug: Finish now", true, true, true, null))
                     {
-                        completion[selectedNode] = true;
+                        Schema.learningNodeRecord.Schema.learningNodeRecord.completion[selectedNode] = true;
                         CompletionAbilities(selectedNode);
                         CompletionHediffs(selectedNode);
                         CompletionModifiers(selectedNode);
@@ -264,12 +296,28 @@ namespace ItsSorceryFramework
                 rect.xMin += 6f;
                 foreach (LearningTreeNodeDef prereq in node.prereqs)
                 {
-                    SetPrereqStatusColor(completion[prereq], node);
+                    SetPrereqStatusColor(Schema.learningNodeRecord.completion[prereq], node);
                     Widgets.LabelCacheHeight(ref rect, prereq.LabelCap, true, false);
                     if (Widgets.ButtonInvisible(rect, true))
                     {
                         SoundDefOf.Click.PlayOneShotOnCamera(null);
-                        this.selectedNode = prereq;
+                        if(node.learningTrackerDef != prereq.learningTrackerDef)
+                        {
+                            if(Find.WindowStack.currentlyDrawnWindow as Dialog_LearningTabs is Dialog_LearningTabs learningTabs && 
+                                learningTabs != null && schemaDef.learningTrackerDefs.Contains(prereq.learningTrackerDef))
+                            {
+                                learningTabs.curTracker = Schema.learningTrackers.FirstOrDefault(x => x.def == prereq.learningTrackerDef);
+                                if (learningTabs.curTracker as LearningTracker_Tree is LearningTracker_Tree treeTracker && treeTracker != null )
+                                {
+                                    treeTracker.selectedNode = prereq;
+                                }
+                            }
+                        }
+                        else 
+                        {
+                            selectedNode = prereq;
+                        }
+                        
                     }
                     rect.yMin += rect.height;
                 }
@@ -336,7 +384,7 @@ namespace ItsSorceryFramework
 
         private float DrawExclusive(LearningTreeNodeDef node, Rect rect)
         {
-            if (exclusiveNodes[node].NullOrEmpty()) return 0;
+            if (ExclusiveNodes[node].NullOrEmpty()) return 0;
 
             float xMin = rect.xMin;
             float yMin = rect.yMin;
@@ -344,9 +392,9 @@ namespace ItsSorceryFramework
             Widgets.LabelCacheHeight(ref rect, "ISF_LearningNodeExclusive".Translate(), true, false);
             rect.yMin += rect.height;
             rect.xMin += 6f;
-            foreach (LearningTreeNodeDef ex in exclusiveNodes[node])
+            foreach (LearningTreeNodeDef ex in ExclusiveNodes[node])
             {
-                if(completion[ex]) GUI.color = ColorLibrary.RedReadable;
+                if(Schema.learningNodeRecord.completion[ex]) GUI.color = ColorLibrary.RedReadable;
 
                 Widgets.LabelCacheHeight(ref rect, ex.LabelCap, true, false);
                 rect.yMin += rect.height;
@@ -513,7 +561,7 @@ namespace ItsSorceryFramework
 
         private void SetPrereqStatusColor(bool compCheck, LearningTreeNodeDef node)
         {
-            if (completion[node])
+            if (Schema.learningNodeRecord.completion[node])
             {
                 return;
             }
@@ -531,14 +579,14 @@ namespace ItsSorceryFramework
                 case LearningNodePrereqMode.All:
                     foreach (LearningTreeNodeDef prereq in node.prereqs)
                     {
-                        if (!completion[prereq]) return false;
+                        if (!Schema.learningNodeRecord.completion[prereq]) return false;
                     }
                     return true;
 
                 case LearningNodePrereqMode.Or:
                     foreach (LearningTreeNodeDef prereq in node.prereqs)
                     {
-                        if (completion[prereq]) return true;
+                        if (Schema.learningNodeRecord.completion[prereq]) return true;
                     }
                     return false;
 
@@ -549,7 +597,7 @@ namespace ItsSorceryFramework
                     int check = Math.Min(node.prereqModeMin, node.prereqs.Count());
                     foreach (LearningTreeNodeDef prereq in node.prereqs)
                     {
-                        if (completion[prereq]) count++;
+                        if (Schema.learningNodeRecord.completion[prereq]) count++;
                         if (count >= check) return true;
                     }
                     return false;
@@ -601,7 +649,7 @@ namespace ItsSorceryFramework
         public Tuple<int,int> PrereqsDone(LearningTreeNodeDef node)
         {
             int prereqCount = 0;
-            if (!node.prereqs.NullOrEmpty()) prereqCount = node.prereqs.Where(x => completion[x]).Count();
+            if (!node.prereqs.NullOrEmpty()) prereqCount = node.prereqs.Where(x => Schema.learningNodeRecord.completion[x]).Count();
 
             int prereqResearchCount = 0;
             if (!node.prereqs.NullOrEmpty()) prereqResearchCount = node.prereqsResearch.Where(x => x.IsFinished).Count();
@@ -709,11 +757,11 @@ namespace ItsSorceryFramework
 
         public bool ExclusiveNodeFufilled(LearningTreeNodeDef node)
         {
-            if (!exclusiveNodes.ContainsKey(node)) return true;
+            if (!ExclusiveNodes.ContainsKey(node)) return true;
 
-            foreach(LearningTreeNodeDef ex in exclusiveNodes[node])
+            foreach(LearningTreeNodeDef ex in ExclusiveNodes[node])
             {
-                if (completion[ex]) return false;
+                if (Schema.learningNodeRecord.completion[ex]) return false;
             }
 
             return true;
@@ -759,7 +807,7 @@ namespace ItsSorceryFramework
 
         public virtual void CompletionModifiers(LearningTreeNodeDef node)
         {
-            ProgressTracker progressTracker = schema.progressTracker; // get progresstracker
+            ProgressTracker progressTracker = Schema.progressTracker; // get progresstracker
             progressTracker.AdjustModifiers(node.statOffsets, node.statFactors, node.capMods); // update list of statMods and capMods
             progressTracker.hediff.curStage = progressTracker.RefreshCurStage(); // rebuild hediffstage with adjusted stats & set hediff curstage to it
         }
@@ -787,7 +835,7 @@ namespace ItsSorceryFramework
 
             // first pass- draw the lines for the node requirements
             Rect nodeRect;
-            foreach (LearningTreeNodeDef node in allNodes)
+            foreach (LearningTreeNodeDef node in AllRelativeNodes)
             {
                 if (!PrereqFufilled(node) && node.condVisiblePrereq) continue;
 
@@ -803,7 +851,7 @@ namespace ItsSorceryFramework
             }
 
             // second pass- draw the nodes + label
-            foreach(LearningTreeNodeDef node in allNodes)
+            foreach(LearningTreeNodeDef node in AllRelativeNodes)
             {
                 if (!PrereqFufilled(node) && node.condVisiblePrereq) continue;
 
@@ -862,7 +910,7 @@ namespace ItsSorceryFramework
         {
             float x = 0f;
             float y = 0f;
-            foreach (LearningTreeNodeDef node in allNodes)
+            foreach (LearningTreeNodeDef node in AllRelativeNodes)
             { 
                 x = Mathf.Max(x, this.CoordToPixelsX(node.coordX) + 140f);
                 y = Mathf.Max(y, this.CoordToPixelsY(node.coordY) + 50f);
@@ -877,7 +925,7 @@ namespace ItsSorceryFramework
 
             //Color baseCol2 = TexUI.AvailResearchColor;
 
-            if (completion[node]) baseCol = TexUI.FinishedResearchColor;
+            if (Schema.learningNodeRecord.completion[node]) baseCol = TexUI.FinishedResearchColor;
 
             else if (!ExclusiveNodeFufilled(node)) baseCol = ColorLibrary.BrickRed;
 
@@ -900,7 +948,7 @@ namespace ItsSorceryFramework
 
                 else if (selectedNode.prereqs.NotNullAndContains(node))
                 {
-                    if(!completion[node]) return TexUI.DependencyOutlineResearchColor;
+                    if(!Schema.learningNodeRecord.completion[node]) return TexUI.DependencyOutlineResearchColor;
                     else return TexUI.HighlightLineResearchColor;
                 }
 
@@ -914,7 +962,7 @@ namespace ItsSorceryFramework
             //Color col = default(Color);
             if (selectedNode == node)
             {
-                if (completion[prereq])
+                if (Schema.learningNodeRecord.completion[prereq])
                 {
                     return new Tuple<Color, float>(TexUI.HighlightLineResearchColor, 3f);
                 }
@@ -926,18 +974,17 @@ namespace ItsSorceryFramework
             }   
             return new Tuple<Color, float>(TexUI.DefaultLineResearchColor, 2f);
         }
-
-        public List<LearningTreeNodeDef> cachedAllNodes;
-
-        public Dictionary<LearningTreeNodeDef, List<LearningTreeNodeDef>> cacheExclusive; 
-
-        public SorcerySchema cachedSchema;
-
-        public Vector2 cachedViewSize;
-
         public LearningTreeNodeDef selectedNode;
+        
+        private List<LearningTreeNodeDef> cachedAllNodes;
 
-        public Dictionary<LearningTreeNodeDef, bool> completion = new Dictionary<LearningTreeNodeDef, bool>();
+        private Dictionary<LearningTreeNodeDef, List<LearningTreeNodeDef>> cacheExclusive; 
+
+        private SorcerySchema cachedSchema;
+
+        private Vector2 cachedViewSize;
+
+        // public Dictionary<LearningTreeNodeDef, bool> completion = new Dictionary<LearningTreeNodeDef, bool>();
 
         private ScrollPositioner scrollPositioner = new ScrollPositioner();
 
