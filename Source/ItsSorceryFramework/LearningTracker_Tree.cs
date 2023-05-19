@@ -221,6 +221,8 @@ namespace ItsSorceryFramework
 
                         if(!PrereqStatFufilled(selectedNode)) reason += "\nStat requirements not fufilled.";
 
+                        if (!PrereqSkillFufilled(selectedNode)) reason += "\nSkill requirements not fufilled.";
+
                         if (!PrereqHediffFufilled(selectedNode)) reason += "\nHediff requirements not met.";
                     }
 
@@ -280,10 +282,8 @@ namespace ItsSorceryFramework
 
         private float DrawNodePrereqs(LearningTreeNodeDef node, Rect rect)
         {
-            if (node.prereqs.NullOrEmpty() && node.prereqsResearch.NullOrEmpty())
-            {
-                return 0f;
-            }
+            if (node.prereqs.NullOrEmpty() && node.prereqsResearch.NullOrEmpty() && node.prereqsStats.NullOrEmpty() && 
+                node.prereqsSkills.NullOrEmpty() && node.prereqsHediff.NullOrEmpty()) return 0f;
             float xMin = rect.xMin;
             float yMin = rect.yMin;
 
@@ -352,6 +352,25 @@ namespace ItsSorceryFramework
                         SetPrereqStatusColor(!PrereqFailStatCase(statMod, prereqsStatCase.mode), node);
                         Widgets.LabelCacheHeight(ref rect, statMod.stat.LabelCap + PrereqsStatsModeNotif(prereqsStatCase.mode) +
                             statMod.stat.ValueToString(statMod.value, ToStringNumberSense.Absolute, !statMod.stat.formatString.NullOrEmpty()), true, false);
+                        rect.yMin += rect.height;
+                    }
+                }
+                GUI.color = Color.white;
+                rect.xMin = xMin;
+            }
+
+            if (!node.prereqsSkills.NullOrEmpty())
+            {
+                Widgets.LabelCacheHeight(ref rect, "ISF_LearningNodeSkillReq".Translate(), true, false);
+                rect.yMin += rect.height;
+                rect.xMin += 6f;
+                foreach (var prereqsSkillCase in node.prereqsSkills)
+                {
+                    foreach (var skillLevel in prereqsSkillCase.skillReqs)
+                    {
+                        SetPrereqStatusColor(!PrereqFailSkillCase(skillLevel.skillDef, skillLevel.ClampedLevel, prereqsSkillCase.mode), node);
+                        Widgets.LabelCacheHeight(ref rect, skillLevel.skillDef.LabelCap + PrereqsStatsModeNotif(prereqsSkillCase.mode) +
+                            skillLevel.ClampedLevel, true, false);
                         rect.yMin += rect.height;
                     }
                 }
@@ -705,6 +724,55 @@ namespace ItsSorceryFramework
 
                 case LearningNodeStatPrereqMode.LesserEqual:
                     if (pawn.GetStatValue(statMod.stat) > statMod.value) return true;
+                    break;
+
+                default:
+                    break;
+            }
+
+            return false;
+        }
+
+        public bool PrereqSkillFufilled(LearningTreeNodeDef node)
+        {
+            if (node.prereqsSkills.NullOrEmpty()) return true;
+            foreach (var skillReqsCase in node.prereqsSkills)
+            {
+                foreach (var skillLevel in skillReqsCase.skillReqs)
+                {
+                    if (PrereqFailSkillCase(skillLevel.skillDef, skillLevel.ClampedLevel, skillReqsCase.mode)) return false;
+                }
+            }
+
+            return true;
+        }
+
+        public bool PrereqFailSkillCase(SkillDef skillDef, int level, LearningNodeStatPrereqMode mode)
+        {
+            switch (mode)
+            {
+                case LearningNodeStatPrereqMode.Equal:
+                    if (pawn.skills.GetSkill(skillDef).GetLevel() != level) return true;
+                    break;
+
+                case LearningNodeStatPrereqMode.NotEqual:
+                    if (pawn.skills.GetSkill(skillDef).GetLevel() == level) return true;
+                    break;
+
+                case LearningNodeStatPrereqMode.Greater:
+                    if (pawn.skills.GetSkill(skillDef).GetLevel() <= level) return true;
+                    break;
+
+                case LearningNodeStatPrereqMode.GreaterEqual:
+                    if (pawn.skills.GetSkill(skillDef).GetLevel() < level) return true;
+                    break;
+
+                case LearningNodeStatPrereqMode.Lesser:
+                    if (pawn.skills.GetSkill(skillDef).GetLevel() >= level) return true;
+                    break;
+
+                case LearningNodeStatPrereqMode.LesserEqual:
+                    if (pawn.skills.GetSkill(skillDef).GetLevel() > level) return true;
                     break;
 
                 default:

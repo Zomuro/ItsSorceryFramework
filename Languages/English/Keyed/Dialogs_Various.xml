@@ -23,6 +23,7 @@
 	<ISF_LearningNodeCost>{0} required: {1}</ISF_LearningNodeCost>
 	<ISF_LearningNodePrereqs>Node prerequisites:</ISF_LearningNodePrereqs>
 	<ISF_LearningNodeStatReq>Stat requirements:</ISF_LearningNodeStatReq>
+	<ISF_LearningNodeSkillReq>Skill requirements:</ISF_LearningNodeSkillReq>
 	<ISF_LearningNodeHediffReq>Hediff requirements:</ISF_LearningNodeHediffReq>
 	<ISF_LearningNodeExclusive>Exclusive with:</ISF_LearningNodeExclusive>
 	<ISF_LearningNodeAbilityGain>Abilities gained:</ISF_LearningNodeAbilityGain>
