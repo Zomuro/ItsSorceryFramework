@@ -120,30 +120,6 @@ namespace ItsSorceryFramework
             Widgets.LabelCacheHeight(ref labelRect, Schema.def.LabelCap, true, false);
             coordY += labelRect.height;
 
-            // level label
-            /*Rect lvlRect = new Rect(0f, coordY, viewRect.width, 50f);
-            Text.Font = GameFont.Small;
-            if (CurLevelLabel.NullOrEmpty())
-            {
-                Widgets.LabelCacheHeight(ref lvlRect,
-                    "ISF_LearningLevelLabel".Translate(CurrLevel), true, false);
-            }
-            else
-            {
-                if (Maxed)
-                {
-                    Widgets.LabelCacheHeight(ref lvlRect,
-                        "ISF_LearningLevelLabelCustom".Translate(CurLevelLabel, "ISF_LearningLevelLabelMax".Translate()), true, false);
-                }
-                else
-                {
-                    Widgets.LabelCacheHeight(ref lvlRect,
-                        "ISF_LearningLevelLabelCustom".Translate(CurLevelLabel, CurrLevel), true, false);
-                }
-
-            }
-            coordY += lvlRect.height;*/
-
             // description
             GenUI.ResetLabelAlign();
             Text.Font = GameFont.Small;
@@ -151,7 +127,7 @@ namespace ItsSorceryFramework
             Widgets.LabelCacheHeight(ref descRect, sorcerySchemaDef.description, true, false);
             coordY += descRect.height;
 
-            this.leftScrollViewHeight = coordY;
+            leftScrollViewHeight = coordY;
             Widgets.EndScrollView();
             Widgets.EndGroup();
 
