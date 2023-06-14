@@ -15,15 +15,15 @@ namespace ItsSorceryFramework
 		{
 			get
 			{
-				return this.curTracker;
+				return curTracker;
 			}
 			set
 			{
-				if (value == this.curTracker)
+				if (value == curTracker)
 				{
 					return;
 				}
-				this.curTracker = value;
+				curTracker = value;
 			}
 		}
 
@@ -31,9 +31,9 @@ namespace ItsSorceryFramework
 		{
 			get
 			{
-				foreach (LearningTabRecord tab in this.tabs)
+				foreach (LearningTabRecord tab in tabs)
 				{
-					if (tab.tracker == this.CurTracker)
+					if (tab.tracker == CurTracker)
 					{
 						return tab;
 					}
@@ -86,8 +86,8 @@ namespace ItsSorceryFramework
 			Rect leftOutRect = new Rect(0f, 0f, width, inRect.height - 24f - 10f);
 			Rect searchRect = new Rect(0f, leftOutRect.yMax + 10f, width, 24f);
 			Rect rightOutRect = new Rect(leftOutRect.xMax + 10f, 0f, inRect.width - leftOutRect.width - 10f, inRect.height);
-			this.DrawLeftRect(leftOutRect);
-			this.DrawRightRect(rightOutRect);
+			DrawLeftRect(leftOutRect);
+			DrawRightRect(rightOutRect);
 		}
 
 		private void DrawLeftRect(Rect leftOutRect)

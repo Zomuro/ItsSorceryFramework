@@ -13,17 +13,11 @@
 	
 	<ItsSorceryFramework.LearningTrackerDef Abstract = "True" ParentName = "LearningTrackerBase" Name = "LearningTrackerProgress">
 		<learningTrackerClass>ItsSorceryFramework.LearningTracker_Progress</learningTrackerClass>
-		<bgPath>UI/LearningTrackers/LogicaBG</bgPath>
 	</ItsSorceryFramework.LearningTrackerDef>
 	
 	<ItsSorceryFramework.LearningTreeNodeDef Abstract = "True" Name = "LearningTreeNodeBase">
-		<label>Birds and bees</label>
-		<description>The literal basics.</description>
-		
-		<!-- Define the LearningTracker_Tree this node is linked to.
-		<learningTrackerDef>LearningTracker_Tree</learningTrackerDef>-->
-		
-		<!-- use the coordinate system to place the nodes on the tree map.-->
+		<label/>
+		<description/>
 		<coordX>0</coordX>
 		<coordY>0</coordY>
 	</ItsSorceryFramework.LearningTreeNodeDef>

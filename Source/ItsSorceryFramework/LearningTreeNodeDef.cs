@@ -101,15 +101,16 @@ namespace ItsSorceryFramework
         {
             base.ResolveReferences();
 
-			if(learningTrackerDef == null) Log.Error("The LearningTrackerDef cannot be null.");
+			bool error = false;
 
-			foreach(LearningTreeNodeDef node in prereqs)
+			if(learningTrackerDef == null)
             {
-				if(node.learningTrackerDef != this.learningTrackerDef)
-                {
-					Log.Error("Prerequisite nodes must be in the same learning tracker. Error on: "+ node.defName);
-				}
-            }
+				error = true;
+				Log.Message("The LearningTrackerDef cannot be null.");
+			}
+
+			if(error) Log.Error("The LearningTrackerDef " + defName + " has errors.");
+
 		}
 
 		public LearningTrackerDef learningTrackerDef;
@@ -144,6 +145,8 @@ namespace ItsSorceryFramework
 		public Dictionary<HediffDef, float> prereqsHediff = new Dictionary<HediffDef, float>();
 
 		public List<NodeStatReqs> prereqsStats = new List<NodeStatReqs>();
+
+		public List<NodeSkillReqs> prereqsSkills = new List<NodeSkillReqs>();
 
 		public List<LearningTreeNodeDef> exclusiveNodes = new List<LearningTreeNodeDef>();
 
@@ -180,4 +183,27 @@ namespace ItsSorceryFramework
 
 		public LearningNodeStatPrereqMode mode = LearningNodeStatPrereqMode.Greater;
 	}
+
+	public class NodeSkillReqs
+	{
+		public List<SkillLevel> skillReqs;
+
+		public LearningNodeStatPrereqMode mode = LearningNodeStatPrereqMode.Greater;
+	}
+
+	public class SkillLevel
+    {
+		public SkillDef skillDef;
+
+		public int level = 1;
+
+		public int ClampedLevel
+        {
+            get
+            {
+				return Mathf.Clamp(level, 1, 20);
+			}
+        }
+		
+    }
 }

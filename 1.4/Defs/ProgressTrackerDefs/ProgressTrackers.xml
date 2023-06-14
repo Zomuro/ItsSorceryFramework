@@ -2,12 +2,16 @@
 <Defs>
 	<!-- Demostration + Testing ProgressTracker def -->
 	<ItsSorceryFramework.ProgressTrackerDef Abstract = "True" Name = "ProgressTrackerBase">
-		<progressTrackerClass>ItsSorceryFramework.ProgressTracker_RPG</progressTrackerClass>
+		<progressTrackerClass>ItsSorceryFramework.ProgressTracker</progressTrackerClass>
 		<progressHediff/>
 		<levelFactors/>
 		<levelSpecifics/>
 		<levelLabels/>
 		<expTags/>
+	</ItsSorceryFramework.ProgressTrackerDef>
+	
+	<ItsSorceryFramework.ProgressTrackerDef Abstract = "True" ParentName = "ProgressTrackerBase" Name = "ProgressTrackerLevelBase">
+		<progressTrackerClass>ItsSorceryFramework.ProgressTracker_Level</progressTrackerClass>
 	</ItsSorceryFramework.ProgressTrackerDef>
 	
 	<HediffDef Abstract = "True" Name="ProgressTrackerHediffBase"> 

@@ -66,6 +66,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Dialog_ProgressLevelOptions.cs" />
+    <Compile Include="Hediff_Progress.cs" />
     <Compile Include="LearningNodeStatPrereqMode.cs" />
     <Compile Include="LearningNodePrereqMode.cs" />
     <Compile Include="CompSchemaItem.cs" />
@@ -85,7 +86,7 @@
     <Compile Include="ProgressEXPWorker.cs" />
     <Compile Include="ProgressEXPTagDef.cs" />
     <Compile Include="LearningTracker_Progress.cs" />
-    <Compile Include="NodeCompletionUtility.cs" />
+    <Compile Include="LearningNodeRecord.cs" />
     <Compile Include="ProgressLevelOption.cs" />
     <Compile Include="ProgressLevelModifier.cs" />
     <Compile Include="CompAbilityEffect_AddEXP.cs" />
@@ -95,7 +96,8 @@
     <Compile Include="LearningTracker_Tree.cs" />
     <Compile Include="LearningTreeNodeDef.cs" />
     <Compile Include="EnergyTracker_Cooldown.cs" />
-    <Compile Include="ProgressTracker_RPG.cs" />
+    <Compile Include="ProgressTracker_Roguelike.cs" />
+    <Compile Include="ProgressTracker_Level.cs" />
     <Compile Include="SchemaJobDefOf.cs" />
     <Compile Include="SchemaJobDef.cs" />
     <Compile Include="EnergyTracker_Inverted.cs" />

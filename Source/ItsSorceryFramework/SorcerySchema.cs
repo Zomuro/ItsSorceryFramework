@@ -19,7 +19,8 @@ namespace ItsSorceryFramework
         {
             this.pawn = pawn;
             this.def = def;
-            this.InitializeTrackers();
+            InitializeTrackers(); // setup energy, learning, and progress trackers
+            InitializeNodeCompletion(); // setup record of learning nodes
             DetermineHasLimits();
             DetermineHasTurns();
         }
@@ -52,9 +53,6 @@ namespace ItsSorceryFramework
 
         public virtual void InitializeTrackers()
         {
-            /*this.energyTracker = Activator.CreateInstance(def.energyTrackerDef.energyTrackerClass,
-                new object[] { pawn, def}) as EnergyTracker;*/
-
             foreach (EnergyTrackerDef etDef in def.energyTrackerDefs)
             {
                 energyTrackers.Add(Activator.CreateInstance(etDef.energyTrackerClass,
@@ -67,9 +65,25 @@ namespace ItsSorceryFramework
                     new object[] { pawn, ltDef, def }) as LearningTracker);
             }
 
-            this.progressTracker = Activator.CreateInstance(def.progressTrackerDef.progressTrackerClass,
+            progressTracker = Activator.CreateInstance(def.progressTrackerDef.progressTrackerClass,
                 new object[] { pawn, def }) as ProgressTracker;
+        }
 
+        public virtual void InitializeNodeCompletion()
+        {
+            learningNodeRecord = new LearningNodeRecord(pawn, def); //testing initalization of node completion and saving
+        }
+
+        public Dictionary<LearningTreeNodeDef, bool> NodeCompletion
+        {
+            get
+            {
+                if(learningNodeRecord is null)
+                {
+                    learningNodeRecord = new LearningNodeRecord(pawn, def);
+                }
+                return learningNodeRecord.completion;
+            }
         }
 
         public virtual void SchemaTick()
@@ -226,6 +240,7 @@ namespace ItsSorceryFramework
             Scribe_Collections.Look(ref energyTrackers, "energyTrackers", LookMode.Deep, new object[] { pawn });
             Scribe_Collections.Look(ref learningTrackers, "learningTrackers", LookMode.Deep, new object[] { pawn });
             Scribe_Deep.Look(ref progressTracker, "progressTracker", new object[] { pawn });
+            Scribe_Deep.Look(ref learningNodeRecord, "nodeTracker", new object[] { pawn });
             Scribe_Values.Look(ref favorited, "favorited", false);
 
             Scribe_Values.Look(ref hasLimits, "hasLimits", false);
@@ -242,6 +257,8 @@ namespace ItsSorceryFramework
         public List<EnergyTracker> energyTrackers = new List<EnergyTracker>();
 
         public List<LearningTracker> learningTrackers = new List<LearningTracker>();
+
+        public LearningNodeRecord learningNodeRecord;
 
         public ProgressTracker progressTracker;
 
