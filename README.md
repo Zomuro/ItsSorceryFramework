@@ -1,5 +1,5 @@
-# It's Sorcery - a Modular Magic System Framework
- 
+![Preview](About/Preview.png)
+
 ## Introduction
 **It's Sorcery!** is a framework designed to build modular magic systems in XML. You may be asking "Why would I want to use this mod?"
 
@@ -10,7 +10,7 @@
 ## FAQ
 
 - **Is there any resource I can use when developing this mod?** This mod has a wiki- go and check it out for a fairly in-depth look. The source code is also included in the repo if you want to build custom components based on it.
-- **I'm the type of person who learns by doing. Are there any examples on how to use this mod?** In the wiki, there is a link for an example mod that you can use. It doesn't touch on all the features the framework offers, but it should provide you with enough guidance and confidence.
+- **I'm the type of person who learns by doing. Are there any examples on how to use this mod?** There is a link for an example mod that you can use in the wiki. It doesn't touch on all the features the framework offers, but it should provide you with enough guidance and confidence.
 - **Does this framework include [insert functionality not in the framework here]?** No, but I bet it's possible. If it's a really nice bit of functionality that can be used more generally, feel free to contribute it to this mod. I'm only one man, after all.
 
 ## Credits
@@ -20,6 +20,6 @@ Warmest thanks go to:
 - **Fraudecon**, for his input and wisdom;
 - **Flango**, for his contribution of skill trees to the learning system;
 - **Feldoh**, for his suggestions in developing the framework;
-- **DetVisor**, for his art contribution;
+- **DetVisor**, for his art contributions;
 
 And many others within the RimWorld community.
