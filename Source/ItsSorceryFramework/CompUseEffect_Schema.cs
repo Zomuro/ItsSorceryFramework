@@ -3,7 +3,7 @@ using Verse;
 
 namespace ItsSorceryFramework
 {
-	public class CompUseEffect_Schema : CompUseEffect
+    public class CompUseEffect_Schema : CompUseEffect
 	{
 		public CompProperties_UseEffectSchema Props
 		{

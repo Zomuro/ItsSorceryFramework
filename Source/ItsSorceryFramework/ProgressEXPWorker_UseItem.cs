@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using Verse;
 using UnityEngine;
+using Verse;
 
 namespace ItsSorceryFramework
 {

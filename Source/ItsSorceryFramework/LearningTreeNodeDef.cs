@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
-using RimWorld;
-using Verse;
+﻿using RimWorld;
+using System.Collections.Generic;
 using UnityEngine;
+using Verse;
 
 namespace ItsSorceryFramework
 {
-	public class LearningTreeNodeDef : Def
+    public class LearningTreeNodeDef : Def
 	{
 		public float ViewX
 		{

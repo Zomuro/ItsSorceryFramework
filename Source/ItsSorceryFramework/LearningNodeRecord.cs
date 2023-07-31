@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using RimWorld;
 using Verse;
 
 namespace ItsSorceryFramework
 {
-	public class LearningNodeRecord : IExposable
+    public class LearningNodeRecord : IExposable
 	{
         /// <summary>
         /// Used to keep a record of node completion across a schema's trackers for a pawn.

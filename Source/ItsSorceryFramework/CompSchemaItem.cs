@@ -3,7 +3,7 @@ using Verse;
 
 namespace ItsSorceryFramework
 {
-	public class CompSchemaItem : CompUsable
+    public class CompSchemaItem : CompUsable
 	{
 		public override void PostExposeData()
 		{

@@ -2,7 +2,7 @@
 
 namespace ItsSorceryFramework
 {
-	public class CompProperties_SchemaItem : CompProperties_Usable
+    public class CompProperties_SchemaItem : CompProperties_Usable
 	{
 		public SorcerySchemaDef schemaDef;
 	}

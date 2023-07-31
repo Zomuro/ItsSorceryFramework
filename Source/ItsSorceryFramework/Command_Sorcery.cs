@@ -1,7 +1,6 @@
-﻿using System;
-using RimWorld;
+﻿using RimWorld;
+using System;
 using Verse;
-using UnityEngine;
 
 namespace ItsSorceryFramework
 {

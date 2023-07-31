@@ -1,16 +1,14 @@
-﻿using System;
+﻿using RimWorld;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using RimWorld;
-using Verse;
 using UnityEngine;
+using Verse;
 
 
 namespace ItsSorceryFramework
 {
-	public class Dialog_ProgressLevelOptions : Dialog_DebugOptionListLister
+    public class Dialog_ProgressLevelOptions : Dialog_DebugOptionListLister
 	{
 		public override Vector2 InitialSize
 		{

@@ -2,7 +2,7 @@
 
 namespace ItsSorceryFramework
 {
-	public class CompProperties_UseEffectSchema : CompProperties_UseEffect
+    public class CompProperties_UseEffectSchema : CompProperties_UseEffect
 	{
 		public CompProperties_UseEffectSchema()
 		{

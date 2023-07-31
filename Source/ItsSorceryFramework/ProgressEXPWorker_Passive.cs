@@ -1,6 +1,6 @@
 ﻿using System;
-using Verse;
 using UnityEngine;
+using Verse;
 
 namespace ItsSorceryFramework
 {
