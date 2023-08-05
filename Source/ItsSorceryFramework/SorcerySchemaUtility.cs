@@ -24,11 +24,35 @@ namespace ItsSorceryFramework
             schemaComp.schemaTracker.sorcerySchemas.Add(InitializeSorcerySchema(pawn, def));
         }
 
+        public static void AddSorcerySchema(Pawn pawn, SorcerySchemaDef def, out SorcerySchema schema)
+        {
+            Comp_ItsSorcery schemaComp = GetSorceryComp(pawn);
+            if (schemaComp.schemaTracker.sorcerySchemas.FirstOrDefault(x => x.def == def) != null)
+            {
+                schema = null;
+                return;
+            }
+            schema = InitializeSorcerySchema(pawn, def);
+            schemaComp.schemaTracker.sorcerySchemas.Add(schema);
+        }
+
         public static void RemoveSorcerySchema(Pawn pawn, SorcerySchemaDef def)
         {
             Comp_ItsSorcery schemaComp = GetSorceryComp(pawn);
             if (schemaComp.schemaTracker.sorcerySchemas.FirstOrDefault(x => x.def == def) == null) return;
             schemaComp.schemaTracker.sorcerySchemas.Remove(InitializeSorcerySchema(pawn, def));
+        }
+
+        public static void RemoveSorcerySchema(Pawn pawn, SorcerySchemaDef def, out SorcerySchema schema)
+        {
+            Comp_ItsSorcery schemaComp = GetSorceryComp(pawn);
+            if (schemaComp.schemaTracker.sorcerySchemas.FirstOrDefault(x => x.def == def) == null) 
+            {
+                schema = null;
+                return;
+            }
+            schema = InitializeSorcerySchema(pawn, def);
+            schemaComp.schemaTracker.sorcerySchemas.Remove(schema);
         }
 
         public static List<SorcerySchema> GetSorcerySchemaList(Pawn pawn)

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using RimWorld;
 using Verse;
 
 namespace ItsSorceryFramework
@@ -75,6 +76,52 @@ namespace ItsSorceryFramework
                 return cachedAllNodes;
             }
         }
+
+        /*
+        public void CompletionAbilities(LearningTreeNodeDef node)
+        {
+            Pawn_AbilityTracker abilityTracker = pawn.abilities;
+
+            foreach (AbilityDef abilityDef in node.abilityGain)
+            {
+                abilityTracker.GainAbility(abilityDef);
+            }
+
+            foreach (AbilityDef abilityDef in node.abilityRemove)
+            {
+                abilityTracker.RemoveAbility(abilityDef);
+            }
+        }
+
+        public void CompletionHediffs(LearningTreeNodeDef node)
+        {
+            Hediff hediff;
+            foreach (NodeHediffProps props in node.hediffAdd)
+            {
+                hediff = HediffMaker.MakeHediff(props.hediffDef, pawn, null);
+                hediff.Severity = props.severity;
+
+                pawn.health.AddHediff(hediff, null, null, null);
+            }
+
+            foreach (NodeHediffProps props in node.hediffAdjust)
+            {
+                HealthUtility.AdjustSeverity(pawn, props.hediffDef, props.severity);
+            }
+
+            foreach (HediffDef hediffDef in node.hediffRemove)
+            {
+                hediff = pawn.health.hediffSet.GetFirstHediffOfDef(hediffDef);
+                if (hediff != null) pawn.health.RemoveHediff(hediff);
+            }
+        }
+
+        public void CompletionModifiers(LearningTreeNodeDef node)
+        {
+            ProgressTracker progressTracker = Schema.progressTracker; // get progresstracker
+            progressTracker.AdjustModifiers(node.statOffsets, node.statFactors, node.capMods); // update list of statMods and capMods
+            progressTracker.hediff.curStage = progressTracker.RefreshCurStage(); // rebuild hediffstage with adjusted stats & set hediff curstage to it
+        }*/
 
         public void RefreshAllNodes()
         {

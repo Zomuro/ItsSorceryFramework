@@ -16,15 +16,21 @@ namespace ItsSorceryFramework
         {
             Harmony harmony = new Harmony("Zomuro.ItsSorcery.Framework");
 
+            // EnergyTracker Patches
+
             // AddHumanlikeOrders_EnergyTracker_Consumable
             // if a pawn has a SorcerySchema with a Consumable class EnergyTracker, show the float menu
             harmony.Patch(AccessTools.Method(typeof(FloatMenuMakerMap), "AddHumanlikeOrders"), null,
                 new HarmonyMethod(typeof(HarmonyPatches), nameof(AddHumanlikeOrders_EnergyTracker_Consumable)));
 
+            // Ability Patches
+
             // DefIconAbilities
             // allows DefIcon to show abilitydef icons
             harmony.Patch(AccessTools.Method(typeof(Widgets), "DefIcon"), null,
                 new HarmonyMethod(typeof(HarmonyPatches), nameof(DefIconAbilities)));
+
+            // ProgressEXPWorker Patches
 
             // TakeDamage_AddEXP
             // for every magic system with the correct EXP tag, give xp depending on damage
@@ -46,6 +52,8 @@ namespace ItsSorceryFramework
             harmony.Patch(AccessTools.Method(typeof(FloatMenuMakerMap), "AddHumanlikeOrders"), null,
                 new HarmonyMethod(typeof(HarmonyPatches), nameof(AddHumanlikeOrders_EXPUseItem)));
 
+            // PawnGen Patches
+
 
         }
 
@@ -59,75 +67,7 @@ namespace ItsSorceryFramework
             {
                 EnergyTracker_AddOrders(schema, __0, __1, __2);
             }
-
-                // Disable for now; need to properly get energytrackers
-                /*Comp_ItsSorcery comp = __1.TryGetComp<Comp_ItsSorcery>() as Comp_ItsSorcery;
-                String text = "";
-                foreach (SorcerySchema schema in from schema in comp.schemaTracker.sorcerySchemas
-                                             where schema.energyTracker.GetType() == typeof(EnergyTracker_Consumable)
-                                             select schema)
-                {
-                    EnergyTracker energyTracker = schema.energyTracker;
-                    if (energyTracker == null || energyTracker.def.consumables.NullOrEmpty()) continue;
-
-                    List<EnergyConsumable> consumables = energyTracker.def.consumables;
-                    foreach (var consume in consumables)
-                    {
-                        Thing ammo = __0.ToIntVec3().GetFirstThing(__1.Map, consume.thingDef);
-                        if (ammo == null)
-                        {
-                            continue;
-                        }
-
-                        if (!__1.CanReach(ammo, PathEndMode.ClosestTouch, Danger.Deadly, false, false, TraverseMode.ByPawn))
-                        {
-                            text = "ISF_Charge".Translate(schema.def.LabelCap.ToString(), ammo.def.label)
-                                + "ISF_ChargeNoPath".Translate();
-                            __2.Add(new FloatMenuOption(text, null, MenuOptionPriority.Default,
-                                null, null, 0f, null, null, true, 0));
-                        }
-                        else if (energyTracker.MaxEnergy != 0 &&
-                            energyTracker.currentEnergy == energyTracker.MaxEnergy)
-                        {
-                            text = "ISF_Charge".Translate(schema.def.LabelCap.ToString(), ammo.def.label)
-                                + "ISF_ChargeFull".Translate();
-                            __2.Add(new FloatMenuOption(text, null, MenuOptionPriority.Default, 
-                                null, null, 0f, null, null, true, 0));
-                        }
-                        else
-                        {
-                            int count = 0;
-                            int endcount = ammo.stackCount;
-                            float gain = endcount * consume.exp;
-                            if (energyTracker.MaxEnergy == 0)
-                            {
-                                text = "ISF_Charge".Translate(schema.def.LabelCap.ToString(), ammo.def.label)
-                                + "ISF_ChargeCalc".Translate(ammo.stackCount, ammo.def.label,
-                                    ammo.stackCount * consume.exp,
-                                    energyTracker.def.energyLabelKey.Translate());
-                            }
-                            else
-                            {
-                                count = (int)Math.Ceiling((energyTracker.MaxEnergy - energyTracker.currentEnergy) / consume.exp);
-                                endcount = Math.Min(count, ammo.stackCount);
-                                gain = Math.Min(endcount * consume.exp, energyTracker.MaxEnergy - energyTracker.currentEnergy);
-                                text = "ISF_Charge".Translate(schema.def.LabelCap.ToString(), ammo.def.label)
-                                + "ISF_ChargeCalc".Translate(endcount, ammo.def.label,
-                                    gain, energyTracker.def.energyLabelKey.Translate());
-                            }
-
-                            Action chargeSchema = delegate ()
-                            {
-                                __1.jobs.TryTakeOrderedJob(JobGiver_Charge.MakeChargeEnergyJob(__1, schema, ammo, endcount), 
-                                    new JobTag?(JobTag.Misc), false);
-                            };
-                            __2.Add(FloatMenuUtility.DecoratePrioritizedTask(new FloatMenuOption(text, chargeSchema, 
-                                MenuOptionPriority.Default, null, null, 0f, null, null, true, 0), __1, ammo, "ReservedBy", null));
-                        }
-                    }
-                }*/
-
-                return;
+            return;
         }
 
         public static void EnergyTracker_AddOrders(SorcerySchema schema, Vector3 vec, Pawn pawn, List<FloatMenuOption> options)
@@ -347,6 +287,34 @@ namespace ItsSorceryFramework
 
             return;
         }
+
+        public static void SetupSchemas(ref Pawn pawn, PawnGenerationRequest request)
+        {
+            if (!request.KindDef.HasModExtension<ModExtension_SchemaSet>()) return;
+            ModExtension_SchemaSet allSets = request.KindDef.GetModExtension<ModExtension_SchemaSet>();
+
+            if (allSets.schemaSets.NullOrEmpty()) return;
+
+            foreach(var schemaSet in allSets.schemaSets)
+            {
+                SchemaReq req = schemaSet.GetRandSchema();
+                SorcerySchemaUtility.AddSorcerySchema(pawn, req.schema, out SorcerySchema schema);
+
+                foreach(var nod in req.requiredNodes)
+                {
+                    
+                    
+                }
+
+            }
+
+        }
+
+        public static void ResolvePrereqs()
+        {
+
+        }
+
 
         public static Dictionary<Pawn, Comp_ItsSorcery> cachedSchemaComps = new Dictionary<Pawn, Comp_ItsSorcery>();
 

@@ -835,9 +835,10 @@ namespace ItsSorceryFramework
             return true;
         }
 
+        // consider removing this
         public virtual void CompletionAbilities(LearningTreeNodeDef node)
         {
-            Pawn_AbilityTracker abilityTracker = this.pawn.abilities;
+            Pawn_AbilityTracker abilityTracker = pawn.abilities;
 
             foreach(AbilityDef abilityDef in node.abilityGain)
             {
