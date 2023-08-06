@@ -300,7 +300,8 @@ namespace ItsSorceryFramework
                 SchemaReq req = schemaSet.GetRandSchema();
                 SorcerySchemaUtility.AddSorcerySchema(pawn, req.schema, out SorcerySchema schema);
 
-                foreach(var nod in req.requiredNodes)
+                Stack<LearningTreeNodeDef> nodeStack = new Stack<LearningTreeNodeDef>();
+                foreach (var node in req.requiredNodes)
                 {
                     
                     
