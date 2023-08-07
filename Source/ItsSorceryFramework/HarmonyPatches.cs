@@ -290,30 +290,114 @@ namespace ItsSorceryFramework
 
         public static void SetupSchemas(ref Pawn pawn, PawnGenerationRequest request)
         {
+            // no modextension to the pawnkind for schemas = no work done
             if (!request.KindDef.HasModExtension<ModExtension_SchemaSet>()) return;
-            ModExtension_SchemaSet allSets = request.KindDef.GetModExtension<ModExtension_SchemaSet>();
+            ModExtension_SchemaSet allSets = request.KindDef.GetModExtension<ModExtension_SchemaSet>(); // else get all schema sets
 
-            if (allSets.schemaSets.NullOrEmpty()) return;
+            if (allSets.schemaSets.NullOrEmpty()) return; // if nothing in schema set, ignore this method
 
-            foreach(var schemaSet in allSets.schemaSets)
+            
+            foreach (var schemaSet in allSets.schemaSets) // else, for each schema set
             {
-                SchemaReq req = schemaSet.GetRandSchema();
-                SorcerySchemaUtility.AddSorcerySchema(pawn, req.schema, out SorcerySchema schema);
-
-                Stack<LearningTreeNodeDef> nodeStack = new Stack<LearningTreeNodeDef>();
-                foreach (var node in req.requiredNodes)
-                {
-                    
-                    
-                }
-
+                SchemaReq req = schemaSet.GetRandSchema(); // get random schema 
+                SorcerySchemaUtility.AddSorcerySchema(pawn, req.schema, out SorcerySchema schema); // add it
+                Stack<LearningTreeNodeDef> nodeStack = new Stack<LearningTreeNodeDef>(); // setup all the nodes for completion
+                foreach (var node in req.requiredNodes) AddAllPrereqStack(ref nodeStack, node);
+                ResolvePrereqs(ref nodeStack, schema);
             }
+
+            
 
         }
 
-        public static void ResolvePrereqs()
+        public static void AddAllPrereqStack(ref Stack<LearningTreeNodeDef> stack, LearningTreeNodeDef baseNodeDef)
         {
+            // no prereqs or the stack already has the base node -> end of prereq line OR their prereqs (if any) already done
+            if (baseNodeDef.prereqs.NullOrEmpty() || stack.Contains(baseNodeDef)) return;
 
+            // setup workstack by putting in the basenodedef to start the process
+            Stack<LearningTreeNodeDef> workStack = new Stack<LearningTreeNodeDef>();
+            LearningTreeNodeDef currNode;
+            stack.Push(baseNodeDef);
+            workStack.Push(baseNodeDef);
+
+            // as long as there's stuff to verify:
+            while (!workStack.EnumerableNullOrEmpty())
+            {
+                currNode = workStack.Pop(); // pull item from workStack
+                switch (currNode.prereqMode) // check its prerequisite completion mode
+                {
+                    case LearningNodePrereqMode.All: // all prereqs required? add them all to the workstack and stack
+                        if (currNode.prereqs.NullOrEmpty()) break;
+                        foreach (var prereq in currNode.prereqs)
+                        {
+                            stack.Push(prereq);
+                            workStack.Push(prereq);
+                        }
+                        break;
+
+                    case LearningNodePrereqMode.Or: // only one prereq required? take just one of them and push to workstack
+                        if (currNode.prereqs.NullOrEmpty()) break;
+                        var randPrereq = currNode.prereqs.RandomElement();
+                        stack.Push(randPrereq);
+                        workStack.Push(randPrereq);
+                        break;
+
+                    case LearningNodePrereqMode.Min: // a min number required? shuffle and take a portion and push to workstack
+                        if (currNode.prereqs.NullOrEmpty()) break;
+                        if (currNode.prereqResearchModeMin <= 0 || currNode.prereqResearchModeMin >= currNode.prereqs.Count())
+                        {
+                            foreach (var prereq in currNode.prereqs)
+                            {
+                                stack.Push(prereq);
+                                workStack.Push(prereq);
+                            }
+                            break;
+                        }
+
+                        IEnumerable<LearningTreeNodeDef> shuffled = currNode.prereqs.OrderBy(x => UnityEngine.Random.Range(0f, 1f)).Take(currNode.prereqResearchModeMin);
+                        foreach (var prereq in shuffled)
+                        {
+                            stack.Push(prereq);
+                            workStack.Push(prereq);
+                        }
+                        break;
+
+                    default:
+                        break;
+                }
+                
+            }
+        }
+
+        public static void ResolvePrereqs(ref Stack<LearningTreeNodeDef> stack, SorcerySchema schema)
+        {
+            LearningTreeNodeDef currNode;
+            while (!stack.EnumerableNullOrEmpty())
+            {
+                currNode = stack.Pop(); // put out most recent node
+                if (!schema.learningNodeRecord.completion.ContainsKey(currNode)) continue; // null check
+                if (!schema.learningNodeRecord.ExclusiveNodeFufilled(currNode))
+                {
+                    Log.Message(currNode.defName + " could not be completed due to an exclusive node in the pawnkind.");
+                    continue;
+                }
+                // if current node isn't completed, prereqsfufilled, and has no exlusive node conflict
+                if (!schema.learningNodeRecord.completion[currNode] && schema.learningNodeRecord.PrereqFufilled(currNode))
+                {
+                    schema.learningNodeRecord.completion[currNode] = true; // complete node
+                    schema.learningNodeRecord.CompletionAbilities(currNode); // adjust abilities
+                    schema.learningNodeRecord.CompletionHediffs(currNode); // adjust hediffs
+                    schema.learningNodeRecord.CompletionModifiers(currNode); // adjust stat modifiers
+                    schema.progressTracker.usedPoints += currNode.pointReq; // alter used points
+                }
+            }
+        }
+
+        public static void ResolveProgress(SorcerySchema schema)
+        {
+            // level up as many times required to fufill point requirements
+            // schema.progressTracker;
         }
 
 
