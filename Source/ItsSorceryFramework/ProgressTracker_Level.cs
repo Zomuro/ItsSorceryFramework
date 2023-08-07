@@ -75,6 +75,7 @@ namespace ItsSorceryFramework
         public override void ForceLevelUp()
         {
             if (hediff == null) return;
+            //if (hediff.Severity + 1 > hediff.def.maxSeverity) return;
             hediff.Severity += 1;
             NotifyLevelUp(hediff.Severity);
         }

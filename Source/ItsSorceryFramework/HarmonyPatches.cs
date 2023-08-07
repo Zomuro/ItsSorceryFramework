@@ -370,8 +370,36 @@ namespace ItsSorceryFramework
             }
         }
 
+        public static int ResolveReqPoints(Stack<LearningTreeNodeDef> stack, SorcerySchema schema)
+        {
+            int points = 0;
+            LearningTreeNodeDef currNode;
+
+            Dictionary<LearningTreeNodeDef, bool> tempCompletion = schema.learningNodeRecord.completion;
+            while (!stack.EnumerableNullOrEmpty())
+            {
+                currNode = stack.Pop(); // put out most recent node
+                if (!tempCompletion.ContainsKey(currNode)) continue; // null check
+                if (!schema.learningNodeRecord.ExclusiveNodeFufilled(currNode))
+                {
+                    Log.Message(currNode.defName + " couldn't be used to calculate points.");
+                    continue;
+                }
+                // if current node isn't completed, prereqsfufilled, and has no exlusive node conflict
+                if (!tempCompletion[currNode] && schema.learningNodeRecord.PrereqFufilled(currNode))
+                {
+                    tempCompletion[currNode] = true; // complete node
+                    points += currNode.pointReq; // alter used points
+                }
+            }
+
+            return points;
+        }
+
+        // we need to concurrently level progress AND complete prereqs
         public static void ResolvePrereqs(ref Stack<LearningTreeNodeDef> stack, SorcerySchema schema)
         {
+            bool levelFlag = schema.progressTracker.GetType() == typeof(ProgressTracker_Level); // check if progress system implements "levels" of some kind
             LearningTreeNodeDef currNode;
             while (!stack.EnumerableNullOrEmpty())
             {
@@ -385,11 +413,17 @@ namespace ItsSorceryFramework
                 // if current node isn't completed, prereqsfufilled, and has no exlusive node conflict
                 if (!schema.learningNodeRecord.completion[currNode] && schema.learningNodeRecord.PrereqFufilled(currNode))
                 {
+                    // handle the progress portion BEFORE the node completion portion
+                    schema.progressTracker.usedPoints += currNode.pointReq; // alter used points
+                    while (schema.progressTracker.points < schema.progressTracker.usedPoints) schema.progressTracker.ForceLevelUp(); // level up system till used points are exceed by normal points
+
+                    //NOTE - check for max level scenario
+
                     schema.learningNodeRecord.completion[currNode] = true; // complete node
                     schema.learningNodeRecord.CompletionAbilities(currNode); // adjust abilities
                     schema.learningNodeRecord.CompletionHediffs(currNode); // adjust hediffs
                     schema.learningNodeRecord.CompletionModifiers(currNode); // adjust stat modifiers
-                    schema.progressTracker.usedPoints += currNode.pointReq; // alter used points
+                    //schema.progressTracker.usedPoints += currNode.pointReq; // alter used points
                 }
             }
         }
@@ -397,7 +431,12 @@ namespace ItsSorceryFramework
         public static void ResolveProgress(SorcerySchema schema)
         {
             // level up as many times required to fufill point requirements
+            // need to figure out how to get everything and account for exclusive nodes
+            // potentially ensure that progresstracker is first BEFORE prereqs
             // schema.progressTracker;
+
+            if (schema.progressTracker.GetType() != typeof(ProgressTracker_Level)) return;
+            while(schema.progressTracker.points < schema.progressTracker.usedPoints) schema.progressTracker.ForceLevelUp();
         }
 
 
