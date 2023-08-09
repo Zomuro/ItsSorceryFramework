@@ -23,3 +23,8 @@ Warmest thanks go to:
 - **DetVisor**, for his art contributions;
 
 And many others within the RimWorld community.
+
+## DISCLAIMER
+This framework is not intended to be a replacement for the Royalty DLC, and should not be considered as such. It does emulates various features of Royalty, however.
+
+As such, if requested by Ludeon, this mod will require the Royalty DLC.
