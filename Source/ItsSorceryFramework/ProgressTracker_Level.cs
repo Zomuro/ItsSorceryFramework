@@ -60,7 +60,8 @@ namespace ItsSorceryFramework
 
             while (!done)
             {
-                if(exp > CurrentLevelEXPReq)
+                if (Maxed) break;
+                if (exp > CurrentLevelEXPReq)
                 {
                     exp -= CurrentLevelEXPReq;
                     hediff.Severity += 1;
@@ -74,8 +75,7 @@ namespace ItsSorceryFramework
 
         public override void ForceLevelUp()
         {
-            if (hediff == null) return;
-            //if (hediff.Severity + 1 > hediff.def.maxSeverity) return;
+            if (hediff == null || Maxed) return;
             hediff.Severity += 1;
             NotifyLevelUp(hediff.Severity);
         }

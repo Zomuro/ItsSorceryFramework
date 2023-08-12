@@ -107,6 +107,16 @@ namespace ItsSorceryFramework
                 return;
             }
 
+            if (!pawn.Faction.IsPlayer) // if we try to apply options to a NPC, just choose a random option.
+            {
+                ProgressLevelOption option = modifier.options.RandomElement();
+                AdjustModifiers(option);
+                AdjustAbilities(option);
+                AdjustHediffs(option);
+                points += option.pointGain;
+                return;
+            }
+
             // if there's a proper list of 2+ options for the progresslevelmodifier, create a window for selection.
             List<DebugMenuOption> options;
             if (select < 0 || select > modifier.options.Count) options = LevelOptions(modifier).ToList();

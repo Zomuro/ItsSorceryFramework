@@ -15,20 +15,32 @@ namespace ItsSorceryFramework
 
     public class SchemaSet
     {
-        public List<SchemaReq> schema;
+        public List<SchemaNodeMap> schemaMappings;
 
-        public SchemaReq GetRandSchema()
+        public SchemaNodeMap GetRandSchema()
         {
-            if (schema.NullOrEmpty()) return null;
-            return schema.RandomElementByWeight(x => x.WeightConstrained);
+            if (schemaMappings.NullOrEmpty()) return null;
+            return schemaMappings.RandomElementByWeight(x => x.WeightConstrained);
         }
     }
 
-    public class SchemaReq
+    public class SchemaNodeMap
     {
         public SorcerySchemaDef schema;
 
-        public List<LearningTreeNodeDef> requiredNodes;
+        public bool forceLevel = false; // instead of leveling pawn as needed, level to the set level
+
+        public int level = 1;
+
+        public bool forcePoints = false; // instead of getting the necessary skill points as needed, level to the set level
+
+        public int points = 1;
+
+        public float weight = 1;
+
+        //public List<LearningTreeNodeDef> requiredNodes;
+
+        public List<SchemaNodeReq> requiredNodes;
 
         public float WeightConstrained
         {
@@ -38,6 +50,15 @@ namespace ItsSorceryFramework
             }
         }
 
-        public float weight = 1;
+        
+    }
+
+    public class SchemaNodeReq
+    {
+        public LearningTreeNodeDef nodeDef;
+
+        public bool forceHediff = false;
+
+        public bool forceSkill = false;
     }
 }

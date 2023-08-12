@@ -299,16 +299,18 @@ namespace ItsSorceryFramework
             
             foreach (var schemaSet in allSets.schemaSets) // else, for each schema set
             {
-                SchemaReq req = schemaSet.GetRandSchema(); // get random schema 
+                SchemaNodeMap req = schemaSet.GetRandSchema(); // get random schema 
                 SorcerySchemaUtility.AddSorcerySchema(pawn, req.schema, out SorcerySchema schema); // add it
                 Stack<LearningTreeNodeDef> nodeStack = new Stack<LearningTreeNodeDef>(); // setup all the nodes for completion
-                foreach (var node in req.requiredNodes) AddAllPrereqStack(ref nodeStack, node);
-                ResolvePrereqs(ref nodeStack, schema);
+                //foreach (var node in req.requiredNodes) AddAllPrereqStack(ref nodeStack, node);
+                //ResolvePrereqs(ref nodeStack, schema);
             }
 
             
 
         }
+
+        /*
 
         public static void AddAllPrereqStack(ref Stack<LearningTreeNodeDef> stack, LearningTreeNodeDef baseNodeDef)
         {
@@ -405,12 +407,12 @@ namespace ItsSorceryFramework
             {
                 currNode = stack.Pop(); // put out most recent node
                 if (!schema.learningNodeRecord.completion.ContainsKey(currNode)) continue; // null check
-                if (!schema.learningNodeRecord.ExclusiveNodeFufilled(currNode))
+                if (!schema.learningNodeRecord.ExclusiveNodeFufilled(currNode)) // if there is an exlusive node conflict
                 {
                     Log.Message(currNode.defName + " could not be completed due to an exclusive node in the pawnkind.");
                     continue;
                 }
-                // if current node isn't completed, prereqsfufilled, and has no exlusive node conflict
+                // if current node isn't completed, prereqsfufilled, 
                 if (!schema.learningNodeRecord.completion[currNode] && schema.learningNodeRecord.PrereqFufilled(currNode))
                 {
                     // handle the progress portion BEFORE the node completion portion
@@ -437,7 +439,7 @@ namespace ItsSorceryFramework
 
             if (schema.progressTracker.GetType() != typeof(ProgressTracker_Level)) return;
             while(schema.progressTracker.points < schema.progressTracker.usedPoints) schema.progressTracker.ForceLevelUp();
-        }
+        }*/
 
 
         public static Dictionary<Pawn, Comp_ItsSorcery> cachedSchemaComps = new Dictionary<Pawn, Comp_ItsSorcery>();
