@@ -299,148 +299,121 @@ namespace ItsSorceryFramework
             
             foreach (var schemaSet in allSets.schemaSets) // else, for each schema set
             {
-                SchemaNodeMap req = schemaSet.GetRandSchema(); // get random schema 
-                SorcerySchemaUtility.AddSorcerySchema(pawn, req.schema, out SorcerySchema schema); // add it
-                Stack<LearningTreeNodeDef> nodeStack = new Stack<LearningTreeNodeDef>(); // setup all the nodes for completion
+                SchemaNodeMap mapping = schemaSet.GetRandSchema(); // get random schema 
+                SorcerySchemaUtility.AddSorcerySchema(pawn, mapping.schema, out SorcerySchema schema); // add it
+                ResolveForcedProgress(mapping, schema);
+
+
+                //Stack<LearningTreeNodeDef> nodeStack = new Stack<LearningTreeNodeDef>(); // setup all the nodes for completion
                 //foreach (var node in req.requiredNodes) AddAllPrereqStack(ref nodeStack, node);
                 //ResolvePrereqs(ref nodeStack, schema);
             }
-
-            
-
         }
 
-        /*
-
-        public static void AddAllPrereqStack(ref Stack<LearningTreeNodeDef> stack, LearningTreeNodeDef baseNodeDef)
+        public static void ResolveForcedProgress(SchemaNodeMap mapping, SorcerySchema schema)
         {
-            // no prereqs or the stack already has the base node -> end of prereq line OR their prereqs (if any) already done
-            if (baseNodeDef.prereqs.NullOrEmpty() || stack.Contains(baseNodeDef)) return;
+            // depending on the mapping's requirements, it will level up the schema and grant points depending on the system
 
-            // setup workstack by putting in the basenodedef to start the process
-            Stack<LearningTreeNodeDef> workStack = new Stack<LearningTreeNodeDef>();
-            LearningTreeNodeDef currNode;
-            stack.Push(baseNodeDef);
-            workStack.Push(baseNodeDef);
-
-            // as long as there's stuff to verify:
-            while (!workStack.EnumerableNullOrEmpty())
+            if (schema.progressTracker.GetType() != typeof(ProgressTracker_Level)) return; // if this system doesn't use a level-based progress tracker, skip it all
+            if (mapping.forceLevel) // if force level is implemented
             {
-                currNode = workStack.Pop(); // pull item from workStack
-                switch (currNode.prereqMode) // check its prerequisite completion mode
-                {
-                    case LearningNodePrereqMode.All: // all prereqs required? add them all to the workstack and stack
-                        if (currNode.prereqs.NullOrEmpty()) break;
-                        foreach (var prereq in currNode.prereqs)
-                        {
-                            stack.Push(prereq);
-                            workStack.Push(prereq);
-                        }
-                        break;
-
-                    case LearningNodePrereqMode.Or: // only one prereq required? take just one of them and push to workstack
-                        if (currNode.prereqs.NullOrEmpty()) break;
-                        var randPrereq = currNode.prereqs.RandomElement();
-                        stack.Push(randPrereq);
-                        workStack.Push(randPrereq);
-                        break;
-
-                    case LearningNodePrereqMode.Min: // a min number required? shuffle and take a portion and push to workstack
-                        if (currNode.prereqs.NullOrEmpty()) break;
-                        if (currNode.prereqResearchModeMin <= 0 || currNode.prereqResearchModeMin >= currNode.prereqs.Count())
-                        {
-                            foreach (var prereq in currNode.prereqs)
-                            {
-                                stack.Push(prereq);
-                                workStack.Push(prereq);
-                            }
-                            break;
-                        }
-
-                        IEnumerable<LearningTreeNodeDef> shuffled = currNode.prereqs.OrderBy(x => UnityEngine.Random.Range(0f, 1f)).Take(currNode.prereqResearchModeMin);
-                        foreach (var prereq in shuffled)
-                        {
-                            stack.Push(prereq);
-                            workStack.Push(prereq);
-                        }
-                        break;
-
-                    default:
-                        break;
-                }
-                
+                // level up until it reachs the right level
+                while (schema.progressTracker.CurrLevel < mapping.level) schema.progressTracker.ForceLevelUp();
             }
+            if (mapping.forcePoints) schema.progressTracker.points = mapping.points; // if force points implemented, forces points to be at that value
         }
 
-        public static int ResolveReqPoints(Stack<LearningTreeNodeDef> stack, SorcerySchema schema)
-        {
-            int points = 0;
-            LearningTreeNodeDef currNode;
-
-            Dictionary<LearningTreeNodeDef, bool> tempCompletion = schema.learningNodeRecord.completion;
-            while (!stack.EnumerableNullOrEmpty())
-            {
-                currNode = stack.Pop(); // put out most recent node
-                if (!tempCompletion.ContainsKey(currNode)) continue; // null check
-                if (!schema.learningNodeRecord.ExclusiveNodeFufilled(currNode))
-                {
-                    Log.Message(currNode.defName + " couldn't be used to calculate points.");
-                    continue;
-                }
-                // if current node isn't completed, prereqsfufilled, and has no exlusive node conflict
-                if (!tempCompletion[currNode] && schema.learningNodeRecord.PrereqFufilled(currNode))
-                {
-                    tempCompletion[currNode] = true; // complete node
-                    points += currNode.pointReq; // alter used points
-                }
-            }
-
-            return points;
-        }
-
-        // we need to concurrently level progress AND complete prereqs
-        public static void ResolvePrereqs(ref Stack<LearningTreeNodeDef> stack, SorcerySchema schema)
+        public static void ResolvePrereqs(SchemaNodeMap mapping, SorcerySchema schema)
         {
             bool levelFlag = schema.progressTracker.GetType() == typeof(ProgressTracker_Level); // check if progress system implements "levels" of some kind
-            LearningTreeNodeDef currNode;
-            while (!stack.EnumerableNullOrEmpty())
+            foreach (var nodeReq in mapping.requiredNodes)
             {
-                currNode = stack.Pop(); // put out most recent node
-                if (!schema.learningNodeRecord.completion.ContainsKey(currNode)) continue; // null check
-                if (!schema.learningNodeRecord.ExclusiveNodeFufilled(currNode)) // if there is an exlusive node conflict
+                if (!schema.learningNodeRecord.completion.ContainsKey(nodeReq.nodeDef)) continue; // null check
+                if (!schema.learningNodeRecord.ExclusiveNodeFufilled(nodeReq.nodeDef)) // if there is an exlusive node conflict
                 {
-                    Log.Message(currNode.defName + " could not be completed due to an exclusive node in the pawnkind.");
+                    Log.Message(nodeReq.nodeDef.defName + " could not be completed due to an exclusive node in the pawnkind.");
                     continue;
                 }
                 // if current node isn't completed, prereqsfufilled, 
-                if (!schema.learningNodeRecord.completion[currNode] && schema.learningNodeRecord.PrereqFufilled(currNode))
+                if (!schema.learningNodeRecord.completion[nodeReq.nodeDef] && schema.learningNodeRecord.PrereqFufilled(nodeReq.nodeDef))
                 {
                     // handle the progress portion BEFORE the node completion portion
-                    schema.progressTracker.usedPoints += currNode.pointReq; // alter used points
-                    while (schema.progressTracker.points < schema.progressTracker.usedPoints) schema.progressTracker.ForceLevelUp(); // level up system till used points are exceed by normal points
+                    if (!mapping.forceLevel)
+                    {
+                        schema.progressTracker.usedPoints += nodeReq.nodeDef.pointReq; // alter used points
+                        while (schema.progressTracker.points < schema.progressTracker.usedPoints && !schema.progressTracker.Maxed)
+                            schema.progressTracker.ForceLevelUp(); // level up system till used points are exceed by normal points
+                    }
 
-                    //NOTE - check for max level scenario
+                    ResolveForceHediff(nodeReq, schema);
 
-                    schema.learningNodeRecord.completion[currNode] = true; // complete node
-                    schema.learningNodeRecord.CompletionAbilities(currNode); // adjust abilities
-                    schema.learningNodeRecord.CompletionHediffs(currNode); // adjust hediffs
-                    schema.learningNodeRecord.CompletionModifiers(currNode); // adjust stat modifiers
-                    //schema.progressTracker.usedPoints += currNode.pointReq; // alter used points
+                    
+
+                    schema.learningNodeRecord.completion[nodeReq.nodeDef] = true; // complete node
+                    schema.learningNodeRecord.CompletionAbilities(nodeReq.nodeDef); // adjust abilities
+                    schema.learningNodeRecord.CompletionHediffs(nodeReq.nodeDef); // adjust hediffs
+                    schema.learningNodeRecord.CompletionModifiers(nodeReq.nodeDef); // adjust stat modifiers
                 }
             }
         }
 
-        public static void ResolveProgress(SorcerySchema schema)
+        public static void ResolveForceHediff(SchemaNodeReq nodeReq, SorcerySchema schema)
         {
-            // level up as many times required to fufill point requirements
-            // need to figure out how to get everything and account for exclusive nodes
-            // potentially ensure that progresstracker is first BEFORE prereqs
-            // schema.progressTracker;
+            if (!nodeReq.forceHediff) return;
 
-            if (schema.progressTracker.GetType() != typeof(ProgressTracker_Level)) return;
-            while(schema.progressTracker.points < schema.progressTracker.usedPoints) schema.progressTracker.ForceLevelUp();
-        }*/
+            foreach (var hediffReq in nodeReq.nodeDef.prereqsHediff)
+            {
+                if (schema.pawn.health.hediffSet.GetFirstHediffOfDef(hediffReq.Key) is Hediff hediff && hediff != null)
+                {
+                    hediff.Severity = hediffReq.Value;
+                }
+                else HealthUtility.AdjustSeverity(schema.pawn, hediffReq.Key, hediffReq.Value);
+            }
+        }
 
+        public static void ResolveForceSkill(SchemaNodeReq nodeReq, SorcerySchema schema)
+        {
+            if (!nodeReq.forceSkill) return;
+
+            SkillRecord currSkill;
+            foreach (var skillReq in nodeReq.nodeDef.prereqsSkills)
+            {
+                foreach (var skillLevel in skillReq.skillReqs)
+                {
+                    currSkill = schema.pawn.skills.GetSkill(skillLevel.skillDef);
+                    if (currSkill.TotallyDisabled) continue;
+                    switch (skillReq.mode)
+                    {
+                        case LearningNodeStatPrereqMode.Equal:
+                            if (currSkill.GetLevel() != skillLevel.level) currSkill.Level = skillLevel.level;
+                            break;
+
+                        case LearningNodeStatPrereqMode.NotEqual:
+                            if (currSkill.GetLevel() == skillLevel.level) currSkill.Level = skillLevel.level - 1;
+                            break;
+
+                        case LearningNodeStatPrereqMode.Greater:
+                            if (currSkill.GetLevel() <= skillLevel.level) currSkill.Level = skillLevel.level + 1;
+                            break;
+
+                        case LearningNodeStatPrereqMode.GreaterEqual:
+                            if (currSkill.GetLevel() < skillLevel.level) currSkill.Level = skillLevel.level;
+                            break;
+
+                        case LearningNodeStatPrereqMode.Lesser:
+                            if (currSkill.GetLevel() >= skillLevel.level) currSkill.Level = skillLevel.level - 1;
+                            break;
+
+                        case LearningNodeStatPrereqMode.LesserEqual:
+                            if (currSkill.GetLevel() > skillLevel.level) currSkill.Level = skillLevel.level;
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
 
         public static Dictionary<Pawn, Comp_ItsSorcery> cachedSchemaComps = new Dictionary<Pawn, Comp_ItsSorcery>();
 
