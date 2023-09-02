@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace ItsSorceryFramework
 {
-    public class ModExtension_SchemaSet : DefModExtension
+    public class ModExtension_PawnGenSchemaSet : DefModExtension
     {
         public override IEnumerable<string> ConfigErrors()
         {

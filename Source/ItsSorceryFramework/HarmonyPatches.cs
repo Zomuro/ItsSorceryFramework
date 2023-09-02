@@ -16,14 +16,14 @@ namespace ItsSorceryFramework
         {
             Harmony harmony = new Harmony("Zomuro.ItsSorcery.Framework");
 
-            // EnergyTracker Patches
+            // EnergyTracker Patches //
 
             // AddHumanlikeOrders_EnergyTracker_Consumable
             // if a pawn has a SorcerySchema with a Consumable class EnergyTracker, show the float menu
             harmony.Patch(AccessTools.Method(typeof(FloatMenuMakerMap), "AddHumanlikeOrders"), null,
                 new HarmonyMethod(typeof(HarmonyPatches), nameof(AddHumanlikeOrders_EnergyTracker_Consumable)));
 
-            // Ability Patches
+            // Ability Patches //
 
             // DefIconAbilities
             // allows DefIcon to show abilitydef icons
@@ -287,133 +287,17 @@ namespace ItsSorceryFramework
 
             return;
         }
-
-        public static void SetupSchemas(ref Pawn pawn, PawnGenerationRequest request)
+           
+        // POSTFIX: using a specific mod extension, allow pawns to be generated with custom magic systems
+        public static void TryGenerateNewPawnInternal_Schema(ref Pawn __result, ref PawnGenerationRequest __0)
         {
-            // no modextension to the pawnkind for schemas = no work done
-            if (!request.KindDef.HasModExtension<ModExtension_SchemaSet>()) return;
-            ModExtension_SchemaSet allSets = request.KindDef.GetModExtension<ModExtension_SchemaSet>(); // else get all schema sets
+            if (__result is null) return; // no pawn generated -> don't bother trying to add a magic schema
 
-            if (allSets.schemaSets.NullOrEmpty()) return; // if nothing in schema set, ignore this method
-
-            
-            foreach (var schemaSet in allSets.schemaSets) // else, for each schema set
-            {
-                SchemaNodeMap mapping = schemaSet.GetRandSchema(); // get random schema 
-                SorcerySchemaUtility.AddSorcerySchema(pawn, mapping.schema, out SorcerySchema schema); // add it
-                ResolveForcedProgress(mapping, schema);
-
-
-                //Stack<LearningTreeNodeDef> nodeStack = new Stack<LearningTreeNodeDef>(); // setup all the nodes for completion
-                //foreach (var node in req.requiredNodes) AddAllPrereqStack(ref nodeStack, node);
-                //ResolvePrereqs(ref nodeStack, schema);
-            }
+            PawnKindSchemaUtility.SetupSchemas(ref __result, __0); // run a static method for generating magic schema on pawns
         }
 
-        public static void ResolveForcedProgress(SchemaNodeMap mapping, SorcerySchema schema)
-        {
-            // depending on the mapping's requirements, it will level up the schema and grant points depending on the system
 
-            if (schema.progressTracker.GetType() != typeof(ProgressTracker_Level)) return; // if this system doesn't use a level-based progress tracker, skip it all
-            if (mapping.forceLevel) // if force level is implemented
-            {
-                // level up until it reachs the right level
-                while (schema.progressTracker.CurrLevel < mapping.level) schema.progressTracker.ForceLevelUp();
-            }
-            if (mapping.forcePoints) schema.progressTracker.points = mapping.points; // if force points implemented, forces points to be at that value
-        }
 
-        public static void ResolvePrereqs(SchemaNodeMap mapping, SorcerySchema schema)
-        {
-            bool levelFlag = schema.progressTracker.GetType() == typeof(ProgressTracker_Level); // check if progress system implements "levels" of some kind
-            foreach (var nodeReq in mapping.requiredNodes)
-            {
-                if (!schema.learningNodeRecord.completion.ContainsKey(nodeReq.nodeDef)) continue; // null check
-                if (!schema.learningNodeRecord.ExclusiveNodeFufilled(nodeReq.nodeDef)) // if there is an exlusive node conflict
-                {
-                    Log.Message(nodeReq.nodeDef.defName + " could not be completed due to an exclusive node in the pawnkind.");
-                    continue;
-                }
-                // if current node isn't completed, prereqsfufilled, 
-                if (!schema.learningNodeRecord.completion[nodeReq.nodeDef] && schema.learningNodeRecord.PrereqFufilled(nodeReq.nodeDef))
-                {
-                    // handle the progress portion BEFORE the node completion portion
-                    if (!mapping.forceLevel)
-                    {
-                        schema.progressTracker.usedPoints += nodeReq.nodeDef.pointReq; // alter used points
-                        while (schema.progressTracker.points < schema.progressTracker.usedPoints && !schema.progressTracker.Maxed)
-                            schema.progressTracker.ForceLevelUp(); // level up system till used points are exceed by normal points
-                    }
-
-                    ResolveForceHediff(nodeReq, schema);
-
-                    
-
-                    schema.learningNodeRecord.completion[nodeReq.nodeDef] = true; // complete node
-                    schema.learningNodeRecord.CompletionAbilities(nodeReq.nodeDef); // adjust abilities
-                    schema.learningNodeRecord.CompletionHediffs(nodeReq.nodeDef); // adjust hediffs
-                    schema.learningNodeRecord.CompletionModifiers(nodeReq.nodeDef); // adjust stat modifiers
-                }
-            }
-        }
-
-        public static void ResolveForceHediff(SchemaNodeReq nodeReq, SorcerySchema schema)
-        {
-            if (!nodeReq.forceHediff) return;
-
-            foreach (var hediffReq in nodeReq.nodeDef.prereqsHediff)
-            {
-                if (schema.pawn.health.hediffSet.GetFirstHediffOfDef(hediffReq.Key) is Hediff hediff && hediff != null)
-                {
-                    hediff.Severity = hediffReq.Value;
-                }
-                else HealthUtility.AdjustSeverity(schema.pawn, hediffReq.Key, hediffReq.Value);
-            }
-        }
-
-        public static void ResolveForceSkill(SchemaNodeReq nodeReq, SorcerySchema schema)
-        {
-            if (!nodeReq.forceSkill) return;
-
-            SkillRecord currSkill;
-            foreach (var skillReq in nodeReq.nodeDef.prereqsSkills)
-            {
-                foreach (var skillLevel in skillReq.skillReqs)
-                {
-                    currSkill = schema.pawn.skills.GetSkill(skillLevel.skillDef);
-                    if (currSkill.TotallyDisabled) continue;
-                    switch (skillReq.mode)
-                    {
-                        case LearningNodeStatPrereqMode.Equal:
-                            if (currSkill.GetLevel() != skillLevel.level) currSkill.Level = skillLevel.level;
-                            break;
-
-                        case LearningNodeStatPrereqMode.NotEqual:
-                            if (currSkill.GetLevel() == skillLevel.level) currSkill.Level = skillLevel.level - 1;
-                            break;
-
-                        case LearningNodeStatPrereqMode.Greater:
-                            if (currSkill.GetLevel() <= skillLevel.level) currSkill.Level = skillLevel.level + 1;
-                            break;
-
-                        case LearningNodeStatPrereqMode.GreaterEqual:
-                            if (currSkill.GetLevel() < skillLevel.level) currSkill.Level = skillLevel.level;
-                            break;
-
-                        case LearningNodeStatPrereqMode.Lesser:
-                            if (currSkill.GetLevel() >= skillLevel.level) currSkill.Level = skillLevel.level - 1;
-                            break;
-
-                        case LearningNodeStatPrereqMode.LesserEqual:
-                            if (currSkill.GetLevel() > skillLevel.level) currSkill.Level = skillLevel.level;
-                            break;
-
-                        default:
-                            break;
-                    }
-                }
-            }
-        }
 
         public static Dictionary<Pawn, Comp_ItsSorcery> cachedSchemaComps = new Dictionary<Pawn, Comp_ItsSorcery>();
 

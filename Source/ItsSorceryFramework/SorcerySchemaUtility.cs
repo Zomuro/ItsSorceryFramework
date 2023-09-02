@@ -27,9 +27,9 @@ namespace ItsSorceryFramework
         public static void AddSorcerySchema(Pawn pawn, SorcerySchemaDef def, out SorcerySchema schema)
         {
             Comp_ItsSorcery schemaComp = GetSorceryComp(pawn);
-            if (schemaComp.schemaTracker.sorcerySchemas.FirstOrDefault(x => x.def == def) != null)
+            if (schemaComp.schemaTracker.sorcerySchemas.FirstOrDefault(x => x.def == def) is SorcerySchema found && found != null)
             {
-                schema = null;
+                schema = found;
                 return;
             }
             schema = InitializeSorcerySchema(pawn, def);
