@@ -300,7 +300,23 @@ namespace ItsSorceryFramework
             PawnKindSchemaUtility.SetupSchemas(ref __result, __0); // run a static method for generating magic schema on pawns
         }
 
+        // POSTFIX: using a specific mod extension, allow pawns to gain custom magic systems through traits
+        public static void GainTrait_Schema(TraitSet __instance, Trait __0)
+        {
+            // no modextension for schemas = no work
+            if (!__0.def.HasModExtension<ModExtension_SchemaAddition>()) return;
+            ModExtension_SchemaAddition schemaExt = __0.def.GetModExtension<ModExtension_SchemaAddition>();
+            SorcerySchemaUtility.AddSorcerySchema(Traverse.Create(__instance).Field("pawn").GetValue<Pawn>(), schemaExt.schema);
+        }
 
+        // POSTFIX: using a specific mod extension, allow pawns to gain custom magic systems through genes
+        public static void AddGene_Schema(Pawn_GeneTracker __instance, GeneDef __0)
+        {
+            // no modextension for schemas = no work
+            if (!__0.HasModExtension<ModExtension_SchemaAddition>()) return;
+            ModExtension_SchemaAddition schemaExt = __0.GetModExtension<ModExtension_SchemaAddition>();
+            SorcerySchemaUtility.AddSorcerySchema(__instance.pawn, schemaExt.schema);
+        }
 
 
         public static Dictionary<Pawn, Comp_ItsSorcery> cachedSchemaComps = new Dictionary<Pawn, Comp_ItsSorcery>();

@@ -65,6 +65,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ModExtension_SchemaAddition.cs" />
     <Compile Include="PawnKindSchemaUtility.cs" />
     <Compile Include="ModExtension_PawnGenSchemaSet.cs" />
     <Compile Include="Dialog_ProgressLevelOptions.cs" />
