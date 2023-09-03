@@ -64,8 +64,6 @@ namespace ItsSorceryFramework
 
         public float weight = 1;
 
-        //public List<LearningTreeNodeDef> requiredNodes;
-
         public List<SchemaNodeReq> requiredNodes;
 
         private List<LearningTreeNodeDef> cachedNodes;

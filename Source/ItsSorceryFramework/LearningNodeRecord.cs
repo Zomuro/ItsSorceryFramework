@@ -26,6 +26,7 @@ namespace ItsSorceryFramework
         {
             this.pawn = pawn;
             this.schemaDef = schemaDef;
+            InitializeCompletion();
         }
 
         public LearningNodeRecord(Pawn pawn, SorcerySchema schema) // temp for now to test initalizing and saving
@@ -33,6 +34,7 @@ namespace ItsSorceryFramework
             this.pawn = pawn;
             schemaDef = schema.def;
             cachedSchema = schema;
+            InitializeCompletion();
         }
 
         public virtual void Initialize()
@@ -58,11 +60,24 @@ namespace ItsSorceryFramework
             Scribe_Defs.Look(ref schemaDef, "schemaDef");
         }
 
+
+        public void InitializeCompletion()
+        {
+            List<LearningTreeNodeDef> nodes = new List<LearningTreeNodeDef>(from def in DefDatabase<LearningTreeNodeDef>.AllDefsListForReading
+                                                           where schemaDef.learningTrackerDefs.Contains(def.learningTrackerDef)
+                                                           select def);
+
+            foreach (LearningTreeNodeDef node in nodes) // if completion doesn't contain the node, include it and set node to false
+            {
+                completion[node] = false;
+            }
+        }
+
         public List<LearningTreeNodeDef> AllNodes
         {
             get
             {
-                if (cachedAllNodes == null) // if cached nodes are empty
+                /*if (cachedAllNodes.NullOrEmpty()) // if cached nodes are empty
                 {
                     // get all nodes that use the learningTrackerDefs outlined in the schema
                     cachedAllNodes = new List<LearningTreeNodeDef>(from def in DefDatabase<LearningTreeNodeDef>.AllDefsListForReading
@@ -75,7 +90,9 @@ namespace ItsSorceryFramework
                     }
                 }
 
-                return cachedAllNodes;
+                return cachedAllNodes;*/
+
+                return completion.Keys.ToList();
             }
         }
 

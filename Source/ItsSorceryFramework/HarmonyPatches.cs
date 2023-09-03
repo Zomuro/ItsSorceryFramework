@@ -52,8 +52,12 @@ namespace ItsSorceryFramework
             harmony.Patch(AccessTools.Method(typeof(FloatMenuMakerMap), "AddHumanlikeOrders"), null,
                 new HarmonyMethod(typeof(HarmonyPatches), nameof(AddHumanlikeOrders_EXPUseItem)));
 
-            // PawnGen Patches
+            // PawnGen Patches //
 
+            // GenerateNewPawnInternal_Schema
+            // adds sorcery schema based on pawnkind def
+            harmony.Patch(AccessTools.Method(typeof(PawnGenerator), "GenerateNewPawnInternal"), null,
+                new HarmonyMethod(typeof(HarmonyPatches), nameof(GenerateNewPawnInternal_Schema)));
 
         }
 
@@ -289,7 +293,7 @@ namespace ItsSorceryFramework
         }
            
         // POSTFIX: using a specific mod extension, allow pawns to be generated with custom magic systems
-        public static void TryGenerateNewPawnInternal_Schema(ref Pawn __result, ref PawnGenerationRequest __0)
+        public static void GenerateNewPawnInternal_Schema(ref Pawn __result, ref PawnGenerationRequest __0)
         {
             if (__result is null) return; // no pawn generated -> don't bother trying to add a magic schema
 

@@ -6,16 +6,27 @@ namespace ItsSorceryFramework
     [StaticConstructorOnStartup]
     public class Comp_ItsSorcery : ThingComp
     {
-		public override void PostSpawnSetup(bool respawningAfterLoad)
+        public override void Initialize(CompProperties props)
+        {
+            base.Initialize(props);
+			if (parent is Pawn p)
+			{
+				pawn = p;
+				SchemaTrackerInitalize();
+			}
+		}
+
+
+        /*public override void PostSpawnSetup(bool respawningAfterLoad)
 		{
 			if (parent is Pawn p)
 			{
 				pawn = p;
-				CompInitalize();
+				SchemaTrackerInitalize();
 			}
-		}
+		}*/
 
-		public virtual void CompInitalize()
+		public virtual void SchemaTrackerInitalize()
 		{
 			if(pawn != null)
             {

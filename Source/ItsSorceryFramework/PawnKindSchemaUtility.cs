@@ -23,13 +23,13 @@ namespace ItsSorceryFramework
             {
                 SchemaNodeMap mapping = schemaSet.GetRandSchema(); // get random schema 
                 SorcerySchemaUtility.AddSorcerySchema(pawn, mapping.schema, out SorcerySchema schema); // add it
-                ResolveForcedLevel(mapping, schema); // if the mapping forces a minimum level, levels the pawn up to said stage
-                ResolveForcedPoints(mapping, schema); // adds points to match the forced point requirement or the current points, whichever is larger
-                ResolvePrereqs(mapping, schema); // finally, complete prerequisites as possible
+                ResolveForcedLevel(mapping, ref schema); // if the mapping forces a minimum level, levels the pawn up to said stage
+                ResolveForcedPoints(mapping, ref schema); // adds points to match the forced point requirement or the current points, whichever is larger
+                ResolvePrereqs(mapping, ref schema); // finally, complete prerequisites as possible
             }
         }
 
-        public static void ResolveForcedLevel(SchemaNodeMap mapping, SorcerySchema schema)
+        public static void ResolveForcedLevel(SchemaNodeMap mapping, ref SorcerySchema schema)
         {
             if (!mapping.forceLevel) return; // if a forced level is not implemented, just skip
 
@@ -38,17 +38,19 @@ namespace ItsSorceryFramework
             while (!schema.progressTracker.Maxed && schema.progressTracker.CurrLevel < mapping.level) schema.progressTracker.ForceLevelUp();
         }
 
-        public static void ResolveForcedPoints(SchemaNodeMap mapping, SorcerySchema schema)
+        public static void ResolveForcedPoints(SchemaNodeMap mapping, ref SorcerySchema schema)
         {
             // if the mapping forces points at a minimum level, sets point either at that level or at the points at the current level, whichever is higher
             if (mapping.forcePoints) schema.progressTracker.points = Math.Max(schema.progressTracker.points, mapping.points); 
         }
 
-        public static void ResolvePrereqs(SchemaNodeMap mapping, SorcerySchema schema)
+        public static void ResolvePrereqs(SchemaNodeMap mapping, ref SorcerySchema schema)
         {
             foreach (var nodeReq in mapping.requiredNodes) // for each node requirement within the mapping
             {
+                Log.Message("test1");
                 if (!schema.learningNodeRecord.completion.ContainsKey(nodeReq.nodeDef)) continue; // null check
+                Log.Message("test2");
                 if (!schema.learningNodeRecord.ExclusiveNodeFufilled(nodeReq.nodeDef)) // if there is an exlusive node conflict
                 {
                     Log.Message(schema.pawn.Name.ToStringShort +": " + nodeReq.nodeDef.defName + " could not be completed due to an exclusive node in the pawnkind.");
@@ -73,8 +75,8 @@ namespace ItsSorceryFramework
                     // other prereq resolution //
                     // stats changes have many sources - thus, it is easier to assume that the pawn had met a requirement previously
                     // hediffs and skill level are more difficult to wave away
-                    ResolveForceHediff(nodeReq, schema); // if set, forces pawn to have hediffs before completing the node
-                    ResolveForceSkill(nodeReq, schema); // if set, forces pawn to have the proper skill level before completing the node
+                    ResolveForceHediff(nodeReq, ref schema); // if set, forces pawn to have hediffs before completing the node
+                    ResolveForceSkill(nodeReq, ref schema); // if set, forces pawn to have the proper skill level before completing the node
 
                     schema.learningNodeRecord.CompletionAbilities(nodeReq.nodeDef); // adjust abilities
                     schema.learningNodeRecord.CompletionHediffs(nodeReq.nodeDef); // adjust hediffs
@@ -88,7 +90,7 @@ namespace ItsSorceryFramework
             }
         }
 
-        public static void ResolveForceHediff(SchemaNodeReq nodeReq, SorcerySchema schema)
+        public static void ResolveForceHediff(SchemaNodeReq nodeReq, ref SorcerySchema schema)
         {
             if (!nodeReq.forceHediff) return; // if the node req doesn't force hediff requirements, skip
 
@@ -102,7 +104,7 @@ namespace ItsSorceryFramework
             }
         }
 
-        public static void ResolveForceSkill(SchemaNodeReq nodeReq, SorcerySchema schema)
+        public static void ResolveForceSkill(SchemaNodeReq nodeReq, ref SorcerySchema schema)
         {
             if (!nodeReq.forceSkill) return; // if the node req doesn't force skill requirements, skip
 
