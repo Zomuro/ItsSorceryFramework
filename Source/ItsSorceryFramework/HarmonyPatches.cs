@@ -59,6 +59,16 @@ namespace ItsSorceryFramework
             harmony.Patch(AccessTools.Method(typeof(PawnGenerator), "GenerateNewPawnInternal"), null,
                 new HarmonyMethod(typeof(HarmonyPatches), nameof(GenerateNewPawnInternal_Schema)));
 
+            // GainTrait_Schema
+            // adds sorcery schema through trait
+            harmony.Patch(AccessTools.Method(typeof(TraitSet), "GainTrait"), null,
+                new HarmonyMethod(typeof(HarmonyPatches), nameof(GainTrait_Schema)));
+
+            // AddGene_Schema
+            // adds sorcery schema through gene
+            harmony.Patch(AccessTools.Method(typeof(Pawn_GeneTracker), "AddGene", new[] { typeof(GeneDef), typeof(bool) }), null,
+                new HarmonyMethod(typeof(HarmonyPatches), nameof(AddGene_Schema)));
+
         }
 
         // POSTFIX: when right clicking items that can reload the schema, provide FloatMenu option to "reload" with them
@@ -74,6 +84,7 @@ namespace ItsSorceryFramework
             return;
         }
 
+        // HELPER METHOD
         public static void EnergyTracker_AddOrders(SorcerySchema schema, Vector3 vec, Pawn pawn, List<FloatMenuOption> options)
         {
             if (schema.energyTrackers.NullOrEmpty()) return;
@@ -130,9 +141,6 @@ namespace ItsSorceryFramework
 
                         Action chargeSchema = delegate ()
                         {
-                            /*pawn.jobs.TryTakeOrderedJob(JobGiver_Charge.MakeChargeEnergyJob(pawn, schema, ammo, endcount),
-                                new JobTag?(JobTag.Misc), false);*/
-
                             pawn.jobs.TryTakeOrderedJob(JobGiver_Charge.MakeChargeEnergyJob(pawn, schema, energyTracker, ammo, endcount),
                                 new JobTag?(JobTag.Misc), false);
                         };
@@ -157,6 +165,7 @@ namespace ItsSorceryFramework
             return;
         }
 
+        // HELPER METHOD
         public static void CacheComp(Pawn pawn)
         {
             if (!cachedSchemaComps.ContainsKey(pawn))
@@ -172,17 +181,18 @@ namespace ItsSorceryFramework
             {
                 Pawn caster;
                 if (__0.Instigator != null && (caster = __0.Instigator as Pawn) != null && caster.IsColonist) 
-                    applyDamageEXP(caster, __0, typeof(ProgressEXPWorker_OnDamage)); 
+                    ApplyDamageEXP(caster, __0, typeof(ProgressEXPWorker_OnDamage)); 
 
                 Pawn target;
                 if ((target = __instance as Pawn) != null && target.IsColonist)
-                    applyDamageEXP(target, __0, typeof(ProgressEXPWorker_OnDamaged));
+                    ApplyDamageEXP(target, __0, typeof(ProgressEXPWorker_OnDamaged));
             }
 
             return;
         }
 
-        public static void applyDamageEXP(Pawn pawn, DamageInfo dinfo, Type progressWorkerClass)
+        // HELPER METHOD
+        public static void ApplyDamageEXP(Pawn pawn, DamageInfo dinfo, Type progressWorkerClass)
         {
             CacheComp(pawn);
             Comp_ItsSorcery comp = cachedSchemaComps[pawn];
@@ -200,6 +210,7 @@ namespace ItsSorceryFramework
             return;
         }
 
+        // HELPER METHOD
         public static void Learn_AddEXP(SkillRecord __instance, float __0)
         {
             // player won't care if it isn't their own pawn getting skill exp, and they won't really notice.
