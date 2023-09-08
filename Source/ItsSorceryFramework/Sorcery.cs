@@ -37,27 +37,18 @@ namespace ItsSorceryFramework
             }
         }
 
+        public override bool CanCast
+        {
+            get
+            {
+                if (!base.CanCast) return false;
+                foreach (var et in Schema.energyTrackers) if (et.WouldReachLimitEnergy(def.statBases.GetStatValueFromList(et.def.energyUnitStatDef, 0), sorceryDef)) return false;
+                return true;
+            }
+        }
+
         public override bool Activate(GlobalTargetInfo target)
         {
-            // disable for now; get the proper energytrackers first
-            /*EnergyTracker energyTracker = SorcerySchemaUtility.FindSorcerySchema(pawn, sorceryDef).energyTracker;
-
-            if (energyTracker == null) return false;
-
-            if (!energyTracker.TryAlterEnergy(sorceryDef.EnergyCost))
-            {
-                return false;
-            }
-
-            foreach (ProgressEXPWorker worker in Schema.progressTracker.def.Workers)
-            {
-                if(worker.GetType() == typeof(ProgressEXPWorker_CastEnergyCost))
-                {
-                    worker.TryExecute(Schema.progressTracker, sorceryDef.EnergyCost);
-                    break;
-                }
-            }*/
-
             foreach (var et in Schema.energyTrackers)
             {
                 if (!et.TryAlterEnergy(sorceryDef.statBases.GetStatValueFromList(et.def.energyUnitStatDef, 0f) * et.EnergyCostFactor, sorceryDef)) return false;
@@ -78,18 +69,6 @@ namespace ItsSorceryFramework
 
         public override bool Activate(LocalTargetInfo target, LocalTargetInfo dest)
         {
-            /*EnergyTracker energyTracker = SorcerySchemaUtility.FindSorcerySchema(pawn, sorceryDef).energyTracker;
-            if (energyTracker == null) return false;
-
-            float finalEnergyCost = sorceryDef.EnergyCost * energyTracker.EnergyCostFactor;
-            if (!energyTracker.TryAlterEnergy(finalEnergyCost, sorceryDef, this))
-            {
-                return false;
-            }
-
-            var worker = Schema.progressTracker.def.Workers.FirstOrDefault(x => x.GetType() == typeof(ProgressEXPWorker_CastEnergyCost));
-            if(worker != null) worker.TryExecute(Schema.progressTracker, sorceryDef.EnergyCost);*/
-
             foreach(var et in Schema.energyTrackers)
             {
                 if (!et.TryAlterEnergy(sorceryDef.statBases.GetStatValueFromList(et.def.energyUnitStatDef, 0f) * et.EnergyCostFactor, sorceryDef)) return false;
