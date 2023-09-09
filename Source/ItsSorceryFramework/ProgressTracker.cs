@@ -451,7 +451,7 @@ namespace ItsSorceryFramework
             float x = rect.x;
 
             Text.Font = GameFont.Medium;
-            Widgets.LabelCacheHeight(ref rect, "Experience:", true, false);
+            Widgets.LabelCacheHeight(ref rect, "Experience", true, false);
             rect.yMin += rect.height;
             //Text.Font = GameFont.Small;
             rect.x += 22f;
@@ -588,25 +588,36 @@ namespace ItsSorceryFramework
             float yMin = rect.yMin;
             float x = rect.x;
 
-            List<Sorcery> sorceries = (from ability in pawn.abilities.abilities
+            /*List<Sorcery> sorceries = (from ability in pawn.abilities.abilities
                                        where (ability as Sorcery) != null && (ability as Sorcery).sorceryDef.sorcerySchema == sorcerySchemaDef
-                                       select (ability as Sorcery)).ToList();
+                                       select (ability as Sorcery)).ToList();*/
 
-            List<SorceryDef> sorceryDefs = (from def in DefDatabase<SorceryDef>.AllDefs
+            /*List<SorceryDef> sorceryDefs = (from def in DefDatabase<SorceryDef>.AllDefs
                                             where def.sorcerySchema == sorcerySchemaDef
-                                            select def).ToList();
+                                            select def).ToList();*/
+
+            //List<SorceryDef> sorceryDefs = (from sorcery in AllSorceries select sorcery.sorceryDef).ToList();
 
             Text.Font = GameFont.Medium;
             Rect titleRect = new Rect(rect);
-            Widgets.LabelCacheHeight(ref titleRect, "Sorceries:", true, false);
+            Widgets.LabelCacheHeight(ref titleRect, "Sorceries", true, false);
+
+            Rect titleButtonRect = new Rect(titleRect);
             rect.yMin += titleRect.height;
             Text.Font = GameFont.Small;
+
+            titleButtonRect.x = rect.x + rect.width / 3f;
+            titleButtonRect.width = rect.width / 6f;
+            if (Widgets.ButtonText(titleButtonRect, "Selection"))
+            {
+                Find.WindowStack.Add(new Dialog_SorcerySelection(AllSorceries));
+            }
 
             float scale = 50f;
 
             Color col = Color.white;
             Rect bounds = new Rect(rect.x, rect.y, rect.width - 5f, rect.height);
-            Rect sorceriesRect = GenUI.DrawElementStack<SorceryDef>(bounds, scale, sorceryDefs,
+            Rect sorceriesRect = GenUI.DrawElementStack(bounds, scale, AllSorceryDefs,
                 delegate (Rect r, SorceryDef sorceryDef)
                 {
                     if (pawn.abilities.GetAbility(sorceryDef) != null) col = Color.white;
@@ -634,6 +645,29 @@ namespace ItsSorceryFramework
             rect.yMin += sorceriesRect.height;
 
             return rect.yMin - yMin;
+        }
+
+        public List<Sorcery> AllSorceries
+        {
+            get
+            {
+                return pawn.abilities.AllAbilitiesForReading.Where(x => x is Sorcery s && s != null && s.Schema.def == sorcerySchemaDef).Select(x => x as Sorcery).ToList();
+            }
+        }
+
+        public List<SorceryDef> AllSorceryDefs
+        {
+            get
+            {
+                if (cachedSorceryDefs.NullOrEmpty())
+                {
+                    cachedSorceryDefs = (from def in DefDatabase<SorceryDef>.AllDefs
+                                         where def.sorcerySchema == sorcerySchemaDef
+                                         select def).ToList();
+                }
+
+                return cachedSorceryDefs;
+            }
         }
 
 
@@ -665,6 +699,10 @@ namespace ItsSorceryFramework
         private string cachedLevelLabel;
 
         private List<ProgressLevelLabel> cachedLevelLabels;
+
+        private List<SorceryDef> cachedSorceryDefs = new List<SorceryDef>();
+
+        //private bool cacheDirtySorceries = true;
 
         public System.Random rand = new System.Random();
     }

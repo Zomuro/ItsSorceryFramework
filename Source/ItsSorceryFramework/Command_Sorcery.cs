@@ -17,6 +17,14 @@ namespace ItsSorceryFramework
 
         }
 
+		public override bool Visible
+		{
+			get
+			{
+				return Ability is Sorcery sorcery && sorcery != null ? sorcery.visible : true;
+			}
+		}
+
 		protected override void DisabledCheck()
 		{
 			// future zom's problem- created cached strings for this + whenever energycostfactor gets changed, clear cache of text constructed

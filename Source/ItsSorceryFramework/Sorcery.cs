@@ -23,6 +23,7 @@ namespace ItsSorceryFramework
         {
             base.ExposeData();
             Scribe_Defs.Look(ref this.sorceryDef, "sorceryDef");
+            Scribe_Values.Look(ref visible, "visible", true);
         }
 
         public SorcerySchema Schema
@@ -109,5 +110,7 @@ namespace ItsSorceryFramework
         public SorceryDef sorceryDef;
 
         public SorcerySchema sorcerySchema;
+
+        public bool visible = true;
     }
 }
