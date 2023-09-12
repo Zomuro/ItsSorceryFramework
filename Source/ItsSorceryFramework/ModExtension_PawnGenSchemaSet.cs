@@ -152,5 +152,7 @@ namespace ItsSorceryFramework
         public bool forceHediff = false;
 
         public bool forceSkill = false;
+
+        public bool forceLevel = false;
     }
 }

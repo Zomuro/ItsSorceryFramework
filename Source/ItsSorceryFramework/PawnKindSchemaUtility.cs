@@ -77,6 +77,7 @@ namespace ItsSorceryFramework
                     // hediffs and skill level are more difficult to wave away
                     ResolveForceHediff(nodeReq, ref schema); // if set, forces pawn to have hediffs before completing the node
                     ResolveForceSkill(nodeReq, ref schema); // if set, forces pawn to have the proper skill level before completing the node
+                    ResolveForceLevelNode(nodeReq, ref schema); // if set, forces pawn to be leveled up to a certain level
 
                     schema.learningNodeRecord.CompletionAbilities(nodeReq.nodeDef); // adjust abilities
                     schema.learningNodeRecord.CompletionHediffs(nodeReq.nodeDef); // adjust hediffs
@@ -146,6 +147,12 @@ namespace ItsSorceryFramework
                     }
                 }
             }
+        }
+
+        public static void ResolveForceLevelNode(SchemaNodeReq nodeReq, ref SorcerySchema schema)
+        {
+            if (!nodeReq.forceLevel) return; // if the node req doesn't force hediff requirements, skip
+            while (!schema.progressTracker.Maxed && nodeReq.nodeDef.prereqLevel > schema.progressTracker.CurrLevel) schema.progressTracker.ForceLevelUp();
         }
 
     }

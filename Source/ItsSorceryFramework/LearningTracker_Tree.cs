@@ -250,7 +250,7 @@ namespace ItsSorceryFramework
 
         private float DrawNodePrereqs(LearningTreeNodeDef node, Rect rect)
         {
-            if (node.prereqs.NullOrEmpty() && node.prereqsResearch.NullOrEmpty() && node.prereqsStats.NullOrEmpty() && 
+            if (node.prereqs.NullOrEmpty() && node.prereqsResearch.NullOrEmpty() && node.prereqLevel <= 0 && node.prereqsStats.NullOrEmpty() && 
                 node.prereqsSkills.NullOrEmpty() && node.prereqsHediff.NullOrEmpty()) return 0f;
             float xMin = rect.xMin;
             float yMin = rect.yMin;
@@ -304,6 +304,15 @@ namespace ItsSorceryFramework
                     Widgets.LabelCacheHeight(ref rect, prereq.LabelCap, true, false);
                     rect.yMin += rect.height;
                 }
+                GUI.color = Color.white;
+                rect.xMin = xMin;
+            }
+
+            if(node.prereqLevel > 0)
+            {
+                SetPrereqStatusColor(!LearningRecord.PrereqLevelFulfilled(node), node);
+                Widgets.LabelCacheHeight(ref rect, "ISF_LearningNodeLevelReq".Translate(node.prereqLevel), true, false);
+                rect.yMin += rect.height;
                 GUI.color = Color.white;
                 rect.xMin = xMin;
             }

@@ -359,6 +359,13 @@ namespace ItsSorceryFramework
             return true;
         }
 
+        public bool PrereqLevelFulfilled(LearningTreeNodeDef node)
+        {
+            if (node.prereqLevel <= Schema.progressTracker.CurrLevel) return true;
+            return false;
+        }
+
+
         public bool ExclusiveNodeFufilled(LearningTreeNodeDef node)
         {
             if (!ExclusiveNodes.ContainsKey(node)) return true;

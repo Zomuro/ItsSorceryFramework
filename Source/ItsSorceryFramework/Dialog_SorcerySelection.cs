@@ -47,44 +47,51 @@ namespace ItsSorceryFramework
 			titleRect.y+= titleRect.height;
 			Text.Font = GameFont.Tiny;
 			Widgets.LabelCacheHeight(ref titleRect, "Toggle sorceries for visibility. Grayed-out sorceries are not visible.", true, false);
-			titleRect.y += titleRect.height;
+			titleRect.y += titleRect.height + 10f;
 			Text.Font = GameFont.Small;
 
 			// fields for elements list
 			float scale = 50f;
-			Color col = Color.white;
+			Color colHighlight = Color.white;
+			Color colBorder = Color.white;
 
 			Rect bounds = new Rect(titleRect.x, titleRect.y, rect.width, rect.yMax - titleRect.y); // scroll boundary rect
 			Rect viewRect = new Rect(bounds.x, bounds.y, bounds.width - 10f, scrollViewHeight); // scroll view rect
-			Widgets.DrawBoxSolidWithOutline(bounds, Color.clear, Color.green); // outline bound
-			Widgets.DrawBoxSolidWithOutline(viewRect, Color.clear, Color.grey); // outline view
+			//Widgets.DrawBoxSolidWithOutline(bounds, Color.clear, Color.green); // outline bound box
+			//Widgets.DrawBoxSolidWithOutline(viewRect, Color.clear, Color.grey); // outline view
 
 			Widgets.BeginScrollView(bounds, ref scrollPosition, viewRect, true); // start scroll
 
-			Rect sorceriesRect = GenUI.DrawElementStack(bounds, scale, allSorcery,
+			Rect sorceriesRect = GenUI.DrawElementStack(viewRect, scale, allSorcery,
 				delegate (Rect r, Sorcery sorcery)
 				{
-					if (sorcery.visible) col = Color.white;
-					else col = new Color(0.25f, 0.25f, 0.25f);
+					// changes highlight of element rect- 100% color if visible, grayed out if not
+					if (sorcery.visible) colHighlight = Color.white;
+					else colHighlight = new Color(0.25f, 0.25f, 0.25f);
 
-					GUI.DrawTexture(r, BaseContent.ClearTex);
-					if (Mouse.IsOver(r))
+					// GUI.DrawTexture(r, BaseContent.ClearTex);
+					if (Mouse.IsOver(r)) // if hovering over element
 					{
-						Widgets.DrawHighlight(r);
-					}
-					if (Widgets.ButtonImage(r, sorcery.sorceryDef.uiIcon, col, true))
-					{
-						//Find.WindowStack.Add(new Dialog_InfoCard(sorcery.sorceryDef, null));
-						sorcery.visible = !sorcery.visible;
-					}
-					if (Mouse.IsOver(r))
-					{
-						TipSignal tip = new TipSignal(() => sorcery.SorceryTooltip + "\n\n" + "ClickToLearnMore".Translate().Colorize(ColoredText.SubtleGrayColor),
+						Widgets.DrawHighlight(r); // highlight rect
+						TipSignal tip = new TipSignal(() => sorcery.SorceryTooltip,
 							(int)bounds.y * 37);
-						TooltipHandler.TipRegion(r, tip);
+						TooltipHandler.TipRegion(r, tip); // shows tip box where mouse is hovered over
+					}
+					if (Widgets.ButtonImage(r, sorcery.sorceryDef.uiIcon, colHighlight, true)) // if element rect is selected
+					{
+						sorcery.visible = !sorcery.visible; // toggles sorcery visibility
 					}
 
-				}, (Sorcery sorcery) => scale, 4f, 5f, true);
+					// draw white outline around the element rectangle for visible sorceries, black for non-visible
+					if (sorcery.visible) colBorder = Color.white;
+                    else colBorder = Color.black;
+
+					Color color = GUI.color;
+					GUI.color = colBorder;
+					Widgets.DrawBox(r, 1, null);
+					GUI.color = color;
+
+				}, (Sorcery sorcery) => scale, 5f, 5f, true);
 			scrollViewHeight = sorceriesRect.height; // set view rect height to elementwindow height
 
 			Widgets.EndScrollView();
