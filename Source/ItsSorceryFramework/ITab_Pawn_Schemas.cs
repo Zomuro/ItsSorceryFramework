@@ -15,7 +15,7 @@ namespace ItsSorceryFramework
         {
             get
             {
-                return SorceryComp != null && SelPawn.IsColonist && !HashSchemas.EnumerableNullOrEmpty();
+                return SorceryComp != null  && !HashSchemas.EnumerableNullOrEmpty(); //&& SelPawn.IsColonist
             }
         }
 

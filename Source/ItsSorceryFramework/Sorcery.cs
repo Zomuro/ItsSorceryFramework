@@ -43,7 +43,7 @@ namespace ItsSorceryFramework
             get
             {
                 if (!base.CanCast) return false;
-                foreach (var et in Schema.energyTrackers) if (et.WouldReachLimitEnergy(def.statBases.GetStatValueFromList(et.def.energyUnitStatDef, 0), sorceryDef)) return false;
+                foreach (var et in Schema.energyTrackers) if (et.WouldReachLimitEnergy(def.statBases.GetStatValueFromList(et.def.energyUnitStatDef, 0) * et.EnergyCostFactor, sorceryDef)) return false;
                 return true;
             }
         }
