@@ -138,6 +138,8 @@ namespace ItsSorceryFramework
 
 		public int prereqResearchModeMin = 1;
 
+		public int prereqLevel = 0;
+
 		public List<LearningTreeNodeDef> prereqs = new List<LearningTreeNodeDef>();
 
 		public List<ResearchProjectDef> prereqsResearch = new List<ResearchProjectDef>();

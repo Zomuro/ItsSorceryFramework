@@ -16,15 +16,21 @@ namespace ItsSorceryFramework
         {
             Harmony harmony = new Harmony("Zomuro.ItsSorcery.Framework");
 
+            // EnergyTracker Patches //
+
             // AddHumanlikeOrders_EnergyTracker_Consumable
             // if a pawn has a SorcerySchema with a Consumable class EnergyTracker, show the float menu
             harmony.Patch(AccessTools.Method(typeof(FloatMenuMakerMap), "AddHumanlikeOrders"), null,
                 new HarmonyMethod(typeof(HarmonyPatches), nameof(AddHumanlikeOrders_EnergyTracker_Consumable)));
 
+            // Ability Patches //
+
             // DefIconAbilities
             // allows DefIcon to show abilitydef icons
             harmony.Patch(AccessTools.Method(typeof(Widgets), "DefIcon"), null,
                 new HarmonyMethod(typeof(HarmonyPatches), nameof(DefIconAbilities)));
+
+            // ProgressEXPWorker Patches
 
             // TakeDamage_AddEXP
             // for every magic system with the correct EXP tag, give xp depending on damage
@@ -46,6 +52,22 @@ namespace ItsSorceryFramework
             harmony.Patch(AccessTools.Method(typeof(FloatMenuMakerMap), "AddHumanlikeOrders"), null,
                 new HarmonyMethod(typeof(HarmonyPatches), nameof(AddHumanlikeOrders_EXPUseItem)));
 
+            // PawnGen Patches //
+
+            // GenerateNewPawnInternal_Schema
+            // adds sorcery schema based on pawnkind def
+            harmony.Patch(AccessTools.Method(typeof(PawnGenerator), "GenerateNewPawnInternal"), null,
+                new HarmonyMethod(typeof(HarmonyPatches), nameof(GenerateNewPawnInternal_Schema)));
+
+            // GainTrait_Schema
+            // adds sorcery schema through trait
+            harmony.Patch(AccessTools.Method(typeof(TraitSet), "GainTrait"), null,
+                new HarmonyMethod(typeof(HarmonyPatches), nameof(GainTrait_Schema)));
+
+            // AddGene_Schema
+            // adds sorcery schema through gene
+            harmony.Patch(AccessTools.Method(typeof(Pawn_GeneTracker), "AddGene", new[] { typeof(GeneDef), typeof(bool) }), null,
+                new HarmonyMethod(typeof(HarmonyPatches), nameof(AddGene_Schema)));
 
         }
 
@@ -59,77 +81,10 @@ namespace ItsSorceryFramework
             {
                 EnergyTracker_AddOrders(schema, __0, __1, __2);
             }
-
-                // Disable for now; need to properly get energytrackers
-                /*Comp_ItsSorcery comp = __1.TryGetComp<Comp_ItsSorcery>() as Comp_ItsSorcery;
-                String text = "";
-                foreach (SorcerySchema schema in from schema in comp.schemaTracker.sorcerySchemas
-                                             where schema.energyTracker.GetType() == typeof(EnergyTracker_Consumable)
-                                             select schema)
-                {
-                    EnergyTracker energyTracker = schema.energyTracker;
-                    if (energyTracker == null || energyTracker.def.consumables.NullOrEmpty()) continue;
-
-                    List<EnergyConsumable> consumables = energyTracker.def.consumables;
-                    foreach (var consume in consumables)
-                    {
-                        Thing ammo = __0.ToIntVec3().GetFirstThing(__1.Map, consume.thingDef);
-                        if (ammo == null)
-                        {
-                            continue;
-                        }
-
-                        if (!__1.CanReach(ammo, PathEndMode.ClosestTouch, Danger.Deadly, false, false, TraverseMode.ByPawn))
-                        {
-                            text = "ISF_Charge".Translate(schema.def.LabelCap.ToString(), ammo.def.label)
-                                + "ISF_ChargeNoPath".Translate();
-                            __2.Add(new FloatMenuOption(text, null, MenuOptionPriority.Default,
-                                null, null, 0f, null, null, true, 0));
-                        }
-                        else if (energyTracker.MaxEnergy != 0 &&
-                            energyTracker.currentEnergy == energyTracker.MaxEnergy)
-                        {
-                            text = "ISF_Charge".Translate(schema.def.LabelCap.ToString(), ammo.def.label)
-                                + "ISF_ChargeFull".Translate();
-                            __2.Add(new FloatMenuOption(text, null, MenuOptionPriority.Default, 
-                                null, null, 0f, null, null, true, 0));
-                        }
-                        else
-                        {
-                            int count = 0;
-                            int endcount = ammo.stackCount;
-                            float gain = endcount * consume.exp;
-                            if (energyTracker.MaxEnergy == 0)
-                            {
-                                text = "ISF_Charge".Translate(schema.def.LabelCap.ToString(), ammo.def.label)
-                                + "ISF_ChargeCalc".Translate(ammo.stackCount, ammo.def.label,
-                                    ammo.stackCount * consume.exp,
-                                    energyTracker.def.energyLabelKey.Translate());
-                            }
-                            else
-                            {
-                                count = (int)Math.Ceiling((energyTracker.MaxEnergy - energyTracker.currentEnergy) / consume.exp);
-                                endcount = Math.Min(count, ammo.stackCount);
-                                gain = Math.Min(endcount * consume.exp, energyTracker.MaxEnergy - energyTracker.currentEnergy);
-                                text = "ISF_Charge".Translate(schema.def.LabelCap.ToString(), ammo.def.label)
-                                + "ISF_ChargeCalc".Translate(endcount, ammo.def.label,
-                                    gain, energyTracker.def.energyLabelKey.Translate());
-                            }
-
-                            Action chargeSchema = delegate ()
-                            {
-                                __1.jobs.TryTakeOrderedJob(JobGiver_Charge.MakeChargeEnergyJob(__1, schema, ammo, endcount), 
-                                    new JobTag?(JobTag.Misc), false);
-                            };
-                            __2.Add(FloatMenuUtility.DecoratePrioritizedTask(new FloatMenuOption(text, chargeSchema, 
-                                MenuOptionPriority.Default, null, null, 0f, null, null, true, 0), __1, ammo, "ReservedBy", null));
-                        }
-                    }
-                }*/
-
-                return;
+            return;
         }
 
+        // HELPER METHOD
         public static void EnergyTracker_AddOrders(SorcerySchema schema, Vector3 vec, Pawn pawn, List<FloatMenuOption> options)
         {
             if (schema.energyTrackers.NullOrEmpty()) return;
@@ -186,9 +141,6 @@ namespace ItsSorceryFramework
 
                         Action chargeSchema = delegate ()
                         {
-                            /*pawn.jobs.TryTakeOrderedJob(JobGiver_Charge.MakeChargeEnergyJob(pawn, schema, ammo, endcount),
-                                new JobTag?(JobTag.Misc), false);*/
-
                             pawn.jobs.TryTakeOrderedJob(JobGiver_Charge.MakeChargeEnergyJob(pawn, schema, energyTracker, ammo, endcount),
                                 new JobTag?(JobTag.Misc), false);
                         };
@@ -213,6 +165,7 @@ namespace ItsSorceryFramework
             return;
         }
 
+        // HELPER METHOD
         public static void CacheComp(Pawn pawn)
         {
             if (!cachedSchemaComps.ContainsKey(pawn))
@@ -228,17 +181,18 @@ namespace ItsSorceryFramework
             {
                 Pawn caster;
                 if (__0.Instigator != null && (caster = __0.Instigator as Pawn) != null && caster.IsColonist) 
-                    applyDamageEXP(caster, __0, typeof(ProgressEXPWorker_OnDamage)); 
+                    ApplyDamageEXP(caster, __0, typeof(ProgressEXPWorker_OnDamage)); 
 
                 Pawn target;
                 if ((target = __instance as Pawn) != null && target.IsColonist)
-                    applyDamageEXP(target, __0, typeof(ProgressEXPWorker_OnDamaged));
+                    ApplyDamageEXP(target, __0, typeof(ProgressEXPWorker_OnDamaged));
             }
 
             return;
         }
 
-        public static void applyDamageEXP(Pawn pawn, DamageInfo dinfo, Type progressWorkerClass)
+        // HELPER METHOD
+        public static void ApplyDamageEXP(Pawn pawn, DamageInfo dinfo, Type progressWorkerClass)
         {
             CacheComp(pawn);
             Comp_ItsSorcery comp = cachedSchemaComps[pawn];
@@ -256,6 +210,7 @@ namespace ItsSorceryFramework
             return;
         }
 
+        // HELPER METHOD
         public static void Learn_AddEXP(SkillRecord __instance, float __0)
         {
             // player won't care if it isn't their own pawn getting skill exp, and they won't really notice.
@@ -347,6 +302,33 @@ namespace ItsSorceryFramework
 
             return;
         }
+           
+        // POSTFIX: using a specific mod extension, allow pawns to be generated with custom magic systems
+        public static void GenerateNewPawnInternal_Schema(ref Pawn __result, ref PawnGenerationRequest __0)
+        {
+            if (__result is null) return; // no pawn generated -> don't bother trying to add a magic schema
+
+            PawnKindSchemaUtility.SetupSchemas(ref __result, __0); // run a static method for generating magic schema on pawns
+        }
+
+        // POSTFIX: using a specific mod extension, allow pawns to gain custom magic systems through traits
+        public static void GainTrait_Schema(TraitSet __instance, Trait __0)
+        {
+            // no modextension for schemas = no work
+            if (!__0.def.HasModExtension<ModExtension_SchemaAddition>()) return;
+            ModExtension_SchemaAddition schemaExt = __0.def.GetModExtension<ModExtension_SchemaAddition>();
+            SorcerySchemaUtility.AddSorcerySchema(Traverse.Create(__instance).Field("pawn").GetValue<Pawn>(), schemaExt.schema);
+        }
+
+        // POSTFIX: using a specific mod extension, allow pawns to gain custom magic systems through genes
+        public static void AddGene_Schema(Pawn_GeneTracker __instance, GeneDef __0)
+        {
+            // no modextension for schemas = no work
+            if (!__0.HasModExtension<ModExtension_SchemaAddition>()) return;
+            ModExtension_SchemaAddition schemaExt = __0.GetModExtension<ModExtension_SchemaAddition>();
+            SorcerySchemaUtility.AddSorcerySchema(__instance.pawn, schemaExt.schema);
+        }
+
 
         public static Dictionary<Pawn, Comp_ItsSorcery> cachedSchemaComps = new Dictionary<Pawn, Comp_ItsSorcery>();
 

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using Verse;
 
 namespace ItsSorceryFramework
@@ -55,6 +56,8 @@ namespace ItsSorceryFramework
 
         public SorcerySchema cachedSchema;
 
+        public List<Sorcery> cachedSorceries;
 
+        public bool cacheDirty = true;
     }
 }
