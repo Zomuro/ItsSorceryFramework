@@ -6,7 +6,7 @@ using Verse.Sound;
 
 namespace ItsSorceryFramework
 {
-    public class SorcerySchema : IExposable
+    public class SorcerySchema : IExposable, ILoadReferenceable
     {
         public SorcerySchema(Pawn pawn)
         {
@@ -24,6 +24,8 @@ namespace ItsSorceryFramework
             DetermineHasLimits();
             DetermineHasTurns();
         }
+
+        public string GetUniqueLoadID() => "SorcerySchema_" + loadID;
 
         // not the thing that makes me happy, but gotta do this
         public void DetermineHasLimits()
@@ -271,6 +273,8 @@ namespace ItsSorceryFramework
         public bool limitLocked = true;
 
         public bool turnTimerOn = true;
+
+        public int loadID = -1;
 
     }
 }

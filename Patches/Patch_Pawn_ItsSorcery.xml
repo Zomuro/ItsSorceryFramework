@@ -1,14 +1,25 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Patch>
 
-	<Operation Class="PatchOperationAdd"> 
-		<xpath>/Defs/ThingDef[@Name="BasePawn"]/comps</xpath>
-		<value>
-			<li Class="ItsSorceryFramework.CompProperties_ItsSorcery">
-			</li>
-		</value>
-    </Operation>	
+	<!-- handles adding the It's Sorcery comp to humans -->
+	<Operation Class="PatchOperationConditional">
+		<xpath>Defs/ThingDef[defName="Human"]/comps</xpath>
+		<nomatch Class="PatchOperationAdd">
+			<xpath>Defs/ThingDef[defName="Human"]</xpath>
+			<value>
+				<comps/>
+			</value>
+		</nomatch>
+	</Operation>
 	
+	<Operation Class="PatchOperationAdd"> 
+		<xpath>/Defs/ThingDef[defName="Human"]/comps</xpath>
+		<value>
+			<li Class="ItsSorceryFramework.CompProperties_ItsSorcery"/>
+		</value>
+    </Operation>
+	
+	<!-- handles adding the It's Sorcery ITab to base pawns -->
 	<Operation Class="PatchOperationAdd"> 
 		<xpath>/Defs/ThingDef[@Name="BasePawn"]/inspectorTabs</xpath>
 		<order>Prepend</order>

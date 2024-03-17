@@ -8,6 +8,22 @@ namespace ItsSorceryFramework
 {
     public class EnergyTracker : IExposable
     {
+        public Pawn pawn;
+
+        public EnergyTrackerDef def;
+
+        public SorcerySchema schema;
+        
+        public SorcerySchemaDef sorcerySchemaDef;
+
+        private SorcerySchema cachedSchema;
+
+        private List<LearningTracker> cachedLearningTrackers = new List<LearningTracker>();
+
+        public float currentEnergy;
+
+        public StatCategoryDef tempStatCategory;
+
         // initalizer- created via activator via SorcerySchema
         public EnergyTracker(Pawn pawn)
         {
@@ -23,11 +39,22 @@ namespace ItsSorceryFramework
             // maybe put initalize gizmo here idunno
         }
 
+        public EnergyTracker(Pawn pawn, EnergyTrackerDef def, SorcerySchema schema)
+        {
+            this.pawn = pawn;
+            this.def = def;
+            this.schema = schema;
+            this.sorcerySchemaDef = this.schema.def;
+
+            // maybe put initalize gizmo here idunno
+        }
+
         public virtual void ExposeData()
         {
             Scribe_References.Look(ref pawn, "pawn");
             Scribe_Defs.Look(ref def, "def");
             Scribe_Defs.Look(ref sorcerySchemaDef, "sorcerySchemaDef");
+            Scribe_References.Look(ref schema, "schema");
             Scribe_Values.Look(ref currentEnergy, "currentEnergy", 0f, false);
         }
 
@@ -260,18 +287,6 @@ namespace ItsSorceryFramework
             }
         }
 
-        public Pawn pawn;
-
-        public EnergyTrackerDef def;
-
-        public SorcerySchemaDef sorcerySchemaDef;
-
-        private SorcerySchema cachedSchema;
-
-        private List<LearningTracker> cachedLearningTrackers = new List<LearningTracker>();
-
-        public float currentEnergy;
-
-        public StatCategoryDef tempStatCategory;
+        
     }
 }

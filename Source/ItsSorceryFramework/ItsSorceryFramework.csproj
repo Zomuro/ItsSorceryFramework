@@ -65,6 +65,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EnergyTrackerComp.cs" />
+    <Compile Include="EnergyTrackerCompProperties.cs" />
     <Compile Include="Dialog_SorcerySelection.cs" />
     <Compile Include="ModExtension_SchemaAddition.cs" />
     <Compile Include="PawnKindSchemaUtility.cs" />
