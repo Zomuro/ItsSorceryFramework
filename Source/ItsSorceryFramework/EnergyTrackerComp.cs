@@ -20,6 +20,10 @@ namespace ItsSorceryFramework
 
         public virtual void CompPostUse() { } // for effects when using a "consumption" item
 
+        public virtual void CompPostAdd() { }
+
+        public virtual void CompPostRemove() { }
+
         public virtual void CompPostDamageDealt() { } // for effects activated when dealing damage
 
         public virtual void CompPostDamageRecieved() { } // for effects activated when recieving damage

@@ -90,8 +90,8 @@ namespace ItsSorceryFramework
             if (schema.energyTrackers.NullOrEmpty()) return;
             foreach (var energyTracker in schema.energyTrackers)
             {
-                if (energyTracker.GetType() != typeof(EnergyTracker_Consumable) || energyTracker.def.consumables.NullOrEmpty()) continue;
-
+                //if (energyTracker.GetType() != typeof(EnergyTracker_Consumable) || energyTracker.def.consumables.NullOrEmpty()) continue;
+                return; // temporary
                 String text = "";
                 List<EnergyConsumable> consumables = energyTracker.def.consumables;
                 foreach (var consume in consumables)

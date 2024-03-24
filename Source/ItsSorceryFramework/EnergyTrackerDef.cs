@@ -7,12 +7,6 @@ namespace ItsSorceryFramework
 {
     public class EnergyTrackerDef : Def
     {
-        public override IEnumerable<StatDrawEntry> SpecialDisplayStats(StatRequest req)
-        {
-            base.SpecialDisplayStats(req);
-            yield break;
-        }
-
         // EnergyTracker class
         public Type energyTrackerClass = typeof(EnergyTracker);
 
@@ -81,7 +75,13 @@ namespace ItsSorceryFramework
         [MustTranslate]
         public string cooldownKey = "ISF_EnergyTrackerCooldown";
 
+        public List<EnergyTrackerCompProperties> comps;
 
+        public override IEnumerable<StatDrawEntry> SpecialDisplayStats(StatRequest req)
+        {
+            base.SpecialDisplayStats(req);
+            yield break;
+        }
     }
 
     public class EnergyConsumable

@@ -22,6 +22,8 @@ namespace ItsSorceryFramework
 
         public float currentEnergy;
 
+        public List<EnergyTrackerComp> comps;
+
         public StatCategoryDef tempStatCategory;
 
         // initalizer- created via activator via SorcerySchema
@@ -49,6 +51,29 @@ namespace ItsSorceryFramework
             // maybe put initalize gizmo here idunno
         }
 
+        public virtual void InitializeComps()
+        {
+            if (def.comps.NullOrEmpty()) return; // null or empty compproperties = don't run.
+
+            comps = new List<EnergyTrackerComp>();
+            foreach (var c in def.comps)
+            {
+                EnergyTrackerComp energyTrackerComp = null;
+                try
+                {
+                    energyTrackerComp = (EnergyTrackerComp)Activator.CreateInstance(c.compClass);
+                    energyTrackerComp.props = c;
+                    energyTrackerComp.parent = this;
+                    comps.Add(energyTrackerComp);
+                }
+                catch (Exception arg)
+                {
+                    Log.Error("Could not instantiate or initialize a EnergyTrackerComp: " + arg);
+                    comps.Remove(energyTrackerComp);
+                }
+            }
+        }
+
         public virtual void ExposeData()
         {
             Scribe_References.Look(ref pawn, "pawn");
@@ -56,6 +81,9 @@ namespace ItsSorceryFramework
             Scribe_Defs.Look(ref sorcerySchemaDef, "sorcerySchemaDef");
             Scribe_References.Look(ref schema, "schema");
             Scribe_Values.Look(ref currentEnergy, "currentEnergy", 0f, false);
+
+            if (Scribe.mode == LoadSaveMode.LoadingVars) InitializeComps();
+            foreach (var c in comps) c.CompExposeData();
         }
 
         public virtual bool HasLimit
@@ -74,53 +102,24 @@ namespace ItsSorceryFramework
             }
         }
 
-        public virtual float MaxEnergy
-        {
-            get
-            {
-                return 50f;//this.pawn.GetStatValue(def.energyMaxStatDef, true);
-            }
-        }
+        public virtual float MinEnergy => Math.Max(pawn.GetStatValue(def.energyMinStatDef ?? StatDefOf_ItsSorcery.MinEnergy_ItsSorcery, true), -1f * MaxEnergy);
 
-        public virtual float MinEnergy
-        {
-            get
-            {
-                return 0f; //this.pawn.GetStatValue(def.energyMinStatDef, true);
-            }
-        }
+        public virtual float MaxEnergy => pawn.GetStatValue(def.energyMaxStatDef ?? StatDefOf_ItsSorcery.MaxEnergy_ItsSorcery, true);
+
 
         public virtual float OverMaxEnergy
         {
             get
             {
-                return 100;//this.pawn.GetStatValue(def.energyOverMaxStatDef, true);
+                return 100;
             }
         }
 
-        public virtual float EnergyRecoveryRate
-        {
-            get
-            {
-                return 5f; //this.pawn.GetStatValue(def.energyRecoveryStatDef, true);
-            }
-        }
+        public virtual float EnergyRecoveryRate => 5f;
 
-        public virtual float EnergyCostFactor
-        {
-            get
-            {
-                return 1f; // this.pawn.GetStatValue(def.energyCostFactorStatDef, true);
-            }
-        }
+        public virtual float EnergyCostFactor => pawn.GetStatValue(def.energyCostFactorStatDef ?? StatDefOf_ItsSorcery.EnergyCostFactor_ItsSorcery, true);
 
-        public virtual float CastFactor
-        {
-            get
-            {
-                return this.pawn.GetStatValue(def.castFactorStatDef ?? StatDefOf_ItsSorcery.CastFactor_ItsSorcery, true);
-            }
-        }
+        public virtual float CastFactor => pawn.GetStatValue(def.castFactorStatDef ?? StatDefOf_ItsSorcery.CastFactor_ItsSorcery, true);
 
         public virtual float OverBarRecoveryFactor
         {
@@ -148,7 +147,7 @@ namespace ItsSorceryFramework
 
         public virtual void EnergyTrackerTick()
         {
-            
+            if (!comps.NullOrEmpty()) foreach (var c in comps) c.CompPostTick();
         }
 
         public virtual float EnergyRelativeValue
@@ -258,25 +257,19 @@ namespace ItsSorceryFramework
             return "";
         }
 
-        public override string ToString()
-        {
-            return "Energy class: "+ this.GetType().Name.ToString();
-        }
+        public override string ToString() => "Energy class: " + GetType().Name.ToString();
 
-        public SorcerySchema Schema
-        {
-            get
-            {
-                if(cachedSchema == null)
-                {
-                    cachedSchema = SorcerySchemaUtility.FindSorcerySchema(pawn, sorcerySchemaDef);
-                }
-                return cachedSchema;
-            }
-        }
+        public SorcerySchema Schema => schema;
+        /*        {
+                    get
+                    {
+                        if(cachedSchema == null) cachedSchema = SorcerySchemaUtility.FindSorcerySchema(pawn, sorcerySchemaDef);
+                        return cachedSchema;
+                    }
+                }*/
 
-        public List<LearningTracker> LearningTrackers
-        {
+        public List<LearningTracker> LearningTrackers => schema.learningTrackers;
+       /* {
             get
             {
                 if (Schema == null || cachedLearningTrackers.NullOrEmpty())
@@ -285,7 +278,7 @@ namespace ItsSorceryFramework
                 }
                 return cachedLearningTrackers;
             }
-        }
+        }*/
 
         
     }

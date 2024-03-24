@@ -65,7 +65,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EnergyTrackerComp_PerTick.cs" />
     <Compile Include="EnergyTrackerComp.cs" />
+    <Compile Include="EnergyTrackerCompProperties_PerTick.cs" />
     <Compile Include="EnergyTrackerCompProperties.cs" />
     <Compile Include="Dialog_SorcerySelection.cs" />
     <Compile Include="ModExtension_SchemaAddition.cs" />
@@ -101,16 +103,10 @@
     <Compile Include="Dialog_LearningTabs.cs" />
     <Compile Include="LearningTracker_Tree.cs" />
     <Compile Include="LearningTreeNodeDef.cs" />
-    <Compile Include="EnergyTracker_Cooldown.cs" />
     <Compile Include="ProgressTracker_Roguelike.cs" />
     <Compile Include="ProgressTracker_Level.cs" />
     <Compile Include="SchemaJobDefOf.cs" />
     <Compile Include="SchemaJobDef.cs" />
-    <Compile Include="EnergyTracker_Inverted.cs" />
-    <Compile Include="EnergyTracker_InvertedTurnBased.cs" />
-    <Compile Include="EnergyTracker_RPGTurnBased.cs" />
-    <Compile Include="EnergyTracker_Consumable.cs" />
-    <Compile Include="EnergyTracker_VancianLifetime.cs" />
     <Compile Include="GizmoTextureUtility.cs" />
     <Compile Include="HarmonyPatches.cs" />
     <Compile Include="ITab_Pawn_Schemas.cs" />
@@ -120,8 +116,6 @@
     <Compile Include="StatCategoryDefOf_ItsSorcery.cs" />
     <Compile Include="Verb_CastSorcery.cs" />
     <Compile Include="CompProperties_ItsSorcery.cs" />
-    <Compile Include="EnergyTracker_Vancian.cs" />
-    <Compile Include="EnergyTracker_RPG.cs" />
     <Compile Include="SorcerySchemaUtility.cs" />
     <Compile Include="Comp_ItsSorcery.cs" />
     <Compile Include="StatDefOf_ItsSorcery.cs" />
