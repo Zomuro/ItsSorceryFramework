@@ -8,7 +8,8 @@ namespace ItsSorceryFramework
         // EnergyTracker default stats
         public static StatDef MaxEnergy_ItsSorcery;
         public static StatDef MinEnergy_ItsSorcery;
-        public static StatDef OverMaxEnergy_ItsSorcery;
+        public static StatDef AbsMaxEnergy_ItsSorcery;
+        public static StatDef AbsMinEnergy_ItsSorcery;
         public static StatDef EnergyRecovery_ItsSorcery;
         public static StatDef EnergyFactor_ItsSorcery;
         public static StatDef EnergyCostFactor_ItsSorcery;

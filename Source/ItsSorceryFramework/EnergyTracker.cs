@@ -26,6 +26,53 @@ namespace ItsSorceryFramework
 
         public StatCategoryDef tempStatCategory;
 
+        public Texture2D cachedEmptyBarTex;
+
+        public Texture2D cachedUnderBarTex;
+
+        public Texture2D cachedNormalBarTex;
+
+        public Texture2D cachedOverBarTex;
+
+        private static readonly Texture2D barDividerTex = ContentFinder<Texture2D>.Get("UI/Misc/NeedUnitDivider", true);
+
+        public Texture2D EmptyBarTex
+        {
+            get
+            {
+                if (cachedEmptyBarTex is null) cachedEmptyBarTex = SolidColorMaterials.NewSolidColorTexture(def.emptyBarColor);
+                return cachedEmptyBarTex;
+            }
+        }
+
+        public Texture2D UnderBarTex
+        {
+            get
+            {
+                if (cachedUnderBarTex is null) cachedUnderBarTex = SolidColorMaterials.NewSolidColorTexture(def.underBarColor);
+                return cachedUnderBarTex;
+            }
+        }
+
+        public Texture2D NormalBarTex
+        {
+            get
+            {
+                if (cachedNormalBarTex is null) cachedNormalBarTex = SolidColorMaterials.NewSolidColorTexture(def.normalBarColor);
+                return cachedNormalBarTex;
+            }
+        }
+
+        public Texture2D OverBarTex
+        {
+            get
+            {
+                if (cachedOverBarTex is null) cachedOverBarTex = SolidColorMaterials.NewSolidColorTexture(def.overBarColor);
+                return cachedOverBarTex;
+            }
+        }
+
+
         // initalizer- created via activator via SorcerySchema
         public EnergyTracker(Pawn pawn)
         {
@@ -86,13 +133,9 @@ namespace ItsSorceryFramework
             foreach (var c in comps) c.CompExposeData();
         }
 
-        public virtual bool HasLimit
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public float InvMult => def.inverse ? -1f : 1f;
+
+        public virtual bool HasLimit => (!def.inverse && AbsMinEnergy < MinEnergy) || (def.inverse && AbsMaxEnergy > MaxEnergy);
 
         public virtual bool HasTurn
         {
@@ -106,14 +149,9 @@ namespace ItsSorceryFramework
 
         public virtual float MaxEnergy => pawn.GetStatValue(def.energyMaxStatDef ?? StatDefOf_ItsSorcery.MaxEnergy_ItsSorcery, true);
 
+        public virtual float AbsMinEnergy => def.energyAbsMinStatDef is null ? MinEnergy : Math.Min(pawn.GetStatValue(def.energyAbsMinStatDef, true), MinEnergy);
 
-        public virtual float OverMaxEnergy
-        {
-            get
-            {
-                return 100;
-            }
-        }
+        public virtual float AbsMaxEnergy => def.energyAbsMaxStatDef is null ? MaxEnergy : Math.Max(pawn.GetStatValue(def.energyAbsMaxStatDef, true), MaxEnergy);
 
         public virtual float EnergyRecoveryRate => 5f;
 
@@ -150,55 +188,204 @@ namespace ItsSorceryFramework
             if (!comps.NullOrEmpty()) foreach (var c in comps) c.CompPostTick();
         }
 
-        public virtual float EnergyRelativeValue
-        {
-            get
-            {
-                return this.EnergyToRelativeValue();
-            }
-        }
+        public virtual float EnergyRelativeValue => EnergyToRelativeValue();
 
+        public virtual float RelativeMin => (MinEnergy - AbsMinEnergy) / (AbsMaxEnergy - AbsMinEnergy); // get relative value of min point; say min relval 0.3, curr val is at 0.1
+
+        public virtual float RelativeMax => (MaxEnergy - AbsMinEnergy) / (AbsMaxEnergy - AbsMinEnergy); // get relative value of max point; say max relval = 0.7, curr val at 0.9
 
         public virtual float EnergyToRelativeValue(float energyCost = 0)
         {
-            return 0f;
+            float tempAdjCurrEnergy = currentEnergy - InvMult * energyCost - AbsMinEnergy; // current energy minus energy cost, downshifted by absolute min energy
+
+            float AdjRange = AbsMaxEnergy - AbsMinEnergy; // absolute max energy downshifted by absolute min energy
+
+            return tempAdjCurrEnergy / AdjRange;
         }
 
         public virtual bool WouldReachLimitEnergy(float energyCost, SorceryDef sorceryDef = null, Sorcery sorcery = null)
         {
-            if (currentEnergy - energyCost < 0) return true;
-            return false;
+
+            return !def.inverse ? (currentEnergy - InvMult * energyCost < MinEnergy && Schema.limitLocked) : (currentEnergy - InvMult * energyCost > MaxEnergy && Schema.limitLocked);
+
+           /* if (!def.inverse)
+            {
+                if (currentEnergy - InvMult * energyCost < MinEnergy && Schema.limitLocked) return true;
+            }
+            else
+            {
+                if (currentEnergy - InvMult * energyCost > MaxEnergy && Schema.limitLocked) return true;
+            }
+            return false;*/
         }
 
         public virtual bool TryAlterEnergy(float energyCost, SorceryDef sorceryDef = null, Sorcery sorcery = null)
         {
-            currentEnergy = Math.Max(0f, currentEnergy - energyCost);
-            return true;
+            if (!WouldReachLimitEnergy(energyCost))
+            {
+                currentEnergy = Mathf.Clamp(currentEnergy - InvMult * energyCost, AbsMinEnergy, AbsMaxEnergy);
+                ApplyHediffSeverity(EnergyToRelativeValue());
+                return true;
+            }
+
+            return false;
         }
 
         public virtual void EmptyEnergy()
         {
-            this.currentEnergy = 0f;
+            if (!def.inverse) currentEnergy = MinEnergy;
+            else currentEnergy = MaxEnergy;
         }
 
-        public virtual void ApplyHediffSeverity(float newSev)
+        public virtual void ApplyHediffSeverity(float relVal) 
         {
+            // if there isn't room beyond limits (i.e over max or under min), don't bother
+            // no side effect defined = no side effects
+            HediffDef hediffDef = def.sideEffect;
+            if (hediffDef == null || !HasLimit) return; 
 
+            Hediff hediff = pawn.health.hediffSet.GetFirstHediffOfDef(hediffDef);
+
+            if (!def.inverse) // if not inverse system
+            {
+                if (relVal >= RelativeMin || RelativeMin == 0f) return; // side effect has no effect if not lower than min relval
+                if (hediff == null) HealthUtility.AdjustSeverity(pawn, hediffDef, 1f - relVal / RelativeMin); // i.e. (1f - 0.1/0.3) = 0.66
+                else if (1f - relVal / RelativeMin > hediff.Severity / hediff.def.maxSeverity) hediff.Severity = 1f - relVal / RelativeMin;
+            }
+            else // else, if inverse system
+            {
+                if (relVal <= RelativeMax || RelativeMax == 1f) return;
+                if (hediff == null) HealthUtility.AdjustSeverity(pawn, hediffDef, (relVal - RelativeMax) / (1f - RelativeMax)); // i.e. (0.9f - 0.7f)/ (1f - 0.7f) = 0.66
+                else if ((relVal - RelativeMax) / (1f - RelativeMax) > hediff.Severity / hediff.def.maxSeverity) hediff.Severity = (relVal - RelativeMax) / (1f - RelativeMax);
+            }
+
+            // leave warning when pawn reaches the max severity of their side effect hediff
+            if (hediff != null && hediff.Severity >= hediff.def.maxSeverity) 
+            {
+                Messages.Message("ISF_MessagePastLimit".Translate(pawn.Named("PAWN")),
+                    pawn, MessageTypeDefOf.NegativeEvent, true);
+            }
         }
 
-        public virtual string DisableCommandReason()
-        {
-            return "ISF_CommandDisableReasonBase";
-        }
+        public virtual string DisableCommandReason() => def.disableReasonKey ?? "ISF_CommandDisableReasonBase";
 
-        public virtual void DrawOnGUI(Rect rect)
-        {
-
-        }
+        public virtual void DrawOnGUI(Rect rect) {}
 
         public virtual float DrawOnGUI(ref Rect rect)
         {
-            return 0;
+            // get original rect
+            Rect orgRect = new Rect(rect);
+            float coordY = 0;
+
+            // add space
+            coordY += 10;
+            rect.y += coordY;
+
+            // set up label and bar rects
+            Text.Font = GameFont.Small;
+            Text.Anchor = TextAnchor.MiddleCenter;
+            Rect labelBox = new Rect(rect);
+            labelBox.width = rect.width / 2;
+            labelBox.ContractedBy(5);
+            Rect barBox = new Rect(labelBox);
+            barBox.x = rect.width * 2 / 5 + rect.x;
+
+            // energy label
+            Widgets.LabelCacheHeight(ref labelBox, def.energyLabelKey.Translate().CapitalizeFirst());
+
+            // draws power bar
+            barBox.height = labelBox.height; // set barbox to labelbox height for consistency
+            DrawEnergyBar(barBox);
+
+            // draw amount of energy
+            string energyLabel = currentEnergy.ToString("F0") + " / " + MaxEnergy.ToString("F0");
+            Widgets.Label(barBox, energyLabel);
+            Text.Anchor = TextAnchor.UpperLeft;
+
+            // highlight energy costs
+            HightlightEnergyCost(barBox);
+
+            // add label/barbox height
+            coordY += labelBox.height;
+            // reset rectangle
+            rect = orgRect;
+            // return accumulated height
+            return coordY;
+        }
+
+        public virtual void DrawEnergyBar(Rect rect)
+        {
+            Widgets.FillableBar(rect, Mathf.Clamp(EnergyRelativeValue, 0f, 1f), CurrBarTex(), EmptyBarTex, true);
+            DrawEnergyBarThresholds(rect);
+
+            if (Mouse.IsOver(rect))
+            {
+                string energy = def.energyLabelKey.Translate().CapitalizeFirst();
+                string tipString = "ISF_BarBase".Translate(energy, currentEnergy.ToString("F0"), MinEnergy.ToString("F0"), MaxEnergy.ToString("F0"));
+                if (!def.inverse)
+                {
+                    if (AbsMaxEnergy > MaxEnergy) tipString += "\n" + "ISF_BarOver".Translate(MaxEnergy.ToString("F0"), AbsMaxEnergy.ToString("F0"));
+                    if (AbsMinEnergy < MinEnergy) tipString += "\n" + "ISF_BarUnder".Translate(AbsMinEnergy.ToString("F0"), MinEnergy.ToString("F0"));
+                }
+                else
+                {
+                    if (AbsMaxEnergy > MaxEnergy) tipString += "\n" + "ISF_BarUnder".Translate(MaxEnergy.ToString("F0"), AbsMaxEnergy.ToString("F0"));
+                    if (AbsMinEnergy < MinEnergy) tipString += "\n" + "ISF_BarOver".Translate(AbsMinEnergy.ToString("F0"), MinEnergy.ToString("F0"));
+                }
+
+                TooltipHandler.TipRegion(rect, tipString);
+            }
+        }
+
+        public virtual void DrawEnergyBarThresholds(Rect rect)
+        {
+            Color tempColor = GUI.color;
+
+            float thresWidth = 2f; //rect.width > 60f ? 2f : 1f;
+            Rect positionMin = new Rect(rect.x + rect.width * RelativeMin - (thresWidth - 1f), rect.y + rect.height / 2f, thresWidth, rect.height / 2f);
+            Rect positionMax = new Rect(rect.x + rect.width * RelativeMax - (thresWidth - 1f), rect.y + rect.height / 2f, thresWidth, rect.height / 2f);
+
+            Texture2D image;
+            if (RelativeMin < EnergyRelativeValue)
+            {
+                image = BaseContent.BlackTex;
+                GUI.color = new Color(1f, 1f, 1f, 0.9f);
+            }
+            else
+            {
+                image = BaseContent.GreyTex;
+                GUI.color = new Color(1f, 1f, 1f, 0.5f);
+            }
+            GUI.DrawTexture(positionMin, image);
+
+            if (RelativeMax < EnergyRelativeValue)
+            {
+                image = BaseContent.BlackTex;
+                GUI.color = new Color(1f, 1f, 1f, 0.9f);
+            }
+            else
+            {
+                image = BaseContent.GreyTex;
+                GUI.color = new Color(1f, 1f, 1f, 0.5f);
+            }
+            GUI.DrawTexture(positionMax, image);
+            GUI.color = tempColor;
+        }
+
+        public Texture2D CurrBarTex()
+        {
+            if (!def.inverse) // if energy typically goes from 100 -> 75
+            {
+                if (EnergyRelativeValue > RelativeMax) return OverBarTex;
+                else if (EnergyRelativeValue <= RelativeMin) return UnderBarTex;
+                else return NormalBarTex;
+            }
+            else // if energy typically goes from 0 -> 25
+            {
+                if (EnergyRelativeValue > RelativeMax) return UnderBarTex;
+                else if (EnergyRelativeValue <= RelativeMin) return OverBarTex;
+                else return NormalBarTex;
+            }
         }
 
         public virtual void HightlightEnergyCost(Rect rec)
@@ -206,10 +393,7 @@ namespace ItsSorceryFramework
 
         }
 
-        public virtual void DrawEnergyBar(Rect rect)
-        {
-
-        }
+        
 
         // used to detect if two values are on different "bars"
         // min bar: less than 0% energy

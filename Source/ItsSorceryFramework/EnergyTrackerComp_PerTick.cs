@@ -13,7 +13,7 @@ namespace ItsSorceryFramework
 
         public EnergyTrackerCompProperties_PerTick Props => (EnergyTrackerCompProperties_PerTick)props;
 
-        public virtual void CompExposeData() { } // saving values to comp, if needed
+        public override void CompExposeData() { } // saving values to comp, if needed
 
         public override void CompPostTick() 
         {
@@ -39,7 +39,7 @@ namespace ItsSorceryFramework
 
         } // for effects over time
 
-        public virtual IEnumerable<StatDrawEntry> CompSpecialDisplayStats(StatRequest req) // provides special display stats, which show how energy gets recovered
+        public override IEnumerable<StatDrawEntry> CompSpecialDisplayStats(StatRequest req) // provides special display stats, which show how energy gets recovered
         {
             yield break;
         }

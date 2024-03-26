@@ -1,7 +1,9 @@
 ﻿using RimWorld;
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 using Verse;
+
 
 namespace ItsSorceryFramework
 {
@@ -22,11 +24,15 @@ namespace ItsSorceryFramework
         public StatDef energyMaxCastStatDef; // define the stat the energytracker uses to figure out max casts
 
         // EnergyTracker general stats
+        public bool inverse = false;
+
         public StatDef energyMaxStatDef;
 
         public StatDef energyMinStatDef;
 
-        public StatDef energyOverMaxStatDef;
+        public StatDef energyAbsMaxStatDef;
+
+        public StatDef energyAbsMinStatDef;
 
         public StatDef energyRecoveryStatDef;
 
@@ -39,6 +45,19 @@ namespace ItsSorceryFramework
         public float underBarRecoveryFactor = 1f;
 
         public HediffDef sideEffect;
+
+        // EnergyTracker visual components
+        public Color emptyBarColor = new Color(0.03f, 0.035f, 0.05f); // HEX #08090D
+
+        public Color underBarColor = new Color(0.6f, 0f, 0f); // HEX #990000 | crimson red
+
+        public Color normalBarColor = new Color(.518f, .427f, .239f); // HEX #846D3D | dull gold
+
+        public Color overBarColor = new Color(.518f, .427f, .239f); // HEX #00A86B | jade
+
+
+
+
 
         // TurnBased EnergyTrackers
         [MustTranslate]

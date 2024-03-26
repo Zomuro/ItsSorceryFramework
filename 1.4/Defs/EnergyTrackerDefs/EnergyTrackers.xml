@@ -7,6 +7,8 @@
 		
 		<energyMaxStatDef>MaxEnergy_ItsSorcery</energyMaxStatDef>
 		<energyMinStatDef>MinEnergy_ItsSorcery</energyMinStatDef>
+		<energyAbsMaxStatDef>AbsMaxEnergy_ItsSorcery</energyAbsMaxStatDef>
+		<energyAbsMinStatDef>AbsMinEnergy_ItsSorcery</energyAbsMinStatDef>
 		<energyRecoveryStatDef>EnergyRecovery_ItsSorcery</energyRecoveryStatDef>
 	</ItsSorceryFramework.EnergyTrackerDef>
 	

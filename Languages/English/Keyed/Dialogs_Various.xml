@@ -48,4 +48,9 @@
 	<ISF_ButtonFav>Toggle whether or not this is a favorited system. Favorited systems can show up in the favorites view of the tab.</ISF_ButtonFav>
 	<ISF_ButtonFavView>Toggle whether or not to view favorited systems.</ISF_ButtonFavView>
 	
+	<!-- ITab_Schema Energy Bar Tooltips -->
+	<ISF_BarBase>Energy: {0}\nCurrent value: {1}\nNormal range: {2} to {3}</ISF_BarBasic>
+	<ISF_BarUnder>Deficit range: {0} to {1}.</ISF_BarUnder>
+	<ISF_BarOver>Overcharge range: {0} to {1}.</ISF_BarOver>
+	
 </LanguageData>
