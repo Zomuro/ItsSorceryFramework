@@ -126,11 +126,15 @@ namespace ItsSorceryFramework
             Scribe_References.Look(ref pawn, "pawn");
             Scribe_Defs.Look(ref def, "def");
             Scribe_Defs.Look(ref sorcerySchemaDef, "sorcerySchemaDef");
+
+
+            Log.Message("savetest");
             Scribe_References.Look(ref schema, "schema");
+            Log.Message("savetest2");
             Scribe_Values.Look(ref currentEnergy, "currentEnergy", 0f, false);
 
             if (Scribe.mode == LoadSaveMode.LoadingVars) InitializeComps();
-            foreach (var c in comps) c.CompExposeData();
+            if(!comps.NullOrEmpty()) foreach (var c in comps) c.CompExposeData();
         }
 
         public float InvMult => def.inverse ? -1f : 1f;
@@ -145,7 +149,7 @@ namespace ItsSorceryFramework
             }
         }
 
-        public virtual float MinEnergy => Math.Max(pawn.GetStatValue(def.energyMinStatDef ?? StatDefOf_ItsSorcery.MinEnergy_ItsSorcery, true), -1f * MaxEnergy);
+        public virtual float MinEnergy => Math.Min(pawn.GetStatValue(def.energyMinStatDef ?? StatDefOf_ItsSorcery.MinEnergy_ItsSorcery, true), MaxEnergy);
 
         public virtual float MaxEnergy => pawn.GetStatValue(def.energyMaxStatDef ?? StatDefOf_ItsSorcery.MaxEnergy_ItsSorcery, true);
 
@@ -267,8 +271,6 @@ namespace ItsSorceryFramework
             }
         }
 
-        public virtual string DisableCommandReason() => def.disableReasonKey ?? "ISF_CommandDisableReasonBase";
-
         public virtual void DrawOnGUI(Rect rect) {}
 
         public virtual float DrawOnGUI(ref Rect rect)
@@ -321,18 +323,17 @@ namespace ItsSorceryFramework
             if (Mouse.IsOver(rect))
             {
                 string energy = def.energyLabelKey.Translate().CapitalizeFirst();
-                string tipString = "ISF_BarBase".Translate(energy, currentEnergy.ToString("F0"), MinEnergy.ToString("F0"), MaxEnergy.ToString("F0"));
+                string tipString = "ISF_BarBaseTip".Translate(energy, currentEnergy.ToString("F0"), MinEnergy.ToString("F0"), MaxEnergy.ToString("F0"));
                 if (!def.inverse)
                 {
-                    if (AbsMaxEnergy > MaxEnergy) tipString += "\n" + "ISF_BarOver".Translate(MaxEnergy.ToString("F0"), AbsMaxEnergy.ToString("F0"));
-                    if (AbsMinEnergy < MinEnergy) tipString += "\n" + "ISF_BarUnder".Translate(AbsMinEnergy.ToString("F0"), MinEnergy.ToString("F0"));
+                    if (AbsMaxEnergy > MaxEnergy) tipString += "\n" + "ISF_BarOverTip".Translate(MaxEnergy.ToString("F0"), AbsMaxEnergy.ToString("F0"));
+                    if (AbsMinEnergy < MinEnergy) tipString += "\n" + "ISF_BarUnderTip".Translate(AbsMinEnergy.ToString("F0"), MinEnergy.ToString("F0"));
                 }
                 else
                 {
-                    if (AbsMaxEnergy > MaxEnergy) tipString += "\n" + "ISF_BarUnder".Translate(MaxEnergy.ToString("F0"), AbsMaxEnergy.ToString("F0"));
-                    if (AbsMinEnergy < MinEnergy) tipString += "\n" + "ISF_BarOver".Translate(AbsMinEnergy.ToString("F0"), MinEnergy.ToString("F0"));
+                    if (AbsMaxEnergy > MaxEnergy) tipString += "\n" + "ISF_BarUnderTip".Translate(MaxEnergy.ToString("F0"), AbsMaxEnergy.ToString("F0"));
+                    if (AbsMinEnergy < MinEnergy) tipString += "\n" + "ISF_BarOverTip".Translate(AbsMinEnergy.ToString("F0"), MinEnergy.ToString("F0"));
                 }
-
                 TooltipHandler.TipRegion(rect, tipString);
             }
         }
@@ -340,35 +341,41 @@ namespace ItsSorceryFramework
         public virtual void DrawEnergyBarThresholds(Rect rect)
         {
             Color tempColor = GUI.color;
-
             float thresWidth = 2f; //rect.width > 60f ? 2f : 1f;
-            Rect positionMin = new Rect(rect.x + rect.width * RelativeMin - (thresWidth - 1f), rect.y + rect.height / 2f, thresWidth, rect.height / 2f);
-            Rect positionMax = new Rect(rect.x + rect.width * RelativeMax - (thresWidth - 1f), rect.y + rect.height / 2f, thresWidth, rect.height / 2f);
-
             Texture2D image;
-            if (RelativeMin < EnergyRelativeValue)
-            {
-                image = BaseContent.BlackTex;
-                GUI.color = new Color(1f, 1f, 1f, 0.9f);
-            }
-            else
-            {
-                image = BaseContent.GreyTex;
-                GUI.color = new Color(1f, 1f, 1f, 0.5f);
-            }
-            GUI.DrawTexture(positionMin, image);
 
-            if (RelativeMax < EnergyRelativeValue)
+            if(RelativeMin > 0f)
             {
-                image = BaseContent.BlackTex;
-                GUI.color = new Color(1f, 1f, 1f, 0.9f);
+                Rect positionMin = new Rect(rect.x + rect.width * RelativeMin - (thresWidth - 1f), rect.y + rect.height / 2f, thresWidth, rect.height / 2f);
+                if (RelativeMin < EnergyRelativeValue)
+                {
+                    image = BaseContent.BlackTex;
+                    GUI.color = new Color(1f, 1f, 1f, 0.9f);
+                }
+                else
+                {
+                    image = BaseContent.GreyTex;
+                    GUI.color = new Color(1f, 1f, 1f, 0.5f);
+                }
+                GUI.DrawTexture(positionMin, image);
             }
-            else
+
+            if (RelativeMax < 1f)
             {
-                image = BaseContent.GreyTex;
-                GUI.color = new Color(1f, 1f, 1f, 0.5f);
+                Rect positionMax = new Rect(rect.x + rect.width * RelativeMax - (thresWidth - 1f), rect.y + rect.height / 2f, thresWidth, rect.height / 2f);
+                if (RelativeMax < EnergyRelativeValue)
+                {
+                    image = BaseContent.BlackTex;
+                    GUI.color = new Color(1f, 1f, 1f, 0.9f);
+                }
+                else
+                {
+                    image = BaseContent.GreyTex;
+                    GUI.color = new Color(1f, 1f, 1f, 0.5f);
+                }
+                GUI.DrawTexture(positionMax, image);
             }
-            GUI.DrawTexture(positionMax, image);
+           
             GUI.color = tempColor;
         }
 
@@ -377,69 +384,108 @@ namespace ItsSorceryFramework
             if (!def.inverse) // if energy typically goes from 100 -> 75
             {
                 if (EnergyRelativeValue > RelativeMax) return OverBarTex;
-                else if (EnergyRelativeValue <= RelativeMin) return UnderBarTex;
+                else if (EnergyRelativeValue < RelativeMin) return UnderBarTex;
                 else return NormalBarTex;
             }
             else // if energy typically goes from 0 -> 25
             {
                 if (EnergyRelativeValue > RelativeMax) return UnderBarTex;
-                else if (EnergyRelativeValue <= RelativeMin) return OverBarTex;
+                else if (EnergyRelativeValue < RelativeMin) return OverBarTex;
                 else return NormalBarTex;
             }
         }
 
-        public virtual void HightlightEnergyCost(Rect rec)
+        public virtual void HightlightEnergyCost(Rect rect)
         {
+            // return if tabwindow is null
+            MainTabWindow_Inspect mainTabWindow_Inspect = (MainTabWindow_Inspect)MainButtonDefOf.Inspect.TabWindow;
+            if (mainTabWindow_Inspect == null) return;
 
-        }
+            // return if hovered gizmo is null
+            Command_Sorcery command_Sorcery = ((mainTabWindow_Inspect != null) ? mainTabWindow_Inspect.LastMouseoverGizmo : null) as Command_Sorcery;
+            if (command_Sorcery == null) return;
 
-        
+            // return if it isn't a sorceryDef or isn't the same energytracker
+            SorceryDef sorceryDef = (command_Sorcery?.Ability as Sorcery)?.sorceryDef;
+            if (sorceryDef == null || !sorceryDef.sorcerySchema.energyTrackerDefs.Contains(def)) return;
 
-        // used to detect if two values are on different "bars"
-        // min bar: less than 0% energy
-        // max bar: greater than 0%, less than 100%
-        // overmax bar: greater than 100%
-        public int findFloor(float relVal, bool decrease = true)
-        {
-            if (!decrease)
-            {
-                if (relVal < 0) return -1;
-                else if (relVal < 1) return 0;
-            }
-            else
-            {
-                if (relVal <= 0) return -1;
-                else if (relVal <= 1) return 0;
-            }
-            return 1;
-        }
+            float energyCost = sorceryDef.statBases.GetStatValueFromList(def.energyUnitStatDef, 0) * EnergyCostFactor;
+            if (energyCost == 0f) return; // no energy cost? don't bother with showing it!
 
-        // normalizes relative values for use in highlighting sorcery costs
-        // see findFloor(relVal, decrease) for structure
-        public float normVal(float relVal, bool decrease = true)
-        {
-            if (!decrease)
-            {
-                if (relVal < 0) return relVal + 1;
-                else if (relVal < 1) return relVal;
-            }
-            else
-            {
-                if (relVal <= 0) return relVal + 1;
-                else if (relVal <= 1) return relVal;
-            }
-            return relVal - 1;
+            /* float relativeEnergyDiff = EnergyToRelativeValue(energyCost);
+            float relativeEnergy = EnergyRelativeValue;*/
+
+            float lowerRelVal = Mathf.Min(EnergyRelativeValue, EnergyToRelativeValue(energyCost));
+            float higherRelVal = Mathf.Max(EnergyRelativeValue, EnergyToRelativeValue(energyCost));
+
+            // used to make random blinking effect on highlight
+            float loopingNum = Mathf.Repeat(Time.time, 0.85f);
+            float alphaVal = 1f;
+            if (loopingNum < 0.1f) alphaVal = loopingNum / 0.1f;
+            else if (loopingNum >= 0.25f) alphaVal = 1f - (loopingNum - 0.25f) / 0.6f;
+
+            Rect highlight = rect.ContractedBy(3f);
+            //float max = highlight.xMax;
+            float min = highlight.xMin;
+            float width = highlight.width;
+
+            highlight.xMin = Widgets.AdjustCoordToUIScalingFloor(min + Mathf.Clamp(lowerRelVal, 0f, 1f) * width);
+            highlight.xMax = Widgets.AdjustCoordToUIScalingFloor(min + Mathf.Clamp(higherRelVal, 0f, 1f) * width);
+
+            // if not inverse, check if energy after cast is less than current energy
+            // else if inverse, check if energy after cast is more than current energy
+            GUI.color = new Color(1f, 1f, 1f, alphaVal * 0.7f);
+            GenUI.DrawTextureWithMaterial(highlight, !def.inverse == (EnergyRelativeValue > EnergyToRelativeValue(energyCost)) ? UnderBarTex : OverBarTex, null, default(Rect));
+            GUI.color = Color.white;
         }
 
         public virtual IEnumerable<StatDrawEntry> SpecialDisplayStats(StatRequest req)
         {
+            StatDef statDef;
+            StatRequest pawnReq = StatRequest.For(pawn);
+            StatCategoryDef finalCat = tempStatCategory ?? StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF;
+
+            // shows the maximum energy of the whole sorcery schema
+            statDef = def.energyMaxStatDef ?? StatDefOf_ItsSorcery.MaxEnergy_ItsSorcery;
+            yield return new StatDrawEntry(finalCat,
+                    statDef, MaxEnergy, pawnReq, ToStringNumberSense.Undefined, statDef.displayPriorityInCategory, false);
+
+            if (AbsMaxEnergy > MaxEnergy) // only show if there's a difference between overmax and max energy.
+            {
+                statDef = def.energyAbsMaxStatDef ?? StatDefOf_ItsSorcery.AbsMaxEnergy_ItsSorcery;
+                yield return new StatDrawEntry(finalCat,
+                        statDef, AbsMaxEnergy, pawnReq, ToStringNumberSense.Undefined, statDef.displayPriorityInCategory, false);
+            }
+
+            statDef = def.energyMinStatDef ?? StatDefOf_ItsSorcery.MinEnergy_ItsSorcery;
+            yield return new StatDrawEntry(finalCat,
+                    statDef, MinEnergy, pawnReq, ToStringNumberSense.Undefined, statDef.displayPriorityInCategory, false);
+
+            if (AbsMinEnergy < MinEnergy) // only show if there's a difference between min energy and 0.
+            {
+                statDef = def.energyAbsMinStatDef ?? StatDefOf_ItsSorcery.AbsMinEnergy_ItsSorcery;
+                yield return new StatDrawEntry(finalCat,
+                        statDef, AbsMinEnergy, pawnReq, ToStringNumberSense.Undefined, statDef.displayPriorityInCategory, false);
+            }
+
+            // shows a pawn's multiplier on relevant sorcery cost
+            statDef = def.energyCostFactorStatDef ?? StatDefOf_ItsSorcery.EnergyCostFactor_ItsSorcery;
+            yield return new StatDrawEntry(finalCat,
+                    statDef, pawn.GetStatValue(statDef), pawnReq, ToStringNumberSense.Undefined, statDef.displayPriorityInCategory, false);
+
+            // retrieve comp specific special display stats
+            if(!comps.NullOrEmpty()) foreach (var c in comps) c.CompSpecialDisplayStats(req);
+
             yield break;
         }
 
         public virtual string TopRightLabel(SorceryDef sorceryDef)
         {
-            return "";
+            return "{0}: {1}".Translate(def.energyLabelKey.Translate().CapitalizeFirst()[0], 
+                Math.Round(sorceryDef.statBases.GetStatValueFromList(def.energyUnitStatDef, 0) * EnergyCostFactor, 2).ToString());
         }
+
+        public virtual string DisableCommandReason() => def.disableReasonKey ?? "ISF_CommandDisableReasonBase";
 
         public override string ToString() => "Energy class: " + GetType().Name.ToString();
 

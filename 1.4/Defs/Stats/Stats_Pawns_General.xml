@@ -23,8 +23,7 @@
 		<label>minimum energy</label>
 		<description>The minimum energy a pawn can have.</description>
 		<category>BasicsPawn</category>
-		<maxValue>0</maxValue>
-		<defaultBaseValue>-50</defaultBaseValue>
+		<defaultBaseValue>0</defaultBaseValue>
 		<toStringStyle>FloatTwo</toStringStyle>
 		<showOnAnimals>false</showOnAnimals>
 		<alwaysHide>true</alwaysHide>

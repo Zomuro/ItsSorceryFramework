@@ -59,9 +59,10 @@ namespace ItsSorceryFramework
             {
                 /*energyTrackers.Add(Activator.CreateInstance(etDef.energyTrackerClass,
                 new object[] { pawn, etDef, def }) as EnergyTracker);*/
-
-                energyTrackers.Add(Activator.CreateInstance(etDef.energyTrackerClass,
-                new object[] { pawn, etDef, this }) as EnergyTracker);
+                EnergyTracker energyTracker = Activator.CreateInstance(etDef.energyTrackerClass,
+                    new object[] { pawn, etDef, this }) as EnergyTracker;
+                energyTracker.InitializeComps();
+                energyTrackers.Add(energyTracker);
             }
 
             foreach (LearningTrackerDef ltDef in def.learningTrackerDefs)
