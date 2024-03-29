@@ -12,8 +12,24 @@ namespace ItsSorceryFramework
     {
         public EnergyTrackerCompProperties_PerTick() => compClass = typeof(EnergyTrackerComp_PerTick);
 
-        public float chargeRatePerSecond = 0f;
+        // Energy related stats and recovery information.
+        public StatDef energyRecoveryStatDef;
 
-        public bool continuous = true;
+        public float overchargeRecoveryFactor = -0.5f;
+
+        public float deficitRecoveryFactor = 0.5f;
+
+        // Translated string keys
+        public string overchargeLabelKey = "ISF_EnergyTrackerOverchargeLabel";
+
+        public string overchargeDescKey = "ISF_EnergyTrackerOverchargeDesc";
+
+        public string deficitLabelKey = "ISF_EnergyTrackerDeficitLabel";
+
+        public string deficitDescKey = "ISF_EnergyTrackerDeficitDesc";
+
+        public StatDef RecoveryRateStatDef => energyRecoveryStatDef ?? StatDefOf_ItsSorcery.EnergyRecovery_ItsSorcery;
+
+        //public bool continuous = true;
     }
 }

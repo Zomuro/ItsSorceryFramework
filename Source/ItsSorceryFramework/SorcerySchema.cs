@@ -8,6 +8,30 @@ namespace ItsSorceryFramework
 {
     public class SorcerySchema : IExposable, ILoadReferenceable
     {
+        public Pawn pawn;
+
+        public SorcerySchemaDef def;
+
+        public List<EnergyTracker> energyTrackers = new List<EnergyTracker>();
+
+        public List<LearningTracker> learningTrackers = new List<LearningTracker>();
+
+        public LearningNodeRecord learningNodeRecord;
+
+        public ProgressTracker progressTracker;
+
+        public bool favorited = false;
+
+        public bool hasLimits = false;
+
+        public bool hasTurns = false;
+
+        public bool limitLocked = true;
+
+        public bool turnTimerOn = true;
+
+        public int loadID = -1;
+
         public SorcerySchema(Pawn pawn)
         {
             this.pawn = pawn;
@@ -25,7 +49,7 @@ namespace ItsSorceryFramework
             DetermineHasTurns();
         }
 
-        public string GetUniqueLoadID() => "SorcerySchema_" + loadID;
+        public string GetUniqueLoadID() => pawn.GetUniqueLoadID() + "_SorcerySchema_" + def.defName;
 
         // not the thing that makes me happy, but gotta do this
         public void DetermineHasLimits()
@@ -121,7 +145,7 @@ namespace ItsSorceryFramework
                 LimitButton(buttonRefPoint, rect.y + 5);
                 buttonRefPoint -= 24;
             }  
-            if (hasTurns) TurnButton(buttonRefPoint, rect.y + 5); // draws turn pause toggle button if schema should be pausable
+            //if (hasTurns) TurnButton(buttonRefPoint, rect.y + 5); // draws turn pause toggle button if schema should be pausable
 
             // temporary rect for plotting energytrackers
             Rect tempRect = new Rect(rect);
@@ -256,29 +280,7 @@ namespace ItsSorceryFramework
 
         }
 
-        public Pawn pawn;
-
-        public SorcerySchemaDef def;
-
-        public List<EnergyTracker> energyTrackers = new List<EnergyTracker>();
-
-        public List<LearningTracker> learningTrackers = new List<LearningTracker>();
-
-        public LearningNodeRecord learningNodeRecord;
-
-        public ProgressTracker progressTracker;
-
-        public bool favorited = false;
-
-        public bool hasLimits = false;
-
-        public bool hasTurns = false;
-
-        public bool limitLocked = true;
-
-        public bool turnTimerOn = true;
-
-        public int loadID = -1;
+        
 
     }
 }

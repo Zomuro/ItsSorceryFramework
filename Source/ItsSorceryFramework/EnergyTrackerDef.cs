@@ -53,7 +53,7 @@ namespace ItsSorceryFramework
 
         public Color normalBarColor = new Color(.518f, .427f, .239f); // HEX #846D3D | dull gold
 
-        public Color overBarColor = new Color(.518f, .427f, .239f); // HEX #00A86B | jade
+        public Color overBarColor = new Color(0f, .659f, .42f); // HEX #00A86B | jade
 
 
 
@@ -88,7 +88,7 @@ namespace ItsSorceryFramework
         public string disableReasonKey;
 
         // Consumable EnerrgyTracker ammo dictionary
-        public List<EnergyConsumable> consumables;
+        //public List<EnergyConsumable> consumables;
 
         // Cooldown EnergyTracker string
         [MustTranslate]
@@ -103,10 +103,10 @@ namespace ItsSorceryFramework
         }
     }
 
-    public class EnergyConsumable
+    /*public class EnergyConsumable
     {
         public ThingDef thingDef;
 
         public float energy = 1f;
-    }
+    }*/
 }

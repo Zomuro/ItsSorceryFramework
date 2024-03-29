@@ -21,7 +21,7 @@ namespace ItsSorceryFramework
             // AddHumanlikeOrders_EnergyTracker_Consumable
             // if a pawn has a SorcerySchema with a Consumable class EnergyTracker, show the float menu
             harmony.Patch(AccessTools.Method(typeof(FloatMenuMakerMap), "AddHumanlikeOrders"), null,
-                new HarmonyMethod(typeof(HarmonyPatches), nameof(AddHumanlikeOrders_EnergyTracker_Consumable)));
+                new HarmonyMethod(typeof(HarmonyPatches), nameof(AddHumanlikeOrders_EnergyTrackerComp_OnConsume)));
 
             // Ability Patches //
 
@@ -72,26 +72,49 @@ namespace ItsSorceryFramework
         }
 
         // POSTFIX: when right clicking items that can reload the schema, provide FloatMenu option to "reload" with them
-        public static void AddHumanlikeOrders_EnergyTracker_Consumable(Vector3 __0, Pawn __1, List<FloatMenuOption> __2)
+        public static void AddHumanlikeOrders_EnergyTracker_ConsumableOld(Vector3 __0, Pawn __1, List<FloatMenuOption> __2)
         {
             List<SorcerySchema> schemas = SorcerySchemaUtility.GetSorcerySchemaList(__1);
             if (schemas.NullOrEmpty()) return;
 
             foreach (SorcerySchema schema in schemas)
             {
-                EnergyTracker_AddOrders(schema, __0, __1, __2);
+                EnergyTracker_AddOrdersOld(schema, __0, __1, __2);
             }
             return;
         }
 
+        public static void AddHumanlikeOrders_EnergyTrackerComp_OnConsume(Vector3 __0, Pawn __1, List<FloatMenuOption> __2)
+        {
+            List<SorcerySchema> schemas = SorcerySchemaUtility.GetSorcerySchemaList(__1);
+            if (schemas.NullOrEmpty()) return;
+
+            foreach (SorcerySchema schema in schemas) EnergyTracker_AddOrders(schema, __0, __2);
+            return;
+        }
+
         // HELPER METHOD
-        public static void EnergyTracker_AddOrders(SorcerySchema schema, Vector3 vec, Pawn pawn, List<FloatMenuOption> options)
+        public static void EnergyTracker_AddOrders(SorcerySchema schema, Vector3 vec, List<FloatMenuOption> options)
+        {
+            if (schema.energyTrackers.NullOrEmpty()) return; // no energytrackers in the schema => don't bother
+            foreach (var energyTracker in schema.energyTrackers)
+            {
+                if (!energyTracker.comps.NullOrEmpty()) // if the energytracker has no comps, skip check
+                {
+                    foreach (var c in energyTracker.comps) options.AddRange(c.CompPostConsume(vec)); // else run the comppostconsume method
+                }
+            }
+        }
+
+
+        public static void EnergyTracker_AddOrdersOld(SorcerySchema schema, Vector3 vec, Pawn pawn, List<FloatMenuOption> options)
         {
             if (schema.energyTrackers.NullOrEmpty()) return;
             foreach (var energyTracker in schema.energyTrackers)
-            {
-                //if (energyTracker.GetType() != typeof(EnergyTracker_Consumable) || energyTracker.def.consumables.NullOrEmpty()) continue;
-                return; // temporary
+            {           
+                
+                /*if (energyTracker.GetType() != typeof(EnergyTracker_Consumable) || energyTracker.def.consumables.NullOrEmpty()) continue;
+                return;
                 String text = "";
                 List<EnergyConsumable> consumables = energyTracker.def.consumables;
                 foreach (var consume in consumables)
@@ -147,7 +170,7 @@ namespace ItsSorceryFramework
                         options.Add(FloatMenuUtility.DecoratePrioritizedTask(new FloatMenuOption(text, chargeSchema,
                             MenuOptionPriority.Default, null, null, 0f, null, null, true, 0), pawn, ammo, "ReservedBy", null));
                     }
-                }
+                }*/
             }
         }
 
@@ -328,7 +351,6 @@ namespace ItsSorceryFramework
             ModExtension_SchemaAddition schemaExt = __0.GetModExtension<ModExtension_SchemaAddition>();
             SorcerySchemaUtility.AddSorcerySchema(__instance.pawn, schemaExt.schema);
         }
-
 
         public static Dictionary<Pawn, Comp_ItsSorcery> cachedSchemaComps = new Dictionary<Pawn, Comp_ItsSorcery>();
 

@@ -14,11 +14,11 @@ namespace ItsSorceryFramework
 
         public SorcerySchema schema;
         
-        public SorcerySchemaDef sorcerySchemaDef;
+        //public SorcerySchemaDef sorcerySchemaDef;
 
-        private SorcerySchema cachedSchema;
+        //private SorcerySchema cachedSchema;
 
-        private List<LearningTracker> cachedLearningTrackers = new List<LearningTracker>();
+        //private List<LearningTracker> cachedLearningTrackers = new List<LearningTracker>();
 
         public float currentEnergy;
 
@@ -34,7 +34,7 @@ namespace ItsSorceryFramework
 
         public Texture2D cachedOverBarTex;
 
-        private static readonly Texture2D barDividerTex = ContentFinder<Texture2D>.Get("UI/Misc/NeedUnitDivider", true);
+        public int loadID = -1;
 
         public Texture2D EmptyBarTex
         {
@@ -72,6 +72,7 @@ namespace ItsSorceryFramework
             }
         }
 
+        //public string GetUniqueLoadID() => pawn.GetUniqueLoadID() + "_EnergyTracker_" + def.defName;
 
         // initalizer- created via activator via SorcerySchema
         public EnergyTracker(Pawn pawn)
@@ -79,21 +80,22 @@ namespace ItsSorceryFramework
             this.pawn = pawn;
         }
 
-        public EnergyTracker(Pawn pawn, EnergyTrackerDef def, SorcerySchemaDef schemaDef) 
+/*        public EnergyTracker(Pawn pawn, EnergyTrackerDef def, SorcerySchemaDef schemaDef) 
         {
             this.pawn = pawn;
             this.def = def;
             this.sorcerySchemaDef = schemaDef;
 
             // maybe put initalize gizmo here idunno
-        }
+        }*/
 
         public EnergyTracker(Pawn pawn, EnergyTrackerDef def, SorcerySchema schema)
         {
             this.pawn = pawn;
             this.def = def;
             this.schema = schema;
-            this.sorcerySchemaDef = this.schema.def;
+            //this.sorcerySchemaDef = this.schema.def;
+            InitializeEnergy();
 
             // maybe put initalize gizmo here idunno
         }
@@ -125,12 +127,8 @@ namespace ItsSorceryFramework
         {
             Scribe_References.Look(ref pawn, "pawn");
             Scribe_Defs.Look(ref def, "def");
-            Scribe_Defs.Look(ref sorcerySchemaDef, "sorcerySchemaDef");
-
-
-            Log.Message("savetest");
+            //Scribe_Defs.Look(ref sorcerySchemaDef, "sorcerySchemaDef");
             Scribe_References.Look(ref schema, "schema");
-            Log.Message("savetest2");
             Scribe_Values.Look(ref currentEnergy, "currentEnergy", 0f, false);
 
             if (Scribe.mode == LoadSaveMode.LoadingVars) InitializeComps();
@@ -139,7 +137,7 @@ namespace ItsSorceryFramework
 
         public float InvMult => def.inverse ? -1f : 1f;
 
-        public virtual bool HasLimit => (!def.inverse && AbsMinEnergy < MinEnergy) || (def.inverse && AbsMaxEnergy > MaxEnergy);
+        public virtual bool HasLimit => HasDeficitZone;
 
         public virtual bool HasTurn
         {
@@ -163,29 +161,23 @@ namespace ItsSorceryFramework
 
         public virtual float CastFactor => pawn.GetStatValue(def.castFactorStatDef ?? StatDefOf_ItsSorcery.CastFactor_ItsSorcery, true);
 
-        public virtual float OverBarRecoveryFactor
-        {
-            get
-            {
-                return 0.5f;
-            }
-        }
+        public virtual bool HasOverchargeZone => !def.inverse ? AbsMaxEnergy > MaxEnergy : MinEnergy > AbsMinEnergy;
 
-        public virtual float UnderBarRecoveryFactor
-        {
-            get
-            {
-                return 0.5f;
-            }
-        }
+        public virtual bool HasDeficitZone => !def.inverse ? MinEnergy > AbsMinEnergy : AbsMaxEnergy > MaxEnergy;
 
-        public virtual int TurnTicks
+        public virtual bool InDeficit => HasDeficitZone && !def.inverse ? currentEnergy < MinEnergy : currentEnergy > MaxEnergy;
+
+        public virtual bool InOvercharge => HasOverchargeZone && !def.inverse ? currentEnergy > MaxEnergy : currentEnergy < MinEnergy;
+
+        public virtual string EnergyLabel => def.energyLabelKey.Translate();
+
+        /*public virtual int TurnTicks
         {
             get
             {
                 return 60;
             }
-        }
+        }*/
 
         public virtual void EnergyTrackerTick()
         {
@@ -239,6 +231,12 @@ namespace ItsSorceryFramework
         {
             if (!def.inverse) currentEnergy = MinEnergy;
             else currentEnergy = MaxEnergy;
+        }
+
+        public virtual void InitializeEnergy()
+        {
+            if (!def.inverse) currentEnergy = MaxEnergy;
+            else currentEnergy = MinEnergy;
         }
 
         public virtual void ApplyHediffSeverity(float relVal) 
@@ -474,8 +472,13 @@ namespace ItsSorceryFramework
                     statDef, pawn.GetStatValue(statDef), pawnReq, ToStringNumberSense.Undefined, statDef.displayPriorityInCategory, false);
 
             // retrieve comp specific special display stats
-            if(!comps.NullOrEmpty()) foreach (var c in comps) c.CompSpecialDisplayStats(req);
-
+            if (!comps.NullOrEmpty()) 
+            { 
+                foreach (var c in comps)
+                {
+                    foreach (var entry in c.CompSpecialDisplayStats(req, finalCat)) yield return entry;
+                }
+            }
             yield break;
         }
 

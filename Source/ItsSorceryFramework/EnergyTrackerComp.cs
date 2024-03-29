@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Verse;
 using RimWorld;
+using UnityEngine;
 
 namespace ItsSorceryFramework
 {
@@ -18,7 +19,7 @@ namespace ItsSorceryFramework
 
         public virtual void CompPostTick() { } // for effects over time
 
-        public virtual void CompPostUse() { } // for effects when using a "consumption" item
+        public virtual IEnumerable<FloatMenuOption> CompPostConsume(Vector3 vec3) { yield break; } // for effects when using a "consumption" item
 
         public virtual void CompPostAdd() { }
 
@@ -30,7 +31,7 @@ namespace ItsSorceryFramework
 
         public virtual void CompPostKill() { } // for effects activated when killing a pawn
 
-        public virtual IEnumerable<StatDrawEntry> CompSpecialDisplayStats(StatRequest req) // provides special display stats, which show how energy gets recovered
+        public virtual IEnumerable<StatDrawEntry> CompSpecialDisplayStats(StatRequest req, StatCategoryDef catDef = null) // provides special display stats, which show how energy gets recovered
         {
             yield break;
         }
