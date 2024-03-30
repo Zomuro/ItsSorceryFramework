@@ -43,6 +43,7 @@ namespace ItsSorceryFramework
             foreach (var et in Schema.energyTrackers)
             {
                 // creates temporary statcategeorydef to properly sort stats into their right place
+                // CANNOT BE SAVED
                 StatCategoryDef tempCat = new StatCategoryDef();
                 tempCat.defName = StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF.defName + "_TEMP" + i;
                 tempCat.label = StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF.LabelCap + " (" + et.def.label + ")";

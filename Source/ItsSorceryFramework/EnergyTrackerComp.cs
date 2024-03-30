@@ -21,9 +21,9 @@ namespace ItsSorceryFramework
 
         public virtual IEnumerable<FloatMenuOption> CompPostConsume(Vector3 vec3) { yield break; } // for effects when using a "consumption" item
 
-        public virtual void CompPostAdd() { }
+        public virtual void CompPostAdd() { } // retain for future use
 
-        public virtual void CompPostRemove() { }
+        public virtual void CompPostRemove() { } // retain for future use
 
         public virtual void CompPostDamageDealt() { } // for effects activated when dealing damage
 

@@ -86,13 +86,33 @@ namespace ItsSorceryFramework
 
 
             yield break;
-        } 
+        }
 
         public override IEnumerable<StatDrawEntry> CompSpecialDisplayStats(StatRequest req, StatCategoryDef catDef = null) // provides special display stats, which show how energy gets recovered
         {
+            //StatDef statDef;
+            //StatRequest pawnReq = StatRequest.For(parent.pawn);
+            StatCategoryDef finalCat = catDef ?? StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF;
+
+            String ammo = "";
+            foreach (var item in Props.consumables)
+            {
+                if (ammo == "")
+                {
+                    ammo = item.thingDef.LabelCap + " ({0})".Translate(item.energy);
+                }
+                else ammo = ammo + ", " + item.thingDef.LabelCap + " ({0})".Translate(item.energy);
+            }
+            if (ammo == "") ammo = "None";
+
+            yield return new StatDrawEntry(finalCat,
+                    "ISF_EnergyTrackerAmmo".Translate(), ammo,
+                    "ISF_EnergyTrackerAmmoDesc".Translate(),
+                    10, null, null, false);
+
             yield break;
         }
- 
+
     }
 
 }
