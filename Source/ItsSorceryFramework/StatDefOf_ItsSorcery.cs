@@ -14,6 +14,7 @@ namespace ItsSorceryFramework
         public static StatDef EnergyFactor_ItsSorcery;
         public static StatDef EnergyCostFactor_ItsSorcery;
         public static StatDef CastFactor_ItsSorcery;
+        public static StatDef Scaling_ItsSorcery;
 
         // SorceryDef stats
         public static StatDef Sorcery_EnergyCost;

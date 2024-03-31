@@ -72,18 +72,6 @@ namespace ItsSorceryFramework
         }
 
         // POSTFIX: when right clicking items that can reload the schema, provide FloatMenu option to "reload" with them
-        public static void AddHumanlikeOrders_EnergyTracker_ConsumableOld(Vector3 __0, Pawn __1, List<FloatMenuOption> __2)
-        {
-            List<SorcerySchema> schemas = SorcerySchemaUtility.GetSorcerySchemaList(__1);
-            if (schemas.NullOrEmpty()) return;
-
-            foreach (SorcerySchema schema in schemas)
-            {
-                EnergyTracker_AddOrdersOld(schema, __0, __1, __2);
-            }
-            return;
-        }
-
         public static void AddHumanlikeOrders_EnergyTrackerComp_OnConsume(Vector3 __0, Pawn __1, List<FloatMenuOption> __2)
         {
             List<SorcerySchema> schemas = SorcerySchemaUtility.GetSorcerySchemaList(__1);
@@ -103,74 +91,6 @@ namespace ItsSorceryFramework
                 {
                     foreach (var c in energyTracker.comps) options.AddRange(c.CompPostConsume(vec)); // else run the comppostconsume method
                 }
-            }
-        }
-
-
-        public static void EnergyTracker_AddOrdersOld(SorcerySchema schema, Vector3 vec, Pawn pawn, List<FloatMenuOption> options)
-        {
-            if (schema.energyTrackers.NullOrEmpty()) return;
-            foreach (var energyTracker in schema.energyTrackers)
-            {           
-                
-                /*if (energyTracker.GetType() != typeof(EnergyTracker_Consumable) || energyTracker.def.consumables.NullOrEmpty()) continue;
-                return;
-                String text = "";
-                List<EnergyConsumable> consumables = energyTracker.def.consumables;
-                foreach (var consume in consumables)
-                {
-                    Thing ammo = vec.ToIntVec3().GetFirstThing(pawn.Map, consume.thingDef);
-                    if (ammo == null)
-                    {
-                        continue;
-                    }
-
-                    if (!pawn.CanReach(ammo, PathEndMode.ClosestTouch, Danger.Deadly, false, false, TraverseMode.ByPawn))
-                    {
-                        text = "ISF_Charge".Translate(schema.def.LabelCap.ToString(), energyTracker.def.LabelCap, ammo.def.label)
-                            + "ISF_ChargeNoPath".Translate();
-                        options.Add(new FloatMenuOption(text, null, MenuOptionPriority.Default,
-                            null, null, 0f, null, null, true, 0));
-                    }
-                    else if (energyTracker.MaxEnergy != 0 &&
-                        energyTracker.currentEnergy == energyTracker.MaxEnergy)
-                    {
-                        text = "ISF_Charge".Translate(schema.def.LabelCap.ToString(), energyTracker.def.LabelCap, ammo.def.label)
-                            + "ISF_ChargeFull".Translate();
-                        options.Add(new FloatMenuOption(text, null, MenuOptionPriority.Default,
-                            null, null, 0f, null, null, true, 0));
-                    }
-                    else
-                    {
-                        int count = 0;
-                        int endcount = ammo.stackCount;
-                        float gain = endcount * consume.energy;
-                        if (energyTracker.MaxEnergy == 0)
-                        {
-                            text = "ISF_Charge".Translate(schema.def.LabelCap.ToString(), energyTracker.def.LabelCap, ammo.def.label)
-                            + "ISF_ChargeCalc".Translate(ammo.stackCount, ammo.def.label,
-                                ammo.stackCount * consume.energy,
-                                energyTracker.def.energyLabelKey.Translate());
-                        }
-                        else
-                        {
-                            count = (int)Math.Ceiling((energyTracker.MaxEnergy - energyTracker.currentEnergy) / consume.energy);
-                            endcount = Math.Min(count, ammo.stackCount);
-                            gain = Math.Min(endcount * consume.energy, energyTracker.MaxEnergy - energyTracker.currentEnergy);
-                            text = "ISF_Charge".Translate(schema.def.LabelCap.ToString(), energyTracker.def.LabelCap, ammo.def.label)
-                            + "ISF_ChargeCalc".Translate(endcount, ammo.def.label,
-                                gain, energyTracker.def.energyLabelKey.Translate());
-                        }
-
-                        Action chargeSchema = delegate ()
-                        {
-                            pawn.jobs.TryTakeOrderedJob(JobGiver_Charge.MakeChargeEnergyJob(pawn, schema, energyTracker, ammo, endcount),
-                                new JobTag?(JobTag.Misc), false);
-                        };
-                        options.Add(FloatMenuUtility.DecoratePrioritizedTask(new FloatMenuOption(text, chargeSchema,
-                            MenuOptionPriority.Default, null, null, 0f, null, null, true, 0), pawn, ammo, "ReservedBy", null));
-                    }
-                }*/
             }
         }
 

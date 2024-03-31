@@ -125,5 +125,19 @@
 		<displayPriorityInCategory>3493</displayPriorityInCategory>
 		<scenarioRandomizable>true</scenarioRandomizable>
 	</StatDef>
+	
+	<StatDef>
+		<defName>Scaling_ItsSorcery</defName>
+		<label>scaling factor</label>
+		<description>A multiplier on the energy change.</description>
+		<category>BasicsPawn</category>
+		<defaultBaseValue>0.1</defaultBaseValue>
+		<toStringStyle>PercentZero</toStringStyle>
+		<showOnAnimals>false</showOnAnimals>
+		<alwaysHide>false</alwaysHide>
+		<minValue>0</minValue>
+		<displayPriorityInCategory>3493</displayPriorityInCategory>
+		<scenarioRandomizable>true</scenarioRandomizable>
+	</StatDef>
 
 </Defs>

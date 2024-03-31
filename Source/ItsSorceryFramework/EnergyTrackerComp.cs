@@ -25,9 +25,9 @@ namespace ItsSorceryFramework
 
         public virtual void CompPostRemove() { } // retain for future use
 
-        public virtual void CompPostDamageDealt() { } // for effects activated when dealing damage
+        public virtual void CompPostDamageDealt(DamageInfo damageInfo) { } // for effects activated when dealing damage
 
-        public virtual void CompPostDamageRecieved() { } // for effects activated when recieving damage
+        public virtual void CompPostDamageRecieved(DamageInfo damageInfo) { } // for effects activated when recieving damage
 
         public virtual void CompPostKill() { } // for effects activated when killing a pawn
 
@@ -35,7 +35,9 @@ namespace ItsSorceryFramework
         {
             yield break;
         }
- 
+
+        public virtual float CompDrawWorker(Rect rect) => 0f; // enables LearningTracker_Progress to draw information about EnergyTrackers
+
     }
 
 }
