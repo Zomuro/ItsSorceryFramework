@@ -6,6 +6,12 @@ namespace ItsSorceryFramework
 {
     public class LearningTracker_Progress : LearningTracker
     {
+        public SorcerySchema cachedSchema;
+
+        public List<Sorcery> cachedSorceries;
+
+        public bool cacheDirty = true;
+
         public LearningTracker_Progress(Pawn pawn) : base(pawn)
         {
 
@@ -17,6 +23,11 @@ namespace ItsSorceryFramework
         }
 
         public LearningTracker_Progress(Pawn pawn, LearningTrackerDef def, SorcerySchemaDef schemaDef) : base(pawn, def, schemaDef)
+        {
+
+        }
+
+        public LearningTracker_Progress(Pawn pawn, LearningTrackerDef def, SorcerySchema schema) : base(pawn, def, schema)
         {
 
         }
@@ -54,10 +65,5 @@ namespace ItsSorceryFramework
             ProgressTracker.DrawRightGUI(rect);
         }
 
-        public SorcerySchema cachedSchema;
-
-        public List<Sorcery> cachedSorceries;
-
-        public bool cacheDirty = true;
     }
 }

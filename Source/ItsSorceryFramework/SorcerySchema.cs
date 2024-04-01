@@ -36,7 +36,6 @@ namespace ItsSorceryFramework
         {
             this.pawn = pawn;
             DetermineHasLimits();
-            DetermineHasTurns();
         }
 
         public SorcerySchema(Pawn pawn, SorcerySchemaDef def)
@@ -46,7 +45,6 @@ namespace ItsSorceryFramework
             InitializeTrackers(); // setup energy, learning, and progress trackers
             InitializeNodeCompletion(); // setup record of learning nodes
             DetermineHasLimits();
-            DetermineHasTurns();
         }
 
         public string GetUniqueLoadID() => pawn.GetUniqueLoadID() + "_SorcerySchema_" + def.defName;
@@ -59,19 +57,6 @@ namespace ItsSorceryFramework
                 if (et.HasLimit) 
                 {
                     hasLimits = true;
-                    return;
-                }
-            }
-        }
-
-        // same boat
-        public void DetermineHasTurns()
-        {
-            foreach (var et in energyTrackers)
-            {
-                if (et.HasTurn)
-                {
-                    hasTurns = true;
                     return;
                 }
             }
@@ -145,7 +130,6 @@ namespace ItsSorceryFramework
                 LimitButton(buttonRefPoint, rect.y + 5);
                 buttonRefPoint -= 24;
             }  
-            //if (hasTurns) TurnButton(buttonRefPoint, rect.y + 5); // draws turn pause toggle button if schema should be pausable
 
             // temporary rect for plotting energytrackers
             Rect tempRect = new Rect(rect);
@@ -274,7 +258,7 @@ namespace ItsSorceryFramework
             Scribe_Values.Look(ref favorited, "favorited", false);
 
             Scribe_Values.Look(ref hasLimits, "hasLimits", false);
-            Scribe_Values.Look(ref hasTurns, "hasTurns", false);
+            //Scribe_Values.Look(ref hasTurns, "hasTurns", false);
             Scribe_Values.Look(ref limitLocked, "limitLocked", true, false);
             Scribe_Values.Look(ref turnTimerOn, "turnTimerOn", true, false);
 

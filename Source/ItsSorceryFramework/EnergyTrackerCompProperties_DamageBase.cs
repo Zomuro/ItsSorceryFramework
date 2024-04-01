@@ -12,17 +12,8 @@ namespace ItsSorceryFramework
     {
         public EnergyTrackerCompProperties_DamageBase() => compClass = typeof(EnergyTrackerComp_DamageBase);
 
-        //public float energyFactor = 1f;
-
         public StatDef scalingStatDef;
 
         public List<DamageDef> damageDefs = new List<DamageDef>();
     }
-
-    /*public class EnergyDamageRecord // retain for opportunity to do flat values?
-    {
-        public DamageDef damageDef;
-
-        public float flatEnergy = 0f;
-    }*/
 }

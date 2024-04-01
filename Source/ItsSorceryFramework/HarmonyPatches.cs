@@ -35,7 +35,7 @@ namespace ItsSorceryFramework
             // TakeDamage_AddEXP
             // for every magic system with the correct EXP tag, give xp depending on damage
             harmony.Patch(AccessTools.Method(typeof(Thing), "TakeDamage"), null,
-                new HarmonyMethod(typeof(HarmonyPatches), nameof(TakeDamage_AddEXP)));
+                new HarmonyMethod(typeof(HarmonyPatches), nameof(TakeDamage_ISF_Postfix)));
 
             // SkillLearn_AddEXP
             // for every magic system with the correct EXP tag, give xp depending on skill being learned
@@ -45,7 +45,7 @@ namespace ItsSorceryFramework
             // DoKillSideEffects_AddEXP
             // for every magic system with the correct EXP tag, give xp on kill
             harmony.Patch(AccessTools.Method(typeof(Pawn), "DoKillSideEffects"), null,
-                new HarmonyMethod(typeof(HarmonyPatches), nameof(DoKillSideEffects_AddEXP)));
+                new HarmonyMethod(typeof(HarmonyPatches), nameof(DoKillSideEffects_ISF_Postfix)));
 
             // AddHumanlikeOrders_EXPUseItem
             // allow items to be used to level up experience systems
@@ -118,10 +118,11 @@ namespace ItsSorceryFramework
         }
 
         // POSTFIX: if a pawn has a tag with the OnDamage or OnDamaged worker, add exp based on amount
-        public static void TakeDamage_AddEXP(Thing __instance, DamageInfo __0)
+        public static void TakeDamage_ISF_Postfix(Thing __instance, DamageInfo __0)
         {
             if (__0.Def.ExternalViolenceFor(__instance))
             {
+                // progress tracker portion
                 Pawn caster;
                 if (__0.Instigator != null && (caster = __0.Instigator as Pawn) != null && caster.IsColonist) 
                     ApplyDamageEXP(caster, __0, typeof(ProgressEXPWorker_OnDamage)); 
@@ -129,6 +130,9 @@ namespace ItsSorceryFramework
                 Pawn target;
                 if ((target = __instance as Pawn) != null && target.IsColonist)
                     ApplyDamageEXP(target, __0, typeof(ProgressEXPWorker_OnDamaged));
+
+                // energy tracker portion
+                ApplyDamageEnergy(__instance, __0);
             }
 
             return;
@@ -154,6 +158,49 @@ namespace ItsSorceryFramework
         }
 
         // HELPER METHOD
+        public static void ApplyDamageEnergy(Thing targetThing, DamageInfo dinfo)
+        {
+            Pawn targetPawn = targetThing as Pawn;
+            if (targetPawn != null)
+            {
+                CacheComp(targetPawn);
+                Comp_ItsSorcery targetComp = cachedSchemaComps[targetPawn];
+                if (targetComp != null && !targetComp.schemaTracker.sorcerySchemas.NullOrEmpty())
+                {
+                    foreach (var schema in targetComp.schemaTracker.sorcerySchemas) // for every sorceryschema
+                    {
+                        if (schema.energyTrackers.NullOrEmpty()) continue; //nullcheck energytrackers
+                        foreach (var energyTracker in schema.energyTrackers)  // look in a schema's energytrackers
+                        {
+                            if (energyTracker.comps.NullOrEmpty()) continue; // nullcheck energycomps
+                            foreach (var energyComp in energyTracker.comps) energyComp.CompPostDamageRecieved(dinfo); // call relevant damage-related comp methods
+                        }
+                    }
+                }
+            }
+
+            Pawn instigatorPawn = dinfo.Instigator is null ? null : dinfo.Instigator as Pawn;
+            if (instigatorPawn != null)
+            {
+                CacheComp(instigatorPawn);
+                Comp_ItsSorcery instigatorComp = cachedSchemaComps[instigatorPawn];
+                if (instigatorComp != null && !instigatorComp.schemaTracker.sorcerySchemas.NullOrEmpty())
+                {
+                    foreach (var schema in instigatorComp.schemaTracker.sorcerySchemas) // for every sorceryschema
+                    {
+                        if (schema.energyTrackers.NullOrEmpty()) continue; //nullcheck energytrackers
+                        foreach (var energyTracker in schema.energyTrackers)  // look in a schema's energytrackers
+                        {
+                            if (energyTracker.comps.NullOrEmpty()) continue; // nullcheck energycomps
+                            // call relevant damage-related comp methods
+                            foreach (var energyComp in energyTracker.comps) energyComp.CompPostDamageDealt(dinfo);
+                        }
+                    }
+                }
+            }
+        }
+
+        // HELPER METHOD
         public static void Learn_AddEXP(SkillRecord __instance, float __0)
         {
             // player won't care if it isn't their own pawn getting skill exp, and they won't really notice.
@@ -176,13 +223,11 @@ namespace ItsSorceryFramework
         }
 
 
-        // POSTFIX: if a pawn kills another pawn, execute the OnKill EXPWorker if their schema has the tag
-        public static void DoKillSideEffects_AddEXP(DamageInfo? __0)
+        // POSTFIX: if a pawn kills another pawn, execute the OnKill EXPWorker and energycomps if their schema has the tag/comp
+        public static void DoKillSideEffects_ISF_Postfix(DamageInfo? __0)
         {
             if (__0 == null || __0.Value.Instigator == null) return;
-
-            Pawn killer;
-            if ((killer = __0.Value.Instigator as Pawn) != null && killer.IsColonist)
+            if (__0.Value.Instigator is Pawn killer && killer.IsColonist)
             {
                 CacheComp(killer);
                 Comp_ItsSorcery comp = cachedSchemaComps[killer];
@@ -195,6 +240,13 @@ namespace ItsSorceryFramework
                     {
                         if (!worker.def.damageDefs.NullOrEmpty() && !worker.def.damageDefs.Contains(__0.Value.Def)) continue;
                         worker.TryExecute(schema.progressTracker);
+                    }
+
+                    if (schema.energyTrackers.NullOrEmpty()) continue;
+                    foreach (var energyTracker in schema.energyTrackers)
+                    {
+                        if (energyTracker.comps.NullOrEmpty()) continue;
+                        foreach (var energyComp in energyTracker.comps) energyComp.CompPostKill(__0);
                     }
                 }
             }

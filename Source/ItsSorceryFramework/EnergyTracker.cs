@@ -72,29 +72,17 @@ namespace ItsSorceryFramework
             }
         }
 
-        //public string GetUniqueLoadID() => pawn.GetUniqueLoadID() + "_EnergyTracker_" + def.defName;
-
         // initalizer- created via activator via SorcerySchema
         public EnergyTracker(Pawn pawn)
         {
             this.pawn = pawn;
         }
 
-/*        public EnergyTracker(Pawn pawn, EnergyTrackerDef def, SorcerySchemaDef schemaDef) 
-        {
-            this.pawn = pawn;
-            this.def = def;
-            this.sorcerySchemaDef = schemaDef;
-
-            // maybe put initalize gizmo here idunno
-        }*/
-
         public EnergyTracker(Pawn pawn, EnergyTrackerDef def, SorcerySchema schema)
         {
             this.pawn = pawn;
             this.def = def;
             this.schema = schema;
-            //this.sorcerySchemaDef = this.schema.def;
             InitializeEnergy();
 
             // maybe put initalize gizmo here idunno
@@ -127,7 +115,6 @@ namespace ItsSorceryFramework
         {
             Scribe_References.Look(ref pawn, "pawn");
             Scribe_Defs.Look(ref def, "def");
-            //Scribe_Defs.Look(ref sorcerySchemaDef, "sorcerySchemaDef");
             Scribe_References.Look(ref schema, "schema");
             Scribe_Values.Look(ref currentEnergy, "currentEnergy", 0f, false);
 
@@ -135,17 +122,13 @@ namespace ItsSorceryFramework
             if(!comps.NullOrEmpty()) foreach (var c in comps) c.CompExposeData();
         }
 
+        public SorcerySchema Schema => schema;
+
+        public List<LearningTracker> LearningTrackers => schema.learningTrackers;
+
         public float InvMult => def.inverse ? -1f : 1f;
 
         public virtual bool HasLimit => HasDeficitZone;
-
-        public virtual bool HasTurn
-        {
-            get
-            {
-                return false;
-            }
-        }
 
         public virtual float MinEnergy => Math.Min(pawn.GetStatValue(def.energyMinStatDef ?? StatDefOf_ItsSorcery.MinEnergy_ItsSorcery, true), MaxEnergy);
 
@@ -171,14 +154,6 @@ namespace ItsSorceryFramework
 
         public virtual string EnergyLabel => def.energyLabelKey.Translate();
 
-        /*public virtual int TurnTicks
-        {
-            get
-            {
-                return 60;
-            }
-        }*/
-
         public virtual void EnergyTrackerTick()
         {
             if (!comps.NullOrEmpty()) foreach (var c in comps) c.CompPostTick();
@@ -201,18 +176,7 @@ namespace ItsSorceryFramework
 
         public virtual bool WouldReachLimitEnergy(float energyCost, SorceryDef sorceryDef = null, Sorcery sorcery = null)
         {
-
             return !def.inverse ? (currentEnergy - InvMult * energyCost < MinEnergy && Schema.limitLocked) : (currentEnergy - InvMult * energyCost > MaxEnergy && Schema.limitLocked);
-
-           /* if (!def.inverse)
-            {
-                if (currentEnergy - InvMult * energyCost < MinEnergy && Schema.limitLocked) return true;
-            }
-            else
-            {
-                if (currentEnergy - InvMult * energyCost > MaxEnergy && Schema.limitLocked) return true;
-            }
-            return false;*/
         }
 
         public virtual bool TryAlterEnergy(float energyCost, SorceryDef sorceryDef = null, Sorcery sorcery = null)
@@ -491,28 +455,5 @@ namespace ItsSorceryFramework
         public virtual string DisableCommandReason() => def.disableReasonKey ?? "ISF_CommandDisableReasonBase";
 
         public override string ToString() => "Energy class: " + GetType().Name.ToString();
-
-        public SorcerySchema Schema => schema;
-        /*        {
-                    get
-                    {
-                        if(cachedSchema == null) cachedSchema = SorcerySchemaUtility.FindSorcerySchema(pawn, sorcerySchemaDef);
-                        return cachedSchema;
-                    }
-                }*/
-
-        public List<LearningTracker> LearningTrackers => schema.learningTrackers;
-       /* {
-            get
-            {
-                if (Schema == null || cachedLearningTrackers.NullOrEmpty())
-                {
-                    cachedLearningTrackers = Schema.learningTrackers;
-                }
-                return cachedLearningTrackers;
-            }
-        }*/
-
-        
     }
 }

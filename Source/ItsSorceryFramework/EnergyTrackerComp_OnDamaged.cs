@@ -9,9 +9,9 @@ using RimWorld;
 
 namespace ItsSorceryFramework
 {
-    public class EnergyTrackerComp_OnDamage : EnergyTrackerComp_DamageBase
+    public class EnergyTrackerComp_OnDamaged : EnergyTrackerComp_DamageBase
     {
-        public override void CompPostDamageDealt(DamageInfo damageInfo) 
+        public override void CompPostDamageRecieved(DamageInfo damageInfo) 
         {
             if (Props.damageDefs.NullOrEmpty() || Props.damageDefs.Contains(damageInfo.Def))
             {
