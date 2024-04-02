@@ -28,7 +28,7 @@ namespace ItsSorceryFramework
 
         public bool limitLocked = true;
 
-        public bool turnTimerOn = true;
+        //public bool turnTimerOn = true;
 
         public int loadID = -1;
 
@@ -66,8 +66,6 @@ namespace ItsSorceryFramework
         {
             foreach (EnergyTrackerDef etDef in def.energyTrackerDefs)
             {
-                /*energyTrackers.Add(Activator.CreateInstance(etDef.energyTrackerClass,
-                new object[] { pawn, etDef, def }) as EnergyTracker);*/
                 EnergyTracker energyTracker = Activator.CreateInstance(etDef.energyTrackerClass,
                     new object[] { pawn, etDef, this }) as EnergyTracker;
                 energyTracker.InitializeComps();
@@ -77,16 +75,16 @@ namespace ItsSorceryFramework
             foreach (LearningTrackerDef ltDef in def.learningTrackerDefs)
             {
                 learningTrackers.Add(Activator.CreateInstance(ltDef.learningTrackerClass,
-                    new object[] { pawn, ltDef, def }) as LearningTracker);
+                    new object[] { pawn, ltDef, this }) as LearningTracker);
             }
 
             progressTracker = Activator.CreateInstance(def.progressTrackerDef.progressTrackerClass,
-                new object[] { pawn, def }) as ProgressTracker;
+                new object[] { pawn, def.progressTrackerDef, this }) as ProgressTracker;
         }
 
         public virtual void InitializeNodeCompletion()
         {
-            learningNodeRecord = new LearningNodeRecord(pawn, def); //testing initalization of node completion and saving
+            learningNodeRecord = new LearningNodeRecord(pawn, this); //testing initalization of node completion and saving
         }
 
         public Dictionary<LearningTreeNodeDef, bool> NodeCompletion
@@ -95,7 +93,7 @@ namespace ItsSorceryFramework
             {
                 if(learningNodeRecord is null)
                 {
-                    learningNodeRecord = new LearningNodeRecord(pawn, def);
+                    learningNodeRecord = new LearningNodeRecord(pawn, this);
                 }
                 return learningNodeRecord.completion;
             }
@@ -224,20 +222,6 @@ namespace ItsSorceryFramework
             return false;
         }
 
-        public bool TurnButton(float x, float y)
-        {
-            Rect rect = new Rect(x, y, 24f, 24f);
-            MouseoverSounds.DoRegion(rect);
-            TooltipHandler.TipRegionByKey(rect, "ISF_ButtonTurnTimer");
-
-            if (Widgets.ButtonImage(rect, turnTimerOn ? TexButton.SpeedButtonTextures[0] : TexButton.SpeedButtonTextures[1], GUI.color, true))
-            {
-                turnTimerOn = !turnTimerOn;
-                return true;
-            }
-            return false;
-        }
-
         public void DrawOutline(Rect rect, Color outColor, int outThick = 1, Texture2D lineTex = null)
         {
             Color color = GUI.color;
@@ -258,10 +242,7 @@ namespace ItsSorceryFramework
             Scribe_Values.Look(ref favorited, "favorited", false);
 
             Scribe_Values.Look(ref hasLimits, "hasLimits", false);
-            //Scribe_Values.Look(ref hasTurns, "hasTurns", false);
             Scribe_Values.Look(ref limitLocked, "limitLocked", true, false);
-            Scribe_Values.Look(ref turnTimerOn, "turnTimerOn", true, false);
-
         }
 
         

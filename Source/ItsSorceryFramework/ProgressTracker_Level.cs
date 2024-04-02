@@ -8,25 +8,29 @@ namespace ItsSorceryFramework
 {
     public class ProgressTracker_Level : ProgressTracker
     {
+        // UI fields
+        private Vector2 leftScrollPosition = Vector2.zero;
+
+        private Vector2 modScrollPosition = Vector2.zero;
+
+        private Vector2 expScrollPosition = Vector2.zero;
+
+        private Vector2 sorceryScrollPosition = Vector2.zero;
+
+        private float leftScrollViewHeight;
+
+        private float modScrollViewHeight;
+
+        private float expScrollViewHeight;
+
+        private float sorceryScrollViewHeight;
+
         // initalizer- created via activator via SorcerySchema
-        public ProgressTracker_Level(Pawn pawn) : base(pawn)
-        {
+        public ProgressTracker_Level(Pawn pawn) : base(pawn) { }
 
-        }
-
-        public ProgressTracker_Level(Pawn pawn, ProgressTrackerDef def) : base(pawn, def)
+        public ProgressTracker_Level(Pawn pawn, ProgressTrackerDef def, SorcerySchema schema) : base(pawn, def, schema)
         {
             Initialize();
-        }
-
-        public ProgressTracker_Level(Pawn pawn, SorcerySchemaDef def) : base(pawn, def)
-        {
-            Initialize();
-        }
-
-        public override void ExposeData()
-        {
-            base.ExposeData();
         }
 
         public override void Initialize()
@@ -38,6 +42,8 @@ namespace ItsSorceryFramework
             hediff.progressTracker = this;
             SetupHediffStage(hediff as Hediff_ProgressLevel);
         }
+
+        public override void ExposeData() => base.ExposeData();
 
         public override void ProgressTrackerTick()
         {
@@ -124,21 +130,9 @@ namespace ItsSorceryFramework
                 def.progressLevelUpDescKey.Translate(orgSev.ToString(), CurrLevel.ToString()), LetterDefOf.NeutralEvent, null);
         }
 
-        public override float CurrProgress
-        {
-            get
-            {
-                return exp / CurrentLevelEXPReq;
-            }
-        }
+        public override float CurrProgress => exp / CurrentLevelEXPReq;
 
-        public override float CurrentLevelEXPReq
-        {
-            get
-            {
-                return def.baseEXP * Mathf.Pow(def.scaling, CurrLevel - 1f);
-            }
-        }
+        public override float CurrentLevelEXPReq => def.baseEXP * Mathf.Pow(def.scaling, CurrLevel - 1f);
 
         public override void DrawLeftGUI(Rect rect)
         {
@@ -155,7 +149,7 @@ namespace ItsSorceryFramework
 
             // title of sorcery schema
             Rect labelRect = new Rect(0f, coordY, viewRect.width, 50f);
-            Widgets.LabelCacheHeight(ref labelRect, Schema.def.LabelCap, true, false);
+            Widgets.LabelCacheHeight(ref labelRect, schema.def.LabelCap, true, false);
             coordY += labelRect.height;
 
             // level label
@@ -203,7 +197,7 @@ namespace ItsSorceryFramework
             GenUI.ResetLabelAlign();
             Text.Font = GameFont.Small;
             Rect descRect = new Rect(0f, coordY, viewRect.width, 0f);
-            Widgets.LabelCacheHeight(ref descRect, sorcerySchemaDef.description, true, false);
+            Widgets.LabelCacheHeight(ref descRect, schema.def.description, true, false);
             coordY += descRect.height;
 
             this.leftScrollViewHeight = coordY;
@@ -355,23 +349,5 @@ namespace ItsSorceryFramework
 
             return rect.yMin - yMin;
         }
-
-        // UI fields
-        private Vector2 leftScrollPosition = Vector2.zero;
-
-        private Vector2 modScrollPosition = Vector2.zero;
-
-        private Vector2 expScrollPosition = Vector2.zero;
-
-        private Vector2 sorceryScrollPosition = Vector2.zero;
-
-        private float leftScrollViewHeight;
-
-        private float modScrollViewHeight;
-
-        private float expScrollViewHeight;
-
-        private float sorceryScrollViewHeight;
-
     }
 }

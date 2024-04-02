@@ -19,6 +19,12 @@ namespace ItsSorceryFramework
         [MustTranslate]
         public string energyDescKey = "ISF_EnergyStatDesc";
 
+        [MustTranslate]
+        public string inverseLabelKey = "ISF_EnergyTrackerInverse";
+
+        [MustTranslate]
+        public string inverseDescKey = "ISF_EnergyTrackerInverseDesc";
+
         public StatDef energyUnitStatDef; // doubles as both energy cost AND cast cost
 
         public StatDef energyMaxCastStatDef; // define the stat the energytracker uses to figure out max casts
@@ -102,11 +108,4 @@ namespace ItsSorceryFramework
             yield break;
         }
     }
-
-    /*public class EnergyConsumable
-    {
-        public ThingDef thingDef;
-
-        public float energy = 1f;
-    }*/
 }

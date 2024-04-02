@@ -8,25 +8,29 @@ namespace ItsSorceryFramework
 {
     public class ProgressTracker_Roguelike : ProgressTracker
     {
+        // UI fields
+        private Vector2 leftScrollPosition = Vector2.zero;
+
+        private Vector2 modScrollPosition = Vector2.zero;
+
+        private Vector2 expScrollPosition = Vector2.zero;
+
+        private Vector2 sorceryScrollPosition = Vector2.zero;
+
+        private float leftScrollViewHeight;
+
+        private float modScrollViewHeight;
+
+        private float expScrollViewHeight;
+
+        private float sorceryScrollViewHeight;
+
         // initalizer- created via activator via SorcerySchema
-        public ProgressTracker_Roguelike(Pawn pawn) : base(pawn)
-        {
+        public ProgressTracker_Roguelike(Pawn pawn) : base(pawn) { }
 
-        }
-
-        public ProgressTracker_Roguelike(Pawn pawn, ProgressTrackerDef def) : base(pawn, def)
+        public ProgressTracker_Roguelike(Pawn pawn, ProgressTrackerDef def, SorcerySchema schema) : base(pawn, def, schema)
         {
             Initialize();
-        }
-
-        public ProgressTracker_Roguelike(Pawn pawn, SorcerySchemaDef def) : base(pawn, def)
-        {
-            Initialize();
-        }
-
-        public override void ExposeData()
-        {
-            base.ExposeData();
         }
 
         public override void Initialize()
@@ -39,10 +43,9 @@ namespace ItsSorceryFramework
             SetupHediffStage(hediff as Hediff_ProgressLevel);
         }
 
-        public override void ProgressTrackerTick()
-        {
+        public override void ExposeData() => base.ExposeData();
 
-        }
+        public override void ProgressTrackerTick() { }
 
         public override void AddExperience(float experience)
         {
@@ -115,14 +118,14 @@ namespace ItsSorceryFramework
 
             // title of sorcery schema
             Rect labelRect = new Rect(0f, coordY, viewRect.width, 50f);
-            Widgets.LabelCacheHeight(ref labelRect, Schema.def.LabelCap, true, false);
+            Widgets.LabelCacheHeight(ref labelRect, schema.def.LabelCap, true, false);
             coordY += labelRect.height;
 
             // description
             GenUI.ResetLabelAlign();
             Text.Font = GameFont.Small;
             Rect descRect = new Rect(0f, coordY, viewRect.width, 0f);
-            Widgets.LabelCacheHeight(ref descRect, sorcerySchemaDef.description, true, false);
+            Widgets.LabelCacheHeight(ref descRect, schema.def.description, true, false);
             coordY += descRect.height;
 
             leftScrollViewHeight = coordY;
@@ -267,23 +270,5 @@ namespace ItsSorceryFramework
 
             return rect.yMin - yMin;
         }
-
-        // UI fields
-        private Vector2 leftScrollPosition = Vector2.zero;
-
-        private Vector2 modScrollPosition = Vector2.zero;
-
-        private Vector2 expScrollPosition = Vector2.zero;
-
-        private Vector2 sorceryScrollPosition = Vector2.zero;
-
-        private float leftScrollViewHeight;
-
-        private float modScrollViewHeight;
-
-        private float expScrollViewHeight;
-
-        private float sorceryScrollViewHeight;
-
     }
 }

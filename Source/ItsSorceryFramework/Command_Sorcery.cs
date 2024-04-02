@@ -94,11 +94,8 @@ namespace ItsSorceryFramework
 
 			foreach (var et in sorceryDef.sorcerySchema.energyTrackerDefs)
 			{
-				tempVal = sorceryDef.statBases.GetStatValueFromList(et.energyUnitStatDef, 0);
+				tempVal = sorceryDef.statBases.GetStatValueFromList(et.energyUnitStatDef, 0) * Schema.pawn.GetStatValue(et.energyCostFactorStatDef);
 				if (tempVal != 0) text += TempRightLabelPart(et, tempVal) + "\n";
-/*				if (et.energyTrackerClass == typeof(EnergyTracker_Vancian)) // for vancian systems do the following
-						text += TempRightLabelPartVancian(et, sorceryDef.statBases.GetStatValueFromList(et.energyMaxCastStatDef, 0)) + "\n"; // temp fix for the moment
-					else */
 			}
 
 			return text.TrimEndNewlines();

@@ -407,43 +407,62 @@ namespace ItsSorceryFramework
             StatRequest pawnReq = StatRequest.For(pawn);
             StatCategoryDef finalCat = tempStatCategory ?? StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF;
 
-            // shows the maximum energy of the whole sorcery schema
-            statDef = def.energyMaxStatDef ?? StatDefOf_ItsSorcery.MaxEnergy_ItsSorcery;
-            yield return new StatDrawEntry(finalCat,
-                    statDef, MaxEnergy, pawnReq, ToStringNumberSense.Undefined, statDef.displayPriorityInCategory, false);
+            int displayPriority = 100;
 
+            // shows what the "energy" is
+            yield return new StatDrawEntry(finalCat,
+                        "ISF_EnergyTrackerUnit".Translate(), def.energyLabelKey.Translate().CapitalizeFirst(),
+                        def.energyDescKey.Translate(), displayPriority, null, null, false);
+            displayPriority--;
+
+            // shows whether or not energy is loaded/gained inversely
+            yield return new StatDrawEntry(finalCat,
+                    def.inverseLabelKey.Translate(), def.inverse ? "Inverted" : "Normal",
+                    def.inverseDescKey.Translate(), displayPriority, null, null, false);
+            displayPriority--;
+
+            // shows the maximum energy of the whole sorcery schema
             if (AbsMaxEnergy > MaxEnergy) // only show if there's a difference between overmax and max energy.
             {
                 statDef = def.energyAbsMaxStatDef ?? StatDefOf_ItsSorcery.AbsMaxEnergy_ItsSorcery;
                 yield return new StatDrawEntry(finalCat,
-                        statDef, AbsMaxEnergy, pawnReq, ToStringNumberSense.Undefined, statDef.displayPriorityInCategory, false);
+                        statDef, AbsMaxEnergy, pawnReq, ToStringNumberSense.Undefined, displayPriority, false);
+                displayPriority--;
             }
+
+            statDef = def.energyMaxStatDef ?? StatDefOf_ItsSorcery.MaxEnergy_ItsSorcery;
+            yield return new StatDrawEntry(finalCat,
+                    statDef, MaxEnergy, pawnReq, ToStringNumberSense.Undefined, displayPriority, false);
+            displayPriority--;
 
             statDef = def.energyMinStatDef ?? StatDefOf_ItsSorcery.MinEnergy_ItsSorcery;
             yield return new StatDrawEntry(finalCat,
-                    statDef, MinEnergy, pawnReq, ToStringNumberSense.Undefined, statDef.displayPriorityInCategory, false);
+                    statDef, MinEnergy, pawnReq, ToStringNumberSense.Undefined, displayPriority, false);
+            displayPriority--;
 
             if (AbsMinEnergy < MinEnergy) // only show if there's a difference between min energy and 0.
             {
                 statDef = def.energyAbsMinStatDef ?? StatDefOf_ItsSorcery.AbsMinEnergy_ItsSorcery;
                 yield return new StatDrawEntry(finalCat,
-                        statDef, AbsMinEnergy, pawnReq, ToStringNumberSense.Undefined, statDef.displayPriorityInCategory, false);
+                        statDef, AbsMinEnergy, pawnReq, ToStringNumberSense.Undefined, displayPriority, false);
+                displayPriority--;
             }
 
             // shows a pawn's multiplier on relevant sorcery cost
             statDef = def.energyCostFactorStatDef ?? StatDefOf_ItsSorcery.EnergyCostFactor_ItsSorcery;
             yield return new StatDrawEntry(finalCat,
-                    statDef, pawn.GetStatValue(statDef), pawnReq, ToStringNumberSense.Undefined, statDef.displayPriorityInCategory, false);
+                    statDef, pawn.GetStatValue(statDef), pawnReq, ToStringNumberSense.Factor, displayPriority, false);
+            displayPriority--;
 
             // retrieve comp specific special display stats
-            if (!comps.NullOrEmpty()) 
+            /*if (!comps.NullOrEmpty()) 
             { 
                 foreach (var c in comps)
                 {
                     foreach (var entry in c.CompSpecialDisplayStats(req, finalCat)) yield return entry;
                 }
             }
-            yield break;
+            yield break;*/
         }
 
         public virtual string TopRightLabel(SorceryDef sorceryDef)

@@ -12,58 +12,16 @@ namespace ItsSorceryFramework
 
         public bool cacheDirty = true;
 
-        public LearningTracker_Progress(Pawn pawn) : base(pawn)
-        {
+        public LearningTracker_Progress(Pawn pawn) : base(pawn) { }
 
-        }
+        public LearningTracker_Progress(Pawn pawn, LearningTrackerDef def, SorcerySchema schema) : base(pawn, def, schema) { }
 
-        public LearningTracker_Progress(Pawn pawn, LearningTrackerDef def) : base(pawn, def)
-        {
+        public ProgressTracker ProgressTracker => schema.progressTracker;
 
-        }
+        public override void ExposeData() => base.ExposeData();
 
-        public LearningTracker_Progress(Pawn pawn, LearningTrackerDef def, SorcerySchemaDef schemaDef) : base(pawn, def, schemaDef)
-        {
+        public override void DrawLeftGUI(Rect rect) => ProgressTracker.DrawLeftGUI(rect);
 
-        }
-
-        public LearningTracker_Progress(Pawn pawn, LearningTrackerDef def, SorcerySchema schema) : base(pawn, def, schema)
-        {
-
-        }
-
-        public SorcerySchema Schema
-        {
-            get
-            {
-                if (cachedSchema == null) cachedSchema = SorcerySchemaUtility.FindSorcerySchema(pawn, schemaDef);
-
-                return cachedSchema;
-            }
-        }
-
-        public ProgressTracker ProgressTracker
-        {
-            get
-            {
-                return Schema.progressTracker;
-            }
-        }
-
-        public override void ExposeData()
-        {
-            base.ExposeData();
-        }
-
-        public override void DrawLeftGUI(Rect rect)
-        {
-            ProgressTracker.DrawLeftGUI(rect);
-        }
-
-        public override void DrawRightGUI(Rect rect)
-        {
-            ProgressTracker.DrawRightGUI(rect);
-        }
-
+        public override void DrawRightGUI(Rect rect) => ProgressTracker.DrawRightGUI(rect);
     }
 }
