@@ -8,5 +8,13 @@
 		<suspendable>false</suspendable>
 		<allowOpportunisticPrefix>true</allowOpportunisticPrefix>
 	</JobDef>
+	
+	<JobDef>
+		<defName>ISF_GainEXPSchema</defName>
+		<driverClass>ItsSorceryFramework.JobDriver_GainEXP</driverClass>
+		<reportString>gaining experience for schema with TargetB.</reportString>
+		<suspendable>false</suspendable>
+		<allowOpportunisticPrefix>true</allowOpportunisticPrefix>
+	</JobDef>
   
 </Defs>

@@ -7,6 +7,7 @@ namespace ItsSorceryFramework
     public static class JobDefOf_ItsSorcery
     {
         public static JobDef ISF_ChargeSchema;
+        public static JobDef ISF_GainEXPSchema;
 
         static JobDefOf_ItsSorcery()
         {

@@ -15,9 +15,6 @@ namespace ItsSorceryFramework
             return onConsumeContext.TryGetValue(pawnID, out var result)? result : new Tuple<SorcerySchema, EnergyTrackerDef, float>(null, null, 0f);
         }
 
-        public static bool RemoveConsumeContext(string pawnID)
-        {
-            return onConsumeContext.Remove(pawnID);
-        }
+        public static bool RemoveConsumeContext(string pawnID) => onConsumeContext.Remove(pawnID);
     }
 }

@@ -27,6 +27,14 @@ namespace ItsSorceryFramework
 			Scribe_Values.Look(ref ammoCountUse, "ammoCountUse", 0, false);
 		}
 
+		public Thing consumable => job.GetTarget(TargetIndex.B).Thing;
+
+		public override string GetReport()
+		{
+			return "ISF_ReportOnConsumeEnergy".Translate(energyTrackerDef.energyLabelKey.Translate().Named("UNIT"), schema.def.LabelCap.Named("SCHEMA"),
+				consumable.Label.Named("ITEM"));
+		}
+
 		protected override IEnumerable<Toil> MakeNewToils()
 		{
 			// retrive values from context; if they are null, rely on saved values
@@ -37,6 +45,10 @@ namespace ItsSorceryFramework
 
 			// save the ammo to use for later
 			ammoCountUse = (ammoCountUse == 0f && job.count > -1) ? job.count : ammoCountUse;
+
+			// dev mode message
+			if (Prefs.DevMode) Log.Message($"Job {job.GetUniqueLoadID()}: " +
+				$"schema {schema.def.LabelCap}, energytracker {energyTrackerDef.defName}, energy per item {energyPerAmmo}, item count {ammoCountUse}");
 
 			//int count = job.count;
 			this.FailOnIncapable(PawnCapacityDefOf.Manipulation);
@@ -98,7 +110,8 @@ namespace ItsSorceryFramework
 			
 			energyTracker.currentEnergy += energyTracker.InvMult * Mathf.Min(count * energyPerAmmo, directEnergyDiff);
 			ammo.SplitOff(count).Destroy(DestroyMode.Vanish);
-        }
+			EnergyTrackerContext.RemoveConsumeContext(pawn.GetUniqueLoadID());
+		}
 
 	}
 }

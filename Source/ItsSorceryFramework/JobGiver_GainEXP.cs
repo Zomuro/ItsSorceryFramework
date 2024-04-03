@@ -1,4 +1,6 @@
-﻿using RimWorld;
+﻿using System;
+using System.Collections.Generic;
+using RimWorld;
 using Verse;
 using Verse.AI;
 
@@ -13,9 +15,11 @@ namespace ItsSorceryFramework
 
 		public static Job MakeChargeEXPJob(Pawn pawn, SorcerySchema schema, Thing target, int count)
 		{
-			SchemaJobDef schemaJobDef = SchemaJobDefOf.GainEXPSchema;
-			schemaJobDef.schemaDef = schema.def;
-			Job job = JobMaker.MakeJob(schemaJobDef, pawn);
+			// add critical jobdriver information into a context dict
+			ProgressTrackerContext.onConsumeContext[pawn.GetUniqueLoadID()] = new Tuple<SorcerySchema, float>(schema, count);
+
+			// build job
+			Job job = JobMaker.MakeJob(JobDefOf_ItsSorcery.ISF_GainEXPSchema, pawn);
 			job.targetB = new LocalTargetInfo(target);
 			job.count = count;
 			return job;

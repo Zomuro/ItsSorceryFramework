@@ -69,6 +69,7 @@
     <Compile Include="EnergyTrackerComp_OnKill.cs" />
     <Compile Include="EnergyTrackerComp_OnDamaged.cs" />
     <Compile Include="EnergyTrackerComp_OnDamage.cs" />
+    <Compile Include="ProgressTrackerContext.cs" />
     <Compile Include="EnergyTrackerContext.cs" />
     <Compile Include="EnergyTrackerCompProperties_OnConsume.cs" />
     <Compile Include="EnergyTrackerCompProperties_DamageBase.cs" />
@@ -115,8 +116,6 @@
     <Compile Include="LearningTreeNodeDef.cs" />
     <Compile Include="ProgressTracker_Roguelike.cs" />
     <Compile Include="ProgressTracker_Level.cs" />
-    <Compile Include="SchemaJobDefOf.cs" />
-    <Compile Include="SchemaJobDef.cs" />
     <Compile Include="GizmoTextureUtility.cs" />
     <Compile Include="HarmonyPatches.cs" />
     <Compile Include="ITab_Pawn_Schemas.cs" />
