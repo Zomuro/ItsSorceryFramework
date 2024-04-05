@@ -31,6 +31,7 @@ namespace ItsSorceryFramework
 
 		public override string GetReport()
 		{
+			if(schema is null) return "ISF_ReportOnConsumeEnergyPrep".Translate();
 			return "ISF_ReportOnConsumeEnergy".Translate(energyTrackerDef.energyLabelKey.Translate().Named("UNIT"), schema.def.LabelCap.Named("SCHEMA"),
 				consumable.Label.Named("ITEM"));
 		}

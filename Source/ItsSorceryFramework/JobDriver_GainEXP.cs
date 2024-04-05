@@ -23,6 +23,7 @@ namespace ItsSorceryFramework
 
 		public override string GetReport()
 		{
+			if (schema is null) return "ISF_ReportOnConsumeProgressPrep".Translate();
 			return "ISF_ReportOnConsumeProgress".Translate(consumable.Label.Named("ITEM"), schema.def.LabelCap.Named("SCHEMA"));
 		}
 

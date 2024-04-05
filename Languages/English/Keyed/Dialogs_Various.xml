@@ -46,6 +46,9 @@
 	<ISF_LearningProgressLevel>Level {0}:</ISF_LearningProgressLevel>
 	<ISF_LearningProgressLevelCustom>Level {0} ({1}):</ISF_LearningProgressLevelCustom>
 	<ISF_LearningProgressLevelBoundary>- - -</ISF_LearningProgressLevelBoundary>
+	<ISF_LearningProgressLevelDescription>Description</ISF_LearningProgressLevelDescription>
+	<ISF_LearningProgressLevelStatus>Status</ISF_LearningProgressLevelStatus>
+	<ISF_LearningProgressLevelProspects>Prospects</ISF_LearningProgressLevelProspects>
 	
 	<!-- ITab_Schema Button Tooltips -->
 	<ISF_ButtonLearningTrackers>View various magic system aspects such as system summary, progression, abilities, etc.</ISF_ButtonLearningTrackers>
