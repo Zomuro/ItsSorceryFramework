@@ -374,6 +374,23 @@ namespace ItsSorceryFramework
             return rect.yMin - yMin;
         }
 
+        public virtual float DrawEnergyComps(Rect rect)
+        {
+            float yMin = rect.yMin;
+            float x = rect.x;
+
+            Text.Font = GameFont.Medium;
+            Widgets.LabelCacheHeight(ref rect, "Energy", true, false);
+            rect.yMin += rect.height;
+            Text.Font = GameFont.Small;
+            rect.x += 22f;
+
+            Widgets.LabelCacheHeight(ref rect, "N/A", true, false);
+            rect.yMin += rect.height;
+
+            return rect.yMin - yMin;
+        }
+
         public virtual string TipStringExtra(HediffStage stage)
         {
             StringBuilder stringBuilder = new StringBuilder();

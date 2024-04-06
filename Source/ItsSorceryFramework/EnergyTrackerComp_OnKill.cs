@@ -13,25 +13,47 @@ namespace ItsSorceryFramework
     {
         public EnergyTrackerCompProperties_OnKill Props => (EnergyTrackerCompProperties_OnKill)props;
 
+        public StatDef ScalingStatDef => Props.scalingStatDef is null ? StatDefOf_ItsSorcery.Scaling_ItsSorcery : Props.scalingStatDef;
+
+        public IEnumerable<String> DamageDefsLabels(IEnumerable<Def> defs)
+        {
+            foreach (var def in defs) yield return def.label;
+            yield break;
+        }
+
         public override void CompPostKill(DamageInfo? damageInfo) 
         {
             if (damageInfo is null || damageInfo.Value.Instigator is null || damageInfo.Value.Instigator as Pawn != parent.pawn) return;
 
             if (Props.damageDefs.NullOrEmpty() || Props.damageDefs.Contains(damageInfo.Value.Def))
             {
-                StatDef refStatDef = Props.scalingStatDef is null ? StatDefOf_ItsSorcery.Scaling_ItsSorcery : Props.scalingStatDef;
-                float energyMaxChange = parent.InvMult * Props.baseEnergy * parent.pawn.GetStatValue(refStatDef);
+                //StatDef refStatDef = Props.scalingStatDef is null ? StatDefOf_ItsSorcery.Scaling_ItsSorcery : Props.scalingStatDef;
+                float energyMaxChange = parent.InvMult * Props.baseEnergy * parent.pawn.GetStatValue(ScalingStatDef);
                 parent.currentEnergy = Mathf.Clamp(parent.currentEnergy + energyMaxChange, parent.AbsMinEnergy, parent.AbsMaxEnergy);
                 // in the future, add effect activation here.
             }
         }
 
-        public override IEnumerable<StatDrawEntry> CompSpecialDisplayStats(StatRequest req, StatCategoryDef catDef = null) // provides special display stats, which show how energy gets recovered
+        public override float CompDrawGUI(Rect rect)
         {
-            yield break;
-        }
+            float yMin = rect.yMin;
 
-        public override float CompDrawWorker(Rect rect) => 0f; // enables LearningTracker_Progress to draw information about EnergyTrackers
+            // retrieve string values
+            string energyLabel = parent.EnergyLabel;
+            string damageDefs = Props.damageDefs.NullOrEmpty() ? "" : DamageDefsLabels(Props.damageDefs).ToStringSafeEnumerable();
+            float energyFactor = parent.InvMult * parent.pawn.GetStatValue(ScalingStatDef);
+            string energyFactorString = energyFactor.ToStringByStyle(ToStringStyle.FloatMaxTwo, ToStringNumberSense.Factor);
+
+            // draw normal components (label and normal energy regen)
+            Text.Font = GameFont.Small;
+            Widgets.LabelCacheHeight(ref rect, "ISF_EnergyTrackerCompOnKillLabel".Translate(damageDefs).Colorize(ColoredText.TipSectionTitleColor), true, false);
+            rect.yMin += rect.height;
+            Widgets.LabelCacheHeight(ref rect, "ISF_EnergyTrackerCompOnKillDesc".Translate(energyLabel.Named("ENERGY"), ScalingStatDef.label.Named("STAT"), 
+                energyFactorString.Named("FACTOR"), Props.baseEnergy.Named("CHANGE")));
+            rect.yMin += rect.height;
+
+            return rect.yMin - yMin;
+        }
     }
 
 }

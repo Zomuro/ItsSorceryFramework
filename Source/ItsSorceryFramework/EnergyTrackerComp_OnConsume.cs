@@ -88,29 +88,37 @@ namespace ItsSorceryFramework
             yield break;
         }
 
-        public override IEnumerable<StatDrawEntry> CompSpecialDisplayStats(StatRequest req, StatCategoryDef catDef = null) // provides special display stats, which show how energy gets recovered
+        public override float CompDrawGUI(Rect rect)
         {
-            //StatDef statDef;
-            //StatRequest pawnReq = StatRequest.For(parent.pawn);
-            StatCategoryDef finalCat = catDef ?? StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF;
+            float yMin = rect.yMin;
 
-            String ammo = "";
-            foreach (var item in Props.consumables)
+            // retrieve string values
+            string energyLabel = parent.EnergyLabel;
+
+            // draw label
+            Text.Font = GameFont.Small;
+            Widgets.LabelCacheHeight(ref rect, "ISF_EnergyTrackerCompOnConsumeLabel".Translate().Colorize(ColoredText.TipSectionTitleColor), true, false);
+            rect.yMin += rect.height;
+
+            if (Props.consumables.NullOrEmpty())
             {
-                if (ammo == "")
-                {
-                    ammo = item.thingDef.LabelCap + " ({0})".Translate(item.energy);
-                }
-                else ammo = ammo + ", " + item.thingDef.LabelCap + " ({0})".Translate(item.energy);
+                Widgets.LabelCacheHeight(ref rect, "N/A");
+                rect.yMin += rect.height;
+                return rect.yMin - yMin;
             }
-            if (ammo == "") ammo = "None";
 
-            yield return new StatDrawEntry(finalCat,
-                    "ISF_EnergyTrackerAmmo".Translate(), ammo,
-                    "ISF_EnergyTrackerAmmoDesc".Translate(),
-                    10, null, null, false);
+            Text.Font = GameFont.Small;
+            Widgets.LabelCacheHeight(ref rect, "ISF_EnergyTrackerCompOnConsumeDesc".Translate(energyLabel.Named("ENERGY")), true, false);
+            rect.yMin += rect.height;
 
-            yield break;
+            foreach(var consumable in Props.consumables)
+            {
+                float energyVal = parent.InvMult * consumable.energy;
+                string energyValString = energyVal.ToStringByStyle(ToStringStyle.FloatMaxTwo, ToStringNumberSense.Offset);
+                Widgets.LabelCacheHeight(ref rect, "ISF_EnergyTrackerCompOnConsumeItem".Translate(consumable.thingDef.label.Named("ITEM"), energyValString.Named("CHANGE")));
+                rect.yMin += rect.height;
+            }
+            return rect.yMin - yMin;
         }
 
     }

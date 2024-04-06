@@ -453,16 +453,6 @@ namespace ItsSorceryFramework
             yield return new StatDrawEntry(finalCat,
                     statDef, pawn.GetStatValue(statDef), pawnReq, ToStringNumberSense.Factor, displayPriority, false);
             displayPriority--;
-
-            // retrieve comp specific special display stats
-            /*if (!comps.NullOrEmpty()) 
-            { 
-                foreach (var c in comps)
-                {
-                    foreach (var entry in c.CompSpecialDisplayStats(req, finalCat)) yield return entry;
-                }
-            }
-            yield break;*/
         }
 
         public virtual string TopRightLabel(SorceryDef sorceryDef)

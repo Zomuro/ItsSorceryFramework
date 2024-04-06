@@ -36,7 +36,7 @@ namespace ItsSorceryFramework
             yield break;
         }
 
-        public virtual float CompDrawWorker(Rect rect) => 0f; // enables LearningTracker_Progress to draw information about EnergyTrackers
+        public virtual float CompDrawGUI(Rect rect) => 0f; // enables LearningTracker_Progress to draw information about EnergyTrackers
 
     }
 

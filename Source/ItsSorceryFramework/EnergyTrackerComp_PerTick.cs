@@ -38,36 +38,39 @@ namespace ItsSorceryFramework
             else parent.currentEnergy = Mathf.Clamp(parent.currentEnergy + energyChange, parent.MinEnergy, parent.MaxEnergy);
         } 
 
-        public override IEnumerable<StatDrawEntry> CompSpecialDisplayStats(StatRequest req, StatCategoryDef catDef = null) // provides special display stats, which show how energy gets recovered
+        public override float CompDrawGUI(Rect rect)
         {
-            StatDef statDef;
-            StatRequest pawnReq = StatRequest.For(parent.pawn);
-            StatCategoryDef finalCat = catDef ?? StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF;
+            float yMin = rect.yMin;
 
-            // shows a pawn's multiplier on relevant sorcery cost
-            statDef = Props.RecoveryRateStatDef;
-            yield return new StatDrawEntry(finalCat,
-                    Props.RecoveryRateStatDef, RecoveryRate, pawnReq, ToStringNumberSense.Undefined, statDef.displayPriorityInCategory, false);
+            // retrieve string values
+            string energyLabel = parent.EnergyLabel;
+            float energyRate = parent.InvMult * parent.pawn.GetStatValue(Props.energyRecoveryStatDef);
+            string energyRateString = energyRate.ToStringByStyle(ToStringStyle.FloatMaxTwo, ToStringNumberSense.Offset);
 
-            //over and under bar drain multiplier
-            if (parent.HasDeficitZone)
-            {
-                yield return new StatDrawEntry(finalCat,
-                    Props.deficitLabelKey.Translate(), Props.deficitRecoveryFactor.ToStringPercent(),
-                    Props.deficitDescKey.Translate(parent.EnergyLabel), 40, null, null, false);
-            }
-            
+            // draw normal components (label and normal energy regen)
+            Text.Font = GameFont.Small;
+            Widgets.LabelCacheHeight(ref rect, "ISF_EnergyTrackerCompOnTickLabel".Translate().Colorize(ColoredText.TipSectionTitleColor), true, false);
+            rect.yMin += rect.height;
+            Widgets.LabelCacheHeight(ref rect, "ISF_EnergyTrackerCompOnTickNormal".Translate(energyLabel.Named("ENERGY"), energyRateString.Named("CHANGE")));
+            rect.yMin += rect.height;
+
+            // draw specialized components (overcharge and deficit regen)
             if (parent.HasOverchargeZone)
             {
-                yield return new StatDrawEntry(finalCat,
-                    Props.overchargeLabelKey.Translate(), Props.overchargeRecoveryFactor.ToStringPercent(),
-                    Props.overchargeDescKey.Translate(parent.EnergyLabel),
-                    30, null, null, false);
+                string overchargeEnergyRate = (energyRate * Props.overchargeRecoveryFactor).ToStringByStyle(ToStringStyle.FloatMaxTwo, ToStringNumberSense.Offset);
+                Widgets.LabelCacheHeight(ref rect, "ISF_EnergyTrackerCompOnTickOvercharge".Translate(energyLabel.Named("ENERGY"), overchargeEnergyRate.Named("CHANGE")));
+                rect.yMin += rect.height;
+            }
+            if (parent.HasDeficitZone)
+            {
+                string deficitEnergyRate = (energyRate * Props.deficitRecoveryFactor).ToStringByStyle(ToStringStyle.FloatMaxTwo, ToStringNumberSense.Offset);
+                Widgets.LabelCacheHeight(ref rect, "ISF_EnergyTrackerCompOnTickDeficit".Translate(energyLabel.Named("ENERGY"), deficitEnergyRate.Named("CHANGE")));
+                rect.yMin += rect.height;
             }
 
-            yield break;
+            return rect.yMin - yMin;
         }
- 
+
     }
 
 }

@@ -17,6 +17,8 @@ namespace ItsSorceryFramework
 
         private Vector2 expScrollPosition = Vector2.zero;
 
+        private Vector2 energyScrollPosition = Vector2.zero;
+
         private Vector2 sorceryScrollPosition = Vector2.zero;
 
         private float leftDescScrollViewHeight;
@@ -26,6 +28,8 @@ namespace ItsSorceryFramework
         private float modScrollViewHeight;
 
         private float expScrollViewHeight;
+
+        private float energyScrollViewHeight;
 
         private float sorceryScrollViewHeight;
 
@@ -257,7 +261,17 @@ namespace ItsSorceryFramework
             Widgets.EndScrollView();
 
             // ENERGY - show energytrackers //
-            // insert code here
+            Rect energyRect = new Rect(rect.width / 2f, 0, rect.width / 4f, rect.height).ContractedBy(20f);
+            //energyRect.height += 20f;
+            Rect energyRectView = new Rect(energyRect.x, energyRect.y, energyRect.width - 20f, energyScrollViewHeight);
+            Widgets.BeginScrollView(energyRect, ref this.energyScrollPosition, energyRectView, true);
+
+            coordY = 0f;
+            Rect allenergyRect = new Rect(energyRectView.x, energyRectView.y + coordY, energyRectView.width, 500f);
+            coordY += DrawEnergyComps(allenergyRect);
+            energyScrollViewHeight = coordY;
+
+            Widgets.EndScrollView();
 
             // SORCERIES - see sorceries and change out what you want to use //
             Rect sorceryRect = new Rect(0, rect.height * 2f / 3f, rect.width / 2f, rect.height * 3f).ContractedBy(20f);
@@ -351,6 +365,42 @@ namespace ItsSorceryFramework
                     rect.xMin -= 6f;
                 }
 
+            }
+
+            return rect.yMin - yMin;
+        }
+
+        public override float DrawEnergyComps(Rect rect)
+        {
+            float yMin = rect.yMin;
+            float x = rect.x;
+
+            /*Text.Font = GameFont.Medium;
+            Widgets.LabelCacheHeight(ref rect, "Energy", true, false);
+            rect.yMin += rect.height;*/
+            //Text.Font = GameFont.Small;
+            //rect.xMin += 22f;
+
+            foreach(var et in schema.energyTrackers) // for each energy tracker
+            {
+                // write energy label
+                rect.xMin = x;
+                Text.Font = GameFont.Medium;
+                Widgets.LabelCacheHeight(ref rect, et.EnergyLabel.CapitalizeFirst(), true, false);
+                rect.yMin += rect.height;
+                rect.xMin += 22f;
+
+                // write out the detailed info within energycomps
+                Text.Font = GameFont.Small;
+                if (et.comps.NullOrEmpty()) // no comps?
+                {
+                    Widgets.LabelCacheHeight(ref rect, "N/A", true, false); // leave N/A
+                    rect.yMin += rect.height;
+                    continue; //skip this energy tracker
+                }
+
+                // else put all the comp information onto the UI.
+                foreach(var comp in et.comps) rect.yMin += comp.CompDrawGUI(rect);
             }
 
             return rect.yMin - yMin;
