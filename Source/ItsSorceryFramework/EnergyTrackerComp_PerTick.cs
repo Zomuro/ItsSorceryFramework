@@ -19,7 +19,9 @@ namespace ItsSorceryFramework
 
         public float InvFactor => parent.InvMult; // if inverse energy tracker, this is -1f; otherwise, it is 1f.
 
-        public float RecoveryRate => parent.pawn.GetStatValue(Props.RecoveryRateStatDef);
+        public StatDef RecoveryRateStatDef => Props.energyRecoveryStatDef ?? StatDefOf_ItsSorcery.EnergyRecovery_ItsSorcery;
+
+        public float RecoveryRate => parent.pawn.GetStatValue(RecoveryRateStatDef);
 
         public override void CompPostTick() 
         {
@@ -49,7 +51,7 @@ namespace ItsSorceryFramework
 
             // draw normal components (label and normal energy regen)
             Text.Font = GameFont.Small;
-            Widgets.LabelCacheHeight(ref rect, "ISF_EnergyTrackerCompOnTickLabel".Translate().Colorize(ColoredText.TipSectionTitleColor), true, false);
+            Widgets.LabelCacheHeight(ref rect, "ISF_EnergyTrackerCompOnTickLabel".Translate(RecoveryRateStatDef.label.Named("STAT")).Colorize(ColoredText.TipSectionTitleColor), true, false);
             rect.yMin += rect.height;
             Widgets.LabelCacheHeight(ref rect, "ISF_EnergyTrackerCompOnTickNormal".Translate(energyLabel.Named("ENERGY"), energyRateString.Named("CHANGE")));
             rect.yMin += rect.height;

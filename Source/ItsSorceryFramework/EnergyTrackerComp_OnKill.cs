@@ -46,9 +46,9 @@ namespace ItsSorceryFramework
 
             // draw normal components (label and normal energy regen)
             Text.Font = GameFont.Small;
-            Widgets.LabelCacheHeight(ref rect, "ISF_EnergyTrackerCompOnKillLabel".Translate(damageDefs).Colorize(ColoredText.TipSectionTitleColor), true, false);
+            Widgets.LabelCacheHeight(ref rect, "ISF_EnergyTrackerCompOnKillLabel".Translate(ScalingStatDef.label.Named("STAT"), damageDefs.Named("DAMAGEDEFS")).Colorize(ColoredText.TipSectionTitleColor), true, false);
             rect.yMin += rect.height;
-            Widgets.LabelCacheHeight(ref rect, "ISF_EnergyTrackerCompOnKillDesc".Translate(energyLabel.Named("ENERGY"), ScalingStatDef.label.Named("STAT"), 
+            Widgets.LabelCacheHeight(ref rect, "ISF_EnergyTrackerCompOnKillDesc".Translate(energyLabel.Named("ENERGY"), 
                 energyFactorString.Named("FACTOR"), Props.baseEnergy.Named("CHANGE")));
             rect.yMin += rect.height;
 

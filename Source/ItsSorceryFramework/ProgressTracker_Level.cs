@@ -287,13 +287,8 @@ namespace ItsSorceryFramework
             Widgets.EndScrollView();
 
             // IMAGE - decorative banner //
-            Rect rightHalf = new Rect(rect.width * 3f/4f, 0, rect.width / 4f, rect.height);
-            Color col = GUI.color;
-            GUI.color = Color.grey;
-            Widgets.DrawLineVertical(rightHalf.x, rightHalf.y, rightHalf.height);
-            GUI.color = col;
-
-            Widgets.DrawTextureFitted(rightHalf, def.BGIcon, 0.95f);
+            Rect bannerRect = new Rect(rect.width * 3f/4f, 0, rect.width / 4f, rect.height);          
+            Widgets.DrawTextureFitted(bannerRect.ContractedBy(10f), def.BGIcon, 1f);
             Widgets.EndGroup();
         }
 

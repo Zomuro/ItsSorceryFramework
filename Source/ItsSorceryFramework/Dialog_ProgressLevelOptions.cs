@@ -32,7 +32,7 @@ namespace ItsSorceryFramework
 			closeOnClickedOutside = false;
 			forcePause = true;
 			closeOnCancel = false;
-			doCloseX = true; // set to false
+			doCloseX = false; // set to false
 		}
 
 		public override void DoWindowContents(Rect inRect)
@@ -54,29 +54,24 @@ namespace ItsSorceryFramework
 				filter = "";
 				focusFilter = false;
 			}
-			if (Event.current.type == EventType.Layout)
-			{
-				totalOptionsHeight = 0f;
-			}
+			if (Event.current.type == EventType.Layout) totalOptionsHeight = 0f;
 
-			// Title for options listing
-			Text.Font = GameFont.Medium;
 			leftHalfRect.yMin += 40f;
-			Widgets.Label(leftHalfRect, "Options");
-			Text.Font = GameFont.Small;
-
-			// Setup right half (label + description + changes in stats and abilities + confirmation)
+			
+			// Setup right half rect
 			Rect rightHalfRect = new Rect(leftHalfRect);
 			rightHalfRect.x = inRect.x + inRect.width / 2;
 
-			// Listing that shows all the options
-			//Rect optionsRect = new Rect(leftHalfRect).ContractedBy(10f);
-			leftHalfRect.yMin += 30f;
+			// Title for options listing
+			Text.Font = GameFont.Medium;
+			Rect titleLeftHalfRect = new Rect(leftHalfRect);
+			Widgets.LabelCacheHeight(ref titleLeftHalfRect, "ISF_ProgressLevelOptionsLabel".Translate(tracker.schema.def.LabelCap));
+			leftHalfRect.yMin += titleLeftHalfRect.height;
+			Text.Font = GameFont.Small;
+
+			// Setup right half (label + description + changes in stats and abilities + confirmation)
 			float allOptionsHeight = totalOptionsHeight;
-			if (allOptionsHeight < leftHalfRect.height)
-			{
-				allOptionsHeight = leftHalfRect.height;
-			}
+			if (allOptionsHeight < leftHalfRect.height) allOptionsHeight = leftHalfRect.height;
 			Rect allOptionsRect = new Rect(leftHalfRect.x, leftHalfRect.y, leftHalfRect.width - 20f, allOptionsHeight);
 			Widgets.BeginScrollView(leftHalfRect, ref scrollPosition, allOptionsRect, true);
 			listing = new Listing_Standard(inRect, () => scrollPosition);
