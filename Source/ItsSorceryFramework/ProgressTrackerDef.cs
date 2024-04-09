@@ -9,6 +9,39 @@ namespace ItsSorceryFramework
 {
     public class ProgressTrackerDef : Def
     {
+        public Type progressTrackerClass = typeof(ProgressTracker);
+
+        public string bgPath;
+
+        private Texture2D trackerBG;
+
+        public HediffDef progressHediff;
+
+        public float baseEXP = 100f;
+
+        public float scaling = 1.1f;
+
+        //public float maxEXP = 1000f;
+
+        public List<ProgressLevelModifier> levelFactors = new List<ProgressLevelModifier>();
+
+        public List<ProgressLevelModifier> levelSpecifics = new List<ProgressLevelModifier>();
+
+        public List<ProgressEXPTagDef> expTags = new List<ProgressEXPTagDef>();
+
+        public List<ProgressLevelLabel> levelLabels = new List<ProgressLevelLabel>();
+
+        [MustTranslate]
+        public string progressLevelUpKey = "ISF_LevelUp";
+
+        [MustTranslate]
+        public string progressLevelUpDescKey = "ISF_LevelUpMessage";
+
+        [MustTranslate]
+        public string skillPointLabelKey = "ISF_SkillPointLabel";
+
+        private HashSet<ProgressEXPWorker> cachedEXPWorkers = new HashSet<ProgressEXPWorker>();
+
         public float maxLevel 
         {
             get 
@@ -124,38 +157,7 @@ namespace ItsSorceryFramework
             }
         }
 
-        public Type progressTrackerClass = typeof(ProgressTracker);
-
-        public string bgPath;
-
-        private Texture2D trackerBG;
-
-        public HediffDef progressHediff;
-
-        public float baseEXP = 100f;
-
-        public float scaling = 1.1f;
-
-        //public float maxEXP = 1000f;
-
-        public List<ProgressLevelModifier> levelFactors = new List<ProgressLevelModifier>();
-
-        public List<ProgressLevelModifier> levelSpecifics = new List<ProgressLevelModifier>();
-
-        public List<ProgressEXPTagDef> expTags = new List<ProgressEXPTagDef>();
-
-        public List<ProgressLevelLabel> levelLabels = new List<ProgressLevelLabel>();
-
-        [MustTranslate]
-        public string progressLevelUpKey = "ISF_LevelUp";
-
-        [MustTranslate]
-        public string progressLevelUpDescKey = "ISF_LevelUpMessage";
-
-        [MustTranslate]
-        public string skillPointLabelKey = "ISF_SkillPointLabel";
-
-        private HashSet<ProgressEXPWorker> cachedEXPWorkers = new HashSet<ProgressEXPWorker>();
+        
     }
 
     public class ProgressLevelLabel

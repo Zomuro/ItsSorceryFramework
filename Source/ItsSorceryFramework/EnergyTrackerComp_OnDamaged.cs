@@ -30,7 +30,7 @@ namespace ItsSorceryFramework
             string energyLabel = parent.EnergyLabel;
             string damageDefs = Props.damageDefs.NullOrEmpty() ? "" : DamageDefsLabels(Props.damageDefs).ToStringSafeEnumerable();
             float energyFactor = parent.InvMult * parent.pawn.GetStatValue(ScalingStatDef);
-            string energyFactorString = energyFactor.ToStringByStyle(ToStringStyle.FloatMaxTwo, ToStringNumberSense.Factor);
+            string energyFactorString = energyFactor.ToStringByStyle(ScalingStatDef.toStringStyle);
 
             // draw normal components (label and normal energy regen)
             Text.Font = GameFont.Small;

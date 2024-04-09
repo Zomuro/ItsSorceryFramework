@@ -1,12 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Defs>
-
-	<!--<StatCategoryDef>
-		<defName>Ability</defName>
-		<label>Ability</label>
-		<displayOrder>60</displayOrder>
-	</StatCategoryDef>-->
-
 	<StatCategoryDef>
 		<defName>SorcerySchema_ISF</defName>
 		<label>Sorcery schema</label>
@@ -36,5 +29,4 @@
 		<label>Sorcery</label>
 		<displayOrder>60</displayOrder>
 	</StatCategoryDef>
-
 </Defs>

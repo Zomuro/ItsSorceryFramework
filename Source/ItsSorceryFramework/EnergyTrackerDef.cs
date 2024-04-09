@@ -13,21 +13,7 @@ namespace ItsSorceryFramework
         public Type energyTrackerClass = typeof(EnergyTracker);
 
         // EnergyTracker unit variables
-        [MustTranslate]
-        public string energyLabelKey = "ISF_EnergyTrackerUnitLabel";
-
-        [MustTranslate]
-        public string energyDescKey = "ISF_EnergyStatDesc";
-
-        [MustTranslate]
-        public string inverseLabelKey = "ISF_EnergyTrackerInverse";
-
-        [MustTranslate]
-        public string inverseDescKey = "ISF_EnergyTrackerInverseDesc";
-
-        public StatDef energyUnitStatDef; // doubles as both energy cost AND cast cost
-
-        public StatDef energyMaxCastStatDef; // define the stat the energytracker uses to figure out max casts
+        public StatDef energyUnitStatDef = StatDefOf_ItsSorcery.ISF_Sorcery_EnergyCost; // doubles as both energy cost AND cast cost
 
         // EnergyTracker general stats
         public bool inverse = false;
@@ -40,15 +26,7 @@ namespace ItsSorceryFramework
 
         public StatDef energyAbsMinStatDef;
 
-        public StatDef energyRecoveryStatDef;
-
         public StatDef energyCostFactorStatDef;
-
-        public StatDef castFactorStatDef;
-
-        public float overBarRecoveryFactor = 1f;
-
-        public float underBarRecoveryFactor = 1f;
 
         public HediffDef sideEffect;
 
@@ -61,45 +39,12 @@ namespace ItsSorceryFramework
 
         public Color overBarColor = new Color(0f, .659f, .42f); // HEX #00A86B | jade
 
-
-
-
-
-        // TurnBased EnergyTrackers
-        [MustTranslate]
-        public string turnInfoKey = "ISF_EnergyTrackerTurnInfo";
-
-        [MustTranslate]
-        public string turnInfoDescKey = "ISF_EnergyTrackerTurnInfoDesc";
-
-        public int turnTicks = 60;
-
-        // Vancian EnergyTracker Stats
-        [MustTranslate]
-        public string refreshNotifKey = "ISF_EnergyTrackerVancianRefresh";
-
-        [MustTranslate]
-        public string refreshInfoKey = "ISF_EnergyTrackerRefreshInfo";
-
-        [MustTranslate]
-        public string refreshInfoDescKey = "ISF_EnergyTrackerRefreshInfoDesc";
-
-        public int refreshTicks = 60000;
-
-        //VancianLifetime EnergyTracker string
-        [MustTranslate]
-        public string castCountKey = "ISF_EnergyTrackerVancianCastsLeft";
-
-        // Command disable string
+        // Translation keys
         public string disableReasonKey;
 
-        // Consumable EnerrgyTracker ammo dictionary
-        //public List<EnergyConsumable> consumables;
+        public string hitLimitKey = "ISF_MessagePastLimit";
 
-        // Cooldown EnergyTracker string
-        [MustTranslate]
-        public string cooldownKey = "ISF_EnergyTrackerCooldown";
-
+        // Comps
         public List<EnergyTrackerCompProperties> comps;
 
         public override IEnumerable<StatDrawEntry> SpecialDisplayStats(StatRequest req)

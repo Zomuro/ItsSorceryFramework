@@ -13,7 +13,7 @@ namespace ItsSorceryFramework
     {
         public EnergyTrackerCompProperties_OnKill Props => (EnergyTrackerCompProperties_OnKill)props;
 
-        public StatDef ScalingStatDef => Props.scalingStatDef is null ? StatDefOf_ItsSorcery.Scaling_ItsSorcery : Props.scalingStatDef;
+        public StatDef ScalingStatDef => Props.scalingStatDef is null ? StatDefOf_ItsSorcery.ISF_ScalingStat : Props.scalingStatDef;
 
         public IEnumerable<String> DamageDefsLabels(IEnumerable<Def> defs)
         {
@@ -42,7 +42,7 @@ namespace ItsSorceryFramework
             string energyLabel = parent.EnergyLabel;
             string damageDefs = Props.damageDefs.NullOrEmpty() ? "" : DamageDefsLabels(Props.damageDefs).ToStringSafeEnumerable();
             float energyFactor = parent.InvMult * parent.pawn.GetStatValue(ScalingStatDef);
-            string energyFactorString = energyFactor.ToStringByStyle(ToStringStyle.FloatMaxTwo, ToStringNumberSense.Factor);
+            string energyFactorString = energyFactor.ToStringByStyle(ScalingStatDef.toStringStyle);
 
             // draw normal components (label and normal energy regen)
             Text.Font = GameFont.Small;

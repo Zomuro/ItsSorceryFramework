@@ -13,7 +13,7 @@ namespace ItsSorceryFramework
     {
         public EnergyTrackerCompProperties_DamageBase Props => (EnergyTrackerCompProperties_DamageBase)props;
 
-        public StatDef ScalingStatDef => Props.scalingStatDef is null ? StatDefOf_ItsSorcery.Scaling_ItsSorcery : Props.scalingStatDef;
+        public StatDef ScalingStatDef => Props.scalingStatDef is null ? StatDefOf_ItsSorcery.ISF_ScalingStat : Props.scalingStatDef;
 
         public IEnumerable<String> DamageDefsLabels(IEnumerable<Def> defs)
         {

@@ -13,12 +13,6 @@ namespace ItsSorceryFramework
         public EnergyTrackerDef def;
 
         public SorcerySchema schema;
-        
-        //public SorcerySchemaDef sorcerySchemaDef;
-
-        //private SorcerySchema cachedSchema;
-
-        //private List<LearningTracker> cachedLearningTrackers = new List<LearningTracker>();
 
         public float currentEnergy;
 
@@ -130,19 +124,19 @@ namespace ItsSorceryFramework
 
         public virtual bool HasLimit => HasDeficitZone;
 
-        public virtual float MinEnergy => Math.Min(pawn.GetStatValue(def.energyMinStatDef ?? StatDefOf_ItsSorcery.MinEnergy_ItsSorcery, true), MaxEnergy);
+        public virtual float MinEnergy => Math.Min(pawn.GetStatValue(def.energyMinStatDef ?? StatDefOf_ItsSorcery.ISF_MinEnergy, true), MaxEnergy);
 
-        public virtual float MaxEnergy => pawn.GetStatValue(def.energyMaxStatDef ?? StatDefOf_ItsSorcery.MaxEnergy_ItsSorcery, true);
+        public virtual float MaxEnergy => pawn.GetStatValue(def.energyMaxStatDef ?? StatDefOf_ItsSorcery.ISF_MaxEnergy, true);
 
         public virtual float AbsMinEnergy => def.energyAbsMinStatDef is null ? MinEnergy : Math.Min(pawn.GetStatValue(def.energyAbsMinStatDef, true), MinEnergy);
 
         public virtual float AbsMaxEnergy => def.energyAbsMaxStatDef is null ? MaxEnergy : Math.Max(pawn.GetStatValue(def.energyAbsMaxStatDef, true), MaxEnergy);
 
-        public virtual float EnergyRecoveryRate => 5f;
+        //public virtual StatDef EnergyUnit => def.energyUnitStatDef is null ? StatDefOf_ItsSorcery.Sorcery_EnergyCost : def.energyUnitStatDef;
 
-        public virtual float EnergyCostFactor => pawn.GetStatValue(def.energyCostFactorStatDef ?? StatDefOf_ItsSorcery.EnergyCostFactor_ItsSorcery, true);
+        public virtual float EnergyCostFactor => pawn.GetStatValue(def.energyCostFactorStatDef ?? StatDefOf_ItsSorcery.ISF_EnergyCostFactor, true);
 
-        public virtual float CastFactor => pawn.GetStatValue(def.castFactorStatDef ?? StatDefOf_ItsSorcery.CastFactor_ItsSorcery, true);
+        //public virtual float CastFactor => pawn.GetStatValue(def.castFactorStatDef ?? StatDefOf_ItsSorcery.CastFactor_ItsSorcery, true);
 
         public virtual bool HasOverchargeZone => !def.inverse ? AbsMaxEnergy > MaxEnergy : MinEnergy > AbsMinEnergy;
 
@@ -152,7 +146,9 @@ namespace ItsSorceryFramework
 
         public virtual bool InOvercharge => HasOverchargeZone && !def.inverse ? currentEnergy > MaxEnergy : currentEnergy < MinEnergy;
 
-        public virtual string EnergyLabel => def.energyLabelKey.Translate();
+        public virtual string EnergyLabel => def.energyUnitStatDef.label;
+
+        public virtual string EnergyDesc => def.energyUnitStatDef.description;
 
         public virtual void EnergyTrackerTick()
         {
@@ -176,7 +172,12 @@ namespace ItsSorceryFramework
 
         public virtual bool WouldReachLimitEnergy(float energyCost, SorceryDef sorceryDef = null, Sorcery sorcery = null)
         {
-            return !def.inverse ? (currentEnergy - InvMult * energyCost < MinEnergy && Schema.limitLocked) : (currentEnergy - InvMult * energyCost > MaxEnergy && Schema.limitLocked);
+            float postEnergy = currentEnergy - InvMult * energyCost;
+
+            if (HasLimit) return !def.inverse ? (postEnergy < MinEnergy && Schema.limitLocked) : (postEnergy > MaxEnergy && Schema.limitLocked);          
+            else return !def.inverse ? (postEnergy < MinEnergy) : (postEnergy > MaxEnergy);
+
+            //return !def.inverse ? (currentEnergy - InvMult * energyCost < MinEnergy && Schema.limitLocked) : (currentEnergy - InvMult * energyCost > MaxEnergy && Schema.limitLocked);
         }
 
         public virtual bool TryAlterEnergy(float energyCost, SorceryDef sorceryDef = null, Sorcery sorcery = null)
@@ -228,7 +229,7 @@ namespace ItsSorceryFramework
             // leave warning when pawn reaches the max severity of their side effect hediff
             if (hediff != null && hediff.Severity >= hediff.def.maxSeverity) 
             {
-                Messages.Message("ISF_MessagePastLimit".Translate(pawn.Named("PAWN")),
+                Messages.Message(def.hitLimitKey.Translate(pawn.Named("PAWN")),
                     pawn, MessageTypeDefOf.NegativeEvent, true);
             }
         }
@@ -255,7 +256,7 @@ namespace ItsSorceryFramework
             barBox.x = rect.width * 2 / 5 + rect.x;
 
             // energy label
-            Widgets.LabelCacheHeight(ref labelBox, def.energyLabelKey.Translate().CapitalizeFirst());
+            Widgets.LabelCacheHeight(ref labelBox, EnergyLabel.CapitalizeFirst());
 
             // draws power bar
             barBox.height = labelBox.height; // set barbox to labelbox height for consistency
@@ -284,7 +285,7 @@ namespace ItsSorceryFramework
 
             if (Mouse.IsOver(rect))
             {
-                string energy = def.energyLabelKey.Translate().CapitalizeFirst();
+                string energy = EnergyLabel.CapitalizeFirst();
                 string tipString = "ISF_BarBaseTip".Translate(energy, currentEnergy.ToString("F0"), MinEnergy.ToString("F0"), MaxEnergy.ToString("F0"));
                 if (!def.inverse)
                 {
@@ -411,45 +412,45 @@ namespace ItsSorceryFramework
 
             // shows what the "energy" is
             yield return new StatDrawEntry(finalCat,
-                        "ISF_EnergyTrackerUnit".Translate(), def.energyLabelKey.Translate().CapitalizeFirst(),
-                        def.energyDescKey.Translate(), displayPriority, null, null, false);
+                        "ISF_EnergyTrackerUnit".Translate(), EnergyLabel.CapitalizeFirst(),
+                        EnergyDesc, displayPriority, null, null, false);
             displayPriority--;
 
             // shows whether or not energy is loaded/gained inversely
             yield return new StatDrawEntry(finalCat,
-                    def.inverseLabelKey.Translate(), def.inverse ? "Inverted" : "Normal",
-                    def.inverseDescKey.Translate(), displayPriority, null, null, false);
+                    "ISF_EnergyTrackerInverse".Translate(), def.inverse ? "Inverted" : "Normal",
+                    "ISF_EnergyTrackerInverseDesc".Translate(), displayPriority, null, null, false);
             displayPriority--;
 
             // shows the maximum energy of the whole sorcery schema
             if (AbsMaxEnergy > MaxEnergy) // only show if there's a difference between overmax and max energy.
             {
-                statDef = def.energyAbsMaxStatDef ?? StatDefOf_ItsSorcery.AbsMaxEnergy_ItsSorcery;
+                statDef = def.energyAbsMaxStatDef ?? StatDefOf_ItsSorcery.ISF_AbsMaxEnergy;
                 yield return new StatDrawEntry(finalCat,
                         statDef, AbsMaxEnergy, pawnReq, ToStringNumberSense.Undefined, displayPriority, false);
                 displayPriority--;
             }
 
-            statDef = def.energyMaxStatDef ?? StatDefOf_ItsSorcery.MaxEnergy_ItsSorcery;
+            statDef = def.energyMaxStatDef ?? StatDefOf_ItsSorcery.ISF_MaxEnergy;
             yield return new StatDrawEntry(finalCat,
                     statDef, MaxEnergy, pawnReq, ToStringNumberSense.Undefined, displayPriority, false);
             displayPriority--;
 
-            statDef = def.energyMinStatDef ?? StatDefOf_ItsSorcery.MinEnergy_ItsSorcery;
+            statDef = def.energyMinStatDef ?? StatDefOf_ItsSorcery.ISF_MinEnergy;
             yield return new StatDrawEntry(finalCat,
                     statDef, MinEnergy, pawnReq, ToStringNumberSense.Undefined, displayPriority, false);
             displayPriority--;
 
             if (AbsMinEnergy < MinEnergy) // only show if there's a difference between min energy and 0.
             {
-                statDef = def.energyAbsMinStatDef ?? StatDefOf_ItsSorcery.AbsMinEnergy_ItsSorcery;
+                statDef = def.energyAbsMinStatDef ?? StatDefOf_ItsSorcery.ISF_AbsMinEnergy;
                 yield return new StatDrawEntry(finalCat,
                         statDef, AbsMinEnergy, pawnReq, ToStringNumberSense.Undefined, displayPriority, false);
                 displayPriority--;
             }
 
             // shows a pawn's multiplier on relevant sorcery cost
-            statDef = def.energyCostFactorStatDef ?? StatDefOf_ItsSorcery.EnergyCostFactor_ItsSorcery;
+            statDef = def.energyCostFactorStatDef ?? StatDefOf_ItsSorcery.ISF_EnergyCostFactor;
             yield return new StatDrawEntry(finalCat,
                     statDef, pawn.GetStatValue(statDef), pawnReq, ToStringNumberSense.Factor, displayPriority, false);
             displayPriority--;
@@ -457,11 +458,11 @@ namespace ItsSorceryFramework
 
         public virtual string TopRightLabel(SorceryDef sorceryDef)
         {
-            return "{0}: {1}".Translate(def.energyLabelKey.Translate().CapitalizeFirst()[0], 
+            return "{0}: {1}".Translate(EnergyLabel.CapitalizeFirst()[0], 
                 Math.Round(sorceryDef.statBases.GetStatValueFromList(def.energyUnitStatDef, 0) * EnergyCostFactor, 2).ToString());
         }
 
-        public virtual string DisableCommandReason() => def.disableReasonKey ?? "ISF_CommandDisableReasonBase";
+        public virtual string DisableCommandReason() => def.disableReasonKey ?? (def.inverse ? "ISF_CommandDisableReasonInvert" : "ISF_CommandDisableReasonBase");
 
         public override string ToString() => "Energy class: " + GetType().Name.ToString();
     }

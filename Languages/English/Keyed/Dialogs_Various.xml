@@ -2,28 +2,9 @@
 <LanguageData>
 	
 	<!-- SorcerySchemaDef Info window - Energy Trackers -->
-	<ISF_EnergyTrackerUnitLabel>energy</ISF_EnergyTrackerUnitLabel>
 	<ISF_EnergyTrackerUnit>Unit</ISF_EnergyTrackerUnit>
-	<ISF_EnergyTrackerMaxUnit>Unit maximum</ISF_EnergyTrackerMaxUnit>
-	
 	<ISF_EnergyTrackerInverse>Energy inversion</ISF_EnergyTrackerInverse>
-	<ISF_EnergyTrackerUnderBarFactor>Deficit recovery factor</ISF_EnergyTrackerUnderBarFactor>
-	<ISF_EnergyTrackerOverBarFactor>Overcharge recovery factor</ISF_EnergyTrackerOverBarFactor>
-	<ISF_EnergyTrackerDeficitLabel>Deficit recovery factor</ISF_EnergyTrackerDeficitLabel>
-	<ISF_EnergyTrackerOverchargeLabel>Overcharge recovery factor</ISF_EnergyTrackerOverchargeLabel>
-	<ISF_EnergyTrackerTurnInfo>Turn time (secs)</ISF_EnergyTrackerTurnInfo>
-	<ISF_EnergyTrackerRefreshInfo>Refresh time (secs)</ISF_EnergyTrackerRefreshInfo>
-	<ISF_EnergyTrackerAmmo>Source(s)</ISF_EnergyTrackerAmmo>
-	
 	<ISF_EnergyTrackerInverseDesc>Specifies the flow direction of the energy.\n\nNon-inverted systems typically consume the energy unit (e.g. 100 -> 50 mana) and regain it over time; inverted energy trackers add the unit (e.g. 0 -> 25 mana) and reduce it over time.</ISF_EnergyTrackerInverseDesc>
-	<ISF_EnergyTrackerUnderBarFactorDesc>A multiplier on recovery rate when the current energy level is below 0.</ISF_EnergyTrackerUnderBarFactorDesc>
-	<ISF_EnergyTrackerOverBarFactorDesc>A multiplier on recovery rate when the current energy level is above the maximum energy.</ISF_EnergyTrackerOverBarFactorDesc>
-	<ISF_EnergyTrackerDeficitDesc>The change in {0} per second when in a {0} deficit.</ISF_EnergyTrackerDeficitDesc>
-	<ISF_EnergyTrackerOverchargeDesc>The change in {0} per second when in a {0} surplus.</ISF_EnergyTrackerOverchargeDesc>
-	<ISF_EnergyStatDesc>The resource that pawns require to cast sorceries, upon which it is depleted (or in rare cases, gained).</ISF_EnergyStatDesc>
-	<ISF_EnergyTrackerTurnInfoDesc>The amount of time a "turn" (the period of time between automatic game pauses when the pawn is drafted) takes in seconds.</ISF_EnergyTrackerTurnInfoDesc>
-	<ISF_EnergyTrackerRefreshInfoDesc>The amount of time it takes a sorcery schema to refresh various values, often discrete casts, in seconds.</ISF_EnergyTrackerRefreshInfoDesc>
-	<ISF_EnergyTrackerAmmoDesc>The source(s) of this schema's energy unit. Depending on schema, various sources can contribute differing amounts of energy units.</ISF_EnergyTrackerAmmoDesc>
 	
 	<!-- SorcerySchemaDef Info window - Learning Trackers -->
 	<ISF_LearningNodeCost>{0} required: {1}</ISF_LearningNodeCost>

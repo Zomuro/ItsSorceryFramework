@@ -19,7 +19,7 @@ namespace ItsSorceryFramework
 
         public float InvFactor => parent.InvMult; // if inverse energy tracker, this is -1f; otherwise, it is 1f.
 
-        public StatDef RecoveryRateStatDef => Props.energyRecoveryStatDef ?? StatDefOf_ItsSorcery.EnergyRecovery_ItsSorcery;
+        public StatDef RecoveryRateStatDef => Props.energyRecoveryStatDef ?? StatDefOf_ItsSorcery.ISF_EnergyRecovery;
 
         public float RecoveryRate => parent.pawn.GetStatValue(RecoveryRateStatDef);
 

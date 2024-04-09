@@ -29,7 +29,7 @@ namespace ItsSorceryFramework
 				foreach(var et in Schema.energyTrackers)
                 {
 					val = statBases.GetStatValueFromList(et.def.energyUnitStatDef, 0);
-					yield return et.def.energyLabelKey.Translate().CapitalizeFirst() + ": " +
+					yield return et.EnergyLabel.CapitalizeFirst() + ": " +
 						Math.Round(val * et.EnergyCostFactor, 2);
 					
 				}
@@ -41,7 +41,7 @@ namespace ItsSorceryFramework
 					val = statBases.GetStatValueFromList(et.energyUnitStatDef, 0);
 					if (val != 0)
 					{
-						yield return et.energyLabelKey.Translate().CapitalizeFirst() + ": " +
+						yield return et.energyUnitStatDef.label.CapitalizeFirst() + ": " +
 								Math.Round(val, 2);
 					}
 				}

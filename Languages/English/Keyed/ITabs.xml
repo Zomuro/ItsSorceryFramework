@@ -7,7 +7,6 @@
 	<!-- ITab_Schema Button Tooltips -->
 	<ISF_ButtonLearningTrackers>View various magic system aspects such as system summary, progression, abilities, etc.</ISF_ButtonLearningTrackers>
 	<ISF_ButtonLimit>Toggle whether this pawn can use energy beyond their limits.</ISF_ButtonLimit>
-	<ISF_ButtonTurnTimer>Toggle whether or not the game pauses at the end of this magic system's turn when this pawn is selected and drafted.</ISF_ButtonTurnTimer>
 	<ISF_ButtonFav>Toggle whether or not this is a favorited system. Favorited systems can show up in the favorites view of the tab.</ISF_ButtonFav>
 	<ISF_ButtonFavView>Toggle whether or not to view favorited systems.</ISF_ButtonFavView>
 	
@@ -15,11 +14,6 @@
 	<ISF_BarBaseTip>{0}: {1}.\nNormal range: {2} to {3}</ISF_BarBaseTip>
 	<ISF_BarUnderTip>Deficit range: {0} to {1}</ISF_BarUnderTip>
 	<ISF_BarOverTip>Overcharge range: {0} to {1}</ISF_BarOverTip>
-	
-	<!-- EnergyTrackerDef -->
-	<ISF_EnergyTrackerVancianRefresh>Refresh casts in: {0}</ISF_EnergyTrackerVancianRefresh>
-	<ISF_EnergyTrackerVancianCastsLeft>Casts left: {0}/{1}</ISF_EnergyTrackerVancianCastsLeft>
-	<ISF_EnergyTrackerCooldown>End schema cooldown in: {0}</ISF_EnergyTrackerCooldown>
 	
 	<!-- EnergyTrackerComp -->
 	<ISF_EnergyTrackerCompOnTickLabel>Every second, scaling with {STAT}:</ISF_EnergyTrackerCompOnTickLabel>
@@ -39,8 +33,6 @@
 	<ISF_EnergyTrackerCompOnConsumeLabel>On consuming items:</ISF_EnergyTrackerCompOnConsumeLabel>
 	<ISF_EnergyTrackerCompOnConsumeDesc>Alter {ENERGY} based on the list below.</ISF_EnergyTrackerCompOnConsumeDesc>
 	<ISF_EnergyTrackerCompOnConsumeItem>  - {ITEM}: {CHANGE}</ISF_EnergyTrackerCompOnConsumeItem>
-	
-	<!-- EnergyTrackerComp -->
 	
 	<!-- LearningTrackerDef -->
 	<ISF_SkillPointLabel>skill point(s)</ISF_SkillPointLabel>

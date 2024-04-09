@@ -103,15 +103,15 @@ namespace ItsSorceryFramework
 
 		public string TempRightLabelPart(EnergyTrackerDef energyTrackerDef, float value)
         {
-			return (energyTrackerDef.energyLabelKey.Translate().CapitalizeFirst()[0]) + ": " +
+			return (energyTrackerDef.LabelCap[0]) + ": " +
 					Math.Round(value, 2).ToString();
 		}
 
-		public string TempRightLabelPartVancian(EnergyTrackerDef energyTrackerDef, float value)
+		/*public string TempRightLabelPartVancian(EnergyTrackerDef energyTrackerDef, float value)
 		{
 			return (energyTrackerDef.energyLabelKey.Translate().CapitalizeFirst()[0]) + ": " +
 					Math.Round(value, 2).ToString() + "/" + Math.Round(value, 2).ToString();
-		}
+		}*/
 
 		public SorcerySchema Schema
         {

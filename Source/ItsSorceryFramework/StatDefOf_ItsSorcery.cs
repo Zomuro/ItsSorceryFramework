@@ -6,19 +6,19 @@ namespace ItsSorceryFramework
     public static class StatDefOf_ItsSorcery
     {
         // EnergyTracker default stats
-        public static StatDef MaxEnergy_ItsSorcery;
-        public static StatDef MinEnergy_ItsSorcery;
-        public static StatDef AbsMaxEnergy_ItsSorcery;
-        public static StatDef AbsMinEnergy_ItsSorcery;
-        public static StatDef EnergyRecovery_ItsSorcery;
-        public static StatDef EnergyFactor_ItsSorcery;
-        public static StatDef EnergyCostFactor_ItsSorcery;
-        public static StatDef CastFactor_ItsSorcery;
-        public static StatDef Scaling_ItsSorcery;
+        public static StatDef ISF_MaxEnergy;
+        public static StatDef ISF_MinEnergy;
+        public static StatDef ISF_AbsMaxEnergy;
+        public static StatDef ISF_AbsMinEnergy;
+        public static StatDef ISF_EnergyRecovery;
+        public static StatDef ISF_EnergyValueFactor;
+        public static StatDef ISF_EnergyCostFactor;
+        //public static StatDef CastFactor_ItsSorcery;
+        public static StatDef ISF_ScalingStat;
 
         // SorceryDef stats
-        public static StatDef Sorcery_EnergyCost;
-        public static StatDef Sorcery_MaxCasts;
+        public static StatDef ISF_Sorcery_EnergyCost;
+        //public static StatDef Sorcery_MaxCasts;
 
         static StatDefOf_ItsSorcery()
         {
