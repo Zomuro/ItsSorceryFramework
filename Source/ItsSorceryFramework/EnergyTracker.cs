@@ -132,11 +132,9 @@ namespace ItsSorceryFramework
 
         public virtual float AbsMaxEnergy => def.energyAbsMaxStatDef is null ? MaxEnergy : Math.Max(pawn.GetStatValue(def.energyAbsMaxStatDef, true), MaxEnergy);
 
-        //public virtual StatDef EnergyUnit => def.energyUnitStatDef is null ? StatDefOf_ItsSorcery.Sorcery_EnergyCost : def.energyUnitStatDef;
+        //public virtual StatDef EnergyUnit => def.energyUnitStatDef is null ? StatDefOf_ItsSorcery.ISF_Sorcery_EnergyCost : def.energyUnitStatDef;
 
         public virtual float EnergyCostFactor => pawn.GetStatValue(def.energyCostFactorStatDef ?? StatDefOf_ItsSorcery.ISF_EnergyCostFactor, true);
-
-        //public virtual float CastFactor => pawn.GetStatValue(def.castFactorStatDef ?? StatDefOf_ItsSorcery.CastFactor_ItsSorcery, true);
 
         public virtual bool HasOverchargeZone => !def.inverse ? AbsMaxEnergy > MaxEnergy : MinEnergy > AbsMinEnergy;
 

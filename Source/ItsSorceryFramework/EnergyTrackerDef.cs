@@ -13,7 +13,7 @@ namespace ItsSorceryFramework
         public Type energyTrackerClass = typeof(EnergyTracker);
 
         // EnergyTracker unit variables
-        public StatDef energyUnitStatDef = StatDefOf_ItsSorcery.ISF_Sorcery_EnergyCost; // doubles as both energy cost AND cast cost
+        public StatDef energyUnitStatDef; // doubles as both energy cost AND cast cost
 
         // EnergyTracker general stats
         public bool inverse = false;
