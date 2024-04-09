@@ -4,7 +4,7 @@
 	<StatDef>
 		<defName>ISF_Sorcery_EnergyCost</defName>
 		<label>energy cost</label>
-		<category>Sorcery_ISF</category>
+		<category>ISF_Sorcery</category>
 		<description>The amount of energy a technique requires to cast.</description>
 		<defaultBaseValue>10</defaultBaseValue>
 		<showIfUndefined>false</showIfUndefined>

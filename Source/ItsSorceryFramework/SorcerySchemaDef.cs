@@ -63,9 +63,9 @@ namespace ItsSorceryFramework
                 // creates temporary statcategeorydef to properly sort stats into their right place
                 // CANNOT BE SAVED
                 StatCategoryDef tempCat = new StatCategoryDef();
-                tempCat.defName = StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF.defName + "_TEMP" + i;
-                tempCat.label = StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF.LabelCap + " (" + et.def.label + ")";
-                tempCat.displayOrder = StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF.displayOrder + i;
+                tempCat.defName = StatCategoryDefOf_ItsSorcery.ISF_EnergyTracker.defName + "_TEMP" + i;
+                tempCat.label = StatCategoryDefOf_ItsSorcery.ISF_EnergyTracker.LabelCap + " (" + et.def.label + ")";
+                tempCat.displayOrder = StatCategoryDefOf_ItsSorcery.ISF_EnergyTracker.displayOrder + i;
 
                 et.tempStatCategory = tempCat;
                 foreach (StatDrawEntry entry in et.SpecialDisplayStats(req)) yield return entry; // depending on energytrackers, alter which ones show up

@@ -404,7 +404,7 @@ namespace ItsSorceryFramework
         {
             StatDef statDef;
             StatRequest pawnReq = StatRequest.For(pawn);
-            StatCategoryDef finalCat = tempStatCategory ?? StatCategoryDefOf_ItsSorcery.EnergyTracker_ISF;
+            StatCategoryDef finalCat = tempStatCategory ?? StatCategoryDefOf_ItsSorcery.ISF_EnergyTracker;
 
             int displayPriority = 100;
 
