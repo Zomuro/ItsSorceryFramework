@@ -2,10 +2,7 @@
 <LanguageData>
 
 	<ISF_CommandDisableReasonBase>{0} does not possess enough energy to cast this.</ISF_CommandDisableReasonBase>
-	<ISF_CommandDisableReasonInvert>{0} will start overloading to cast this.</ISF_CommandDisableReasonInvert>
-	<ISF_CommandDisableReasonVancian>{0} has no more casts of this.</ISF_CommandDisableReasonVancian>
-	<ISF_CommandDisableReasonCooldown>{0} must wait longer to cast abilities.</ISF_CommandDisableReasonCooldown>
-	
+	<ISF_CommandDisableReasonInvert>{0} will start overloading to cast this.</ISF_CommandDisableReasonInvert>	
 	<ISF_CommandDisableNoSchema>{0} does not possess the magic system {1}.</ISF_CommandDisableNoSchema>
 	
 </LanguageData>

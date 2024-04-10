@@ -2,22 +2,9 @@
 <LanguageData>
 	
 	<!-- SorcerySchemaDef Info window - Energy Trackers -->
-	<ISF_EnergyTrackerUnitLabel>energy</ISF_EnergyTrackerUnitLabel>
 	<ISF_EnergyTrackerUnit>Unit</ISF_EnergyTrackerUnit>
-	<ISF_EnergyTrackerMaxUnit>Unit maximum</ISF_EnergyTrackerMaxUnit>
-	
-	<ISF_EnergyTrackerUnderBarFactor>Underbar recovery factor</ISF_EnergyTrackerUnderBarFactor>
-	<ISF_EnergyTrackerOverBarFactor>Overbar recovery factor</ISF_EnergyTrackerOverBarFactor>
-	<ISF_EnergyTrackerTurnInfo>Turn time (secs)</ISF_EnergyTrackerTurnInfo>
-	<ISF_EnergyTrackerRefreshInfo>Refresh time (secs)</ISF_EnergyTrackerRefreshInfo>
-	<ISF_EnergyTrackerAmmo>Source(s)</ISF_EnergyTrackerAmmo>
-	
-	<ISF_EnergyTrackerUnderBarFactorDesc>A multiplier on recovery rate when the current energy level is below 0.</ISF_EnergyTrackerUnderBarFactorDesc>
-	<ISF_EnergyTrackerOverBarFactorDesc>A multiplier on recovery rate when the current energy level is above the maximum energy.</ISF_EnergyTrackerOverBarFactorDesc>
-	<ISF_EnergyStatDesc>The resource that pawns require to cast sorceries, upon which it is depleted (or in rare cases, gained).</ISF_EnergyStatDesc>
-	<ISF_EnergyTrackerTurnInfoDesc>The amount of time a "turn" (the period of time between automatic game pauses when the pawn is drafted) takes in seconds.</ISF_EnergyTrackerTurnInfoDesc>
-	<ISF_EnergyTrackerRefreshInfoDesc>The amount of time it takes a sorcery schema to refresh various values, often discrete casts, in seconds.</ISF_EnergyTrackerRefreshInfoDesc>
-	<ISF_EnergyTrackerAmmoDesc>The source(s) of this schema's energy unit. Depending on schema, various sources can contribute differing amounts of energy units.</ISF_EnergyTrackerAmmoDesc>
+	<ISF_EnergyTrackerInverse>Energy inversion</ISF_EnergyTrackerInverse>
+	<ISF_EnergyTrackerInverseDesc>Specifies the flow direction of the energy.\n\nNon-inverted systems typically consume the energy unit (e.g. 100 -> 50 mana) and regain it over time; inverted energy trackers add the unit (e.g. 0 -> 25 mana) and reduce it over time.</ISF_EnergyTrackerInverseDesc>
 	
 	<!-- SorcerySchemaDef Info window - Learning Trackers -->
 	<ISF_LearningNodeCost>{0} required: {1}</ISF_LearningNodeCost>
@@ -40,12 +27,12 @@
 	<ISF_LearningProgressLevel>Level {0}:</ISF_LearningProgressLevel>
 	<ISF_LearningProgressLevelCustom>Level {0} ({1}):</ISF_LearningProgressLevelCustom>
 	<ISF_LearningProgressLevelBoundary>- - -</ISF_LearningProgressLevelBoundary>
+	<ISF_LearningProgressLevelDescription>Description</ISF_LearningProgressLevelDescription>
+	<ISF_LearningProgressLevelStatus>Status</ISF_LearningProgressLevelStatus>
+	<ISF_LearningProgressLevelProspects>Prospects</ISF_LearningProgressLevelProspects>
 	
-	<!-- ITab_Schema Button Tooltips -->
-	<ISF_ButtonLearningTrackers>View various magic system aspects such as system summary, progression, abilities, etc.</ISF_ButtonLearningTrackers>
-	<ISF_ButtonLimit>Toggle whether this pawn can use energy beyond their limits.</ISF_ButtonLimit>
-	<ISF_ButtonTurnTimer>Toggle whether or not the game pauses at the end of this magic system's turn when this pawn is selected and drafted.</ISF_ButtonTurnTimer>
-	<ISF_ButtonFav>Toggle whether or not this is a favorited system. Favorited systems can show up in the favorites view of the tab.</ISF_ButtonFav>
-	<ISF_ButtonFavView>Toggle whether or not to view favorited systems.</ISF_ButtonFavView>
+	<!-- Dialog_ProgressLevelOptions - options for ProgressTrackers -->
+	<ISF_ProgressLevelOptionsLabel>Options - {0}</ISF_ProgressLevelOptionsLabel>
+	
 	
 </LanguageData>

@@ -5,12 +5,11 @@ namespace ItsSorceryFramework
     [DefOf]
     public static class StatCategoryDefOf_ItsSorcery
     {
-        public static StatCategoryDef SorcerySchema_ISF;
-        public static StatCategoryDef EnergyTracker_ISF;
-        public static StatCategoryDef LearningTracker_ISF;
-        public static StatCategoryDef ProgressTracker_ISF;
-
-        public static StatCategoryDef Sorcery_ISF;
+        public static StatCategoryDef ISF_SorcerySchema;
+        public static StatCategoryDef ISF_EnergyTracker;
+        public static StatCategoryDef ISF_LearningTracker;
+        public static StatCategoryDef ISF_ProgressTracker;
+        public static StatCategoryDef ISF_Sorcery;
 
         static StatCategoryDefOf_ItsSorcery()
         {

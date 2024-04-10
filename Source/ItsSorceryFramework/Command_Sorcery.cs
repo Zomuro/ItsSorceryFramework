@@ -94,11 +94,8 @@ namespace ItsSorceryFramework
 
 			foreach (var et in sorceryDef.sorcerySchema.energyTrackerDefs)
 			{
-				tempVal = sorceryDef.statBases.GetStatValueFromList(et.energyUnitStatDef, 0);
-				if (tempVal != 0)
-					if(et.energyTrackerClass == typeof(EnergyTracker_Vancian)) // for vancian systems do the following
-						text += TempRightLabelPartVancian(et, sorceryDef.statBases.GetStatValueFromList(et.energyMaxCastStatDef, 0)) + "\n"; // temp fix for the moment
-					else text += TempRightLabelPart(et, tempVal)+ "\n";
+				tempVal = sorceryDef.statBases.GetStatValueFromList(et.energyUnitStatDef, 0) * Schema.pawn.GetStatValue(et.energyCostFactorStatDef);
+				if (tempVal != 0) text += TempRightLabelPart(et, tempVal) + "\n";
 			}
 
 			return text.TrimEndNewlines();
@@ -106,15 +103,15 @@ namespace ItsSorceryFramework
 
 		public string TempRightLabelPart(EnergyTrackerDef energyTrackerDef, float value)
         {
-			return (energyTrackerDef.energyLabelKey.Translate().CapitalizeFirst()[0]) + ": " +
+			return (energyTrackerDef.LabelCap[0]) + ": " +
 					Math.Round(value, 2).ToString();
 		}
 
-		public string TempRightLabelPartVancian(EnergyTrackerDef energyTrackerDef, float value)
+		/*public string TempRightLabelPartVancian(EnergyTrackerDef energyTrackerDef, float value)
 		{
 			return (energyTrackerDef.energyLabelKey.Translate().CapitalizeFirst()[0]) + ": " +
 					Math.Round(value, 2).ToString() + "/" + Math.Round(value, 2).ToString();
-		}
+		}*/
 
 		public SorcerySchema Schema
         {

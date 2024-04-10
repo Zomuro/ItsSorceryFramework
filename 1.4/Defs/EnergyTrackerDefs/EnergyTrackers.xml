@@ -1,68 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Defs>
-	<!-- Demostration + Testing EnergyTracker def -->
-	
-	<ItsSorceryFramework.EnergyTrackerDef Abstract = "True" Name = "EnergyTrackerBase">
+
+	<ItsSorceryFramework.EnergyTrackerDef Abstract = "True" Name = "ISF_EnergyTrackerBase">
 		<energyTrackerClass>ItsSorceryFramework.EnergyTracker</energyTrackerClass>		
-	</ItsSorceryFramework.EnergyTrackerDef>
-	
-	<ItsSorceryFramework.EnergyTrackerDef Abstract = "True" ParentName = "EnergyTrackerBase" Name = "EnergyTrackerBaseRPG">
-		<energyTrackerClass>ItsSorceryFramework.EnergyTracker_RPG</energyTrackerClass>
 		
-		<energyMaxStatDef>MaxEnergy_ItsSorcery</energyMaxStatDef>
-		<energyMinStatDef>MinEnergy_ItsSorcery</energyMinStatDef>
-		<energyRecoveryStatDef>EnergyRecovery_ItsSorcery</energyRecoveryStatDef>
-		
-	</ItsSorceryFramework.EnergyTrackerDef>
-	
-	<ItsSorceryFramework.EnergyTrackerDef Abstract = "True" ParentName = "EnergyTrackerBase" Name = "EnergyTrackerBaseRPGTurnBased">
-		<energyTrackerClass>ItsSorceryFramework.EnergyTracker_RPGTurnBased</energyTrackerClass>
-		
-		<energyMaxStatDef>MaxEnergy_ItsSorcery</energyMaxStatDef>
-		<energyMinStatDef>MinEnergy_ItsSorcery</energyMinStatDef>
-		<energyRecoveryStatDef>EnergyRecovery_ItsSorcery</energyRecoveryStatDef>
-		
-		<turnTicks>180</turnTicks>
-	</ItsSorceryFramework.EnergyTrackerDef>
-	
-	<ItsSorceryFramework.EnergyTrackerDef Abstract = "True" ParentName = "EnergyTrackerBase" Name = "EnergyTrackerBaseInverted">
-		<energyTrackerClass>ItsSorceryFramework.EnergyTracker_Inverted</energyTrackerClass>
-		
-		<energyMaxStatDef>MaxEnergy_ItsSorcery</energyMaxStatDef>
-		<energyMinStatDef>MinEnergy_ItsSorcery</energyMinStatDef>
-		<energyRecoveryStatDef>EnergyRecovery_ItsSorcery</energyRecoveryStatDef>
-	</ItsSorceryFramework.EnergyTrackerDef>
-	
-	<ItsSorceryFramework.EnergyTrackerDef Abstract = "True" ParentName = "EnergyTrackerBase" Name = "EnergyTracker_InvertedTurnBased">
-		<energyTrackerClass>ItsSorceryFramework.EnergyTracker_InvertedTurnBased</energyTrackerClass>
-		
-		<energyMaxStatDef>MaxEnergy_ItsSorcery</energyMaxStatDef>
-		<energyMinStatDef>MinEnergy_ItsSorcery</energyMinStatDef>
-		<energyRecoveryStatDef>EnergyRecovery_ItsSorcery</energyRecoveryStatDef>
-		
-		<turnTicks>180</turnTicks>
-	</ItsSorceryFramework.EnergyTrackerDef>
-	
-	<ItsSorceryFramework.EnergyTrackerDef Abstract = "True" ParentName = "EnergyTrackerBase" Name = "EnergyTrackerBaseVancian">
-		<energyTrackerClass>ItsSorceryFramework.EnergyTracker_Vancian</energyTrackerClass>
-		
-		<refreshTicks>1500</refreshTicks>
-	</ItsSorceryFramework.EnergyTrackerDef>
-	
-	<ItsSorceryFramework.EnergyTrackerDef Abstract = "True" ParentName = "EnergyTrackerBase" Name = "EnergyTrackerBaseVancianLifetime">
-		<energyTrackerClass>ItsSorceryFramework.EnergyTracker_VancianLifetime</energyTrackerClass>
-		
-		<energyMaxStatDef>MaxEnergy_ItsSorcery</energyMaxStatDef>
-		<energyRecoveryStatDef>EnergyRecovery_ItsSorcery</energyRecoveryStatDef>
-		<refreshTicks>1500</refreshTicks>
-	</ItsSorceryFramework.EnergyTrackerDef>
-	
-	<ItsSorceryFramework.EnergyTrackerDef Abstract = "True" ParentName = "EnergyTrackerBase" Name = "EnergyTrackerBaseConsumable">
-		<energyTrackerClass>ItsSorceryFramework.EnergyTracker_Consumable</energyTrackerClass>
-		
-		<energyMaxStatDef>MaxEnergy_ItsSorcery</energyMaxStatDef>
-		<energyRecoveryStatDef>EnergyRecovery_ItsSorcery</energyRecoveryStatDef>
-		<consumables/>
+		<energyMaxStatDef>ISF_MaxEnergy</energyMaxStatDef>
+		<energyMinStatDef>ISF_MinEnergy</energyMinStatDef>
+		<energyCostFactorStatDef>ISF_EnergyCostFactor</energyCostFactorStatDef>
 	</ItsSorceryFramework.EnergyTrackerDef>
 
 </Defs>

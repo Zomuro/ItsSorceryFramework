@@ -10,31 +10,56 @@ namespace ItsSorceryFramework
 {
     public class ProgressTracker : IExposable
     {
+        public Pawn pawn;
+
+        public ProgressTrackerDef def;
+
+        public SorcerySchema schema;
+
+        public Hediff_Progress hediff;
+
+        public Dictionary<StatDef, float> statOffsetsTotal = new Dictionary<StatDef, float>();
+
+        public Dictionary<StatDef, float> statFactorsTotal = new Dictionary<StatDef, float>();
+
+        public Dictionary<PawnCapacityDef, float> capModsTotal = new Dictionary<PawnCapacityDef, float>();
+
+        public float exp = 0f;
+
+        public int usedPoints = 0;
+
+        public int points = 0;
+
+        private int cachedCurLevel = 0;
+
+        private string cachedLevelLabel;
+
+        private List<ProgressLevelLabel> cachedLevelLabels;
+
+        private List<SorceryDef> cachedSorceryDefs = new List<SorceryDef>();
+
+        //private bool cacheDirtySorceries = true;
+
+        public System.Random rand = new System.Random();
+
         // initalizer- created via activator via SorcerySchema
         public ProgressTracker(Pawn pawn)
         {
             this.pawn = pawn;
         }
 
-        public ProgressTracker(Pawn pawn, ProgressTrackerDef def)
+        public ProgressTracker(Pawn pawn, ProgressTrackerDef def, SorcerySchema schema)
         {
             this.pawn = pawn;
             this.def = def;
-            this.sorcerySchemaDef = null;
-        }
-
-        public ProgressTracker(Pawn pawn, SorcerySchemaDef def)
-        {
-            this.pawn = pawn;
-            this.def = def.progressTrackerDef;
-            this.sorcerySchemaDef = def;
+            this.schema = schema;
         }
 
         public virtual void ExposeData()
         {
             Scribe_References.Look(ref pawn, "pawn");
             Scribe_Defs.Look(ref def, "def");
-            Scribe_Defs.Look(ref sorcerySchemaDef, "sorcerySchemaDef");
+            Scribe_References.Look(ref schema, "schema");
             Scribe_References.Look(ref hediff, "hediff");
             Scribe_Values.Look(ref exp, "exp", 0f);
             Scribe_Values.Look(ref usedPoints, "usedPoints", 0);
@@ -42,16 +67,6 @@ namespace ItsSorceryFramework
             Scribe_Collections.Look(ref statOffsetsTotal, "statOffsetsTotal", LookMode.Def, LookMode.Value);
             Scribe_Collections.Look(ref statFactorsTotal, "statFactorsTotal", LookMode.Def, LookMode.Value);
             Scribe_Collections.Look(ref capModsTotal, "capModsTotal", LookMode.Def, LookMode.Value);
-        }
-
-        public SorcerySchema Schema
-        {
-            get
-            {
-                if (cachedSchema == null) cachedSchema = SorcerySchemaUtility.FindSorcerySchema(pawn, sorcerySchemaDef);
-
-                return cachedSchema;
-            }
         }
 
         public virtual void Initialize()
@@ -73,25 +88,13 @@ namespace ItsSorceryFramework
             hediff.curStage = newStage;
         }
 
-        public virtual void ProgressTrackerTick()
-        {
+        public virtual void ProgressTrackerTick() { }
 
-        }
+        public virtual void AddExperience(float experience) { }
 
-        public virtual void AddExperience(float experience)
-        {
+        public virtual void ForceLevelUp() { }
 
-        }
-
-        public virtual void ForceLevelUp() 
-        {
-
-        }
-
-        public virtual void NotifyLevelUp(float sev)
-        {
-
-        }
+        public virtual void NotifyLevelUp(float sev) { }
 
         public virtual void ApplyOptions(ProgressLevelModifier modifier)
         {
@@ -283,10 +286,7 @@ namespace ItsSorceryFramework
             }
         }
 
-        public virtual HediffStage RefreshCurStage()
-        {
-            return new HediffStage();
-        }
+        public virtual HediffStage RefreshCurStage() => new HediffStage();
 
         public virtual void NotifyTotalLevelUp(float orgSev)
         {
@@ -294,38 +294,13 @@ namespace ItsSorceryFramework
                 "This pawn has leveled up.", LetterDefOf.NeutralEvent, null);
         }
 
-        public bool Maxed
-        {
-            get
-            {
-                return (CurrLevel) >= hediff.def.maxSeverity;
-            }
-        }
+        public bool Maxed => (CurrLevel) >= hediff.def.maxSeverity;
 
-        public int CurrLevel
-        {
-            get
-            {
-                return (int) hediff.Severity;
-            }
-        }
+        public int CurrLevel => (int)hediff.Severity;
 
-        public virtual float CurrProgress
-        {
-            get
-            {
-                return exp / CurrentLevelEXPReq;
-            }
-            
-        }
+        public virtual float CurrProgress => exp / CurrentLevelEXPReq;
 
-        public virtual float CurrentLevelEXPReq
-        {
-            get
-            {
-                return def.baseEXP;
-            }
-        }
+        public virtual float CurrentLevelEXPReq => def.baseEXP;
 
         // if the def has specific level labels, get the one for the current level
         public string CurLevelLabel
@@ -369,13 +344,10 @@ namespace ItsSorceryFramework
         public virtual void DrawLeftGUI(Rect rect)
         {
             Rect labelRect = new Rect(0f, 0, rect.width, 50f);
-            Widgets.LabelCacheHeight(ref labelRect, sorcerySchemaDef.LabelCap, true, false);
+            Widgets.LabelCacheHeight(ref labelRect, schema.def.LabelCap, true, false);
         }
 
-        public virtual void DrawRightGUI(Rect rect)
-        {
-
-        }
+        public virtual void DrawRightGUI(Rect rect) { }
 
         public virtual float DrawModifiers(Rect rect)
         {
@@ -398,6 +370,23 @@ namespace ItsSorceryFramework
                 Widgets.LabelCacheHeight(ref rect, tipString, true, false);
                 rect.yMin += rect.height;
             }
+
+            return rect.yMin - yMin;
+        }
+
+        public virtual float DrawEnergyComps(Rect rect)
+        {
+            float yMin = rect.yMin;
+            float x = rect.x;
+
+            Text.Font = GameFont.Medium;
+            Widgets.LabelCacheHeight(ref rect, "Energy", true, false);
+            rect.yMin += rect.height;
+            Text.Font = GameFont.Small;
+            rect.x += 22f;
+
+            Widgets.LabelCacheHeight(ref rect, "N/A", true, false);
+            rect.yMin += rect.height;
 
             return rect.yMin - yMin;
         }
@@ -456,8 +445,8 @@ namespace ItsSorceryFramework
             //Text.Font = GameFont.Small;
             rect.x += 22f;
 
-            if (Schema.progressTracker.def.Workers.EnumerableNullOrEmpty()) return rect.yMin - yMin;
-            foreach (ProgressEXPWorker worker in Schema.progressTracker.def.Workers)
+            if (schema.progressTracker.def.Workers.EnumerableNullOrEmpty()) return rect.yMin - yMin;
+            foreach (ProgressEXPWorker worker in schema.progressTracker.def.Workers)
             {
                 rect.yMin += worker.drawWorker(rect);
             }
@@ -632,7 +621,7 @@ namespace ItsSorceryFramework
         {
             get
             {
-                return pawn.abilities.AllAbilitiesForReading.Where(x => x is Sorcery s && s != null && s.Schema.def == sorcerySchemaDef).Select(x => x as Sorcery).ToList();
+                return pawn.abilities.AllAbilitiesForReading.Where(x => x is Sorcery s && s != null && s.Schema.def == schema.def).Select(x => x as Sorcery).ToList();
             }
         }
 
@@ -643,7 +632,7 @@ namespace ItsSorceryFramework
                 if (cachedSorceryDefs.NullOrEmpty())
                 {
                     cachedSorceryDefs = (from def in DefDatabase<SorceryDef>.AllDefs
-                                         where def.sorcerySchema == sorcerySchemaDef
+                                         where def.sorcerySchema == schema.def
                                          select def).ToList();
                 }
 
@@ -653,38 +642,6 @@ namespace ItsSorceryFramework
 
 
 
-        public Pawn pawn;
-
-        public ProgressTrackerDef def;
-
-        public SorcerySchemaDef sorcerySchemaDef;
-
-        private SorcerySchema cachedSchema;
-
-        public Hediff_Progress hediff;
-
-        public Dictionary<StatDef, float> statOffsetsTotal = new Dictionary<StatDef, float>();
-
-        public Dictionary<StatDef, float> statFactorsTotal = new Dictionary<StatDef, float>();
-
-        public Dictionary<PawnCapacityDef, float> capModsTotal = new Dictionary<PawnCapacityDef, float>();
-
-        public float exp = 0f;
-
-        public int usedPoints = 0;
-
-        public int points = 0;
-
-        private int cachedCurLevel = 0;
-
-        private string cachedLevelLabel;
-
-        private List<ProgressLevelLabel> cachedLevelLabels;
-
-        private List<SorceryDef> cachedSorceryDefs = new List<SorceryDef>();
-
-        //private bool cacheDirtySorceries = true;
-
-        public System.Random rand = new System.Random();
+        
     }
 }

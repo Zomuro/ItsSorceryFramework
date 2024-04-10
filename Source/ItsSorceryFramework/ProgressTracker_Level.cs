@@ -8,25 +8,37 @@ namespace ItsSorceryFramework
 {
     public class ProgressTracker_Level : ProgressTracker
     {
+        // UI fields
+         private Vector2 leftDescScrollPosition = Vector2.zero;
+
+        private Vector2 leftStatusScrollPosition = Vector2.zero;
+
+        private Vector2 modScrollPosition = Vector2.zero;
+
+        private Vector2 expScrollPosition = Vector2.zero;
+
+        private Vector2 energyScrollPosition = Vector2.zero;
+
+        private Vector2 sorceryScrollPosition = Vector2.zero;
+
+        private float leftDescScrollViewHeight;
+
+        private float leftStatusScrollViewHeight;
+
+        private float modScrollViewHeight;
+
+        private float expScrollViewHeight;
+
+        private float energyScrollViewHeight;
+
+        private float sorceryScrollViewHeight;
+
         // initalizer- created via activator via SorcerySchema
-        public ProgressTracker_Level(Pawn pawn) : base(pawn)
-        {
+        public ProgressTracker_Level(Pawn pawn) : base(pawn) { }
 
-        }
-
-        public ProgressTracker_Level(Pawn pawn, ProgressTrackerDef def) : base(pawn, def)
+        public ProgressTracker_Level(Pawn pawn, ProgressTrackerDef def, SorcerySchema schema) : base(pawn, def, schema)
         {
             Initialize();
-        }
-
-        public ProgressTracker_Level(Pawn pawn, SorcerySchemaDef def) : base(pawn, def)
-        {
-            Initialize();
-        }
-
-        public override void ExposeData()
-        {
-            base.ExposeData();
         }
 
         public override void Initialize()
@@ -38,6 +50,8 @@ namespace ItsSorceryFramework
             hediff.progressTracker = this;
             SetupHediffStage(hediff as Hediff_ProgressLevel);
         }
+
+        public override void ExposeData() => base.ExposeData();
 
         public override void ProgressTrackerTick()
         {
@@ -124,65 +138,41 @@ namespace ItsSorceryFramework
                 def.progressLevelUpDescKey.Translate(orgSev.ToString(), CurrLevel.ToString()), LetterDefOf.NeutralEvent, null);
         }
 
-        public override float CurrProgress
-        {
-            get
-            {
-                return exp / CurrentLevelEXPReq;
-            }
-        }
+        public override float CurrProgress => exp / CurrentLevelEXPReq;
 
-        public override float CurrentLevelEXPReq
-        {
-            get
-            {
-                return def.baseEXP * Mathf.Pow(def.scaling, CurrLevel - 1f);
-            }
-        }
+        public override float CurrentLevelEXPReq => def.baseEXP * Mathf.Pow(def.scaling, CurrLevel - 1f);
 
         public override void DrawLeftGUI(Rect rect)
         {
             Widgets.BeginGroup(rect);
 
             Rect outRect = new Rect(0f, 0f, rect.width, rect.height);
-            Rect viewRect = new Rect(0f, 0f, outRect.width - 20f, leftScrollViewHeight);
-            Widgets.BeginScrollView(outRect, ref this.leftScrollPosition, viewRect, true);
+            Rect viewRect = new Rect(0f, 0f, outRect.width - 20f, rect.height);
 
             float coordY = 0f;
 
             Text.Font = GameFont.Medium;
             Text.Anchor = TextAnchor.MiddleCenter;
 
-            // title of sorcery schema
+            // SCHEMA //
             Rect labelRect = new Rect(0f, coordY, viewRect.width, 50f);
-            Widgets.LabelCacheHeight(ref labelRect, Schema.def.LabelCap, true, false);
+            Widgets.LabelCacheHeight(ref labelRect, schema.def.LabelCap, true, false);
             coordY += labelRect.height;
 
-            // level label
+            // LEVEL //
             Rect lvlRect = new Rect(0f, coordY, viewRect.width, 50f);
             Text.Font = GameFont.Small;
-            if (CurLevelLabel.NullOrEmpty())
-            {
-                Widgets.LabelCacheHeight(ref lvlRect,
-                    "ISF_LearningLevelLabel".Translate(CurrLevel), true, false);
-            }
+            if (CurLevelLabel.NullOrEmpty()) Widgets.LabelCacheHeight(ref lvlRect, "ISF_LearningLevelLabel".Translate(CurrLevel), true, false);
             else
             {
-                if (Maxed)
-                {
-                    Widgets.LabelCacheHeight(ref lvlRect,
+                if (Maxed) Widgets.LabelCacheHeight(ref lvlRect,
                         "ISF_LearningLevelLabelCustom".Translate(CurLevelLabel, "ISF_LearningLevelLabelMax".Translate()), true, false);
-                }
-                else
-                {
-                    Widgets.LabelCacheHeight(ref lvlRect,
+                else Widgets.LabelCacheHeight(ref lvlRect,
                         "ISF_LearningLevelLabelCustom".Translate(CurLevelLabel, CurrLevel), true, false);
-                }
-
             }
             coordY += lvlRect.height;
 
-            // xp bar
+            // XP BAR //
             Rect xpBar = new Rect(0f, coordY + 10, rect.width, 35f);
             if (Maxed) // if at max level, full xp bar + Maxed
             {
@@ -199,17 +189,44 @@ namespace ItsSorceryFramework
 
             coordY += xpBar.height * 1.5f;
 
-            // description
+            // DESCRIPTION //
             GenUI.ResetLabelAlign();
-            Text.Font = GameFont.Small;
-            Rect descRect = new Rect(0f, coordY, viewRect.width, 0f);
-            Widgets.LabelCacheHeight(ref descRect, sorcerySchemaDef.description, true, false);
-            coordY += descRect.height;
+            
+            Text.Font = GameFont.Medium; // Description LABEL
+            Rect descTitleRect = new Rect(0f, coordY, viewRect.width, 0f);
+            Widgets.LabelCacheHeight(ref descTitleRect, "ISF_LearningProgressLevelDescription".Translate(), true, false);
+            coordY += descTitleRect.height;
 
-            this.leftScrollViewHeight = coordY;
+            Text.Font = GameFont.Small; // Description DESCRIPTION
+            Rect descOuterRect = new Rect(0f, coordY, outRect.width, outRect.height / 2f - coordY);
+            Rect descViewRect = new Rect(0f, coordY, viewRect.width, leftDescScrollViewHeight); //leftDescScrollViewHeight
+            Widgets.BeginScrollView(descOuterRect, ref leftDescScrollPosition, descViewRect, true);
+            Widgets.LabelCacheHeight(ref descViewRect, schema.def.description, true, false);
+            leftDescScrollViewHeight = descViewRect.height;
             Widgets.EndScrollView();
-            Widgets.EndGroup();
+            coordY += descOuterRect.height;
 
+            coordY += xpBar.height * 0.5f;
+
+            // STATUS //
+            Text.Font = GameFont.Medium; // STATUS LABEL
+            Rect modTitleRect = new Rect(0f, coordY, viewRect.width, 0f);
+            Widgets.LabelCacheHeight(ref modTitleRect, "ISF_LearningProgressLevelStatus".Translate(), true, false);
+            coordY += modTitleRect.height;
+
+            String tipString = TipStringExtra(hediff.CurStage);
+            if (tipString.NullOrEmpty()) tipString = "N/A";
+
+            Text.Font = GameFont.Small; // Status info
+            Rect statusOuterRect = new Rect(0f, coordY, outRect.width, outRect.height - coordY);
+            Rect statusViewRect = new Rect(0f, coordY, viewRect.width, leftStatusScrollViewHeight); //leftDescScrollViewHeight
+            Widgets.BeginScrollView(statusOuterRect, ref leftStatusScrollPosition, statusViewRect, true);
+            Widgets.LabelCacheHeight(ref statusViewRect, tipString, true, false);
+            leftStatusScrollViewHeight = statusViewRect.height;
+            Widgets.EndScrollView();
+
+            //coordY += statusOuterRect.height;
+            Widgets.EndGroup();
         }
 
         public override void DrawRightGUI(Rect rect)
@@ -217,7 +234,7 @@ namespace ItsSorceryFramework
             Widgets.BeginGroup(rect);
             Rect leftHalf = new Rect(0, 0, rect.width / 2f, rect.height);
 
-            // current and upcoming modifiers for hediff
+            // PROSPECTS - future modifiers w/ level up //
             Rect modRect = new Rect(0, 0, rect.width / 4f, rect.height * 2f / 3f).ContractedBy(20f);
             modRect.height += 20f;
             Rect modRectView = new Rect(modRect.x, modRect.y, modRect.width - 20f, modScrollViewHeight);
@@ -230,7 +247,7 @@ namespace ItsSorceryFramework
 
             Widgets.EndScrollView();
 
-            // all experience gain methods
+            // EXPERIENCE - show expgain //
             Rect expRect = new Rect(rect.width / 4f, 0, rect.width / 4f, rect.height * 2f / 3f).ContractedBy(20f);
             expRect.height += 20f;
             Rect expRectView = new Rect(expRect.x, expRect.y, expRect.width - 20f, expScrollViewHeight);
@@ -243,7 +260,20 @@ namespace ItsSorceryFramework
 
             Widgets.EndScrollView();
 
-            // all sorceries linked to this schema (and if you have them)
+            // ENERGY - show energytrackers //
+            Rect energyRect = new Rect(rect.width / 2f, 0, rect.width / 4f, rect.height).ContractedBy(20f);
+            //energyRect.height += 20f;
+            Rect energyRectView = new Rect(energyRect.x, energyRect.y, energyRect.width - 20f, energyScrollViewHeight);
+            Widgets.BeginScrollView(energyRect, ref this.energyScrollPosition, energyRectView, true);
+
+            coordY = 0f;
+            Rect allenergyRect = new Rect(energyRectView.x, energyRectView.y + coordY, energyRectView.width, 500f);
+            coordY += DrawEnergyComps(allenergyRect);
+            energyScrollViewHeight = coordY;
+
+            Widgets.EndScrollView();
+
+            // SORCERIES - see sorceries and change out what you want to use //
             Rect sorceryRect = new Rect(0, rect.height * 2f / 3f, rect.width / 2f, rect.height * 3f).ContractedBy(20f);
             sorceryRect.height += 20f;
             Rect sorceryRectView = new Rect(sorceryRect.x, sorceryRect.y, sorceryRect.width - 20f, sorceryScrollViewHeight);
@@ -256,14 +286,9 @@ namespace ItsSorceryFramework
 
             Widgets.EndScrollView();
 
-            // background image
-            Rect rightHalf = new Rect(rect.width / 2f, 0, rect.width / 2f, rect.height);
-            Color col = GUI.color;
-            GUI.color = Color.grey;
-            Widgets.DrawLineVertical(rightHalf.x, rightHalf.y, rightHalf.height);
-            GUI.color = col;
-
-            Widgets.DrawTextureFitted(rightHalf, def.BGIcon, 0.95f);
+            // IMAGE - decorative banner //
+            Rect bannerRect = new Rect(rect.width * 3f/4f, 0, rect.width / 4f, rect.height);          
+            Widgets.DrawTextureFitted(bannerRect.ContractedBy(10f), def.BGIcon, 1f);
             Widgets.EndGroup();
         }
 
@@ -273,39 +298,23 @@ namespace ItsSorceryFramework
             float x = rect.x;
 
             Text.Font = GameFont.Medium;
-            Widgets.LabelCacheHeight(ref rect, "Modifiers", true, false);
+            Widgets.LabelCacheHeight(ref rect, "ISF_LearningProgressLevelProspects".Translate(), true, false);
             rect.yMin += rect.height;
-            //Text.Font = GameFont.Small;
             rect.x += 22f;
 
-            String tipString = TipStringExtra(hediff.CurStage);
+            String tipString;
             String tipString2;
-            if (!tipString.NullOrEmpty())
-            {
-                Widgets.LabelCacheHeight(ref rect, "Current:", true, false);
-                rect.yMin += rect.height;
-                Text.Font = GameFont.Small;
-
-                Widgets.LabelCacheHeight(ref rect, tipString, true, false);
-                rect.yMin += rect.height;
-            }
-
-            ProgressTrackerDef pDef = def;
             float projLevel = CurrLevel + 1;
 
             if (projLevel > hediff.def.maxSeverity) return rect.yMin - yMin;
-            Text.Font = GameFont.Medium;
-            Widgets.LabelCacheHeight(ref rect, "Upcoming:", true, false);
-            rect.yMin += rect.height;
             Text.Font = GameFont.Small;
-
             for (int i = (int)projLevel; i < (int)projLevel + 5; i++)
             {
                 if (i > hediff.def.maxSeverity) break;
 
-                ProgressLevelModifier factor = pDef.getLevelFactor(i);
+                ProgressLevelModifier factor = def.getLevelFactor(i);
                 tipString = TipStringExtra(factor);
-                ProgressLevelModifier special = pDef.getLevelSpecific(i);
+                ProgressLevelModifier special = def.getLevelSpecific(i);
                 tipString2 = TipStringExtra(special);
 
                 if (tipString.NullOrEmpty() && !HyperlinkCheck(factor) &&
@@ -356,22 +365,40 @@ namespace ItsSorceryFramework
             return rect.yMin - yMin;
         }
 
-        // UI fields
-        private Vector2 leftScrollPosition = Vector2.zero;
+        public override float DrawEnergyComps(Rect rect)
+        {
+            float yMin = rect.yMin;
+            float x = rect.x;
 
-        private Vector2 modScrollPosition = Vector2.zero;
+            /*Text.Font = GameFont.Medium;
+            Widgets.LabelCacheHeight(ref rect, "Energy", true, false);
+            rect.yMin += rect.height;*/
+            //Text.Font = GameFont.Small;
+            //rect.xMin += 22f;
 
-        private Vector2 expScrollPosition = Vector2.zero;
+            foreach(var et in schema.energyTrackers) // for each energy tracker
+            {
+                // write energy label
+                rect.xMin = x;
+                Text.Font = GameFont.Medium;
+                Widgets.LabelCacheHeight(ref rect, et.EnergyLabel.CapitalizeFirst(), true, false);
+                rect.yMin += rect.height;
+                rect.xMin += 22f;
 
-        private Vector2 sorceryScrollPosition = Vector2.zero;
+                // write out the detailed info within energycomps
+                Text.Font = GameFont.Small;
+                if (et.comps.NullOrEmpty()) // no comps?
+                {
+                    Widgets.LabelCacheHeight(ref rect, "N/A", true, false); // leave N/A
+                    rect.yMin += rect.height;
+                    continue; //skip this energy tracker
+                }
 
-        private float leftScrollViewHeight;
+                // else put all the comp information onto the UI.
+                foreach(var comp in et.comps) rect.yMin += comp.CompDrawGUI(rect);
+            }
 
-        private float modScrollViewHeight;
-
-        private float expScrollViewHeight;
-
-        private float sorceryScrollViewHeight;
-
+            return rect.yMin - yMin;
+        }
     }
 }

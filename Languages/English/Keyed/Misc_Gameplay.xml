@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+
+	<!-- Job reports -->
+	<ISF_ReportOnConsumeEnergyPrep>preparing to charge energy.</ISF_ReportOnConsumeEnergyPrep>
+	<ISF_ReportOnConsumeProgressPrep>preparing to gain experience.</ISF_ReportOnConsumeProgressPrep>
+	<ISF_ReportOnConsumeEnergy>charging {UNIT} ({SCHEMA}) with {ITEM}.</ISF_ReportOnConsumeEnergy>
+	<ISF_ReportOnConsumeProgress>gaining experience with {ITEM} for {SCHEMA}.</ISF_ReportOnConsumeProgress>
+	
+</LanguageData>

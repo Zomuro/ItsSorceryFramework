@@ -11,20 +11,27 @@ namespace ItsSorceryFramework
 {
     public class LearningTracker_Tree : LearningTracker
     {
-        public LearningTracker_Tree(Pawn pawn) : base(pawn)
-        {
+        public LearningTreeNodeDef selectedNode;
 
-        }
+        private List<LearningTreeNodeDef> cachedAllNodes;
 
-        public LearningTracker_Tree(Pawn pawn, LearningTrackerDef def) : base(pawn, def)
-        {
+        private Vector2 cachedViewSize;
 
-        }
+        private ScrollPositioner scrollPositioner = new ScrollPositioner();
 
-        public LearningTracker_Tree(Pawn pawn, LearningTrackerDef def, SorcerySchemaDef schemaDef) : base(pawn, def, schemaDef)
-        {
+        private float leftStartAreaHeight = 68f;
 
-        }
+        private float leftViewDebugHeight;
+
+        private Vector2 leftScrollPosition = Vector2.zero;
+
+        private float leftScrollViewHeight;
+
+        private Vector2 rightScrollPosition = Vector2.zero;
+
+        public LearningTracker_Tree(Pawn pawn) : base(pawn) { }
+
+        public LearningTracker_Tree(Pawn pawn, LearningTrackerDef def, SorcerySchema schema) : base(pawn, def, schema) { }
 
         public List<LearningTreeNodeDef> AllRelativeNodes
         {
@@ -41,27 +48,11 @@ namespace ItsSorceryFramework
             }
         }
 
-        public void RefreshRelativeNodes()
-        {
-            cachedAllNodes = null;
-        }
+        public void RefreshRelativeNodes() => cachedAllNodes = null;
 
-        public Dictionary<LearningTreeNodeDef, List<LearningTreeNodeDef>> ExclusiveNodes 
-        {
-            get
-            {
-                return LearningRecord.ExclusiveNodes;
-            }           
-        }
+        public LearningNodeRecord LearningRecord => schema.learningNodeRecord;
 
-        public void RefreshExclusiveNodes()
-        {
-            /// <summary>
-            /// Empties cached exclusive nodes, allowing the system to recalculate them.
-            /// </summary>
-
-            cacheExclusive = null;
-        }
+        public Dictionary<LearningTreeNodeDef, List<LearningTreeNodeDef>> ExclusiveNodes => LearningRecord.ExclusiveNodes;
 
         public Vector2 ViewSize
         {
@@ -73,40 +64,17 @@ namespace ItsSorceryFramework
             }
         }
 
-        public SorcerySchema Schema
-        {
-            get
-            {
-                if (cachedSchema == null) cachedSchema = SorcerySchemaUtility.FindSorcerySchema(pawn, schemaDef);
-
-                return cachedSchema;
-            }
-        }
-
-        public LearningNodeRecord LearningRecord
-        {
-            get
-            {
-                return Schema.learningNodeRecord;
-            }
-        }
-
         public float PointUsePercent
         {
             get
             {
-                ProgressTracker progress = Schema.progressTracker;
+                ProgressTracker progress = schema.progressTracker;
                 if (progress.points == 0) return 0;
                 return (float) (progress.points - progress.usedPoints) / progress.points;
             }
         }
 
-        public override void ExposeData()
-        {
-            base.ExposeData();
-            //Scribe_Collections.Look(ref completion, "completion", LookMode.Def, LookMode.Value);
-
-        }
+        public override void ExposeData() => base.ExposeData();
 
         public override void DrawLeftGUI(Rect rect)
         {
@@ -154,7 +122,7 @@ namespace ItsSorceryFramework
                 leftScrollViewHeight = coordY;
                 Widgets.EndScrollView();
 
-                ProgressTracker progress = Schema.progressTracker;
+                ProgressTracker progress = schema.progressTracker;
                 Rect confirmButton = new Rect(0f, outRect.yMax + 10f + this.leftViewDebugHeight, rect.width, this.leftStartAreaHeight);
                 string reason = "";
                 if (!LearningRecord.completion[selectedNode] && LearningRecord.PrereqFufilled(selectedNode) && LearningRecord.PrereqResearchFufilled(selectedNode) &&
@@ -168,7 +136,7 @@ namespace ItsSorceryFramework
                         LearningRecord.CompletionAbilities(selectedNode);
                         LearningRecord.CompletionHediffs(selectedNode);
                         LearningRecord.CompletionModifiers(selectedNode);
-                        Schema.progressTracker.usedPoints += selectedNode.pointReq;
+                        schema.progressTracker.usedPoints += selectedNode.pointReq;
                     }
                 }
                 else
@@ -181,7 +149,7 @@ namespace ItsSorceryFramework
                         reason = "Locked:";
 
                         if (selectedNode.pointReq + progress.usedPoints > progress.points) reason += "\nNot enough "+ 
-                                schemaDef.progressTrackerDef.skillPointLabelKey.Translate() +".";
+                                schema.progressTracker.def.skillPointLabelKey.Translate() +".";
 
                         if (!LearningRecord.PrereqFufilled(selectedNode)) reason += "\nPrior nodes not completed.";
 
@@ -203,7 +171,7 @@ namespace ItsSorceryFramework
                 Rect pointBar = new Rect(0f, confirmButton.yMax + 10f, rect.width, 35f);
                 Widgets.FillableBar(pointBar, PointUsePercent);
                 Text.Anchor = TextAnchor.MiddleCenter;
-                Widgets.Label(pointBar, (progress.points-progress.usedPoints).ToString("F0") + " / " + Schema.progressTracker.points.ToString("F0"));
+                Widgets.Label(pointBar, (progress.points-progress.usedPoints).ToString("F0") + " / " + schema.progressTracker.points.ToString("F0"));
                 
                 Text.Anchor = TextAnchor.UpperLeft;
                 this.leftViewDebugHeight = 0f;
@@ -243,7 +211,7 @@ namespace ItsSorceryFramework
         {
             float yMin = rect.yMin;
 
-            Widgets.LabelCacheHeight(ref rect, "ISF_LearningNodeCost".Translate(schemaDef.progressTrackerDef.skillPointLabelKey.Translate().CapitalizeFirst(), node.pointReq));
+            Widgets.LabelCacheHeight(ref rect, "ISF_LearningNodeCost".Translate(base.schema.progressTracker.def.skillPointLabelKey.Translate().CapitalizeFirst(), node.pointReq));
             rect.yMin += rect.height;
             return rect.yMin - yMin;
         }
@@ -272,9 +240,9 @@ namespace ItsSorceryFramework
                         if(node.learningTrackerDef != prereq.learningTrackerDef)
                         {
                             if(Find.WindowStack.currentlyDrawnWindow as Dialog_LearningTabs is Dialog_LearningTabs learningTabs && 
-                                learningTabs != null && schemaDef.learningTrackerDefs.Contains(prereq.learningTrackerDef))
+                                learningTabs != null && base.schema.def.learningTrackerDefs.Contains(prereq.learningTrackerDef))
                             {
-                                learningTabs.curTracker = Schema.learningTrackers.FirstOrDefault(x => x.def == prereq.learningTrackerDef);
+                                learningTabs.curTracker = schema.learningTrackers.FirstOrDefault(x => x.def == prereq.learningTrackerDef);
                                 if (learningTabs.curTracker as LearningTracker_Tree is LearningTracker_Tree treeTracker && treeTracker != null )
                                 {
                                     treeTracker.selectedNode = prereq;
@@ -731,28 +699,6 @@ namespace ItsSorceryFramework
             }   
             return new Tuple<Color, float>(TexUI.DefaultLineResearchColor, 2f);
         }
-        public LearningTreeNodeDef selectedNode;
         
-        private List<LearningTreeNodeDef> cachedAllNodes;
-
-        private Dictionary<LearningTreeNodeDef, List<LearningTreeNodeDef>> cacheExclusive; 
-
-        private SorcerySchema cachedSchema;
-
-        private Vector2 cachedViewSize;
-
-        // public Dictionary<LearningTreeNodeDef, bool> completion = new Dictionary<LearningTreeNodeDef, bool>();
-
-        private ScrollPositioner scrollPositioner = new ScrollPositioner();
-
-        private float leftStartAreaHeight = 68f;
-
-        private float leftViewDebugHeight;
-
-        private Vector2 leftScrollPosition = Vector2.zero;
-
-        private float leftScrollViewHeight;
-
-        private Vector2 rightScrollPosition = Vector2.zero;
     }
 }

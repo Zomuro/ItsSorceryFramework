@@ -6,13 +6,36 @@ using Verse.Sound;
 
 namespace ItsSorceryFramework
 {
-    public class SorcerySchema : IExposable
+    public class SorcerySchema : IExposable, ILoadReferenceable
     {
+        public Pawn pawn;
+
+        public SorcerySchemaDef def;
+
+        public List<EnergyTracker> energyTrackers = new List<EnergyTracker>();
+
+        public List<LearningTracker> learningTrackers = new List<LearningTracker>();
+
+        public LearningNodeRecord learningNodeRecord;
+
+        public ProgressTracker progressTracker;
+
+        public bool favorited = false;
+
+        public bool hasLimits = false;
+
+        public bool hasTurns = false;
+
+        public bool limitLocked = true;
+
+        //public bool turnTimerOn = true;
+
+        public int loadID = -1;
+
         public SorcerySchema(Pawn pawn)
         {
             this.pawn = pawn;
             DetermineHasLimits();
-            DetermineHasTurns();
         }
 
         public SorcerySchema(Pawn pawn, SorcerySchemaDef def)
@@ -22,8 +45,9 @@ namespace ItsSorceryFramework
             InitializeTrackers(); // setup energy, learning, and progress trackers
             InitializeNodeCompletion(); // setup record of learning nodes
             DetermineHasLimits();
-            DetermineHasTurns();
         }
+
+        public string GetUniqueLoadID() => pawn.GetUniqueLoadID() + "_SorcerySchema_" + def.defName;
 
         // not the thing that makes me happy, but gotta do this
         public void DetermineHasLimits()
@@ -38,40 +62,29 @@ namespace ItsSorceryFramework
             }
         }
 
-        // same boat
-        public void DetermineHasTurns()
-        {
-            foreach (var et in energyTrackers)
-            {
-                if (et.HasTurn)
-                {
-                    hasTurns = true;
-                    return;
-                }
-            }
-        }
-
         public virtual void InitializeTrackers()
         {
             foreach (EnergyTrackerDef etDef in def.energyTrackerDefs)
             {
-                energyTrackers.Add(Activator.CreateInstance(etDef.energyTrackerClass,
-                new object[] { pawn, etDef, def }) as EnergyTracker);
+                EnergyTracker energyTracker = Activator.CreateInstance(etDef.energyTrackerClass,
+                    new object[] { pawn, etDef, this }) as EnergyTracker;
+                energyTracker.InitializeComps();
+                energyTrackers.Add(energyTracker);
             }
 
             foreach (LearningTrackerDef ltDef in def.learningTrackerDefs)
             {
                 learningTrackers.Add(Activator.CreateInstance(ltDef.learningTrackerClass,
-                    new object[] { pawn, ltDef, def }) as LearningTracker);
+                    new object[] { pawn, ltDef, this }) as LearningTracker);
             }
 
             progressTracker = Activator.CreateInstance(def.progressTrackerDef.progressTrackerClass,
-                new object[] { pawn, def }) as ProgressTracker;
+                new object[] { pawn, def.progressTrackerDef, this }) as ProgressTracker;
         }
 
         public virtual void InitializeNodeCompletion()
         {
-            learningNodeRecord = new LearningNodeRecord(pawn, def); //testing initalization of node completion and saving
+            learningNodeRecord = new LearningNodeRecord(pawn, this); //testing initalization of node completion and saving
         }
 
         public Dictionary<LearningTreeNodeDef, bool> NodeCompletion
@@ -80,7 +93,7 @@ namespace ItsSorceryFramework
             {
                 if(learningNodeRecord is null)
                 {
-                    learningNodeRecord = new LearningNodeRecord(pawn, def);
+                    learningNodeRecord = new LearningNodeRecord(pawn, this);
                 }
                 return learningNodeRecord.completion;
             }
@@ -115,7 +128,6 @@ namespace ItsSorceryFramework
                 LimitButton(buttonRefPoint, rect.y + 5);
                 buttonRefPoint -= 24;
             }  
-            if (hasTurns) TurnButton(buttonRefPoint, rect.y + 5); // draws turn pause toggle button if schema should be pausable
 
             // temporary rect for plotting energytrackers
             Rect tempRect = new Rect(rect);
@@ -210,20 +222,6 @@ namespace ItsSorceryFramework
             return false;
         }
 
-        public bool TurnButton(float x, float y)
-        {
-            Rect rect = new Rect(x, y, 24f, 24f);
-            MouseoverSounds.DoRegion(rect);
-            TooltipHandler.TipRegionByKey(rect, "ISF_ButtonTurnTimer");
-
-            if (Widgets.ButtonImage(rect, turnTimerOn ? TexButton.SpeedButtonTextures[0] : TexButton.SpeedButtonTextures[1], GUI.color, true))
-            {
-                turnTimerOn = !turnTimerOn;
-                return true;
-            }
-            return false;
-        }
-
         public void DrawOutline(Rect rect, Color outColor, int outThick = 1, Texture2D lineTex = null)
         {
             Color color = GUI.color;
@@ -244,33 +242,10 @@ namespace ItsSorceryFramework
             Scribe_Values.Look(ref favorited, "favorited", false);
 
             Scribe_Values.Look(ref hasLimits, "hasLimits", false);
-            Scribe_Values.Look(ref hasTurns, "hasTurns", false);
             Scribe_Values.Look(ref limitLocked, "limitLocked", true, false);
-            Scribe_Values.Look(ref turnTimerOn, "turnTimerOn", true, false);
-
         }
 
-        public Pawn pawn;
-
-        public SorcerySchemaDef def;
-
-        public List<EnergyTracker> energyTrackers = new List<EnergyTracker>();
-
-        public List<LearningTracker> learningTrackers = new List<LearningTracker>();
-
-        public LearningNodeRecord learningNodeRecord;
-
-        public ProgressTracker progressTracker;
-
-        public bool favorited = false;
-
-        public bool hasLimits = false;
-
-        public bool hasTurns = false;
-
-        public bool limitLocked = true;
-
-        public bool turnTimerOn = true;
+        
 
     }
 }
