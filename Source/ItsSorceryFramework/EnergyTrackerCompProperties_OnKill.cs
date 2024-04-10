@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Verse;
-using RimWorld;
-
-namespace ItsSorceryFramework
+﻿namespace ItsSorceryFramework
 {
     public class EnergyTrackerCompProperties_OnKill : EnergyTrackerCompProperties_DamageBase
     {
