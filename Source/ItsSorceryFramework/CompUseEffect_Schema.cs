@@ -24,14 +24,15 @@ namespace ItsSorceryFramework
 			}
 		}
 
-		public override bool CanBeUsedBy(Pawn p, out string failReason)
+		public override AcceptanceReport CanBeUsedBy(Pawn p)
 		{
 			if (SorcerySchemaUtility.FindSorcerySchema(p, Props.schemaDef) != null)
 			{
-				failReason = "ISF_UseSchemaItemFail".Translate(p.Named("USER"), Props.schemaDef.label);
-				return false;
+				return "ISF_UseSchemaItemFail".Translate(p.Named("USER"), Props.schemaDef.label);
+				/*failReason = "ISF_UseSchemaItemFail".Translate(p.Named("USER"), Props.schemaDef.label);
+				return false;*/
 			}
-			return base.CanBeUsedBy(p, out failReason);
+			return base.CanBeUsedBy(p);
 		}
 	}
 }

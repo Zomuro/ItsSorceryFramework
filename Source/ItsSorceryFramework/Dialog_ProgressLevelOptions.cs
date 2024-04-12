@@ -1,4 +1,5 @@
-﻿using RimWorld;
+﻿using LudeonTK;
+using RimWorld;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -10,21 +11,19 @@ namespace ItsSorceryFramework
 {
     public class Dialog_ProgressLevelOptions : Dialog_DebugOptionListLister
 	{
-		public override Vector2 InitialSize
-		{
-			get
-			{
-				return new Vector2(800, 600);
-			}
-		}
+		public ProgressLevelOption selectedOption;
 
-		public override bool IsDebug
-		{
-			get
-			{
-				return false;
-			}
-		}
+		private bool focusFilter;
+
+		protected Vector2 scrollPositionOption;
+
+		private float optionViewHeight;
+
+		public ProgressTracker tracker;
+
+		public override Vector2 InitialSize => new Vector2(800, 600);
+
+		public override bool IsDebug => false;
 
 		public Dialog_ProgressLevelOptions(IEnumerable<DebugMenuOption> options, ProgressTracker progressTracker) : base(options)
 		{
@@ -32,7 +31,26 @@ namespace ItsSorceryFramework
 			closeOnClickedOutside = false;
 			forcePause = true;
 			closeOnCancel = false;
-			doCloseX = false; // set to false
+			doCloseX = true; // set to false
+		}
+
+		protected override int HighlightedIndex
+		{
+			get
+			{
+				if (options.NullOrEmpty<DebugMenuOption>()) return base.HighlightedIndex;	
+				if (FilterAllows(options[prioritizedHighlightedIndex].label)) return prioritizedHighlightedIndex;
+				if (filter.NullOrEmpty()) return -1;
+				for (int i = 0; i < options.Count; i++)
+				{
+					if (FilterAllows(options[i].label))
+					{
+						currentHighlightIndex = i;
+						break;
+					}
+				}
+				return currentHighlightIndex;
+			}
 		}
 
 		public override void DoWindowContents(Rect inRect)
@@ -72,13 +90,14 @@ namespace ItsSorceryFramework
 			// Setup right half (label + description + changes in stats and abilities + confirmation)
 			float allOptionsHeight = totalOptionsHeight;
 			if (allOptionsHeight < leftHalfRect.height) allOptionsHeight = leftHalfRect.height;
+
+			curX = 0f;
+			curY = leftHalfRect.y;
+
 			Rect allOptionsRect = new Rect(leftHalfRect.x, leftHalfRect.y, leftHalfRect.width - 20f, allOptionsHeight);
-			Widgets.BeginScrollView(leftHalfRect, ref scrollPosition, allOptionsRect, true);
-			listing = new Listing_Standard(inRect, () => scrollPosition);
-			listing.ColumnWidth = (leftHalfRect.width - 20f);
-			listing.Begin(allOptionsRect);
-			DoListingItems();
-			listing.End();
+			float columnWidth = (leftHalfRect.width - 20f);
+			Widgets.BeginScrollView(leftHalfRect, ref scrollPosition, allOptionsRect, true);		
+			DoListingItems(allOptionsRect, columnWidth);
 			Widgets.EndScrollView();
 
 			// seperator line between left and right
@@ -173,7 +192,7 @@ namespace ItsSorceryFramework
 			StringBuilder stringBuilder = new StringBuilder();
 			foreach (StatDrawEntry statDrawEntry in option.specialDisplayMods())
 			{
-				if (statDrawEntry.ShouldDisplay)
+				if (statDrawEntry.ShouldDisplay())
 				{
 					stringBuilder.AppendInNewLine("  - " + statDrawEntry.LabelCap + ": " + statDrawEntry.ValueString);
 				}
@@ -292,7 +311,7 @@ namespace ItsSorceryFramework
 		}
 
 		// adjusted so that clicking on an option does not close the dialog window
-		protected override void DoListingItems()
+		protected override void DoListingItems(Rect inRect, float columnWidth)
 		{
 			if (KeyBindingDefOf.Dev_ChangeSelectedDebugAction.IsDownEvent) ChangeHighlightedOption();
 			int highlightedIndex = HighlightedIndex;
@@ -300,19 +319,19 @@ namespace ItsSorceryFramework
 			{
 				DebugMenuOption debugMenuOption = options[i];
 				bool highlight = highlightedIndex == i;
-				if (debugMenuOption.mode == DebugMenuOptionMode.Action) DebugActionOption(debugMenuOption.label, debugMenuOption.method, highlight);
-				if (debugMenuOption.mode == DebugMenuOptionMode.Tool) DebugToolMap(debugMenuOption.label, debugMenuOption.method, highlight);
+				if (debugMenuOption.mode == DebugMenuOptionMode.Action) DebugActionOption(debugMenuOption.label, columnWidth, debugMenuOption.method, highlight);
+				if (debugMenuOption.mode == DebugMenuOptionMode.Tool) DebugToolMap(debugMenuOption.label, columnWidth, debugMenuOption.method, highlight);
 			}
 		}
 
-		protected bool DebugActionOption(string label, Action action, bool highlight)
+		protected bool DebugActionOption(string label, float columnWidth, Action action, bool highlight)
 		{
 			bool result = false;
 			if (!base.FilterAllows(label))
 			{
 				GUI.color = new Color(1f, 1f, 1f, 0.3f);
 			}
-			if (this.listing.ButtonDebug(label, highlight))
+			if (this.ButtonDebug(label, columnWidth, highlight))
 			{
 				action();
 				result = true;
@@ -325,14 +344,6 @@ namespace ItsSorceryFramework
 			return result;
 		}
 
-		public ProgressLevelOption selectedOption;
-
-		private bool focusFilter;
-
-		protected Vector2 scrollPositionOption;
-
-		private float optionViewHeight;
-
-		public ProgressTracker tracker;
+		
 	}
 }

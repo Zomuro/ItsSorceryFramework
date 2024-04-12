@@ -1,4 +1,5 @@
-﻿using RimWorld;
+﻿using LudeonTK;
+using RimWorld;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -291,7 +292,7 @@ namespace ItsSorceryFramework
         public virtual void NotifyTotalLevelUp(float orgSev)
         {
             Find.LetterStack.ReceiveLetter("Level up.",
-                "This pawn has leveled up.", LetterDefOf.NeutralEvent, null);
+                "This pawn has leveled up.", LetterDefOf.NeutralEvent);
         }
 
         public bool Maxed => (CurrLevel) >= hediff.def.maxSeverity;
@@ -396,7 +397,7 @@ namespace ItsSorceryFramework
             StringBuilder stringBuilder = new StringBuilder();
             foreach (StatDrawEntry statDrawEntry in stage.SpecialDisplayStats())
             {
-                if (statDrawEntry.ShouldDisplay)
+                if (statDrawEntry.ShouldDisplay())
                 {
                     stringBuilder.AppendInNewLine("  - " + statDrawEntry.LabelCap + ": " + statDrawEntry.ValueString);
                 }
@@ -409,7 +410,7 @@ namespace ItsSorceryFramework
             StringBuilder stringBuilder = new StringBuilder();
             foreach (StatDrawEntry statDrawEntry in entries)
             {
-                if (statDrawEntry.ShouldDisplay)
+                if (statDrawEntry.ShouldDisplay())
                 {
                     stringBuilder.AppendInNewLine("  - " + statDrawEntry.LabelCap + ": " + statDrawEntry.ValueString);
                 }
@@ -424,7 +425,7 @@ namespace ItsSorceryFramework
             StringBuilder stringBuilder = new StringBuilder();
             foreach (StatDrawEntry statDrawEntry in entries)
             {
-                if (statDrawEntry.ShouldDisplay)
+                if (statDrawEntry.ShouldDisplay())
                 {
                     stringBuilder.AppendInNewLine("  - " + statDrawEntry.LabelCap + ": " + statDrawEntry.ValueString);
                 }

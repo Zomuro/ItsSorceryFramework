@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+	<ThingCategoryDef>
+		<defName>ISF_SchemaItems</defName>
+		<label>sorcery schema items</label>
+		<parent>Items</parent>
+    </ThingCategoryDef>
+
+
+	<ThingDef ParentName="ResourceBase" Name="SchemaItemBase" Abstract="True">
+		<thingClass>ThingWithComps</thingClass>
+		<techLevel>Archotech</techLevel>
+		
+		<resourceReadoutPriority>Middle</resourceReadoutPriority>
+		<stackLimit>1</stackLimit>
+		<tradeNeverStack>true</tradeNeverStack>
+		<useHitPoints>true</useHitPoints>
+		<relicChance>0</relicChance>
+		<statBases>
+			<MarketValue>1000</MarketValue>
+			<MaxHitPoints>50</MaxHitPoints>
+			<Mass>0.5</Mass>
+		</statBases>
+		<drawGUIOverlay>false</drawGUIOverlay>
+		
+		<thingCategories>
+			<li>ISF_SchemaItems</li>
+		</thingCategories>
+		<tradeTags>
+			<li>ISF_SchemaItems</li>
+		</tradeTags>
+		<thingSetMakerTags><li>RewardStandardHighFreq</li></thingSetMakerTags>
+		
+		<comps>
+			<li Class="CompProperties_UseEffectDestroySelf" />
+		</comps>
+	</ThingDef>
+  
+</Defs>

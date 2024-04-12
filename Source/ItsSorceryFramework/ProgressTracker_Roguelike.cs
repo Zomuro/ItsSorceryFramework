@@ -100,7 +100,7 @@ namespace ItsSorceryFramework
         public override void NotifyTotalLevelUp(float orgSev)
         {
             Find.LetterStack.ReceiveLetter(def.progressLevelUpKey.Translate(pawn.Name.ToStringShort),
-                def.progressLevelUpDescKey.Translate(), LetterDefOf.NeutralEvent, null);
+                def.progressLevelUpDescKey.Translate(), LetterDefOf.NeutralEvent);
         }
 
         public override void DrawLeftGUI(Rect rect)

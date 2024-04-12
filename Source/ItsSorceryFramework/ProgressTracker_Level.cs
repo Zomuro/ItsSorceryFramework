@@ -135,7 +135,7 @@ namespace ItsSorceryFramework
         public override void NotifyTotalLevelUp(float orgSev)
         {
             Find.LetterStack.ReceiveLetter(def.progressLevelUpKey.Translate(pawn.Name.ToStringShort),
-                def.progressLevelUpDescKey.Translate(orgSev.ToString(), CurrLevel.ToString()), LetterDefOf.NeutralEvent, null);
+                def.progressLevelUpDescKey.Translate(orgSev.ToString(), CurrLevel.ToString()), LetterDefOf.NeutralEvent);
         }
 
         public override float CurrProgress => exp / CurrentLevelEXPReq;

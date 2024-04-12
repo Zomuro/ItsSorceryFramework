@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	<!-- Demostration + Testing ProgressTracker def -->
+	<ItsSorceryFramework.ProgressTrackerDef Abstract = "True" Name = "ProgressTrackerBase">
+		<progressTrackerClass>ItsSorceryFramework.ProgressTracker</progressTrackerClass>
+		<progressHediff/>
+		<levelFactors/>
+		<levelSpecifics/>
+		<levelLabels/>
+		<expTags/>
+	</ItsSorceryFramework.ProgressTrackerDef>
+	
+	<ItsSorceryFramework.ProgressTrackerDef Abstract = "True" ParentName = "ProgressTrackerBase" Name = "ProgressTrackerLevelBase">
+		<progressTrackerClass>ItsSorceryFramework.ProgressTracker_Level</progressTrackerClass>
+	</ItsSorceryFramework.ProgressTrackerDef>
+	
+	<HediffDef Abstract = "True" Name="ProgressTrackerHediffBase"> 
+		<hediffClass>ItsSorceryFramework.Hediff_ProgressLevel</hediffClass>
+		<defaultLabelColor>(0.8314,0.6863,0.2157)</defaultLabelColor> <!-- golden color -->
+		<initialSeverity>1</initialSeverity>
+		<minSeverity>0</minSeverity>
+		<maxSeverity>100</maxSeverity>
+		<countsAsAddedPartOrImplant>false</countsAsAddedPartOrImplant>
+		<stages>	
+		</stages>
+	</HediffDef>
+	
+	
+</Defs>
