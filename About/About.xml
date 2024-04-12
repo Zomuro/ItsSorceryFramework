@@ -2,7 +2,7 @@
 <ModMetaData>
 	<name>It's Sorcery!</name>
 	<author>Zomuro</author>
-	<supportedVersions><li>1.4</li></supportedVersions>
+	<supportedVersions><li>1.4</li><li>1.5</li></supportedVersions>
 	<modDependencies>
 		<li>
 			<packageId>brrainz.harmony</packageId>
