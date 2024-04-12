@@ -31,7 +31,7 @@ namespace ItsSorceryFramework
 			closeOnClickedOutside = false;
 			forcePause = true;
 			closeOnCancel = false;
-			doCloseX = true; // set to false
+			doCloseX = Prefs.DevMode; // true if in dev mode; false otherwise
 		}
 
 		protected override int HighlightedIndex
