@@ -38,7 +38,7 @@ namespace ItsSorceryFramework
 					if (capMod.offset != 0f)
 					{
 						yield return new StatDrawEntry(StatCategoryDefOf.CapacityEffects,
-							capMod.capacity.GetLabelFor(true, true).CapitalizeFirst(),
+							capMod.capacity.GetLabelFor().CapitalizeFirst(),
 							(capMod.offset * 100f).ToString("+#;-#") + "%",
 							capMod.capacity.description, 4060, null, null, false);
 					}

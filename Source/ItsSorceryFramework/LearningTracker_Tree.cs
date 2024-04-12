@@ -498,7 +498,7 @@ namespace ItsSorceryFramework
         {
             StringBuilder stringBuilder = new StringBuilder();
             foreach (StatDrawEntry statDrawEntry in node.specialDisplayMods()){
-                if (statDrawEntry.ShouldDisplay)
+                if (statDrawEntry.ShouldDisplay())
                 {
                     stringBuilder.AppendInNewLine("  - " + statDrawEntry.LabelCap + ": " + statDrawEntry.ValueString);
                 }
@@ -583,7 +583,7 @@ namespace ItsSorceryFramework
                 nodeRect = GetNodeRect(node);
 
                 if (Widgets.CustomButtonText(ref nodeRect, "", SelectionBGColor(node),
-                    new Color(0.8f, 0.85f, 1f), SelectionBorderColor(node), false, 1, true, true))
+                    new Color(0.8f, 0.85f, 1f), SelectionBorderColor(node), default, false, 1, true, true))
                 {
                     SoundDefOf.Click.PlayOneShotOnCamera(null);
                     this.selectedNode = node;

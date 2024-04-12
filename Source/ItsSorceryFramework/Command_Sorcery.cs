@@ -6,7 +6,7 @@ namespace ItsSorceryFramework
 {
     public class Command_Sorcery : Command_Ability
     {
-		public Command_Sorcery(Ability ability) : base(ability)
+		public Command_Sorcery(Ability ability, Pawn pawn) : base(ability, pawn)
 		{
 			this.shrinkable = true;
 		}

@@ -1,4 +1,5 @@
-﻿using RimWorld;
+﻿using LudeonTK;
+using RimWorld;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -390,8 +391,8 @@ namespace ItsSorceryFramework
             float min = highlight.xMin;
             float width = highlight.width;
 
-            highlight.xMin = Widgets.AdjustCoordToUIScalingFloor(min + Mathf.Clamp(lowerRelVal, 0f, 1f) * width);
-            highlight.xMax = Widgets.AdjustCoordToUIScalingFloor(min + Mathf.Clamp(higherRelVal, 0f, 1f) * width);
+            highlight.xMin = UIScaling.AdjustCoordToUIScalingFloor(min + Mathf.Clamp(lowerRelVal, 0f, 1f) * width);
+            highlight.xMax = UIScaling.AdjustCoordToUIScalingFloor(min + Mathf.Clamp(higherRelVal, 0f, 1f) * width);
 
             // if not inverse, check if energy after cast is less than current energy
             // else if inverse, check if energy after cast is more than current energy
