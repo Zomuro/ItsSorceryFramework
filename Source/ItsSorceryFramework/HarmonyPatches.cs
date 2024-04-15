@@ -255,9 +255,12 @@ namespace ItsSorceryFramework
         // POSTFIX: when right clicking items that can give xp to schemas, provide FloatMenu option to use them
         public static void AddHumanlikeOrders_EXPUseItem(Vector3 __0, Pawn __1, List<FloatMenuOption> __2)
         {
-            Comp_ItsSorcery comp = __1.TryGetComp<Comp_ItsSorcery>();
+            // do schema check - no comp or schema = null
+            List<SorcerySchema> schemas = SorcerySchemaUtility.GetSorcerySchemaList(__1);
+            if (schemas.NullOrEmpty()) return;
+
             String text;
-            foreach (SorcerySchema schema in comp.schemaTracker.sorcerySchemas)
+            foreach (SorcerySchema schema in schemas) // comp.schemaTracker.sorcerySchemas
             {
                 if (schema.progressTracker.def.Workers.EnumerableNullOrEmpty()) continue;
 
