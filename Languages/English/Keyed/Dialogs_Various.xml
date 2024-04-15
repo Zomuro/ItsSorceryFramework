@@ -9,6 +9,7 @@
 	<!-- SorcerySchemaDef Info window - Learning Trackers -->
 	<ISF_LearningNodeCost>{0} required: {1}</ISF_LearningNodeCost>
 	<ISF_LearningNodePrereqs>Node prerequisites:</ISF_LearningNodePrereqs>
+	<ISF_LearningNodeResearchPrereqs>Research prerequisites:</ISF_LearningNodeResearchPrereqs>
 	<ISF_LearningNodeLevelReq>Level requirement: {0}</ISF_LearningNodeLevelReq>
 	<ISF_LearningNodeStatReq>Stat requirements:</ISF_LearningNodeStatReq>
 	<ISF_LearningNodeSkillReq>Skill requirements:</ISF_LearningNodeSkillReq>
@@ -20,6 +21,17 @@
 	<ISF_LearningNodeHediffAdjust>Hediff adjustments:</ISF_LearningNodeHediffAdjust>
 	<ISF_LearningNodeHediffRemove>Hediffs removed:</ISF_LearningNodeHediffRemove>
 	<ISF_LearningNodeMods>Modifiers applied:</ISF_LearningNodeMods>
+	
+	<ISF_LearningNodeReasonCompleted>Completed.</ISF_LearningNodeReasonCompleted>
+	<ISF_LearningNodeReasonExclusive>Conflicts with another node.</ISF_LearningNodeReasonExclusive>
+	<ISF_LearningNodeLocked>Locked:</ISF_LearningNodeLocked>
+	<ISF_LearningNodeLockedPoints>Not enough {0}.</ISF_LearningNodeLockedPoints>
+	<ISF_LearningNodeLockedNodes>Prior nodes not completed.</ISF_LearningNodeLockedNodes>
+	<ISF_LearningNodeLockedResearch>Research requirements not completed.</ISF_LearningNodeLockedResearch>
+	<ISF_LearningNodeLockedStat>Stat requirements not fufilled.</ISF_LearningNodeLockedStat>
+	<ISF_LearningNodeLockedSkill>Skill requirements not fufilled.</ISF_LearningNodeLockedSkill>
+	<ISF_LearningNodeLockedHediff>Hediff requirements not met.</ISF_LearningNodeLockedHediff>
+	<ISF_LearningNodeLockedLevel>Level requirements not met.</ISF_LearningNodeLockedLevel>
 	
 	<ISF_LearningLevelLabel>Level {0}</ISF_LearningLevelLabel>
 	<ISF_LearningLevelLabelCustom>{0} (lvl. {1})</ISF_LearningLevelLabelCustom>

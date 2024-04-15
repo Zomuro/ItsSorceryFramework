@@ -30,7 +30,7 @@
 	<ISF_EnergyTrackerCompOnKillLabel>On kill, scaling with {STAT}: {DAMAGEDEFS}</ISF_EnergyTrackerCompOnKillLabel>
 	<ISF_EnergyTrackerCompOnKillDesc>Alter {ENERGY} = {FACTOR} of {CHANGE}.</ISF_EnergyTrackerCompOnKillDesc>
 	
-	<ISF_EnergyTrackerCompOnConsumeLabel>On consuming items:</ISF_EnergyTrackerCompOnConsumeLabel>
+	<ISF_EnergyTrackerCompOnConsumeLabel>On consuming items, scaling with {STAT}:</ISF_EnergyTrackerCompOnConsumeLabel>
 	<ISF_EnergyTrackerCompOnConsumeDesc>Alter {ENERGY} based on the list below.</ISF_EnergyTrackerCompOnConsumeDesc>
 	<ISF_EnergyTrackerCompOnConsumeItem>  - {ITEM}: {CHANGE}</ISF_EnergyTrackerCompOnConsumeItem>
 	
