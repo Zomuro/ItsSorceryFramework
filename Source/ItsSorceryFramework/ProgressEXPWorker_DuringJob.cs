@@ -19,14 +19,14 @@ namespace ItsSorceryFramework
                 if (sets.jobDefs.Contains(progressTracker.pawn.CurJobDef))
                 {
                     progressTracker.AddExperience(def.fixedEXP);
-                    fireEXPMote(progressTracker.pawn, def.fixedEXP);
+                    FireEXPMote(progressTracker.pawn, def.fixedEXP);
                     return true;
                 }
             }
             return false;
         }
 
-        public override float drawWorker(Rect rect)
+        public override float DrawWorker(Rect rect)
         {
             float yMin = rect.yMin;
             float x = rect.x;
@@ -35,11 +35,12 @@ namespace ItsSorceryFramework
             String allJobSets = !def.jobSets.NullOrEmpty() ? labelsFromEXPJobSets(def.jobSets).ToStringSafeEnumerable() : "";
 
             Text.Font = GameFont.Small;
-            Widgets.LabelCacheHeight(ref rect, "On performing job sets: ".Colorize(ColoredText.TipSectionTitleColor) + allJobSets, true, false);
+            Widgets.LabelCacheHeight(ref rect, 
+                "ISF_LearningProgressEXPJob".Translate(allJobSets).Colorize(ColoredText.TipSectionTitleColor), true, false);
             rect.yMin += rect.height;
-            Widgets.LabelCacheHeight(ref rect, "Grant " + 
-                def.fixedEXP.ToStringByStyle(ToStringStyle.FloatMaxTwo, ToStringNumberSense.Absolute).Colorize(ColoredText.TipSectionTitleColor) +
-                " experience every second.", true, false);
+            Widgets.LabelCacheHeight(ref rect, 
+                "ISF_LearningProgressEXPJobDesc".Translate(def.fixedEXP.ToStringByStyle(ToStringStyle.FloatMaxTwo, ToStringNumberSense.Absolute))
+                , true, false);
             rect.yMin += rect.height;
 
             return rect.yMin - yMin;

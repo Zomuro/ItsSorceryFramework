@@ -13,6 +13,8 @@ namespace ItsSorceryFramework
 
         public Pawn Pawn => parent.pawn;
 
+        public StatDef ScalingStatDef => Props.scalingStatDef is null ? StatDefOf_ItsSorcery.ISF_ScalingStat : Props.scalingStatDef;
+
         public bool AtLimit => parent.schema.limitLocked && (!parent.def.inverse ? parent.currentEnergy >= parent.MaxEnergy : parent.currentEnergy <= parent.MinEnergy);
         
         public override IEnumerable<FloatMenuOption> CompPostConsume(Vector3 vec3) // for effects when using a "consumption" item
@@ -45,14 +47,15 @@ namespace ItsSorceryFramework
                     int count = 0;
                     float energyDiff = 0;
                     int endcount = ammo.stackCount;
-                    float gain = endcount * consume.energy;
+                    float adjConsumeEnergy = consume.energy * Pawn.GetStatValue(ScalingStatDef);
+                    float gain = endcount * adjConsumeEnergy;
 
                     if (!parent.def.inverse)
                     {
                         energyDiff = Mathf.Max(0f, parent.schema.limitLocked ? parent.MaxEnergy - parent.currentEnergy : parent.AbsMaxEnergy - parent.currentEnergy);
-                        count = (int)Math.Ceiling(energyDiff / consume.energy);
+                        count = (int)Math.Ceiling(energyDiff / adjConsumeEnergy);
                         endcount = Math.Min(count, ammo.stackCount);
-                        gain = Math.Min(endcount * consume.energy, energyDiff);
+                        gain = Math.Min(endcount * adjConsumeEnergy, energyDiff);
 
                         text = "ISF_Charge".Translate(parent.schema.def.LabelCap.ToString(), parent.def.LabelCap, ammo.def.label)
                         + "ISF_ChargeCalc".Translate(endcount, ammo.def.label,
@@ -61,9 +64,9 @@ namespace ItsSorceryFramework
                     else
                     {
                         energyDiff = Mathf.Max(0f, parent.schema.limitLocked ? parent.currentEnergy - parent.MinEnergy: parent.currentEnergy - parent.AbsMinEnergy);
-                        count = (int)Math.Ceiling(energyDiff / consume.energy);
+                        count = (int)Math.Ceiling(energyDiff / adjConsumeEnergy);
                         endcount = Math.Min(count, ammo.stackCount);
-                        gain = Math.Min(endcount * consume.energy, energyDiff);
+                        gain = Math.Min(endcount * adjConsumeEnergy, energyDiff);
 
                         text = "ISF_Charge".Translate(parent.schema.def.LabelCap.ToString(), parent.def.LabelCap, ammo.def.label)
                         + "ISF_ChargeCalc".Translate(endcount, ammo.def.label,
@@ -72,7 +75,7 @@ namespace ItsSorceryFramework
 
                     Action chargeSchema = delegate ()
                     {
-                        Job job = JobGiver_Charge.MakeChargeEnergyJob(parent.pawn, parent.schema, parent.def, ammo, endcount, consume.energy);
+                        Job job = JobGiver_Charge.MakeChargeEnergyJob(parent.pawn, parent.schema, parent.def, ammo, endcount, adjConsumeEnergy);
                         parent.pawn.jobs.TryTakeOrderedJob(job, new JobTag?(JobTag.Misc), false);
                     };
                     yield return FloatMenuUtility.DecoratePrioritizedTask(new FloatMenuOption(text, chargeSchema,
@@ -94,7 +97,7 @@ namespace ItsSorceryFramework
 
             // draw label
             Text.Font = GameFont.Small;
-            Widgets.LabelCacheHeight(ref rect, "ISF_EnergyTrackerCompOnConsumeLabel".Translate().Colorize(ColoredText.TipSectionTitleColor), true, false);
+            Widgets.LabelCacheHeight(ref rect, "ISF_EnergyTrackerCompOnConsumeLabel".Translate(ScalingStatDef.label.Named("STAT")).Colorize(ColoredText.TipSectionTitleColor), true, false);
             rect.yMin += rect.height;
 
             if (Props.consumables.NullOrEmpty())
@@ -110,7 +113,7 @@ namespace ItsSorceryFramework
 
             foreach(var consumable in Props.consumables)
             {
-                float energyVal = parent.InvMult * consumable.energy;
+                float energyVal = parent.InvMult * consumable.energy * Pawn.GetStatValue(ScalingStatDef);
                 string energyValString = energyVal.ToStringByStyle(ToStringStyle.FloatMaxTwo, ToStringNumberSense.Offset);
                 Widgets.LabelCacheHeight(ref rect, "ISF_EnergyTrackerCompOnConsumeItem".Translate(consumable.thingDef.label.Named("ITEM"), energyValString.Named("CHANGE")));
                 rect.yMin += rect.height;

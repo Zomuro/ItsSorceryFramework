@@ -13,19 +13,21 @@ namespace ItsSorceryFramework
             return true;
         }
 
-        public override float drawWorker(Rect rect)
+        public override float DrawWorker(Rect rect)
         {
             float yMin = rect.yMin;
             float x = rect.x;
 
-            String skills = !def.skillDefs.NullOrEmpty() ? labelsFromDef(def.skillDefs).ToStringSafeEnumerable() : "";
+            String skills = !def.skillDefs.NullOrEmpty() ? LabelsFromDef(def.skillDefs).ToStringSafeEnumerable() : "";
 
             Text.Font = GameFont.Small;
-            Widgets.LabelCacheHeight(ref rect, "On gaining skill experience: ".Colorize(ColoredText.TipSectionTitleColor) + skills, true, false);
+            Widgets.LabelCacheHeight(ref rect, 
+                "ISF_LearningProgressEXPSkill".Translate(skills).Colorize(ColoredText.TipSectionTitleColor), 
+                true, false);
             rect.yMin += rect.height;
-            Widgets.LabelCacheHeight(ref rect, "Grant experience equal to " + 
-                def.expFactor.ToStringByStyle(ToStringStyle.FloatMaxTwo, ToStringNumberSense.Factor).Colorize(ColoredText.TipSectionTitleColor) +
-                " the experience gained while learning skills.", true, false);
+            Widgets.LabelCacheHeight(ref rect,
+                "ISF_LearningProgressEXPSkillDesc".Translate(def.expFactor.ToStringByStyle(ToStringStyle.FloatMaxTwo, ToStringNumberSense.Factor)),
+                true, false);
             rect.yMin += rect.height;
 
             return rect.yMin - yMin;

@@ -232,12 +232,12 @@ namespace ItsSorceryFramework
         public override void DrawRightGUI(Rect rect)
         {
             Widgets.BeginGroup(rect);
-            Rect leftHalf = new Rect(0, 0, rect.width / 2f, rect.height);
+            //Rect leftHalf = new Rect(0, 0, rect.width / 2f, rect.height);
 
             // PROSPECTS - future modifiers w/ level up //
             Rect modRect = new Rect(0, 0, rect.width / 4f, rect.height * 2f / 3f).ContractedBy(20f);
             modRect.height += 20f;
-            Rect modRectView = new Rect(modRect.x, modRect.y, modRect.width - 20f, modScrollViewHeight);
+            Rect modRectView = new Rect(modRect.x, modRect.y, modRect.width - 20f * Prefs.UIScale, modScrollViewHeight);
             Widgets.BeginScrollView(modRect, ref this.modScrollPosition, modRectView, true);
 
             float coordY = 0f;
@@ -250,7 +250,7 @@ namespace ItsSorceryFramework
             // EXPERIENCE - show expgain //
             Rect expRect = new Rect(rect.width / 4f, 0, rect.width / 4f, rect.height * 2f / 3f).ContractedBy(20f);
             expRect.height += 20f;
-            Rect expRectView = new Rect(expRect.x, expRect.y, expRect.width - 20f, expScrollViewHeight);
+            Rect expRectView = new Rect(expRect.x, expRect.y, expRect.width - 20f * Prefs.UIScale, expScrollViewHeight);
             Widgets.BeginScrollView(expRect, ref this.expScrollPosition, expRectView, true);
 
             coordY = 0f;
@@ -263,7 +263,7 @@ namespace ItsSorceryFramework
             // ENERGY - show energytrackers //
             Rect energyRect = new Rect(rect.width / 2f, 0, rect.width / 4f, rect.height).ContractedBy(20f);
             //energyRect.height += 20f;
-            Rect energyRectView = new Rect(energyRect.x, energyRect.y, energyRect.width - 20f, energyScrollViewHeight);
+            Rect energyRectView = new Rect(energyRect.x, energyRect.y, energyRect.width - 20f * Prefs.UIScale, energyScrollViewHeight);
             Widgets.BeginScrollView(energyRect, ref this.energyScrollPosition, energyRectView, true);
 
             coordY = 0f;
@@ -276,7 +276,7 @@ namespace ItsSorceryFramework
             // SORCERIES - see sorceries and change out what you want to use //
             Rect sorceryRect = new Rect(0, rect.height * 2f / 3f, rect.width / 2f, rect.height * 3f).ContractedBy(20f);
             sorceryRect.height += 20f;
-            Rect sorceryRectView = new Rect(sorceryRect.x, sorceryRect.y, sorceryRect.width - 20f, sorceryScrollViewHeight);
+            Rect sorceryRectView = new Rect(sorceryRect.x, sorceryRect.y, sorceryRect.width - 20f * Prefs.UIScale, sorceryScrollViewHeight);
             Widgets.BeginScrollView(sorceryRect, ref this.sorceryScrollPosition, sorceryRectView, true);
 
             coordY = 0f;

@@ -449,7 +449,7 @@ namespace ItsSorceryFramework
             if (schema.progressTracker.def.Workers.EnumerableNullOrEmpty()) return rect.yMin - yMin;
             foreach (ProgressEXPWorker worker in schema.progressTracker.def.Workers)
             {
-                rect.yMin += worker.drawWorker(rect);
+                rect.yMin += worker.DrawWorker(rect);
             }
 
             return rect.yMin - yMin;

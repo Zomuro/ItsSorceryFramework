@@ -42,7 +42,7 @@ namespace ItsSorceryFramework
 		{
 			get
 			{
-				return new Vector2(Screen.width, Screen.height * 3/4f);
+				return new Vector2(UI.screenWidth, UI.screenHeight * 3f / 4f);
 			}
 		}
 
@@ -50,7 +50,9 @@ namespace ItsSorceryFramework
 		{
 			learningTrackers = trackers;
 			forcePause = true;
-			resizeable = false;
+			resizeable = true;
+			draggable = true;
+			closeOnClickedOutside = true;
 		}
 
 		public override void PreOpen()
@@ -75,7 +77,7 @@ namespace ItsSorceryFramework
 
 		public override void DoWindowContents(Rect inRect)
         {
-			this.windowRect.width = (float)UI.screenWidth;
+			//this.windowRect.width = (float)UI.screenWidth;
 			Text.Anchor = TextAnchor.UpperLeft;
 			Text.Font = GameFont.Small;
 			float width = Mathf.Max(200f, inRect.width * 0.22f);

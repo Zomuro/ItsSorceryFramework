@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using RimWorld;
+using System.Collections.Generic;
 using Verse;
 
 namespace ItsSorceryFramework
@@ -6,6 +7,8 @@ namespace ItsSorceryFramework
     public class EnergyTrackerCompProperties_OnConsume : EnergyTrackerCompProperties
     {
         public EnergyTrackerCompProperties_OnConsume() => compClass = typeof(EnergyTrackerComp_OnConsume);
+
+        public StatDef scalingStatDef;
 
         public List<EnergyConsumable> consumables;
     }

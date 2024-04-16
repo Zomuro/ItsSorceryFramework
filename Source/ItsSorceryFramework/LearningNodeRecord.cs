@@ -327,7 +327,7 @@ namespace ItsSorceryFramework
 
         public bool PrereqLevelFulfilled(LearningTreeNodeDef node)
         {
-            if (node.prereqLevel <= schema.progressTracker.CurrLevel) return true;
+            if (node.prereqLevel <= 0 || node.prereqLevel <= schema.progressTracker.CurrLevel) return true;
             return false;
         }
 

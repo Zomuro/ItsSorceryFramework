@@ -127,7 +127,7 @@ namespace ItsSorceryFramework
                 string reason = "";
                 if (!LearningRecord.completion[selectedNode] && LearningRecord.PrereqFufilled(selectedNode) && LearningRecord.PrereqResearchFufilled(selectedNode) &&
                     LearningRecord.PrereqStatFufilled(selectedNode) && LearningRecord.PrereqHediffFufilled(selectedNode) && LearningRecord.ExclusiveNodeFufilled(selectedNode) &&
-                    selectedNode.pointReq + progress.usedPoints <= progress.points) 
+                    LearningRecord.PrereqLevelFulfilled(selectedNode) && selectedNode.pointReq + progress.usedPoints <= progress.points) 
                 {
                     if (Widgets.ButtonText(confirmButton, "ISF_SkillPointUse".Translate(selectedNode.pointReq, 
                         progress.def.skillPointLabelKey.Translate())))
@@ -142,24 +142,26 @@ namespace ItsSorceryFramework
                 else
                 {
                     Text.Anchor = TextAnchor.MiddleCenter;
-                    if (LearningRecord.completion[selectedNode]) reason = "Completed.";
-                    else if (!LearningRecord.ExclusiveNodeFufilled(selectedNode)) reason = "Conflicts with another node.";
+                    if (LearningRecord.completion[selectedNode]) reason = "ISF_LearningNodeReasonCompleted".Translate();
+                    else if (!LearningRecord.ExclusiveNodeFufilled(selectedNode)) reason = "ISF_LearningNodeReasonExclusive".Translate();
                     else
                     {
-                        reason = "Locked:";
+                        reason = "ISF_LearningNodeLocked".Translate();
 
-                        if (selectedNode.pointReq + progress.usedPoints > progress.points) reason += "\nNot enough "+ 
-                                schema.progressTracker.def.skillPointLabelKey.Translate() +".";
+                        if (selectedNode.pointReq + progress.usedPoints > progress.points) reason += "\n" +
+                                "ISF_LearningNodeLockedPoints".Translate(schema.progressTracker.def.skillPointLabelKey.Translate());
 
-                        if (!LearningRecord.PrereqFufilled(selectedNode)) reason += "\nPrior nodes not completed.";
+                        if (!LearningRecord.PrereqFufilled(selectedNode)) reason += "\n" + "ISF_LearningNodeLockedNodes".Translate();
 
-                        if (!LearningRecord.PrereqResearchFufilled(selectedNode)) reason += "\nResearch requirements not completed.";
+                        if (!LearningRecord.PrereqResearchFufilled(selectedNode)) reason += "\n" + "ISF_LearningNodeLockedResearch".Translate();
 
-                        if(!LearningRecord.PrereqStatFufilled(selectedNode)) reason += "\nStat requirements not fufilled.";
+                        if (!LearningRecord.PrereqLevelFulfilled(selectedNode)) reason += "\n" + "ISF_LearningNodeLockedLevel".Translate();
 
-                        if (!LearningRecord.PrereqSkillFufilled(selectedNode)) reason += "\nSkill requirements not fufilled.";
+                        if (!LearningRecord.PrereqStatFufilled(selectedNode)) reason += "\n" + "ISF_LearningNodeLockedStat".Translate();
 
-                        if (!LearningRecord.PrereqHediffFufilled(selectedNode)) reason += "\nHediff requirements not met.";
+                        if (!LearningRecord.PrereqSkillFufilled(selectedNode)) reason += "\n"+ "ISF_LearningNodeLockedSkill".Translate();
+
+                        if (!LearningRecord.PrereqHediffFufilled(selectedNode)) reason += "\n" + "ISF_LearningNodeLockedHediff".Translate();
                     }
 
                     this.leftStartAreaHeight = Mathf.Max(Text.CalcHeight(reason, confirmButton.width - 10f) + 10f, 68f);
@@ -263,7 +265,7 @@ namespace ItsSorceryFramework
 
             if (!node.prereqsResearch.NullOrEmpty())
             {
-                Widgets.LabelCacheHeight(ref rect, "ResearchPrerequisites".Translate() + ":" + LearningRecord.PrereqsModeNotif(node.prereqResearchMode, node.prereqResearchModeMin, prereqsDone.Item2), true, false);
+                Widgets.LabelCacheHeight(ref rect, "ISF_LearningNodeResearchPrereqs".Translate() + ":" + LearningRecord.PrereqsModeNotif(node.prereqResearchMode, node.prereqResearchModeMin, prereqsDone.Item2), true, false);
                 rect.yMin += rect.height;
                 rect.xMin += 6f;
                 foreach (ResearchProjectDef prereq in node.prereqsResearch)
