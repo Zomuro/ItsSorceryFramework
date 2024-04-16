@@ -14,7 +14,7 @@ namespace ItsSorceryFramework
             return true;
         }
 
-        public override float drawWorker(Rect rect)
+        public override float DrawWorker(Rect rect)
         {
             float yMin = rect.yMin;
             float x = rect.x;
@@ -22,9 +22,13 @@ namespace ItsSorceryFramework
             if (def.expItems.NullOrEmpty()) return 0;
 
             Text.Font = GameFont.Small;
-            Widgets.LabelCacheHeight(ref rect, "On using items: ".Colorize(ColoredText.TipSectionTitleColor), true, false);
+            Widgets.LabelCacheHeight(ref rect, 
+                "ISF_LearningProgressEXPUseItem".Translate().Colorize(ColoredText.TipSectionTitleColor), 
+                true, false);
             rect.yMin += rect.height;
-            Widgets.LabelCacheHeight(ref rect, "Gain experience based on the following", true, false);
+            Widgets.LabelCacheHeight(ref rect, 
+                "ISF_LearningProgressEXPUseItemDesc".Translate(), 
+                true, false);
             rect.yMin += rect.height;
 
             rect.x += 6;

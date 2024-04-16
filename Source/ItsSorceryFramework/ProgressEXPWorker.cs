@@ -15,12 +15,12 @@ namespace ItsSorceryFramework
             return true;
         }
 
-        public virtual float drawWorker(Rect rect)
+        public virtual float DrawWorker(Rect rect)
         {
             return 0f;
         }
 
-        public IEnumerable<String> labelsFromDef(IEnumerable<Def> defs)
+        public IEnumerable<String> LabelsFromDef(IEnumerable<Def> defs)
         {
             foreach(var def in defs)
             {
@@ -29,7 +29,7 @@ namespace ItsSorceryFramework
             yield break;
         }
 
-        public virtual void fireEXPMote(Pawn pawn, float exp)
+        public virtual void FireEXPMote(Pawn pawn, float exp)
         {
             MoteMaker.ThrowText(pawn.Position.ToVector3(), pawn.Map,
                 exp.ToStringByStyle(ToStringStyle.FloatMaxTwo, ToStringNumberSense.Offset) + " EXP");

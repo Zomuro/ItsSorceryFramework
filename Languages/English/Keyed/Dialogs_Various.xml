@@ -6,7 +6,7 @@
 	<ISF_EnergyTrackerInverse>Energy inversion</ISF_EnergyTrackerInverse>
 	<ISF_EnergyTrackerInverseDesc>Specifies the flow direction of the energy.\n\nNon-inverted systems typically consume the energy unit (e.g. 100 -> 50 mana) and regain it over time; inverted energy trackers add the unit (e.g. 0 -> 25 mana) and reduce it over time.</ISF_EnergyTrackerInverseDesc>
 	
-	<!-- SorcerySchemaDef Info window - Learning Trackers -->
+	<!-- SorcerySchemaDef Info window - Learning Trackers - Tree -->
 	<ISF_LearningNodeCost>{0} required: {1}</ISF_LearningNodeCost>
 	<ISF_LearningNodePrereqs>Node prerequisites:</ISF_LearningNodePrereqs>
 	<ISF_LearningNodeResearchPrereqs>Research prerequisites:</ISF_LearningNodeResearchPrereqs>
@@ -33,6 +33,7 @@
 	<ISF_LearningNodeLockedHediff>Hediff requirements not met.</ISF_LearningNodeLockedHediff>
 	<ISF_LearningNodeLockedLevel>Level requirements not met.</ISF_LearningNodeLockedLevel>
 	
+	<!-- SorcerySchemaDef Info window - Learning Trackers - Progress -->
 	<ISF_LearningLevelLabel>Level {0}</ISF_LearningLevelLabel>
 	<ISF_LearningLevelLabelCustom>{0} (lvl. {1})</ISF_LearningLevelLabelCustom>
 	<ISF_LearningLevelLabelMax>Max</ISF_LearningLevelLabelMax>
@@ -42,6 +43,44 @@
 	<ISF_LearningProgressLevelDescription>Description</ISF_LearningProgressLevelDescription>
 	<ISF_LearningProgressLevelStatus>Status</ISF_LearningProgressLevelStatus>
 	<ISF_LearningProgressLevelProspects>Prospects</ISF_LearningProgressLevelProspects>
+	
+	<!-- ProgressTrackerTags -->
+	<ISF_LearningProgressEXPCast>On cast:</ISF_LearningProgressEXPCast>
+	<ISF_LearningProgressEXPCastDesc>Gain experience = {0} the base energy cost.</ISF_LearningProgressEXPCastDesc>
+	<ISF_LearningProgressEXPJob>While performing job set(s): {0}</ISF_LearningProgressEXPJob>
+	<ISF_LearningProgressEXPJobDesc>Gain {0} experience every second.</ISF_LearningProgressEXPJobDesc>
+	<ISF_LearningProgressEXPOnDamage>On dealing damage: {0}</ISF_LearningProgressEXPOnDamage>
+	<ISF_LearningProgressEXPOnDamageDesc>Grant experience = {0} the base damage dealt.</ISF_LearningProgressEXPOnDamageDesc>
+	<ISF_LearningProgressEXPOnDamaged>On receiving damage: {0}</ISF_LearningProgressEXPOnDamaged>
+	<ISF_LearningProgressEXPOnDamagedDesc>Grant experience = {0} the base damage received.</ISF_LearningProgressEXPOnDamagedDesc>
+	<ISF_LearningProgressEXPOnKill>On kill:</ISF_LearningProgressEXPOnKill>
+	<ISF_LearningProgressEXPOnKillDamage>On kill with damage: {0}</ISF_LearningProgressEXPOnKillDamage>
+	<ISF_LearningProgressEXPOnKillDesc>Grant {0} experience.</ISF_LearningProgressEXPOnKillDesc>
+	<ISF_LearningProgressEXPSkill>On gaining skill experience: {0}</ISF_LearningProgressEXPSkill>
+	<ISF_LearningProgressEXPSkillDesc>Grant experience = {0} the gained skill experience.</ISF_LearningProgressEXPSkillDesc>
+	<ISF_LearningProgressEXPPassive>Every second:</ISF_LearningProgressEXPPassive>
+	<ISF_LearningProgressEXPPassiveDesc>Gain {0} experience.</ISF_LearningProgressEXPPassiveDesc>
+	<ISF_LearningProgressEXPUseItem>On using items:</ISF_LearningProgressEXPUseItem>
+	<ISF_LearningProgressEXPUseItemDesc>Grant experience based on the following.</ISF_LearningProgressEXPUseItemDesc>
+	
+	<!-- EnergyTrackerComp -->
+	<ISF_EnergyTrackerCompOnTickLabel>Every second, scaling with {STAT}:</ISF_EnergyTrackerCompOnTickLabel>
+	<ISF_EnergyTrackerCompOnTickNormal>Alter current {0} by {1}.</ISF_EnergyTrackerCompOnTickNormal>
+	<ISF_EnergyTrackerCompOnTickOvercharge>If in the overcharge zone, the {ENERGY} per second is {CHANGE}.</ISF_EnergyTrackerCompOnTickOvercharge>
+	<ISF_EnergyTrackerCompOnTickDeficit>If in the deficit zone, the {ENERGY} per second is {CHANGE}.</ISF_EnergyTrackerCompOnTickDeficit>
+	
+	<ISF_EnergyTrackerCompOnDamageLabel>On dealing damage, scaling with {STAT}: {DAMAGEDEFS}</ISF_EnergyTrackerCompOnDamageLabel>
+	<ISF_EnergyTrackerCompOnDamageDesc>Alter {ENERGY} = {FACTOR} of the damage dealt by this pawn.</ISF_EnergyTrackerCompOnDamageDesc>
+	
+	<ISF_EnergyTrackerCompOnDamagedLabel>On receiving damage, scaling with {STAT}: {DAMAGEDEFS}</ISF_EnergyTrackerCompOnDamagedLabel>
+	<ISF_EnergyTrackerCompOnDamagedDesc>Alter {ENERGY} = {FACTOR} of the damage dealt by this pawn.</ISF_EnergyTrackerCompOnDamagedDesc>
+	
+	<ISF_EnergyTrackerCompOnKillLabel>On kill, scaling with {STAT}: {DAMAGEDEFS}</ISF_EnergyTrackerCompOnKillLabel>
+	<ISF_EnergyTrackerCompOnKillDesc>Alter {ENERGY} = {FACTOR} of {CHANGE}.</ISF_EnergyTrackerCompOnKillDesc>
+	
+	<ISF_EnergyTrackerCompOnConsumeLabel>On consuming items, scaling with {STAT}:</ISF_EnergyTrackerCompOnConsumeLabel>
+	<ISF_EnergyTrackerCompOnConsumeDesc>Alter {ENERGY} based on the list below.</ISF_EnergyTrackerCompOnConsumeDesc>
+	<ISF_EnergyTrackerCompOnConsumeItem>  - {ITEM}: {CHANGE}</ISF_EnergyTrackerCompOnConsumeItem>
 	
 	<!-- Dialog_ProgressLevelOptions - options for ProgressTrackers -->
 	<ISF_ProgressLevelOptionsLabel>Options - {0}</ISF_ProgressLevelOptionsLabel>

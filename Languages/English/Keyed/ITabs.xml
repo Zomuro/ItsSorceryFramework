@@ -15,25 +15,6 @@
 	<ISF_BarUnderTip>Deficit range: {0} to {1}</ISF_BarUnderTip>
 	<ISF_BarOverTip>Overcharge range: {0} to {1}</ISF_BarOverTip>
 	
-	<!-- EnergyTrackerComp -->
-	<ISF_EnergyTrackerCompOnTickLabel>Every second, scaling with {STAT}:</ISF_EnergyTrackerCompOnTickLabel>
-	<ISF_EnergyTrackerCompOnTickNormal>Alter current {0} by {1}.</ISF_EnergyTrackerCompOnTickNormal>
-	<ISF_EnergyTrackerCompOnTickOvercharge>If in the overcharge zone, the {ENERGY} per second is {CHANGE}.</ISF_EnergyTrackerCompOnTickOvercharge>
-	<ISF_EnergyTrackerCompOnTickDeficit>If in the deficit zone, the {ENERGY} per second is {CHANGE}.</ISF_EnergyTrackerCompOnTickDeficit>
-	
-	<ISF_EnergyTrackerCompOnDamageLabel>On dealing damage, scaling with {STAT}: {DAMAGEDEFS}</ISF_EnergyTrackerCompOnDamageLabel>
-	<ISF_EnergyTrackerCompOnDamageDesc>Alter {ENERGY} = {FACTOR} of the damage dealt by this pawn.</ISF_EnergyTrackerCompOnDamageDesc>
-	
-	<ISF_EnergyTrackerCompOnDamagedLabel>On receiving damage, scaling with {STAT}: {DAMAGEDEFS}</ISF_EnergyTrackerCompOnDamagedLabel>
-	<ISF_EnergyTrackerCompOnDamagedDesc>Alter {ENERGY} = {FACTOR} of the damage dealt by this pawn.</ISF_EnergyTrackerCompOnDamagedDesc>
-	
-	<ISF_EnergyTrackerCompOnKillLabel>On kill, scaling with {STAT}: {DAMAGEDEFS}</ISF_EnergyTrackerCompOnKillLabel>
-	<ISF_EnergyTrackerCompOnKillDesc>Alter {ENERGY} = {FACTOR} of {CHANGE}.</ISF_EnergyTrackerCompOnKillDesc>
-	
-	<ISF_EnergyTrackerCompOnConsumeLabel>On consuming items, scaling with {STAT}:</ISF_EnergyTrackerCompOnConsumeLabel>
-	<ISF_EnergyTrackerCompOnConsumeDesc>Alter {ENERGY} based on the list below.</ISF_EnergyTrackerCompOnConsumeDesc>
-	<ISF_EnergyTrackerCompOnConsumeItem>  - {ITEM}: {CHANGE}</ISF_EnergyTrackerCompOnConsumeItem>
-	
 	<!-- LearningTrackerDef -->
 	<ISF_SkillPointLabel>skill point(s)</ISF_SkillPointLabel>
 	<ISF_SkillPointUse>{0} {1}</ISF_SkillPointUse>

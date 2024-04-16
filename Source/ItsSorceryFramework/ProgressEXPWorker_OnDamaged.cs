@@ -13,23 +13,25 @@ namespace ItsSorceryFramework
             if (exp <= 0) return false;
             
             progressTracker.AddExperience(Math.Abs(exp) * def.expFactor);
-            fireEXPMote(progressTracker.pawn, Math.Abs(exp) * def.expFactor);
+            FireEXPMote(progressTracker.pawn, Math.Abs(exp) * def.expFactor);
             return true;
         }
 
-        public override float drawWorker(Rect rect)
+        public override float DrawWorker(Rect rect)
         {
             float yMin = rect.yMin;
             float x = rect.x;
 
-            String allDamage = !def.damageDefs.NullOrEmpty() ? labelsFromDef(def.damageDefs).ToStringSafeEnumerable() : "";
+            String allDamage = !def.damageDefs.NullOrEmpty() ? LabelsFromDef(def.damageDefs).ToStringSafeEnumerable() : "";
 
             Text.Font = GameFont.Small;
-            Widgets.LabelCacheHeight(ref rect, "On receiving damage: ".Colorize(ColoredText.TipSectionTitleColor) + allDamage, true, false);
+            Widgets.LabelCacheHeight(ref rect,
+                "ISF_LearningProgressEXPOnDamaged".Translate(allDamage).Colorize(ColoredText.TipSectionTitleColor),
+                true, false);
             rect.yMin += rect.height;
-            Widgets.LabelCacheHeight(ref rect, "Grant experience equal to " + 
-                def.expFactor.ToStringByStyle(ToStringStyle.FloatMaxTwo, ToStringNumberSense.Factor).Colorize(ColoredText.TipSectionTitleColor) +
-                " the base damage received by this pawn.", true, false);
+            Widgets.LabelCacheHeight(ref rect,
+                "ISF_LearningProgressEXPOnDamagedDesc".Translate(def.expFactor.ToStringByStyle(ToStringStyle.FloatMaxTwo, ToStringNumberSense.Factor)),
+                true, false);
             rect.yMin += rect.height;
 
             return rect.yMin - yMin;
