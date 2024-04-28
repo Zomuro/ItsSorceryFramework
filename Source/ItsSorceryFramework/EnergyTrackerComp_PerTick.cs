@@ -6,21 +6,35 @@ namespace ItsSorceryFramework
 {
     public class EnergyTrackerComp_PerTick : EnergyTrackerComp
     {
+        public float cachedRecoveryRate = float.MinValue;
+        
         public EnergyTrackerCompProperties_PerTick Props => (EnergyTrackerCompProperties_PerTick)props;
 
         public override void CompExposeData() { } // saving values to comp, if needed
 
-        public float ToTick => 1.TicksToSeconds(); // set to conversion value from tick to second.
-
-        public float InvFactor => parent.InvMult; // if inverse energy tracker, this is -1f; otherwise, it is 1f.
-
         public StatDef RecoveryRateStatDef => Props.energyRecoveryStatDef ?? StatDefOf_ItsSorcery.ISF_EnergyRecovery;
 
-        public float RecoveryRate => parent.pawn.GetStatValue(RecoveryRateStatDef);
+        public float RecoveryRate
+        {
+            get
+            {
+                if (cachedRecoveryRate == float.MinValue) cachedRecoveryRate = parent.pawn.GetStatValue(RecoveryRateStatDef);
+                return cachedRecoveryRate;
+            }
+        }
+
+        //public float RecoveryRate => parent.pawn.GetStatValue(RecoveryRateStatDef);
+
+        public void ClearStatCache()
+        {
+            cachedRecoveryRate = float.MinValue;
+        }
 
         public override void CompPostTick() 
         {
-            float energyChange = parent.InvMult * ToTick * RecoveryRate;
+            if (parent.pawn.IsHashIntervalTick(ItsSorceryUtility.settings.EnergyStatCacheTicks)) ClearStatCache();
+
+            float energyChange = parent.InvMult * 1.TicksToSeconds() * RecoveryRate;
 
             if (parent.InDeficit)
             {

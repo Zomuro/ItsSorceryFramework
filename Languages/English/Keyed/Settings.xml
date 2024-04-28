@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+  
+	<ISF_Settings_Category>It's Sorcery!</ISF_Settings_Category>
+	
+	<!-- EnergyTracker -->
+	<ISF_Settings_EnergyStatCacheTicks>Avg stat value cache period: {0} ticks</ISF_Settings_EnergyStatCacheTicks>
+	<ISF_Settings_EnergyStatCacheTicksDesc>Set how long stat values are cached within the EnergyTracker on average. Shorter periods are more performance intensive.</ISF_Settings_EnergyStatCacheTicksDesc>
+	
+	<!-- ProgressTracker -->
+	<ISF_Settings_ProgressShowXPMotes>Show EXP motes</ISF_Settings_ProgressShowXPMotes>
+	<ISF_Settings_ProgressShowXPMotesDesc>Toggle if certain ProgressEXPWorkers will throw motes displaying EXP gain.</ISF_Settings_ProgressShowXPMotesDesc>
+	
+	<!-- Default -->
+	<ISF_Settings_Default>Reset to default</ISF_Settings_Default>
+	
+</LanguageData>

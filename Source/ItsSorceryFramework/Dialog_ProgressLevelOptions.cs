@@ -128,7 +128,7 @@ namespace ItsSorceryFramework
 					tracker.AdjustAbilities(selectedOption);
 					tracker.AdjustHediffs(selectedOption);
 					tracker.points += selectedOption.pointGain;
-					tracker.hediff.curStage = tracker.RefreshCurStage();
+					tracker.hediff.cachedCurStage = tracker.RefreshCurStage();
 					Close();
 				}
 			}

@@ -54,7 +54,7 @@ namespace ItsSorceryFramework
         {
             foreach(var et in energyTrackers)
             {
-                if (et.HasLimit) 
+                if (et.HasDeficitZone) 
                 {
                     hasLimits = true;
                     return;

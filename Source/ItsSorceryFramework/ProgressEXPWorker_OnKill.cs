@@ -10,7 +10,8 @@ namespace ItsSorceryFramework
         {
             if (progressTracker.Maxed) return false;
             progressTracker.AddExperience(def.fixedEXP);
-            FireEXPMote(progressTracker.pawn, def.fixedEXP);
+            if (ItsSorceryUtility.settings.ProgressShowXPMotes)
+                FireEXPMote(progressTracker.pawn, def.fixedEXP);
             return true;
         }
 

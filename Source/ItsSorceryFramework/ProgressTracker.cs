@@ -86,7 +86,7 @@ namespace ItsSorceryFramework
                 statFactors = new List<StatModifier>(),
                 capMods = new List<PawnCapacityModifier>()
             };
-            hediff.curStage = newStage;
+            hediff.cachedCurStage = newStage;
         }
 
         public virtual void ProgressTrackerTick() { }

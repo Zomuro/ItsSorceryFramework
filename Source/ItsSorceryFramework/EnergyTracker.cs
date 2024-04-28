@@ -2,6 +2,7 @@
 using RimWorld;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using Verse;
 
@@ -20,6 +21,16 @@ namespace ItsSorceryFramework
         public List<EnergyTrackerComp> comps;
 
         public StatCategoryDef tempStatCategory;
+
+        public float cachedEnergyMax = float.MinValue;
+
+        public float cachedEnergyMin = float.MinValue;
+
+        public float cachedEnergyAbsMax = float.MinValue;
+
+        public float cachedEnergyAbsMin = float.MinValue;
+
+        public float cachedEnergyCostFactor = float.MinValue;
 
         public Texture2D cachedEmptyBarTex;
 
@@ -117,25 +128,54 @@ namespace ItsSorceryFramework
             if(!comps.NullOrEmpty()) foreach (var c in comps) c.CompExposeData();
         }
 
-        public SorcerySchema Schema => schema;
-
         public List<LearningTracker> LearningTrackers => schema.learningTrackers;
 
         public float InvMult => def.inverse ? -1f : 1f;
 
-        public virtual bool HasLimit => HasDeficitZone;
+        public virtual float MinEnergy
+        {
+            get
+            {
+                if (cachedEnergyMin == float.MinValue) cachedEnergyMin = Math.Min(pawn.GetStatValue(def.energyMinStatDef ?? StatDefOf_ItsSorcery.ISF_MinEnergy, true), MaxEnergy);
+                return cachedEnergyMin;
+            }
+        }
 
-        public virtual float MinEnergy => Math.Min(pawn.GetStatValue(def.energyMinStatDef ?? StatDefOf_ItsSorcery.ISF_MinEnergy, true), MaxEnergy);
+        public virtual float MaxEnergy
+        {
+            get
+            {
+                if(cachedEnergyMax == float.MinValue) cachedEnergyMax = pawn.GetStatValue(def.energyMaxStatDef ?? StatDefOf_ItsSorcery.ISF_MaxEnergy, true);
+                return cachedEnergyMax;
+            }
+        }
 
-        public virtual float MaxEnergy => pawn.GetStatValue(def.energyMaxStatDef ?? StatDefOf_ItsSorcery.ISF_MaxEnergy, true);
+        public virtual float AbsMinEnergy
+        {
+            get
+            {
+                if(cachedEnergyAbsMin == float.MinValue) cachedEnergyAbsMin = def.energyAbsMinStatDef is null ? MinEnergy : Math.Min(pawn.GetStatValue(def.energyAbsMinStatDef, true), MinEnergy);
+                return cachedEnergyAbsMin;
+            }
+        }
 
-        public virtual float AbsMinEnergy => def.energyAbsMinStatDef is null ? MinEnergy : Math.Min(pawn.GetStatValue(def.energyAbsMinStatDef, true), MinEnergy);
+        public virtual float AbsMaxEnergy
+        {
+            get
+            {
+                if (cachedEnergyAbsMax == float.MinValue) cachedEnergyAbsMax = def.energyAbsMaxStatDef is null ? MaxEnergy : Math.Max(pawn.GetStatValue(def.energyAbsMaxStatDef, true), MaxEnergy);
+                return cachedEnergyAbsMax;
+            }
+        }
 
-        public virtual float AbsMaxEnergy => def.energyAbsMaxStatDef is null ? MaxEnergy : Math.Max(pawn.GetStatValue(def.energyAbsMaxStatDef, true), MaxEnergy);
-
-        //public virtual StatDef EnergyUnit => def.energyUnitStatDef is null ? StatDefOf_ItsSorcery.ISF_Sorcery_EnergyCost : def.energyUnitStatDef;
-
-        public virtual float EnergyCostFactor => pawn.GetStatValue(def.energyCostFactorStatDef ?? StatDefOf_ItsSorcery.ISF_EnergyCostFactor, true);
+        public virtual float EnergyCostFactor
+        {
+            get
+            {
+                if (cachedEnergyCostFactor == float.MinValue) cachedEnergyCostFactor = pawn.GetStatValue(def.energyCostFactorStatDef ?? StatDefOf_ItsSorcery.ISF_EnergyCostFactor, true);
+                return cachedEnergyCostFactor;
+            }
+        }
 
         public virtual bool HasOverchargeZone => !def.inverse ? AbsMaxEnergy > MaxEnergy : MinEnergy > AbsMinEnergy;
 
@@ -149,8 +189,23 @@ namespace ItsSorceryFramework
 
         public virtual string EnergyDesc => def.energyUnitStatDef.description;
 
+        public void ClearStatCache()
+        {
+            if (pawn.IsHashIntervalTick(ItsSorceryUtility.settings.EnergyStatCacheTicks - 2))
+                cachedEnergyMin = float.MinValue;
+            if (pawn.IsHashIntervalTick(ItsSorceryUtility.settings.EnergyStatCacheTicks - 1))
+                cachedEnergyMax = float.MinValue;
+            if (pawn.IsHashIntervalTick(ItsSorceryUtility.settings.EnergyStatCacheTicks))
+                cachedEnergyAbsMin = float.MinValue;
+            if (pawn.IsHashIntervalTick(ItsSorceryUtility.settings.EnergyStatCacheTicks + 1))
+                cachedEnergyAbsMax = float.MinValue;
+            if (pawn.IsHashIntervalTick(ItsSorceryUtility.settings.EnergyStatCacheTicks + 2))
+                cachedEnergyCostFactor = float.MinValue;
+        }
+
         public virtual void EnergyTrackerTick()
         {
+            ClearStatCache();
             if (!comps.NullOrEmpty()) foreach (var c in comps) c.CompPostTick();
         }
 
@@ -173,10 +228,8 @@ namespace ItsSorceryFramework
         {
             float postEnergy = currentEnergy - InvMult * energyCost;
 
-            if (HasLimit) return !def.inverse ? (postEnergy < MinEnergy && Schema.limitLocked) : (postEnergy > MaxEnergy && Schema.limitLocked);          
+            if (HasDeficitZone) return !def.inverse ? (postEnergy < MinEnergy && schema.limitLocked) : (postEnergy > MaxEnergy && schema.limitLocked);          
             else return !def.inverse ? (postEnergy < MinEnergy) : (postEnergy > MaxEnergy);
-
-            //return !def.inverse ? (currentEnergy - InvMult * energyCost < MinEnergy && Schema.limitLocked) : (currentEnergy - InvMult * energyCost > MaxEnergy && Schema.limitLocked);
         }
 
         public virtual bool TryAlterEnergy(float energyCost, SorceryDef sorceryDef = null, Sorcery sorcery = null)
@@ -208,7 +261,7 @@ namespace ItsSorceryFramework
             // if there isn't room beyond limits (i.e over max or under min), don't bother
             // no side effect defined = no side effects
             HediffDef hediffDef = def.sideEffect;
-            if (hediffDef == null || !HasLimit) return; 
+            if (hediffDef == null || !HasDeficitZone) return; 
 
             Hediff hediff = pawn.health.hediffSet.GetFirstHediffOfDef(hediffDef);
 
@@ -232,8 +285,6 @@ namespace ItsSorceryFramework
                     pawn, MessageTypeDefOf.NegativeEvent, true);
             }
         }
-
-        public virtual void DrawOnGUI(Rect rect) {}
 
         public virtual float DrawOnGUI(ref Rect rect)
         {

@@ -4,23 +4,18 @@ namespace ItsSorceryFramework
 {
     public class Hediff_Progress : HediffWithComps
 	{
-		public override string Label
-		{
-			get
-			{
-				return def.label;
-			}
-		}
+		public ProgressTracker progressTracker;
+
+		public HediffStage cachedCurStage;
+
+		public override string Label => def.label;
 
 		public override HediffStage CurStage
 		{
 			get
 			{
-				if (curStage == null)
-				{
-					return progressTracker?.RefreshCurStage() ?? new HediffStage();
-				}
-				return curStage;
+				if (cachedCurStage == null) cachedCurStage = progressTracker?.RefreshCurStage() ?? new HediffStage();
+				return cachedCurStage;
 			}
 		}
 
@@ -34,22 +29,12 @@ namespace ItsSorceryFramework
 			base.PostAdd(dinfo);
 		}
 
-		public override bool ShouldRemove
-		{
-			get
-			{
-				return Severity <= 0;
-			}
-		}
+		public override bool ShouldRemove => Severity <= 0;
 
 		public override void ExposeData()
 		{
 			base.ExposeData();
 			Scribe_Deep.Look(ref progressTracker, "progressTracker", new object[] { pawn });
 		}
-
-		public ProgressTracker progressTracker;
-
-		public HediffStage curStage;
 	}
 }

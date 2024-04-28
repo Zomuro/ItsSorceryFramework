@@ -116,7 +116,7 @@ namespace ItsSorceryFramework
                 ApplyOptions(special);
             }
 
-            hediff.curStage = RefreshCurStage();
+            hediff.cachedCurStage = RefreshCurStage();
         }
 
         public override HediffStage RefreshCurStage()
