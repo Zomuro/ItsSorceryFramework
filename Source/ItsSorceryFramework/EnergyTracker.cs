@@ -32,6 +32,8 @@ namespace ItsSorceryFramework
 
         public float cachedEnergyCostFactor = float.MinValue;
 
+        public int nextRecacheTick = -1;
+
         public Texture2D cachedEmptyBarTex;
 
         public Texture2D cachedUnderBarTex;
@@ -191,21 +193,18 @@ namespace ItsSorceryFramework
 
         public void ClearStatCache()
         {
-            if (pawn.IsHashIntervalTick(ItsSorceryUtility.settings.EnergyStatCacheTicks - 2))
-                cachedEnergyMin = float.MinValue;
-            if (pawn.IsHashIntervalTick(ItsSorceryUtility.settings.EnergyStatCacheTicks - 1))
-                cachedEnergyMax = float.MinValue;
-            if (pawn.IsHashIntervalTick(ItsSorceryUtility.settings.EnergyStatCacheTicks))
-                cachedEnergyAbsMin = float.MinValue;
-            if (pawn.IsHashIntervalTick(ItsSorceryUtility.settings.EnergyStatCacheTicks + 1))
-                cachedEnergyAbsMax = float.MinValue;
-            if (pawn.IsHashIntervalTick(ItsSorceryUtility.settings.EnergyStatCacheTicks + 2))
-                cachedEnergyCostFactor = float.MinValue;
+            int baseTicks = ItsSorceryUtility.settings.EnergyStatCacheTicks;
+            nextRecacheTick = Find.TickManager.TicksGame + UnityEngine.Random.Range(baseTicks - 3, baseTicks + 3);
+            cachedEnergyMin = float.MinValue;
+            cachedEnergyMax = float.MinValue;
+            cachedEnergyAbsMin = float.MinValue;
+            cachedEnergyAbsMax = float.MinValue;
+            cachedEnergyCostFactor = float.MinValue;
         }
 
         public virtual void EnergyTrackerTick()
         {
-            ClearStatCache();
+            if(Find.TickManager.TicksGame >= nextRecacheTick) ClearStatCache();
             if (!comps.NullOrEmpty()) foreach (var c in comps) c.CompPostTick();
         }
 
@@ -308,31 +307,33 @@ namespace ItsSorceryFramework
             // energy label
             Widgets.LabelCacheHeight(ref labelBox, EnergyLabel.CapitalizeFirst());
 
-            // draws power bar
+            // draws power bar & highlight energy costs
             barBox.height = labelBox.height; // set barbox to labelbox height for consistency
-            DrawEnergyBar(barBox);
+            DrawEnergyBarTip(barBox);
+            if (ItsSorceryUtility.settings.SchemaShowEnergyBar)
+            {
+                DrawEnergyBar(barBox);
+                HightlightEnergyCost(barBox);
+            }
 
             // draw amount of energy
             string energyLabel = currentEnergy.ToString("F0") + " / " + MaxEnergy.ToString("F0");
             Widgets.Label(barBox, energyLabel);
             Text.Anchor = TextAnchor.UpperLeft;
-
-            // highlight energy costs
-            HightlightEnergyCost(barBox);
-
-            // add label/barbox height
-            coordY += labelBox.height;
-            // reset rectangle
-            rect = orgRect;
-            // return accumulated height
-            return coordY;
+ 
+            coordY += labelBox.height; // add label/barbox height
+            rect = orgRect; // reset rectangle
+            return coordY; // return accumulated height
         }
 
         public virtual void DrawEnergyBar(Rect rect)
         {
             Widgets.FillableBar(rect, Mathf.Clamp(EnergyRelativeValue, 0f, 1f), CurrBarTex(), EmptyBarTex, true);
             DrawEnergyBarThresholds(rect);
+        }
 
+        public virtual void DrawEnergyBarTip(Rect rect)
+        {
             if (Mouse.IsOver(rect))
             {
                 string energy = EnergyLabel.CapitalizeFirst();

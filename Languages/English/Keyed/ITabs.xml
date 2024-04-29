@@ -15,6 +15,9 @@
 	<ISF_BarUnderTip>Deficit range: {0} to {1}</ISF_BarUnderTip>
 	<ISF_BarOverTip>Overcharge range: {0} to {1}</ISF_BarOverTip>
 	
+	<!-- ITab_Schema Skill Points -->
+	<ISF_CurrentSkillPoints>Current {0}: {1}</ISF_CurrentSkillPoints>
+	
 	<!-- LearningTrackerDef -->
 	<ISF_SkillPointLabel>skill point(s)</ISF_SkillPointLabel>
 	<ISF_SkillPointUse>{0} {1}</ISF_SkillPointUse>

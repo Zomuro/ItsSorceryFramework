@@ -7,7 +7,9 @@ namespace ItsSorceryFramework
     public class EnergyTrackerComp_PerTick : EnergyTrackerComp
     {
         public float cachedRecoveryRate = float.MinValue;
-        
+
+        public int nextRecacheTick = -1;
+
         public EnergyTrackerCompProperties_PerTick Props => (EnergyTrackerCompProperties_PerTick)props;
 
         public override void CompExposeData() { } // saving values to comp, if needed
@@ -27,12 +29,14 @@ namespace ItsSorceryFramework
 
         public void ClearStatCache()
         {
+            int baseTicks = ItsSorceryUtility.settings.EnergyStatCacheTicks;
+            nextRecacheTick = Find.TickManager.TicksGame + UnityEngine.Random.Range(baseTicks - 3, baseTicks + 3);
             cachedRecoveryRate = float.MinValue;
         }
 
         public override void CompPostTick() 
         {
-            if (parent.pawn.IsHashIntervalTick(ItsSorceryUtility.settings.EnergyStatCacheTicks)) ClearStatCache();
+            if (Find.TickManager.TicksGame >= nextRecacheTick) ClearStatCache();
 
             float energyChange = parent.InvMult * 1.TicksToSeconds() * RecoveryRate;
 

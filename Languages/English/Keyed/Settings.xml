@@ -1,7 +1,18 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <LanguageData>
   
+	<!-- Setting Titles -->
 	<ISF_Settings_Category>It's Sorcery!</ISF_Settings_Category>
+	<ISF_Settings_Schema>SorcerySchema</ISF_Settings_Schema>
+	<ISF_Settings_Energy>EnergyTracker</ISF_Settings_Energy>
+	<ISF_Settings_Learning>LearningTracker</ISF_Settings_Learning>
+	<ISF_Settings_Progress>ProgressTracker</ISF_Settings_Progress>
+	
+	<!-- SorcerySchema -->
+	<ISF_Settings_SchemaShowEnergyBars>Show energy bar(s)</ISF_Settings_SchemaShowEnergyBars>
+	<ISF_Settings_SchemaShowEnergyBarsDesc>Toggle if the Schema ITab will show energy bars for each SorcerySchema.</ISF_Settings_SchemaShowEnergyBarsDesc>
+	<ISF_Settings_SchemaShowSkillPoints>Show remaining skill points</ISF_Settings_SchemaShowSkillPoints>
+	<ISF_Settings_SchemaShowSkillPointsDesc>Toggle if the Schema ITab will show available skill points for each SorcerySchema.</ISF_Settings_SchemaShowSkillPointsDesc>
 	
 	<!-- EnergyTracker -->
 	<ISF_Settings_EnergyStatCacheTicks>Avg stat value cache period: {0} ticks</ISF_Settings_EnergyStatCacheTicks>
@@ -13,5 +24,11 @@
 	
 	<!-- Default -->
 	<ISF_Settings_Default>Reset to default</ISF_Settings_Default>
+	<ISF_Settings_DefaultGlobal>Reset to global default</ISF_Settings_DefaultGlobal>
+	
+	<!-- General -->
+	
+	<!-- Placeholder -->
+	<ISF_Settings_None>No settings at the moment.</ISF_Settings_None>
 	
 </LanguageData>

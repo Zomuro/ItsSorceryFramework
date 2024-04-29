@@ -140,6 +140,19 @@ namespace ItsSorceryFramework
                 coordY += etHeight;
                 tempRect.y += etHeight;
             }
+            
+            // write out skill points, if setting is enabled
+            if (ItsSorceryUtility.settings.SchemaShowSkillPoints)
+            {
+                coordY += 10;
+                tempRect.y += 10;
+                Text.Anchor = TextAnchor.MiddleCenter;
+                Widgets.LabelCacheHeight(ref tempRect, 
+                    "ISF_CurrentSkillPoints".Translate(progressTracker.def.skillPointLabelKey.Translate(), 
+                    progressTracker.points - progressTracker.usedPoints));
+                Text.Anchor = TextAnchor.UpperLeft;
+                coordY += tempRect.height;
+            }
 
             coordY += 10;
             rect.height = coordY;
