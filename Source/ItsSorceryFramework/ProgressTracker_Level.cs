@@ -1,6 +1,7 @@
 ﻿using RimWorld;
 using System;
 using System.Linq;
+using System.Collections.Generic;
 using UnityEngine;
 using Verse;
 
@@ -72,6 +73,8 @@ namespace ItsSorceryFramework
             bool done = false;
             exp += experience;
 
+            List<Window> optionWindows = new List<Window>();
+
             while (!done)
             {
                 if (Maxed) break;
@@ -79,31 +82,37 @@ namespace ItsSorceryFramework
                 {
                     exp -= CurrentLevelEXPReq;
                     hediff.Severity += 1;
-                    NotifyLevelUp(hediff.Severity);
+                    NotifyLevelUp(hediff.Severity, ref optionWindows); // get benefits of level up + add windows
                 }
                 else done = true;
             }
 
-            if(CurrLevel > orgSev) NotifyTotalLevelUp(orgSev);
+            if(CurrLevel > orgSev) NotifyTotalLevelUp(orgSev, optionWindows); // notify total level up and add windows
         }
 
         public override void ForceLevelUp()
         {
             if (hediff == null || Maxed) return;
+            float orgSev = CurrLevel;
             hediff.Severity += 1;
-            NotifyLevelUp(hediff.Severity);
+            List<Window> windows = new List<Window>();
+            NotifyLevelUp(hediff.Severity, ref windows); // level up + get levels
+            NotifyTotalLevelUp(orgSev, windows); // notify level up + get windows
         }
 
-        public override void NotifyLevelUp(float sev)
+        public override void NotifyLevelUp(float sev, ref List<Window> windows)
         {
             ProgressLevelModifier factor = def.getLevelFactor(sev);
+
+            if (Prefs.DevMode && !factor.options.NullOrEmpty()) Log.Message($"Level {CurrLevel}: {factor.options.Count} factor options");
+
             if (factor != null)
             {
                 AdjustModifiers(factor);
                 AdjustAbilities(factor);
                 AdjustHediffs(factor);
                 points += factor.pointGain;
-                ApplyOptions(factor);
+                ApplyOptions(factor, ref windows);
             }
 
             ProgressLevelModifier special = def.getLevelSpecific(sev);
@@ -113,7 +122,7 @@ namespace ItsSorceryFramework
                 AdjustAbilities(special);
                 AdjustHediffs(special);
                 points += special.pointGain;
-                ApplyOptions(special);
+                ApplyOptions(special, ref windows);
             }
 
             hediff.cachedCurStage = RefreshCurStage();
@@ -132,8 +141,13 @@ namespace ItsSorceryFramework
             return stage;
         }
 
-        public override void NotifyTotalLevelUp(float orgSev)
+        public override void NotifyTotalLevelUp(float orgSev, List<Window> windows = null)
         {
+            if (!windows.NullOrEmpty())
+            {
+                foreach(var window in windows.Reverse<Window>()) Find.WindowStack.Add(window);
+            }
+
             Find.LetterStack.ReceiveLetter(def.progressLevelUpKey.Translate(pawn.Name.ToStringShort),
                 def.progressLevelUpDescKey.Translate(orgSev.ToString(), CurrLevel.ToString()), LetterDefOf.NeutralEvent);
         }
@@ -370,11 +384,16 @@ namespace ItsSorceryFramework
             float yMin = rect.yMin;
             float x = rect.x;
 
-            /*Text.Font = GameFont.Medium;
-            Widgets.LabelCacheHeight(ref rect, "Energy", true, false);
-            rect.yMin += rect.height;*/
-            //Text.Font = GameFont.Small;
-            //rect.xMin += 22f;
+            if (schema.energyTrackers.NullOrEmpty())
+            {
+                Text.Font = GameFont.Medium;
+                Text.Anchor = TextAnchor.UpperCenter;
+                Widgets.LabelCacheHeight(ref rect, "ISF_EnergyTrackerCompNone".Translate(), true, false);
+                Text.Font = GameFont.Small;
+                Text.Anchor = TextAnchor.UpperLeft;
+                rect.yMin += rect.height;
+                return rect.yMin - yMin;
+            }
 
             foreach(var et in schema.energyTrackers) // for each energy tracker
             {

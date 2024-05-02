@@ -1,6 +1,7 @@
 ﻿using RimWorld;
 using System;
 using System.Linq;
+using System.Collections.Generic;
 using UnityEngine;
 using Verse;
 
@@ -55,11 +56,14 @@ namespace ItsSorceryFramework
         public override void ForceLevelUp()
         {
             if (hediff == null) return;
+            int orgSev = CurrLevel;
             hediff.Severity += 1;
-            NotifyLevelUp(hediff.Severity);
+            List<Window> windows = new List<Window>();
+            NotifyLevelUp(hediff.Severity, ref windows);
+            NotifyTotalLevelUp(orgSev, windows);
         }
 
-        public override void NotifyLevelUp(float sev)
+        public override void NotifyLevelUp(float sev, ref List<Window> windows)
         {
             ProgressLevelModifier factor = def.getLevelFactor(sev);
             if (factor != null)
@@ -68,7 +72,7 @@ namespace ItsSorceryFramework
                 AdjustAbilities(factor);
                 AdjustHediffs(factor);
                 points += factor.pointGain;
-                ApplyOptions(factor);
+                ApplyOptions(factor, ref windows);
             }
 
             ProgressLevelModifier special = def.getLevelSpecific(sev);
@@ -78,7 +82,7 @@ namespace ItsSorceryFramework
                 AdjustAbilities(special);
                 AdjustHediffs(special);
                 points += special.pointGain;
-                ApplyOptions(special);
+                ApplyOptions(special, ref windows);
             }
 
             hediff.cachedCurStage = RefreshCurStage();
@@ -97,7 +101,7 @@ namespace ItsSorceryFramework
             return stage;
         }
 
-        public override void NotifyTotalLevelUp(float orgSev)
+        public override void NotifyTotalLevelUp(float orgSev, List<Window> windows = null)
         {
             Find.LetterStack.ReceiveLetter(def.progressLevelUpKey.Translate(pawn.Name.ToStringShort),
                 def.progressLevelUpDescKey.Translate(), LetterDefOf.NeutralEvent);

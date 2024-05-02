@@ -64,6 +64,8 @@
 	<ISF_LearningProgressEXPUseItemDesc>Grant experience based on the following.</ISF_LearningProgressEXPUseItemDesc>
 	
 	<!-- EnergyTrackerComp -->
+	<ISF_EnergyTrackerCompNone>N/A</ISF_EnergyTrackerCompNone>
+	
 	<ISF_EnergyTrackerCompOnTickLabel>Every second, scaling with {STAT}:</ISF_EnergyTrackerCompOnTickLabel>
 	<ISF_EnergyTrackerCompOnTickNormal>Alter current {0} by {1}.</ISF_EnergyTrackerCompOnTickNormal>
 	<ISF_EnergyTrackerCompOnTickOvercharge>If in the overcharge zone, the {ENERGY} per second is {CHANGE}.</ISF_EnergyTrackerCompOnTickOvercharge>
@@ -83,7 +85,9 @@
 	<ISF_EnergyTrackerCompOnConsumeItem>  - {ITEM}: {CHANGE}</ISF_EnergyTrackerCompOnConsumeItem>
 	
 	<!-- Dialog_ProgressLevelOptions - options for ProgressTrackers -->
-	<ISF_ProgressLevelOptionsLabel>Options - {0}</ISF_ProgressLevelOptionsLabel>
+	<ISF_ProgressLevelOptionsLabel>Options - {0} (lvl. {1})</ISF_ProgressLevelOptionsLabel>
+	<ISF_ProgressLevelOptionsNone>Select an option.</ISF_ProgressLevelOptionsNone>
+	<ISF_ProgressLevelOptionsConfirm>Confirm</ISF_ProgressLevelOptionsConfirm>
 	
 	
 </LanguageData>

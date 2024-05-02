@@ -115,7 +115,6 @@
     <Compile Include="Dialog_LearningTabs.cs" />
     <Compile Include="LearningTracker_Tree.cs" />
     <Compile Include="LearningTreeNodeDef.cs" />
-    <Compile Include="ProgressTracker_Roguelike.cs" />
     <Compile Include="ProgressTracker_Level.cs" />
     <Compile Include="GizmoTextureUtility.cs" />
     <Compile Include="HarmonyPatches.cs" />

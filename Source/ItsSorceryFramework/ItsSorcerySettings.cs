@@ -59,6 +59,10 @@ namespace ItsSorceryFramework
 
         private float leftHalfViewHeight;
 
+        private const int MinStatCacheTicks = 20;
+
+        private const int MaxStatCacheTicks = 180;
+
         private enum Tab
         {
             Schema,
@@ -140,6 +144,7 @@ namespace ItsSorceryFramework
         {
             Text.Font = GameFont.Medium;
             listing.Label("ISF_Settings_Schema".Translate());
+            listing.GapLine();
 
             Text.Font = GameFont.Small;
             listing.CheckboxLabeled("ISF_Settings_SchemaShowEnergyBars".Translate(),
@@ -155,11 +160,12 @@ namespace ItsSorceryFramework
         {
             Text.Font = GameFont.Medium;
             listing.Label("ISF_Settings_Energy".Translate());
+            listing.GapLine();
 
             Text.Font = GameFont.Small;
             listing.Label("ISF_Settings_EnergyStatCacheTicks".Translate(settings.EnergyStatCacheTicks.ToString(), -1,
                 "ISF_Settings_EnergyStatCacheTicksDesc".Translate()));
-            settings.EnergyStatCacheTicks = (int)listing.Slider(settings.EnergyStatCacheTicks, 20, 180);
+            settings.EnergyStatCacheTicks = (int)listing.Slider(settings.EnergyStatCacheTicks, MinStatCacheTicks, MaxStatCacheTicks);
 
             listing.Gap(8f);
             if (listing.ButtonText("ISF_Settings_Default".Translate())) SettingsEnergyDefault();
@@ -169,6 +175,7 @@ namespace ItsSorceryFramework
         {
             Text.Font = GameFont.Medium;
             listing.Label("ISF_Settings_Learning".Translate());
+            listing.GapLine();
 
             Text.Font = GameFont.Small;
             listing.Label("ISF_Settings_None".Translate());
@@ -181,6 +188,7 @@ namespace ItsSorceryFramework
         {
             Text.Font = GameFont.Medium;
             listing.Label("ISF_Settings_Progress".Translate());
+            listing.GapLine();
 
             Text.Font = GameFont.Small;
             listing.CheckboxLabeled("ISF_Settings_ProgressShowXPMotes".Translate(),
@@ -200,38 +208,82 @@ namespace ItsSorceryFramework
             var listing = new Listing_Standard();
             listing.Begin(generalRect.ContractedBy(10f));
 
-            if (listing.ButtonText("ISF_Settings_DefaultGlobal".Translate())) SettingsGlobalDefault();
+            Text.Font = GameFont.Medium;
+            //listing.Label("ISF_Settings_General".Translate());
+            listing.Label("ISF_Settings_GeneralPresets".Translate());
+            listing.GapLine();
+
+            Text.Font = GameFont.Small;
+            if (listing.ButtonText("ISF_Settings_GeneralPerf".Translate())) SettingsPerf();
+            listing.Gap(8f);
+            if (listing.ButtonText("ISF_Settings_GeneralDefault".Translate())) SettingsGlobalDefault();
+            listing.Gap(8f);
+            if (listing.ButtonText("ISF_Settings_GeneralHigh".Translate())) SettingsHigh();
+
+            //if (listing.ButtonText("ISF_Settings_DefaultGlobal".Translate())) SettingsGlobalDefault();
 
             listing.End();
         }
 
-        public void SettingsSchemaDefault()
+        public void SettingsSchemaDefault(bool msg = true)
         {
             settings.SchemaShowEnergyBar = true;
             settings.SchemaShowSkillPoints = false;
+
+            if(msg) Messages.Message(new Message("ISF_Settings_SchemaDefaultMessage".Translate(), MessageTypeDefOf.NeutralEvent));
         }
 
-        public void SettingsEnergyDefault()
+        public void SettingsEnergyDefault(bool msg = true)
         {
             settings.EnergyStatCacheTicks = 60;
+
+            if (msg) Messages.Message(new Message("ISF_Settings_EnergyDefaultMessage".Translate(), MessageTypeDefOf.NeutralEvent));
         }
 
-        public void SettingsLearningDefault()
+        public void SettingsLearningDefault(bool msg = true)
         {
-
+            if (msg) Messages.Message(new Message("ISF_Settings_LearningDefaultMessage".Translate(), MessageTypeDefOf.NeutralEvent));
         }
 
-        public void SettingsProgressDefault()
+        public void SettingsProgressDefault(bool msg = true)
         {
             settings.ProgressShowXPMotes = true;
+
+            if (msg) Messages.Message(new Message("ISF_Settings_ProgressDefaultMessage".Translate(), MessageTypeDefOf.NeutralEvent));
         }
 
         public void SettingsGlobalDefault()
         {
-            SettingsSchemaDefault();
-            SettingsEnergyDefault();
-            SettingsLearningDefault();
-            SettingsProgressDefault();
+            SettingsSchemaDefault(false);
+            SettingsEnergyDefault(false);
+            SettingsLearningDefault(false);
+            SettingsProgressDefault(false);
+
+            Messages.Message(new Message("ISF_Settings_GeneralDefaultMessage".Translate(), MessageTypeDefOf.NeutralEvent));
+        }
+
+        public void SettingsPerf()
+        {
+            settings.SchemaShowEnergyBar = false;
+            settings.SchemaShowSkillPoints = false;
+
+            settings.EnergyStatCacheTicks = MaxStatCacheTicks;
+
+            settings.ProgressShowXPMotes = false;
+
+            Messages.Message(new Message("ISF_Settings_GeneralPerfMessage".Translate(), MessageTypeDefOf.NeutralEvent));
+        }
+
+        public void SettingsHigh()
+        {
+            settings.SchemaShowEnergyBar = true;
+            settings.SchemaShowSkillPoints = true;
+
+            settings.EnergyStatCacheTicks = MinStatCacheTicks;
+
+            settings.ProgressShowXPMotes = true;
+
+            Messages.Message(new Message("ISF_Settings_GeneralHighMessage".Translate(), MessageTypeDefOf.NeutralEvent));
         }
 
 

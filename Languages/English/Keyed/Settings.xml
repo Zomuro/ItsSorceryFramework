@@ -27,6 +27,10 @@
 	<ISF_Settings_DefaultGlobal>Reset to global default</ISF_Settings_DefaultGlobal>
 	
 	<!-- General -->
+	<ISF_Settings_GeneralPresets>Presets</ISF_Settings_GeneralPresets>
+	<ISF_Settings_GeneralPerf>Performance</ISF_Settings_GeneralPerf>
+	<ISF_Settings_GeneralDefault>Default</ISF_Settings_GeneralDefault>
+	<ISF_Settings_GeneralHigh>High</ISF_Settings_GeneralHigh>
 	
 	<!-- Placeholder -->
 	<ISF_Settings_None>No settings at the moment.</ISF_Settings_None>

@@ -421,7 +421,7 @@ namespace ItsSorceryFramework
 
             // return if it isn't a sorceryDef or isn't the same energytracker
             SorceryDef sorceryDef = (command_Sorcery?.Ability as Sorcery)?.sorceryDef;
-            if (sorceryDef == null || !sorceryDef.sorcerySchema.energyTrackerDefs.Contains(def)) return;
+            if (sorceryDef == null || sorceryDef.sorcerySchema != schema.def || !sorceryDef.sorcerySchema.energyTrackerDefs.Contains(def)) return;
 
             float energyCost = sorceryDef.statBases.GetStatValueFromList(def.energyUnitStatDef, 0) * EnergyCostFactor;
             if (energyCost == 0f) return; // no energy cost? don't bother with showing it!

@@ -147,9 +147,9 @@ namespace ItsSorceryFramework
                 coordY += 10;
                 tempRect.y += 10;
                 Text.Anchor = TextAnchor.MiddleCenter;
-                Widgets.LabelCacheHeight(ref tempRect, 
-                    "ISF_CurrentSkillPoints".Translate(progressTracker.def.skillPointLabelKey.Translate(), 
+                Widgets.LabelCacheHeight(ref tempRect, "ISF_CurrentSkillPoints".Translate(progressTracker.def.skillPointLabelKey.Translate(),
                     progressTracker.points - progressTracker.usedPoints));
+                    //$"{progressTracker.def.skillPointLabelKey.Translate().CapitalizeFirst()}: {progressTracker.points - progressTracker.usedPoints}"
                 Text.Anchor = TextAnchor.UpperLeft;
                 coordY += tempRect.height;
             }

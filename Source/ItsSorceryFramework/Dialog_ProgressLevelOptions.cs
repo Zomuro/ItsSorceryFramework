@@ -21,17 +21,21 @@ namespace ItsSorceryFramework
 
 		public ProgressTracker tracker;
 
+		public int setLevel = -1;
+
 		public override Vector2 InitialSize => new Vector2(800, 600);
 
 		public override bool IsDebug => false;
 
-		public Dialog_ProgressLevelOptions(IEnumerable<DebugMenuOption> options, ProgressTracker progressTracker) : base(options)
+		public Dialog_ProgressLevelOptions(IEnumerable<DebugMenuOption> options, ProgressTracker progressTracker, int level) : base(options)
 		{
 			tracker = progressTracker;
 			closeOnClickedOutside = false;
 			forcePause = true;
 			closeOnCancel = false;
 			doCloseX = Prefs.DevMode; // true if in dev mode; false otherwise
+			onlyOneOfTypeAllowed = false;
+			setLevel = level;
 		}
 
 		protected override int HighlightedIndex
@@ -83,7 +87,7 @@ namespace ItsSorceryFramework
 			// Title for options listing
 			Text.Font = GameFont.Medium;
 			Rect titleLeftHalfRect = new Rect(leftHalfRect);
-			Widgets.LabelCacheHeight(ref titleLeftHalfRect, "ISF_ProgressLevelOptionsLabel".Translate(tracker.schema.def.LabelCap));
+			Widgets.LabelCacheHeight(ref titleLeftHalfRect, "ISF_ProgressLevelOptionsLabel".Translate(tracker.schema.def.LabelCap, setLevel));
 			leftHalfRect.yMin += titleLeftHalfRect.height;
 			Text.Font = GameFont.Small;
 
@@ -103,26 +107,26 @@ namespace ItsSorceryFramework
 			// seperator line between left and right
 			Widgets.DrawLine(new Vector2(rightHalfRect.x, rightHalfRect.y), new Vector2(rightHalfRect.x, rightHalfRect.yMax), Color.grey, 1);
 
+			// dividing up right side into view of options + confirmation area
+			Rect selectDetailRect = new Rect(rightHalfRect.ContractedBy(10f));
+
+			// draw background menu area
+			Widgets.DrawMenuSection(selectDetailRect);
+
 			// Plotting out info on options
 			// skip it all if no option is selected
 			if (selectedOption != null)
             {
-				// dividing up right side into view of options + confirmation area
-				Rect selectDetailRect = new Rect(rightHalfRect);
-				selectDetailRect.xMin += 20f;
-				selectDetailRect.height -= 100;
-				Rect confirmRect = new Rect(rightHalfRect);
-				confirmRect.yMin = selectDetailRect.yMax;
-
-				// seperator line between details and confirm
-				Widgets.DrawLine(new Vector2(selectDetailRect.x, selectDetailRect.yMax), new Vector2(selectDetailRect.xMax, selectDetailRect.yMax), Color.grey, 1);
-
 				// show information on option effect
-				DrawOptionDetails(selectDetailRect);
+				Rect detailRect = new Rect(selectDetailRect.x, selectDetailRect.y, selectDetailRect.width, selectDetailRect.height * 4f / 5f).ContractedBy(10f);
+				DrawOptionDetails(detailRect);
 
 				// draw confirmation button
-				Rect confirmButtonRect = new Rect(confirmRect.x + confirmRect.width /4, confirmRect.y + confirmRect.height / 4,  confirmRect.width / 2, confirmRect.height / 2);
-				if(Widgets.ButtonText(confirmButtonRect, "Confirm")) // if hit w/ a selected option, adjust the following
+				Rect confirmRect = new Rect(selectDetailRect.x + selectDetailRect.width/4f, selectDetailRect.y + selectDetailRect.height * 17f/20f, 
+					selectDetailRect.width / 2f, selectDetailRect.width / 10f);
+				
+				//Rect confirmButtonRect = new Rect(confirmRect.x + confirmRect.width /4, confirmRect.y + confirmRect.height / 4,  confirmRect.width / 2, confirmRect.height / 2);
+				if(Widgets.ButtonText(confirmRect, "ISF_ProgressLevelOptionsConfirm".Translate())) // if hit w/ a selected option, adjust the following
                 {
 					tracker.AdjustModifiers(selectedOption);
 					tracker.AdjustAbilities(selectedOption);
@@ -131,6 +135,12 @@ namespace ItsSorceryFramework
 					tracker.hediff.cachedCurStage = tracker.RefreshCurStage();
 					Close();
 				}
+			}
+            else
+            {
+				Text.Anchor = TextAnchor.MiddleCenter;
+				Widgets.Label(selectDetailRect, "ISF_ProgressLevelOptionsNone".Translate());
+				Text.Anchor = TextAnchor.UpperLeft;
 			}
 		}
 

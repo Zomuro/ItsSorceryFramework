@@ -95,9 +95,9 @@ namespace ItsSorceryFramework
 
         public virtual void ForceLevelUp() { }
 
-        public virtual void NotifyLevelUp(float sev) { }
+        public virtual void NotifyLevelUp(float sev, ref List<Window> windows) { }
 
-        public virtual void ApplyOptions(ProgressLevelModifier modifier)
+        public virtual void ApplyOptions(ProgressLevelModifier modifier, ref List<Window> windows)
         {
             int select = Math.Min(modifier.optionChoices, modifier.options.Count);
 
@@ -125,7 +125,8 @@ namespace ItsSorceryFramework
             List<DebugMenuOption> options;
             if (select < 0 || select > modifier.options.Count) options = LevelOptions(modifier).ToList();
             else options = LevelOptions(modifier).OrderBy(x => rand.Next()).Take(select).ToList();
-            Find.WindowStack.Add(new Dialog_ProgressLevelOptions(options, this));
+            windows.Add(new Dialog_ProgressLevelOptions(options, this, CurrLevel));
+            //Find.WindowStack.Add(new Dialog_ProgressLevelOptions(options, this, CurrLevel));
         }
 
         public virtual IEnumerable<DebugMenuOption> LevelOptions(ProgressLevelModifier modifier)
@@ -289,7 +290,7 @@ namespace ItsSorceryFramework
 
         public virtual HediffStage RefreshCurStage() => new HediffStage();
 
-        public virtual void NotifyTotalLevelUp(float orgSev)
+        public virtual void NotifyTotalLevelUp(float orgSev, List<Window> windows = null)
         {
             Find.LetterStack.ReceiveLetter("Level up.",
                 "This pawn has leveled up.", LetterDefOf.NeutralEvent);

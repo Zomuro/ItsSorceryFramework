@@ -20,9 +20,6 @@ namespace ItsSorceryFramework
 
         private SorcerySchema cachedSchema; // used for infocard
 
-        // don't know if we need this: most of the custom stuff arises from the trackers linked to the schema
-        //public Type sorcerySchemaClass = typeof(SorcerySchema);
-
         public Pawn TempPawn
         {
             get
@@ -93,11 +90,11 @@ namespace ItsSorceryFramework
 
             bool error = false;
 
-            if (energyTrackerDefs.NullOrEmpty())
+            /*if (energyTrackerDefs.NullOrEmpty())
             {
                 error = true;
                 Log.Warning($"It's Sorcery! Error: {defName} cannot have null or no EnergyTrackers.");
-            }
+            }*/
 
             if (!energyTrackerDefs.NullOrEmpty() && energyTrackerDefs.Count != energyTrackerDefs.Distinct().Count())
             {

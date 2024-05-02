@@ -39,12 +39,18 @@ namespace ItsSorceryFramework
 				return;
 			}
 
+			if(Schema.energyTrackers is null) // don't bother cost checking if no energy tracker
+            {
+				base.DisabledCheck();
+				return;
+			}
+
 			foreach(var et in Schema.energyTrackers)
             {
 				if (et.WouldReachLimitEnergy(def.statBases.GetStatValueFromList(et.def.energyUnitStatDef, 0), def))
 				{
 					base.DisableWithReason(et.DisableCommandReason().Translate(pawn.NameFullColored));
-					return;
+					//return;
 				}
 			}
 
@@ -106,12 +112,6 @@ namespace ItsSorceryFramework
 			return (energyTrackerDef.LabelCap[0]) + ": " +
 					Math.Round(value, 2).ToString();
 		}
-
-		/*public string TempRightLabelPartVancian(EnergyTrackerDef energyTrackerDef, float value)
-		{
-			return (energyTrackerDef.energyLabelKey.Translate().CapitalizeFirst()[0]) + ": " +
-					Math.Round(value, 2).ToString() + "/" + Math.Round(value, 2).ToString();
-		}*/
 
 		public SorcerySchema Schema
         {

@@ -24,6 +24,8 @@
 	
 	<!-- Hediff (ProgressTracker) -->
 	<ISF_LevelLabel>(level {0}, {1})</ISF_LevelLabel>
+	<ISF_LevelLabelMax>(level {0}, MAX)</ISF_LevelLabelMax>
 	<ISF_LevelLabelCustom>({0}, {1})</ISF_LevelLabelCustom>
+	<ISF_LevelLabelCustomMAX>({0}, MAX)</ISF_LevelLabelCustomMAX>
 	
 </LanguageData>
