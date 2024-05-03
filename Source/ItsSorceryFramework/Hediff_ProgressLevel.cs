@@ -8,32 +8,32 @@ namespace ItsSorceryFramework
 		{
 			get
 			{
-				if (progressTracker != null)
+				if (schema?.progressTracker != null)
 				{
-					if(progressTracker.CurLevelLabel.NullOrEmpty())
+					if(schema.progressTracker.CurLevelLabel.NullOrEmpty())
                     {
-						if (level == (int)def.maxSeverity)
-							return def.label + " " + "ISF_LevelLabelMax".Translate(level.ToString());
-						return def.label + " " + "ISF_LevelLabel".Translate(level.ToString());
+						if (Level == (int)def.maxSeverity)
+							return $"{def.label} (lvl. {Level}, MAX)";
+						return $"{def.label} (lvl. {Level})";  //def.label + " " + "ISF_LevelLabel".Translate(Level.ToString());
 					}
 
 					else
 					{
-						if (level == (int)def.maxSeverity)
-							return def.label + " " + "ISF_LevelLabelCustomMax".Translate(progressTracker.CurLevelLabel);
-						return def.label + " " + "ISF_LevelLabelCustom".Translate(progressTracker.CurLevelLabel);
+						if (Level == (int)def.maxSeverity)
+							return $"{def.label} ({schema.progressTracker.CurLevelLabel}, MAX)"; //def.label + " " + "ISF_LevelLabelCustomMax".Translate(schema.progressTracker.CurLevelLabel);
+						return $"{def.label} ({schema.progressTracker.CurLevelLabel})"; //def.label + " " + "ISF_LevelLabelCustom".Translate(schema.progressTracker.CurLevelLabel);
 					}
 				}
-				return def.label + " x" + this.level;
+				return def.label + " x" + Level;
 			}
 		}
 
-		public virtual int level
+		public virtual int Level
         {
             get
             {
-				return (int) Severity;
-            }
+				return (int)Severity;
+			}
         }
 
 		public override void Tick()

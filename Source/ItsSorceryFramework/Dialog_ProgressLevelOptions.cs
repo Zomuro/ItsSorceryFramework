@@ -140,9 +140,9 @@ namespace ItsSorceryFramework
 						$"\nProgressTracker offets: {tracker.statOffsetsTotal.ToStringSafeEnumerable()}" +
 						$"\nProgressTracker factors: {tracker.statFactorsTotal.ToStringSafeEnumerable()}" +
 						$"\nProgressTracker cap mods: {tracker.capModsTotal.ToStringSafeEnumerable()}" +
-						$"\nHediff ProgressTracker offets: {tracker.hediff.progressTracker.statOffsetsTotal.ToStringSafeEnumerable()}" +
-						$"\nHediff ProgressTracker factors: {tracker.hediff.progressTracker.statFactorsTotal.ToStringSafeEnumerable()}" +
-						$"\nHediff ProgressTracker cap mods: {tracker.hediff.progressTracker.capModsTotal.ToStringSafeEnumerable()}");
+						$"\nHediff ProgressTracker offets: {tracker.hediff.schema.progressTracker.statOffsetsTotal.ToStringSafeEnumerable()}" +
+						$"\nHediff ProgressTracker factors: {tracker.hediff.schema.progressTracker.statFactorsTotal.ToStringSafeEnumerable()}" +
+						$"\nHediff ProgressTracker cap mods: {tracker.hediff.schema.progressTracker.capModsTotal.ToStringSafeEnumerable()}");
 					}
 
 					Close();

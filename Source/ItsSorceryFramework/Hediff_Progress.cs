@@ -4,7 +4,9 @@ namespace ItsSorceryFramework
 {
     public class Hediff_Progress : HediffWithComps
 	{
-		public ProgressTracker progressTracker;
+		//public ProgressTracker progressTracker;
+
+		public SorcerySchema schema;
 
 		public HediffStage cachedCurStage;
 
@@ -14,7 +16,7 @@ namespace ItsSorceryFramework
 		{
 			get
 			{
-				if (cachedCurStage == null) cachedCurStage = progressTracker?.RefreshCurStage() ?? new HediffStage();
+				if (cachedCurStage == null) cachedCurStage = schema?.progressTracker?.RefreshCurStage() ?? new HediffStage();
 				return cachedCurStage;
 			}
 		}
@@ -34,18 +36,21 @@ namespace ItsSorceryFramework
 		public override void ExposeData()
 		{
 			base.ExposeData();
-			Scribe_Deep.Look(ref progressTracker, "progressTracker", new object[] { pawn });
+			//Scribe_Deep.Look(ref progressTracker, "progressTracker", new object[] { pawn });
 
-            if (Scribe.mode == LoadSaveMode.LoadingVars) // after loading stuff, get cur stage
+			//Scribe_Deep.Look(ref schema, "schema", new object[] { pawn });
+			Scribe_References.Look(ref schema, "schema");
+
+			if (Scribe.mode == LoadSaveMode.PostLoadInit) // after loading stuff, get cur stage
             {
                 if (Prefs.DevMode && ItsSorceryUtility.settings.ShowItsSorceryDebug)
                 {
-					Log.Message($"Hediff {def.defName} ProgressTracker null? {progressTracker is null}" +
-						$"\nProgressTracker offets: {progressTracker.statOffsetsTotal.ToStringSafeEnumerable()}" +
-						$"\nProgressTracker factors: {progressTracker.statFactorsTotal.ToStringSafeEnumerable()}" +
-						$"\nProgressTracker cap mods: {progressTracker.capModsTotal.ToStringSafeEnumerable()}");
+					Log.Message($"Hediff {def.defName} ProgressTracker null? {schema?.progressTracker is null}" +
+						$"\nProgressTracker offets: {schema?.progressTracker.statOffsetsTotal.ToStringSafeEnumerable()}" +
+						$"\nProgressTracker factors: {schema?.progressTracker.statFactorsTotal.ToStringSafeEnumerable()}" +
+						$"\nProgressTracker cap mods: {schema?.progressTracker.capModsTotal.ToStringSafeEnumerable()}");
 				}
-                cachedCurStage = progressTracker?.RefreshCurStage() ?? new HediffStage();
+                cachedCurStage = schema?.progressTracker?.RefreshCurStage() ?? new HediffStage();
             }
         }
 	}

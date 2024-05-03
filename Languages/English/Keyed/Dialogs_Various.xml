@@ -36,7 +36,7 @@
 	<!-- SorcerySchemaDef Info window - Learning Trackers - Progress -->
 	<ISF_LearningLevelLabel>Level {0}</ISF_LearningLevelLabel>
 	<ISF_LearningLevelLabelCustom>{0} (lvl. {1})</ISF_LearningLevelLabelCustom>
-	<ISF_LearningLevelLabelMax>Max</ISF_LearningLevelLabelMax>
+	<ISF_LearningLevelLabelMax>MAX</ISF_LearningLevelLabelMax>
 	<ISF_LearningProgressLevel>Level {0}:</ISF_LearningProgressLevel>
 	<ISF_LearningProgressLevelCustom>Level {0} ({1}):</ISF_LearningProgressLevelCustom>
 	<ISF_LearningProgressLevelBoundary>- - -</ISF_LearningProgressLevelBoundary>

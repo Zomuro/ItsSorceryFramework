@@ -46,15 +46,9 @@ namespace ItsSorceryFramework
         {
             base.Initialize();
 
-            /*if(hediff is null)
-            {
-                
-            }*/
-
-            // temporary arrangement
             Hediff_ProgressLevel progressHediff = HediffMaker.MakeHediff(def.progressHediff, pawn, null) as Hediff_ProgressLevel;
             progressHediff.Severity = def.progressHediff.initialSeverity;
-            progressHediff.progressTracker = this;
+            progressHediff.schema = schema;
             pawn.health.AddHediff(progressHediff, null, null, null);
             hediff = progressHediff;
 
@@ -150,9 +144,9 @@ namespace ItsSorceryFramework
                         $"\nProgressTracker offets: {statOffsetsTotal.ToStringSafeEnumerable()}" +
                         $"\nProgressTracker factors: {statFactorsTotal.ToStringSafeEnumerable()}" +
                         $"\nProgressTracker cap mods: {capModsTotal.ToStringSafeEnumerable()}" +
-                        $"\nHediff ProgressTracker offets: {hediff.progressTracker.statOffsetsTotal.ToStringSafeEnumerable()}" +
-                        $"\nHediff ProgressTracker factors: {hediff.progressTracker.statFactorsTotal.ToStringSafeEnumerable()}" +
-                        $"\nHediff ProgressTracker cap mods: {hediff.progressTracker.capModsTotal.ToStringSafeEnumerable()}");
+                        $"\nHediff ProgressTracker offets: {hediff.schema.progressTracker.statOffsetsTotal.ToStringSafeEnumerable()}" +
+                        $"\nHediff ProgressTracker factors: {hediff.schema.progressTracker.statFactorsTotal.ToStringSafeEnumerable()}" +
+                        $"\nHediff ProgressTracker cap mods: {hediff.schema.progressTracker.capModsTotal.ToStringSafeEnumerable()}");
             }
 
             hediff.cachedCurStage = RefreshCurStage();
