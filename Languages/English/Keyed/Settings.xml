@@ -32,6 +32,9 @@
 	<ISF_Settings_GeneralDefault>Default</ISF_Settings_GeneralDefault>
 	<ISF_Settings_GeneralHigh>High</ISF_Settings_GeneralHigh>
 	
+	<ISF_Settings_GeneralShowDebug>Show It's Sorcery! debug logs</ISF_Settings_GeneralShowDebug>
+	<ISF_Settings_GeneralShowDebugDesc>Toggle to show useful log message information. Intended for modders.</ISF_Settings_GeneralShowDebugDesc>
+	
 	<!-- Placeholder -->
 	<ISF_Settings_None>No settings at the moment.</ISF_Settings_None>
 	

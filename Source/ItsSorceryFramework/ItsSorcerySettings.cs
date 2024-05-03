@@ -27,6 +27,9 @@ namespace ItsSorceryFramework
         // ProgressTracker
         public bool ProgressShowXPMotes = true;
 
+        // General
+        public bool ShowItsSorceryDebug = false;
+
         public override void ExposeData()
         {
             // ITab
@@ -42,7 +45,10 @@ namespace ItsSorceryFramework
 
             // ProgressTracker
             Scribe_Values.Look(ref ProgressShowXPMotes, "ProgressShowXPMotes", true);
-            
+
+            // ProgressTracker
+            Scribe_Values.Look(ref ShowItsSorceryDebug, "ShowItsSorceryDebug", false);
+
             base.ExposeData();
         }
     }
@@ -202,14 +208,11 @@ namespace ItsSorceryFramework
         {
             Rect generalRect = rect.ContractedBy(10f);
             Widgets.DrawMenuSection(generalRect);
-            
-            //Widgets.DrawBoxSolidWithOutline(generalRect, Color.clear, Color.grey);
-            
+                        
             var listing = new Listing_Standard();
             listing.Begin(generalRect.ContractedBy(10f));
 
             Text.Font = GameFont.Medium;
-            //listing.Label("ISF_Settings_General".Translate());
             listing.Label("ISF_Settings_GeneralPresets".Translate());
             listing.GapLine();
 
@@ -219,6 +222,10 @@ namespace ItsSorceryFramework
             if (listing.ButtonText("ISF_Settings_GeneralDefault".Translate())) SettingsGlobalDefault();
             listing.Gap(8f);
             if (listing.ButtonText("ISF_Settings_GeneralHigh".Translate())) SettingsHigh();
+            listing.Gap(8f);
+
+            listing.CheckboxLabeled("ISF_Settings_GeneralShowDebug".Translate(),
+                ref settings.ShowItsSorceryDebug, "ISF_Settings_GeneralShowDebugDesc".Translate());
 
             //if (listing.ButtonText("ISF_Settings_DefaultGlobal".Translate())) SettingsGlobalDefault();
 

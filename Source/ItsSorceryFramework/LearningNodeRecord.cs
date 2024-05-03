@@ -59,8 +59,8 @@ namespace ItsSorceryFramework
 
         public virtual void InitializeMetrics()
         {
-            if (!Prefs.DevMode) return;
-            Log.Message($"{schema.def.LabelCap} Stats; Learning node count: {AllNodes.Count}; Completion list count {completion.Count}");
+            if (Prefs.DevMode && ItsSorceryUtility.settings.ShowItsSorceryDebug)
+                Log.Message($"{schema.def.LabelCap} Stats; Learning node count: {AllNodes.Count}; Completion list count {completion.Count}");
         }
 
         public List<LearningTreeNodeDef> AllNodes => completion.Keys.ToList();

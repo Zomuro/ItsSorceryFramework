@@ -35,6 +35,18 @@ namespace ItsSorceryFramework
 		{
 			base.ExposeData();
 			Scribe_Deep.Look(ref progressTracker, "progressTracker", new object[] { pawn });
-		}
+
+            if (Scribe.mode == LoadSaveMode.LoadingVars) // after loading stuff, get cur stage
+            {
+                if (Prefs.DevMode && ItsSorceryUtility.settings.ShowItsSorceryDebug)
+                {
+					Log.Message($"Hediff {def.defName} ProgressTracker null? {progressTracker is null}" +
+						$"\nProgressTracker offets: {progressTracker.statOffsetsTotal.ToStringSafeEnumerable()}" +
+						$"\nProgressTracker factors: {progressTracker.statFactorsTotal.ToStringSafeEnumerable()}" +
+						$"\nProgressTracker cap mods: {progressTracker.capModsTotal.ToStringSafeEnumerable()}");
+				}
+                cachedCurStage = progressTracker?.RefreshCurStage() ?? new HediffStage();
+            }
+        }
 	}
 }

@@ -50,6 +50,23 @@ namespace ItsSorceryFramework
             }
         }
 
+        public override void ResolveReferences()
+        {
+            base.ResolveReferences();
+
+            bool error = false;
+
+            int hediffCheckCount =  SorcerySchemaUtility.ProgressTrackerDefs.Where(x => x.progressHediff == progressHediff).Count();
+
+            if (hediffCheckCount > 1)
+            {
+                error = true;
+                Log.Warning($"It's Sorcery! Error: {defName} should not have the same hediff as other ProgressTrackerDefs.");
+            }
+
+            if (error) Log.Error("The ProgressTrackerDef " + defName + " has errors.");
+        }
+
         public IEnumerable<StatDrawEntry> specialDisplayMods(ProgressLevelModifier levelMod)
         {
             if (levelMod == null) yield break;

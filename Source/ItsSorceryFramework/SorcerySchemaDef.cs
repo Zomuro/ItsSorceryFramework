@@ -90,12 +90,6 @@ namespace ItsSorceryFramework
 
             bool error = false;
 
-            /*if (energyTrackerDefs.NullOrEmpty())
-            {
-                error = true;
-                Log.Warning($"It's Sorcery! Error: {defName} cannot have null or no EnergyTrackers.");
-            }*/
-
             if (!energyTrackerDefs.NullOrEmpty() && energyTrackerDefs.Count != energyTrackerDefs.Distinct().Count())
             {
                 error = true;
@@ -120,7 +114,14 @@ namespace ItsSorceryFramework
                 Log.Warning($"It's Sorcery! Error: {defName} cannot have a null ProgressTracker.");
             }
 
-            if (error) Log.Error("The LearningTrackerDef " + defName + " has errors.");
+            int progressTrackerDupCount = SorcerySchemaUtility.SorcerySchemaDefs.Where(x => x.progressTrackerDef == progressTrackerDef).Count();
+            if (progressTrackerDupCount > 1)
+            {
+                error = true;
+                Log.Warning($"It's Sorcery! Error: {defName} cannot share the ProgressTracker {progressTrackerDef.defName} with another SorcerySchema.");
+            }
+
+            if (error) Log.Error("The SorcerySchemaDef " + defName + " has errors.");
 
         }
 

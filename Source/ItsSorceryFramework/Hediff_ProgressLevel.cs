@@ -14,18 +14,15 @@ namespace ItsSorceryFramework
                     {
 						if (level == (int)def.maxSeverity)
 							return def.label + " " + "ISF_LevelLabelMax".Translate(level.ToString());
-						return def.label + " " + "ISF_LevelLabel".Translate(level.ToString(), progressTracker.CurrProgress.ToString("P2"));
+						return def.label + " " + "ISF_LevelLabel".Translate(level.ToString());
 					}
 
 					else
 					{
 						if (level == (int)def.maxSeverity)
 							return def.label + " " + "ISF_LevelLabelCustomMax".Translate(progressTracker.CurLevelLabel);
-						return def.label + " " + "ISF_LevelLabelCustom".Translate(progressTracker.CurLevelLabel, progressTracker.CurrProgress.ToString("P2"));
+						return def.label + " " + "ISF_LevelLabelCustom".Translate(progressTracker.CurLevelLabel);
 					}
-
-
-					//return def.label + " " + "ISF_LevelLabelCustom".Translate(progressTracker.CurLevelLabel, progressTracker.CurrProgress.ToString("P2"));
 				}
 				return def.label + " x" + this.level;
 			}

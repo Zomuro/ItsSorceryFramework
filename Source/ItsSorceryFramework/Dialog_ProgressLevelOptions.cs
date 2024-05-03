@@ -133,6 +133,18 @@ namespace ItsSorceryFramework
 					tracker.AdjustHediffs(selectedOption);
 					tracker.points += selectedOption.pointGain;
 					tracker.hediff.cachedCurStage = tracker.RefreshCurStage();
+
+					if (Prefs.DevMode && ItsSorceryUtility.settings.ShowItsSorceryDebug)
+					{
+						Log.Message($"{tracker.schema.def.defName}.{tracker.def.defName}:" +
+						$"\nProgressTracker offets: {tracker.statOffsetsTotal.ToStringSafeEnumerable()}" +
+						$"\nProgressTracker factors: {tracker.statFactorsTotal.ToStringSafeEnumerable()}" +
+						$"\nProgressTracker cap mods: {tracker.capModsTotal.ToStringSafeEnumerable()}" +
+						$"\nHediff ProgressTracker offets: {tracker.hediff.progressTracker.statOffsetsTotal.ToStringSafeEnumerable()}" +
+						$"\nHediff ProgressTracker factors: {tracker.hediff.progressTracker.statFactorsTotal.ToStringSafeEnumerable()}" +
+						$"\nHediff ProgressTracker cap mods: {tracker.hediff.progressTracker.capModsTotal.ToStringSafeEnumerable()}");
+					}
+
 					Close();
 				}
 			}

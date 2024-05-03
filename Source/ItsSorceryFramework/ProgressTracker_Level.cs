@@ -45,11 +45,29 @@ namespace ItsSorceryFramework
         public override void Initialize()
         {
             base.Initialize();
-            if(pawn.health.hediffSet.GetFirstHediffOfDef(def.progressHediff) == null)
+
+            /*if(hediff is null)
+            {
+                
+            }*/
+
+            // temporary arrangement
+            Hediff_ProgressLevel progressHediff = HediffMaker.MakeHediff(def.progressHediff, pawn, null) as Hediff_ProgressLevel;
+            progressHediff.Severity = def.progressHediff.initialSeverity;
+            progressHediff.progressTracker = this;
+            pawn.health.AddHediff(progressHediff, null, null, null);
+            hediff = progressHediff;
+
+            hediff.cachedCurStage = RefreshCurStage();
+
+            //SetupHediffStage(hediff as Hediff_ProgressLevel); // safety
+
+            /*if (pawn.health.hediffSet.GetFirstHediffOfDef(def.progressHediff) == null)
+                //HediffMaker.MakeHediff
                 HealthUtility.AdjustSeverity(pawn, def.progressHediff, def.progressHediff.initialSeverity);
             hediff = pawn.health.hediffSet.GetFirstHediffOfDef(def.progressHediff) as Hediff_ProgressLevel;
             hediff.progressTracker = this;
-            SetupHediffStage(hediff as Hediff_ProgressLevel);
+            SetupHediffStage(hediff as Hediff_ProgressLevel);*/
         }
 
         public override void ExposeData() => base.ExposeData();
@@ -104,7 +122,8 @@ namespace ItsSorceryFramework
         {
             ProgressLevelModifier factor = def.getLevelFactor(sev);
 
-            if (Prefs.DevMode && !factor.options.NullOrEmpty()) Log.Message($"Level {CurrLevel}: {factor.options.Count} factor options");
+            if (Prefs.DevMode && ItsSorceryUtility.settings.ShowItsSorceryDebug && !factor.options.NullOrEmpty()) 
+                Log.Message($"Level {CurrLevel} has {factor.options.Count} options to choose from; picking {factor.optionChoices}");
 
             if (factor != null)
             {
@@ -125,12 +144,22 @@ namespace ItsSorceryFramework
                 ApplyOptions(special, ref windows);
             }
 
+            if (Prefs.DevMode && ItsSorceryUtility.settings.ShowItsSorceryDebug)
+            {
+                Log.Message($"{schema.def.defName}.{def.defName}:" +
+                        $"\nProgressTracker offets: {statOffsetsTotal.ToStringSafeEnumerable()}" +
+                        $"\nProgressTracker factors: {statFactorsTotal.ToStringSafeEnumerable()}" +
+                        $"\nProgressTracker cap mods: {capModsTotal.ToStringSafeEnumerable()}" +
+                        $"\nHediff ProgressTracker offets: {hediff.progressTracker.statOffsetsTotal.ToStringSafeEnumerable()}" +
+                        $"\nHediff ProgressTracker factors: {hediff.progressTracker.statFactorsTotal.ToStringSafeEnumerable()}" +
+                        $"\nHediff ProgressTracker cap mods: {hediff.progressTracker.capModsTotal.ToStringSafeEnumerable()}");
+            }
+
             hediff.cachedCurStage = RefreshCurStage();
         }
 
         public override HediffStage RefreshCurStage()
         {
-
             HediffStage stage = new HediffStage()
             {
                 statOffsets = CreateStatModifiers(statOffsetsTotal).ToList(),
