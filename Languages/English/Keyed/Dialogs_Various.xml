@@ -7,6 +7,9 @@
 	<ISF_EnergyTrackerInverseDesc>Specifies the flow direction of the energy.\n\nNon-inverted systems typically consume the energy unit (e.g. 100 -> 50 mana) and regain it over time; inverted energy trackers add the unit (e.g. 0 -> 25 mana) and reduce it over time.</ISF_EnergyTrackerInverseDesc>
 	
 	<!-- SorcerySchemaDef Info window - Learning Trackers - Tree -->
+	<!-- <ISF_LearningTreeLocked>Locked</ISF_LearningTreeLocked> -->
+	<!-- <ISF_LearningTreeUnlockDesc>Unlock</ISF_LearningTreeUnlockDesc> -->
+	
 	<ISF_LearningNodeCost>{0} required: {1}</ISF_LearningNodeCost>
 	<ISF_LearningNodePrereqs>Node prerequisites:</ISF_LearningNodePrereqs>
 	<ISF_LearningNodeResearchPrereqs>Research prerequisites:</ISF_LearningNodeResearchPrereqs>
@@ -21,6 +24,7 @@
 	<ISF_LearningNodeHediffAdjust>Hediff adjustments:</ISF_LearningNodeHediffAdjust>
 	<ISF_LearningNodeHediffRemove>Hediffs removed:</ISF_LearningNodeHediffRemove>
 	<ISF_LearningNodeMods>Modifiers applied:</ISF_LearningNodeMods>
+	<ISF_LearningNodeUnlocks>Unlocks:</ISF_LearningNodeUnlocks>
 	
 	<ISF_LearningNodeReasonCompleted>Completed.</ISF_LearningNodeReasonCompleted>
 	<ISF_LearningNodeReasonExclusive>Conflicts with another node.</ISF_LearningNodeReasonExclusive>
@@ -43,6 +47,15 @@
 	<ISF_LearningProgressLevelDescription>Description</ISF_LearningProgressLevelDescription>
 	<ISF_LearningProgressLevelStatus>Status</ISF_LearningProgressLevelStatus>
 	<ISF_LearningProgressLevelProspects>Prospects</ISF_LearningProgressLevelProspects>
+	<ISF_LearningProgressLevelProspectsNormal>Normal</ISF_LearningProgressLevelProspectsNormal>
+	<ISF_LearningProgressLevelProspectsSpecial>Special</ISF_LearningProgressLevelProspectsSpecial>
+	<ISF_LearningProgressLevelProspectsModifiers>Modifiers</ISF_LearningProgressLevelProspectsModifiers>
+	<ISF_LearningProgressLevelProspectsAbilityGain>Abilities gained</ISF_LearningProgressLevelProspectsAbilityGain>
+	<ISF_LearningProgressLevelProspectsAbilityRemove>Abilities removed</ISF_LearningProgressLevelProspectsAbilityRemove>
+	<ISF_LearningProgressLevelProspectsHediffAdd>Hediffs added</ISF_LearningProgressLevelProspectsHediffAdd>
+	<ISF_LearningProgressLevelProspectsHediffAdjust>Hediff adjustments</ISF_LearningProgressLevelProspectsHediffAdjust>
+	<ISF_LearningProgressLevelProspectsHediffRemove>Hediffs removed</ISF_LearningProgressLevelProspectsHediffRemove>
+	<ISF_LearningProgressLevelProspectsUnlocks>Unlocks</ISF_LearningProgressLevelProspectsUnlocks>
 	
 	<!-- ProgressTrackerTags -->
 	<ISF_LearningProgressEXPCast>On cast:</ISF_LearningProgressEXPCast>

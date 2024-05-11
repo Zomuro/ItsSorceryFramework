@@ -385,13 +385,19 @@ namespace ItsSorceryFramework
 
         public void CompletionModifiers(LearningTreeNodeDef node)
         {
-            //ProgressTracker progressTracker = schema.progressTracker; // get progresstracker
             schema.progressTracker.AdjustModifiers(node.statOffsets, node.statFactors, node.capMods); // update list of statMods and capMods
             schema.progressTracker.hediff.cachedCurStage = schema.progressTracker.RefreshCurStage(); // rebuild hediffstage with adjusted stats & set hediff curstage to it
         }
 
-        
+        public void CompletionLearningUnlock(LearningTreeNodeDef node)
+        {
+            if (node.unlocks.NullOrEmpty()) return;
 
-        
+            foreach(var lt in schema.learningTrackers)
+            {
+                if (node.unlocks.Contains(lt.def)) lt.locked = false;
+            }
+        }
+
     }
 }

@@ -65,6 +65,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CompProperties_LearningTreeItem.cs" />
+    <Compile Include="CompLearningTreeItem.cs" />
+    <Compile Include="CompProperties_UseEffectLearningTree.cs" />
+    <Compile Include="CompUseEffect_LearningTree.cs" />
     <Compile Include="ItsSorcerySettings.cs" />
     <Compile Include="EnergyTrackerCompProperties_OnKill.cs" />
     <Compile Include="EnergyTrackerComp_OnKill.cs" />

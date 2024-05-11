@@ -11,6 +11,8 @@ namespace ItsSorceryFramework
 
         public SorcerySchema schema;
 
+        public bool locked = false;
+
         public LearningTracker(Pawn pawn)
         {
             this.pawn = pawn;
@@ -21,6 +23,7 @@ namespace ItsSorceryFramework
             this.pawn = pawn;
             this.def = def;
             this.schema = schema;
+            this.locked = def.defaultLocked;
         }
 
         public virtual void ExposeData()
@@ -28,6 +31,7 @@ namespace ItsSorceryFramework
             Scribe_References.Look(ref pawn, "pawn");
             Scribe_Defs.Look(ref def, "def");
             Scribe_References.Look(ref schema, "schema");
+            Scribe_Values.Look(ref locked, "locked", true);
         }
 
         public virtual void DrawLeftGUI(Rect rect) { }

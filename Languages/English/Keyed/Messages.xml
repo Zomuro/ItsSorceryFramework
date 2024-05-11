@@ -4,6 +4,7 @@
 	<ISF_MessagePastLimit>{PAWN} has exceeded {PAWN_possessive} limits.</ISF_MessagePastLimit>
 	
 	<ISF_UsedSchemaItem>{USER_labelShort} has learned {1}.</ISF_UsedSchemaItem>
+	<ISF_UsedLearningTreeItem>{USER_labelShort} has unlocked {1} in {2}.</ISF_UsedLearningTreeItem>
 	
 	<ISF_Settings_SchemaDefaultMessage>SorcerySchema settings have been set to default values.</ISF_Settings_SchemaDefaultMessage>
 	<ISF_Settings_EnergyDefaultMessage>EnergyTracker settings have been set to default values.</ISF_Settings_EnergyDefaultMessage>

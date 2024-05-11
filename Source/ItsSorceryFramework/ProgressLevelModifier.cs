@@ -30,6 +30,8 @@ namespace ItsSorceryFramework
 
         public int optionChoices = -1;
 
-               
+        public List<LearningTrackerDef> specialUnlocks = new List<LearningTrackerDef>();
+
+
     }
 }

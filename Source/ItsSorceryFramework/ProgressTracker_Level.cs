@@ -134,6 +134,7 @@ namespace ItsSorceryFramework
                 AdjustModifiers(special);
                 AdjustAbilities(special);
                 AdjustHediffs(special);
+                ApplyUnlocks(special); // only for modifiers within special
                 points += special.pointGain;
                 ApplyOptions(special, ref windows);
             }
@@ -279,7 +280,7 @@ namespace ItsSorceryFramework
 
             float coordY = 0f;
             Rect allModRect = new Rect(modRectView.x, modRectView.y + coordY, modRectView.width, 500f);
-            coordY += DrawModifiers(allModRect);
+            coordY += DrawProspects(allModRect);
             modScrollViewHeight = coordY;
 
             Widgets.EndScrollView();
@@ -329,7 +330,7 @@ namespace ItsSorceryFramework
             Widgets.EndGroup();
         }
 
-        public override float DrawModifiers(Rect rect)
+        public override float DrawProspects(Rect rect)
         {
             float yMin = rect.yMin;
             float x = rect.x;
@@ -355,46 +356,41 @@ namespace ItsSorceryFramework
                 tipString2 = TipStringExtra(special);
 
                 if (tipString.NullOrEmpty() && !HyperlinkCheck(factor) &&
-                    tipString2.NullOrEmpty() && !HyperlinkCheck(special)) continue;
+                    tipString2.NullOrEmpty() && !HyperlinkCheck(special) && !SpecialUnlocksCheck(special)) continue;
 
                 Text.Font = GameFont.Small;
-                //Text.Font = GameFont.Medium;
                 if (CurLevelLabel.NullOrEmpty())
                     Widgets.LabelCacheHeight(ref rect, "ISF_LearningProgressLevel".Translate(i).Colorize(ColoredText.TipSectionTitleColor), true, false);
                 else
                     Widgets.LabelCacheHeight(ref rect, "ISF_LearningProgressLevelCustom".Translate(i, GetProgressLevelLabel(i)).Colorize(ColoredText.TipSectionTitleColor), true, false);
                 rect.yMin += rect.height;
-                //Text.Font = GameFont.Small;
-
-                Rect hyperlinkRect;
 
                 if (!tipString.NullOrEmpty() || HyperlinkCheck(factor))
                 {
                     Text.Font = GameFont.Small;
-                    Widgets.LabelCacheHeight(ref rect, "Normal".Colorize(ColoredText.SubtleGrayColor), true, false);
+                    Widgets.LabelCacheHeight(ref rect, "ISF_LearningProgressLevelProspectsNormal".Translate().Colorize(ColoredText.SubtleGrayColor), true, false);
                     rect.yMin += rect.height;
 
-                    Widgets.LabelCacheHeight(ref rect, tipString, true, false);
-                    rect.yMin += rect.height;
+                    // draw modifiers
+                    rect.yMin += this.DrawModifiers(rect, factor, tipString);
 
-                    rect.xMin += 6f;
-                    hyperlinkRect = new Rect(rect.x, rect.yMin, rect.width, 500f);
-                    rect.yMin += this.DrawHyperlinks(hyperlinkRect, factor);
-                    rect.xMin -= 6f;
+                    // draw hyperlinks
+                    rect.yMin += this.DrawHyperlinks(rect, factor);
                 }
-                if (!tipString2.NullOrEmpty() || HyperlinkCheck(special))
+                if (!tipString2.NullOrEmpty() || HyperlinkCheck(special) || SpecialUnlocksCheck(special))
                 {
                     Text.Font = GameFont.Small;
-                    Widgets.LabelCacheHeight(ref rect, "Special".Colorize(ColoredText.SubtleGrayColor), true, false);
+                    Widgets.LabelCacheHeight(ref rect, "ISF_LearningProgressLevelProspectsSpecial".Translate().Colorize(ColoredText.SubtleGrayColor), true, false);
                     rect.yMin += rect.height;
 
-                    Widgets.LabelCacheHeight(ref rect, tipString2, true, false);
-                    rect.yMin += rect.height;
+                    // draw modifiers
+                    rect.yMin += this.DrawModifiers(rect, factor, tipString2);
 
-                    rect.xMin += 6f;
-                    hyperlinkRect = new Rect(rect.x, rect.yMin, rect.width, 500f);
-                    rect.yMin += this.DrawHyperlinks(hyperlinkRect, special);
-                    rect.xMin -= 6f;
+                    // draw hyperlinks
+                    rect.yMin += this.DrawHyperlinks(rect, special);
+
+                    // draw special unlocks
+                    rect.yMin += this.DrawSpecialUnlocks(rect, special);
                 }
 
             }

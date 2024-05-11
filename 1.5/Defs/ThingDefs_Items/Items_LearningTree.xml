@@ -2,13 +2,13 @@
 <Defs>
 
 	<ThingCategoryDef>
-		<defName>ISF_SchemaItems</defName>
-		<label>sorcery schema items</label>
+		<defName>ISF_LearningTreeItems</defName>
+		<label>learning tracker (tree) items</label>
 		<parent>Items</parent>
     </ThingCategoryDef>
 
 
-	<ThingDef ParentName="ResourceBase" Name="ISF_SchemaItemBase" Abstract="True">
+	<ThingDef ParentName="ResourceBase" Name="ISF_LearningTreeItemBase" Abstract="True">
 		<thingClass>ThingWithComps</thingClass>
 		<techLevel>Archotech</techLevel>
 		
@@ -25,10 +25,10 @@
 		<drawGUIOverlay>false</drawGUIOverlay>
 		
 		<thingCategories>
-			<li>ISF_SchemaItems</li>
+			<li>ISF_LearningTreeItems</li>
 		</thingCategories>
 		<tradeTags>
-			<li>ISF_SchemaItems</li>
+			<li>ISF_LearningTreeItems</li>
 		</tradeTags>
 		<thingSetMakerTags><li>RewardStandardHighFreq</li></thingSetMakerTags>
 		

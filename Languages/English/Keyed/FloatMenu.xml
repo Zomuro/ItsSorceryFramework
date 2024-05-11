@@ -9,5 +9,8 @@
 	<ISF_UseEXPItemNoPath>No path: </ISF_UseEXPItemNoPath>
 	<ISF_UseEXPItem>Use {0} to gain {1} experience for {2}.</ISF_UseEXPItem>
 	<ISF_UseSchemaItemFail>{USER_labelShort} already knows {1}.</ISF_UseSchemaItemFail>
+	<ISF_UseLearningTreeItemFail_Schema>{USER_labelShort} does not know {1}.</ISF_UseLearningTreeItemFail_Schema>
+	<ISF_UseLearningTreeItemFail_Learning>{USER_labelShort} does not know {1}.</ISF_UseLearningTreeItemFail_Learning>
+	<ISF_UseLearningTreeItemFail_Unlocked>{USER_labelShort} has already unlocked {1} ({2}).</ISF_UseLearningTreeItemFail_Unlocked>
 
 </LanguageData>

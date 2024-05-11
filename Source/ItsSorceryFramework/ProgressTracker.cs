@@ -143,6 +143,18 @@ namespace ItsSorceryFramework
             yield break;
         }
 
+        public virtual void ApplyUnlocks(ProgressLevelModifier modifier)
+        {
+            if (modifier.specialUnlocks.NullOrEmpty()) return; // no unlocks in modifier = don't bother
+
+            foreach(var learningTracker in schema.learningTrackers) // for each learning tracker
+            {
+                // if there's no unlock corrresponding to the learningtracker, skip
+                if (!modifier.specialUnlocks.Contains(learningTracker.def)) continue; 
+                learningTracker.locked = false; // otherwise unlock learningtracker
+            }
+        }
+
         public virtual void AdjustModifiers(ProgressLevelModifier modulo)
         {
             AdjustTotalStatMods(statOffsetsTotal, modulo.statOffsets);
@@ -351,7 +363,7 @@ namespace ItsSorceryFramework
 
         public virtual void DrawRightGUI(Rect rect) { }
 
-        public virtual float DrawModifiers(Rect rect)
+        public virtual float DrawProspects(Rect rect)
         {
             float yMin = rect.yMin;
             float x = rect.x;
@@ -422,7 +434,7 @@ namespace ItsSorceryFramework
         public virtual string TipStringExtra(ProgressLevelModifier mods)
         {
             IEnumerable<StatDrawEntry> entries = def.specialDisplayMods(mods);
-            if (entries.EnumerableNullOrEmpty()) return null;
+            if (entries.EnumerableNullOrEmpty()) return "";
             StringBuilder stringBuilder = new StringBuilder();
             foreach (StatDrawEntry statDrawEntry in entries)
             {
@@ -452,6 +464,22 @@ namespace ItsSorceryFramework
             {
                 rect.yMin += worker.DrawWorker(rect);
             }
+
+            return rect.yMin - yMin;
+        }
+
+        public virtual float DrawModifiers(Rect rect, ProgressLevelModifier mod, string forceTipString = null)
+        {
+            float yMin = rect.yMin;
+            float x = rect.x;
+
+            string tipString = forceTipString ?? TipStringExtra(mod);
+            if (tipString.NullOrEmpty()) return 0f;
+
+            Widgets.LabelCacheHeight(ref rect, "ISF_LearningProgressLevelProspectsModifiers".Translate(), true, false);
+            rect.yMin += rect.height;
+            Widgets.LabelCacheHeight(ref rect, tipString, true, false);
+            rect.yMin += rect.height;
 
             return rect.yMin - yMin;
         }
@@ -486,7 +514,7 @@ namespace ItsSorceryFramework
 
             if (!abilityGain.NullOrEmpty())
             {
-                Widgets.LabelCacheHeight(ref rect, "Abilities gained:", true, false);
+                Widgets.LabelCacheHeight(ref rect, "ISF_LearningProgressLevelProspectsAbilityGain".Translate(), true, false);
                 rect.yMin += rect.height;
                 rect.x += 6f;
                 foreach (AbilityDef abilityDef in abilityGain)
@@ -501,7 +529,7 @@ namespace ItsSorceryFramework
 
             if (!abilityRemove.NullOrEmpty())
             {
-                Widgets.LabelCacheHeight(ref rect, "Abilities removed:", true, false);
+                Widgets.LabelCacheHeight(ref rect, "ISF_LearningProgressLevelProspectsAbilityRemove".Translate(), true, false);
                 rect.yMin += rect.height;
                 rect.x += 6f;
                 foreach (AbilityDef abilityDef in abilityRemove)
@@ -516,7 +544,7 @@ namespace ItsSorceryFramework
 
             if (!hediffAdd.NullOrEmpty())
             {
-                Widgets.LabelCacheHeight(ref rect, "Hediffs added:", true, false);
+                Widgets.LabelCacheHeight(ref rect, "ISF_LearningProgressLevelProspectsHediffAdd".Translate(), true, false);
                 rect.yMin += rect.height;
                 rect.x += 6f;
                 foreach (NodeHediffProps prop in hediffAdd)
@@ -538,7 +566,7 @@ namespace ItsSorceryFramework
 
             if (!hediffAdjust.NullOrEmpty())
             {
-                Widgets.LabelCacheHeight(ref rect, "Hediff adjustments:", true, false);
+                Widgets.LabelCacheHeight(ref rect, "ISF_LearningProgressLevelProspectsHediffAdjust".Translate(), true, false);
                 rect.yMin += rect.height;
                 rect.x += 6f;
                 foreach (NodeHediffProps prop in hediffAdjust)
@@ -547,7 +575,7 @@ namespace ItsSorceryFramework
                     HediffDef hediffDef = prop.hediffDef;
                     string sev;
 
-                    sev = prop.severity.ToStringWithSign("F0");
+                    sev = prop.severity.ToStringWithSign("F2");
                     hyperlink = new Dialog_InfoCard.Hyperlink(hediffDef, -1);
                     Widgets.HyperlinkWithIcon(hyperRect, hyperlink, hediffDef.LabelCap + " ({0})".Translate(sev),
                         2f, 6f, new Color(0.8f, 0.85f, 1f), false);
@@ -558,7 +586,7 @@ namespace ItsSorceryFramework
 
             if (!hediffRemove.NullOrEmpty())
             {
-                Widgets.LabelCacheHeight(ref rect, "Hediffs removed:", true, false);
+                Widgets.LabelCacheHeight(ref rect, "ISF_LearningProgressLevelProspectsHediffRemove".Translate(), true, false);
                 rect.yMin += rect.height;
                 rect.x += 6f;
                 foreach (HediffDef hediffDef in hediffRemove)
@@ -567,6 +595,39 @@ namespace ItsSorceryFramework
                     hyperlink = new Dialog_InfoCard.Hyperlink(hediffDef, -1);
                     Widgets.HyperlinkWithIcon(hyperRect, hyperlink, null, 2f, 6f, new Color(0.8f, 0.85f, 1f), false);
                     rect.yMin += 24f;
+                }
+                rect.x = x;
+            }
+
+            return rect.yMin - yMin;
+        }
+
+        public virtual bool SpecialUnlocksCheck(ProgressLevelModifier mod)
+        {
+            if (mod == null) return false;
+
+            if (mod.specialUnlocks.NullOrEmpty()) return false;
+
+            return true;
+        }
+
+        public virtual float DrawSpecialUnlocks(Rect rect, ProgressLevelModifier mod)
+        {
+            float yMin = rect.yMin;
+            float x = rect.x;
+
+            List<LearningTrackerDef> specialUnlocks = mod.specialUnlocks;
+
+            if (!specialUnlocks.NullOrEmpty())
+            {
+                Widgets.LabelCacheHeight(ref rect, "ISF_LearningProgressLevelProspectsUnlocks".Translate(), true, false);
+                rect.yMin += rect.height;
+                rect.x += 6f;
+                foreach (var unlock in specialUnlocks)
+                {
+                    if (!schema.def.learningTrackerDefs.Contains(unlock)) continue;
+                    Widgets.LabelCacheHeight(ref rect, "  - " + unlock.LabelCap, true, false);
+                    rect.yMin += rect.height;
                 }
                 rect.x = x;
             }

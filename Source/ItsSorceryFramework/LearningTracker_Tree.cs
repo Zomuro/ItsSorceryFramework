@@ -116,6 +116,9 @@ namespace ItsSorceryFramework
                 Rect statModRect = new Rect(0f, coordY, viewRect.width, 500f);
                 coordY += DrawStatMods(statModRect, selectedNode);
 
+                Rect unlockRect = new Rect(0f, coordY, viewRect.width, 500f);
+                coordY += DrawUnlockedLearningTrackers(unlockRect, selectedNode);
+
                 Rect contentRect = new Rect(0f, coordY, viewRect.width, 500f);
                 coordY += DrawContentSource(contentRect, selectedNode);
                 coordY += 3f;
@@ -136,6 +139,7 @@ namespace ItsSorceryFramework
                         LearningRecord.CompletionAbilities(selectedNode);
                         LearningRecord.CompletionHediffs(selectedNode);
                         LearningRecord.CompletionModifiers(selectedNode);
+                        LearningRecord.CompletionLearningUnlock(selectedNode);
                         schema.progressTracker.usedPoints += selectedNode.pointReq;
                     }
                 }
@@ -187,6 +191,7 @@ namespace ItsSorceryFramework
                         LearningRecord.CompletionAbilities(selectedNode);
                         LearningRecord.CompletionHediffs(selectedNode);
                         LearningRecord.CompletionModifiers(selectedNode);
+                        LearningRecord.CompletionLearningUnlock(selectedNode);
                     }
                     Text.Font = GameFont.Small;
                     this.leftViewDebugHeight = debugButton.height;
@@ -508,6 +513,47 @@ namespace ItsSorceryFramework
             return stringBuilder.ToString();
         }
 
+        private float DrawUnlockedLearningTrackers(Rect rect, LearningTreeNodeDef node)
+        {
+            float yMin = rect.yMin;
+            float xMin = rect.xMin;
+
+            if (!node.unlocks.NullOrEmpty())
+            {
+                Widgets.LabelCacheHeight(ref rect, "ISF_LearningNodeUnlocks".Translate(), true, false); // label
+                rect.yMin += rect.height;
+                rect.xMin += 6f;
+
+                foreach (var lt in node.unlocks) // displays learningtrackerdefs that will be unlocked, if not
+                {
+                    if (!schema.def.learningTrackerDefs.Contains(lt)) continue;
+
+                    Widgets.LabelCacheHeight(ref rect, lt.LabelCap, true, false);
+                    if (Widgets.ButtonInvisible(rect, true))
+                    {
+                        SoundDefOf.Click.PlayOneShotOnCamera(null);
+                        if (node.learningTrackerDef != lt)
+                        {
+                            if (Find.WindowStack.currentlyDrawnWindow as Dialog_LearningTabs is Dialog_LearningTabs learningTabs &&
+                                learningTabs != null && base.schema.def.learningTrackerDefs.Contains(lt))
+                            {
+                                learningTabs.curTracker = schema.learningTrackers.FirstOrDefault(x => x.def == lt);
+                                if (learningTabs.curTracker as LearningTracker_Tree is LearningTracker_Tree treeTracker && treeTracker != null)
+                                {
+                                    treeTracker.selectedNode = null;
+                                }
+                            }
+                        }
+
+                    }
+                    rect.yMin += rect.height;
+                }
+                rect.xMin = xMin;
+            }
+
+            return rect.yMin - yMin;
+        }
+
         private float DrawContentSource(Rect rect, LearningTreeNodeDef node) // taken from research tab
         {
             if (node.modContentPack == null || node.modContentPack.IsCoreMod)
@@ -541,6 +587,29 @@ namespace ItsSorceryFramework
 
         public override void DrawRightGUI(Rect rect)
         {
+            if (locked)
+            {
+                Text.Anchor = TextAnchor.MiddleCenter;
+                Text.Font = GameFont.Medium;
+
+                Rect lockedRect = new Rect(rect.x, rect.y + rect.height / 3f, rect.width, rect.height);
+
+                Widgets.LabelCacheHeight(ref lockedRect, def.lockedLabel);
+                lockedRect.yMin += lockedRect.height;
+
+                Text.Font = GameFont.Small;
+                Widgets.LabelCacheHeight(ref lockedRect, def.unlockTip);
+                lockedRect.yMin += lockedRect.height;
+
+                if (Prefs.DevMode && Widgets.ButtonText(new Rect(rect.x + rect.width / 2 - 75f, lockedRect.y, 150f, 50f), "Dev mode: unlock"))
+                {
+                    locked = false;
+                }
+
+                Text.Anchor = TextAnchor.UpperLeft;
+                return;
+            }
+            
             rect.yMin += 32f;
 
             Rect outRect = rect.ContractedBy(10f);
@@ -550,9 +619,6 @@ namespace ItsSorceryFramework
             Rect viewRect = new Rect(0f, 0f, ViewSize.x, ViewSize.y);
             viewRect.ContractedBy(10f);
             viewRect.width = ViewSize.x;
-            //Log.Message("nodecount: " + allNodes.Count().ToString());
-            //Log.Message(viewRect.width.ToString());
-            //Log.Message(viewRect.height.ToString());
             Rect groupRect = viewRect.ContractedBy(10f);
 
             //this.scrollPositioner.ClearInterestRects();
