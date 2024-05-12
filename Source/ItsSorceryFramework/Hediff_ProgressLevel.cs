@@ -1,5 +1,4 @@
-﻿using RimWorld;
-using Verse;
+﻿using Verse;
 namespace ItsSorceryFramework
 {
     public class Hediff_ProgressLevel : Hediff_Progress
