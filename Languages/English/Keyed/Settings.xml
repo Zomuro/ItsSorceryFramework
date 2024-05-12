@@ -21,6 +21,8 @@
 	<!-- ProgressTracker -->
 	<ISF_Settings_ProgressShowXPMotes>Show EXP motes</ISF_Settings_ProgressShowXPMotes>
 	<ISF_Settings_ProgressShowXPMotesDesc>Toggle if certain ProgressEXPWorkers will throw motes displaying EXP gain.</ISF_Settings_ProgressShowXPMotesDesc>
+	<ISF_Settings_ProgressShowViewProspectsNum>View in Prospects: {0} levels</ISF_Settings_ProgressShowViewProspectsNum>
+	<ISF_Settings_ProgressShowViewProspectsNumDesc>Set how many levels in the future a LearningTracker_Progress tab will show.</ISF_Settings_ProgressShowViewProspectsNumDesc>
 	
 	<!-- Default -->
 	<ISF_Settings_Default>Reset to default</ISF_Settings_Default>

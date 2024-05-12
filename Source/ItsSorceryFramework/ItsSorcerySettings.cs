@@ -27,6 +27,8 @@ namespace ItsSorceryFramework
         // ProgressTracker
         public bool ProgressShowXPMotes = true;
 
+        public int ProgressViewProspectsNum = 5;
+
         // General
         public bool ShowItsSorceryDebug = false;
 
@@ -45,6 +47,7 @@ namespace ItsSorceryFramework
 
             // ProgressTracker
             Scribe_Values.Look(ref ProgressShowXPMotes, "ProgressShowXPMotes", true);
+            Scribe_Values.Look(ref ProgressViewProspectsNum, "ProgressShowProspectsNum", 5);
 
             // ProgressTracker
             Scribe_Values.Look(ref ShowItsSorceryDebug, "ShowItsSorceryDebug", false);
@@ -68,6 +71,10 @@ namespace ItsSorceryFramework
         private const int MinStatCacheTicks = 20;
 
         private const int MaxStatCacheTicks = 180;
+
+        private const int MinProspectLevels = 3;
+
+        private const int MaxProspectLevels = 20;
 
         private enum Tab
         {
@@ -199,6 +206,9 @@ namespace ItsSorceryFramework
             Text.Font = GameFont.Small;
             listing.CheckboxLabeled("ISF_Settings_ProgressShowXPMotes".Translate(),
                 ref settings.ProgressShowXPMotes, "ISF_Settings_ProgressShowXPMotesDesc".Translate());
+            listing.Label("ISF_Settings_ProgressShowViewProspectsNum".Translate(settings.ProgressViewProspectsNum.ToString(), -1,
+                "ISF_Settings_ProgressShowViewProspectsNumDesc".Translate()));
+            settings.ProgressViewProspectsNum = (int)listing.Slider(settings.ProgressViewProspectsNum, MinProspectLevels, MaxProspectLevels);
 
             listing.Gap(8f);
             if (listing.ButtonText("ISF_Settings_Default".Translate())) SettingsProgressDefault();
@@ -255,6 +265,7 @@ namespace ItsSorceryFramework
         public void SettingsProgressDefault(bool msg = true)
         {
             settings.ProgressShowXPMotes = true;
+            settings.ProgressViewProspectsNum = 5;
 
             if (msg) Messages.Message(new Message("ISF_Settings_ProgressDefaultMessage".Translate(), MessageTypeDefOf.NeutralEvent));
         }

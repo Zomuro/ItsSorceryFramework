@@ -346,7 +346,7 @@ namespace ItsSorceryFramework
 
             if (projLevel > hediff.def.maxSeverity) return rect.yMin - yMin;
             Text.Font = GameFont.Small;
-            for (int i = (int)projLevel; i < (int)projLevel + 5; i++)
+            for (int i = (int)projLevel; i < (int)projLevel + ItsSorceryUtility.settings.ProgressViewProspectsNum; i++)
             {
                 if (i > hediff.def.maxSeverity) break;
 
