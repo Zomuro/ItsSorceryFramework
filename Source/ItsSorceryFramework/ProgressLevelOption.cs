@@ -29,7 +29,7 @@ namespace ItsSorceryFramework
 
         public int pointGain = 0;
 
-		public IEnumerable<StatDrawEntry> specialDisplayMods()
+		public IEnumerable<StatDrawEntry> SpecialDisplayMods()
 		{
 			if (!capMods.NullOrEmpty())
 			{

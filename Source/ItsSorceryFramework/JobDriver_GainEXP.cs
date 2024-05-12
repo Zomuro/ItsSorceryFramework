@@ -40,7 +40,7 @@ namespace ItsSorceryFramework
 			int count = job.count;
 
 			// dev mode message
-			if (Prefs.DevMode) Log.Message($"Job {job.GetUniqueLoadID()}: schema {schema.def.LabelCap}, item count {count}");
+			if (Prefs.DevMode && ItsSorceryUtility.settings.ShowItsSorceryDebug) Log.Message($"Job {job.GetUniqueLoadID()}: schema {schema.def.LabelCap}, item count {count}");
 
 			// toils for moving to target item and picking it up
 			this.FailOnIncapable(PawnCapacityDefOf.Manipulation);

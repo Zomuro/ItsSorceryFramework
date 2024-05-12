@@ -1,5 +1,4 @@
-﻿using RimWorld;
-using Verse;
+﻿using Verse;
 namespace ItsSorceryFramework
 {
     public class Hediff_ProgressLevel : Hediff_Progress
@@ -8,23 +7,32 @@ namespace ItsSorceryFramework
 		{
 			get
 			{
-				if (progressTracker != null)
+				if (schema?.progressTracker != null)
 				{
-					if(progressTracker.CurLevelLabel.NullOrEmpty()) 
-						return def.label + " "+ "ISF_LevelLabel".Translate(level.ToString(), progressTracker.CurrProgress.ToString("P2"));
+					if(schema.progressTracker.CurLevelLabel.NullOrEmpty())
+                    {
+						if (Level == (int)def.maxSeverity)
+							return $"{def.label} (lvl. {Level}, MAX)";
+						return $"{def.label} (lvl. {Level})";  //def.label + " " + "ISF_LevelLabel".Translate(Level.ToString());
+					}
 
-					return def.label + " " + "ISF_LevelLabelCustom".Translate(progressTracker.CurLevelLabel, progressTracker.CurrProgress.ToString("P2"));
+					else
+					{
+						if (Level == (int)def.maxSeverity)
+							return $"{def.label} ({schema.progressTracker.CurLevelLabel}, MAX)"; //def.label + " " + "ISF_LevelLabelCustomMax".Translate(schema.progressTracker.CurLevelLabel);
+						return $"{def.label} ({schema.progressTracker.CurLevelLabel})"; //def.label + " " + "ISF_LevelLabelCustom".Translate(schema.progressTracker.CurLevelLabel);
+					}
 				}
-				return def.label + " x" + this.level;
+				return def.label + " x" + Level;
 			}
 		}
 
-		public virtual int level
+		public virtual int Level
         {
             get
             {
-				return (int) Severity;
-            }
+				return (int)Severity;
+			}
         }
 
 		public override void Tick()

@@ -48,7 +48,7 @@ namespace ItsSorceryFramework
 			ammoCountUse = (ammoCountUse == 0f && job.count > -1) ? job.count : ammoCountUse;
 
 			// dev mode message
-			if (Prefs.DevMode) Log.Message($"Job {job.GetUniqueLoadID()}: " +
+			if (Prefs.DevMode && ItsSorceryUtility.settings.ShowItsSorceryDebug) Log.Message($"Job {job.GetUniqueLoadID()}: " +
 				$"schema {schema.def.LabelCap}, energytracker {energyTrackerDef.defName}, energy per item {energyPerAmmo}, item count {ammoCountUse}");
 
 			//int count = job.count;

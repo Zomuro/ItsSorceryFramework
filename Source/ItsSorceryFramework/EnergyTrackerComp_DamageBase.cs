@@ -20,8 +20,6 @@ namespace ItsSorceryFramework
 
         public override void CompExposeData() { } // saving values to comp, if needed
 
-        //public float InvFactor => parent.InvMult; // if inverse energy tracker, this is -1f; otherwise, it is 1f.
-
         public override void CompPostDamageDealt(DamageInfo damageInfo) { } // for effects activated when dealing damage
 
         public override IEnumerable<StatDrawEntry> CompSpecialDisplayStats(StatRequest req, StatCategoryDef catDef = null) // provides special display stats, which show how energy gets recovered

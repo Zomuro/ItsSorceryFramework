@@ -21,6 +21,18 @@ namespace ItsSorceryFramework
 
         public StatCategoryDef tempStatCategory;
 
+        public float cachedEnergyMax = float.MinValue;
+
+        public float cachedEnergyMin = float.MinValue;
+
+        public float cachedEnergyAbsMax = float.MinValue;
+
+        public float cachedEnergyAbsMin = float.MinValue;
+
+        public float cachedEnergyCostFactor = float.MinValue;
+
+        public int nextRecacheTick = -1;
+
         public Texture2D cachedEmptyBarTex;
 
         public Texture2D cachedUnderBarTex;
@@ -117,25 +129,54 @@ namespace ItsSorceryFramework
             if(!comps.NullOrEmpty()) foreach (var c in comps) c.CompExposeData();
         }
 
-        public SorcerySchema Schema => schema;
-
         public List<LearningTracker> LearningTrackers => schema.learningTrackers;
 
         public float InvMult => def.inverse ? -1f : 1f;
 
-        public virtual bool HasLimit => HasDeficitZone;
+        public virtual float MinEnergy
+        {
+            get
+            {
+                if (cachedEnergyMin == float.MinValue) cachedEnergyMin = Math.Min(pawn.GetStatValue(def.energyMinStatDef ?? StatDefOf_ItsSorcery.ISF_MinEnergy, true), MaxEnergy);
+                return cachedEnergyMin;
+            }
+        }
 
-        public virtual float MinEnergy => Math.Min(pawn.GetStatValue(def.energyMinStatDef ?? StatDefOf_ItsSorcery.ISF_MinEnergy, true), MaxEnergy);
+        public virtual float MaxEnergy
+        {
+            get
+            {
+                if(cachedEnergyMax == float.MinValue) cachedEnergyMax = pawn.GetStatValue(def.energyMaxStatDef ?? StatDefOf_ItsSorcery.ISF_MaxEnergy, true);
+                return cachedEnergyMax;
+            }
+        }
 
-        public virtual float MaxEnergy => pawn.GetStatValue(def.energyMaxStatDef ?? StatDefOf_ItsSorcery.ISF_MaxEnergy, true);
+        public virtual float AbsMinEnergy
+        {
+            get
+            {
+                if(cachedEnergyAbsMin == float.MinValue) cachedEnergyAbsMin = def.energyAbsMinStatDef is null ? MinEnergy : Math.Min(pawn.GetStatValue(def.energyAbsMinStatDef, true), MinEnergy);
+                return cachedEnergyAbsMin;
+            }
+        }
 
-        public virtual float AbsMinEnergy => def.energyAbsMinStatDef is null ? MinEnergy : Math.Min(pawn.GetStatValue(def.energyAbsMinStatDef, true), MinEnergy);
+        public virtual float AbsMaxEnergy
+        {
+            get
+            {
+                if (cachedEnergyAbsMax == float.MinValue) cachedEnergyAbsMax = def.energyAbsMaxStatDef is null ? MaxEnergy : Math.Max(pawn.GetStatValue(def.energyAbsMaxStatDef, true), MaxEnergy);
+                return cachedEnergyAbsMax;
+            }
+        }
 
-        public virtual float AbsMaxEnergy => def.energyAbsMaxStatDef is null ? MaxEnergy : Math.Max(pawn.GetStatValue(def.energyAbsMaxStatDef, true), MaxEnergy);
-
-        //public virtual StatDef EnergyUnit => def.energyUnitStatDef is null ? StatDefOf_ItsSorcery.ISF_Sorcery_EnergyCost : def.energyUnitStatDef;
-
-        public virtual float EnergyCostFactor => pawn.GetStatValue(def.energyCostFactorStatDef ?? StatDefOf_ItsSorcery.ISF_EnergyCostFactor, true);
+        public virtual float EnergyCostFactor
+        {
+            get
+            {
+                if (cachedEnergyCostFactor == float.MinValue) cachedEnergyCostFactor = pawn.GetStatValue(def.energyCostFactorStatDef ?? StatDefOf_ItsSorcery.ISF_EnergyCostFactor, true);
+                return cachedEnergyCostFactor;
+            }
+        }
 
         public virtual bool HasOverchargeZone => !def.inverse ? AbsMaxEnergy > MaxEnergy : MinEnergy > AbsMinEnergy;
 
@@ -149,8 +190,20 @@ namespace ItsSorceryFramework
 
         public virtual string EnergyDesc => def.energyUnitStatDef.description;
 
+        public void ClearStatCache()
+        {
+            int baseTicks = ItsSorceryUtility.settings.EnergyStatCacheTicks;
+            nextRecacheTick = Find.TickManager.TicksGame + UnityEngine.Random.Range(baseTicks - 3, baseTicks + 3);
+            cachedEnergyMin = float.MinValue;
+            cachedEnergyMax = float.MinValue;
+            cachedEnergyAbsMin = float.MinValue;
+            cachedEnergyAbsMax = float.MinValue;
+            cachedEnergyCostFactor = float.MinValue;
+        }
+
         public virtual void EnergyTrackerTick()
         {
+            if(Find.TickManager.TicksGame >= nextRecacheTick) ClearStatCache();
             if (!comps.NullOrEmpty()) foreach (var c in comps) c.CompPostTick();
         }
 
@@ -173,10 +226,8 @@ namespace ItsSorceryFramework
         {
             float postEnergy = currentEnergy - InvMult * energyCost;
 
-            if (HasLimit) return !def.inverse ? (postEnergy < MinEnergy && Schema.limitLocked) : (postEnergy > MaxEnergy && Schema.limitLocked);          
+            if (HasDeficitZone) return !def.inverse ? (postEnergy < MinEnergy && schema.limitLocked) : (postEnergy > MaxEnergy && schema.limitLocked);          
             else return !def.inverse ? (postEnergy < MinEnergy) : (postEnergy > MaxEnergy);
-
-            //return !def.inverse ? (currentEnergy - InvMult * energyCost < MinEnergy && Schema.limitLocked) : (currentEnergy - InvMult * energyCost > MaxEnergy && Schema.limitLocked);
         }
 
         public virtual bool TryAlterEnergy(float energyCost, SorceryDef sorceryDef = null, Sorcery sorcery = null)
@@ -208,7 +259,7 @@ namespace ItsSorceryFramework
             // if there isn't room beyond limits (i.e over max or under min), don't bother
             // no side effect defined = no side effects
             HediffDef hediffDef = def.sideEffect;
-            if (hediffDef == null || !HasLimit) return; 
+            if (hediffDef == null || !HasDeficitZone) return; 
 
             Hediff hediff = pawn.health.hediffSet.GetFirstHediffOfDef(hediffDef);
 
@@ -233,8 +284,6 @@ namespace ItsSorceryFramework
             }
         }
 
-        public virtual void DrawOnGUI(Rect rect) {}
-
         public virtual float DrawOnGUI(ref Rect rect)
         {
             // get original rect
@@ -257,31 +306,33 @@ namespace ItsSorceryFramework
             // energy label
             Widgets.LabelCacheHeight(ref labelBox, EnergyLabel.CapitalizeFirst());
 
-            // draws power bar
+            // draws power bar & highlight energy costs
             barBox.height = labelBox.height; // set barbox to labelbox height for consistency
-            DrawEnergyBar(barBox);
+            DrawEnergyBarTip(barBox);
+            if (ItsSorceryUtility.settings.SchemaShowEnergyBar)
+            {
+                DrawEnergyBar(barBox);
+                HightlightEnergyCost(barBox);
+            }
 
             // draw amount of energy
             string energyLabel = currentEnergy.ToString("F0") + " / " + MaxEnergy.ToString("F0");
             Widgets.Label(barBox, energyLabel);
             Text.Anchor = TextAnchor.UpperLeft;
-
-            // highlight energy costs
-            HightlightEnergyCost(barBox);
-
-            // add label/barbox height
-            coordY += labelBox.height;
-            // reset rectangle
-            rect = orgRect;
-            // return accumulated height
-            return coordY;
+ 
+            coordY += labelBox.height; // add label/barbox height
+            rect = orgRect; // reset rectangle
+            return coordY; // return accumulated height
         }
 
         public virtual void DrawEnergyBar(Rect rect)
         {
             Widgets.FillableBar(rect, Mathf.Clamp(EnergyRelativeValue, 0f, 1f), CurrBarTex(), EmptyBarTex, true);
             DrawEnergyBarThresholds(rect);
+        }
 
+        public virtual void DrawEnergyBarTip(Rect rect)
+        {
             if (Mouse.IsOver(rect))
             {
                 string energy = EnergyLabel.CapitalizeFirst();
@@ -369,7 +420,7 @@ namespace ItsSorceryFramework
 
             // return if it isn't a sorceryDef or isn't the same energytracker
             SorceryDef sorceryDef = (command_Sorcery?.Ability as Sorcery)?.sorceryDef;
-            if (sorceryDef == null || !sorceryDef.sorcerySchema.energyTrackerDefs.Contains(def)) return;
+            if (sorceryDef == null || sorceryDef.sorcerySchema != schema.def || !sorceryDef.sorcerySchema.energyTrackerDefs.Contains(def)) return;
 
             float energyCost = sorceryDef.statBases.GetStatValueFromList(def.energyUnitStatDef, 0) * EnergyCostFactor;
             if (energyCost == 0f) return; // no energy cost? don't bother with showing it!

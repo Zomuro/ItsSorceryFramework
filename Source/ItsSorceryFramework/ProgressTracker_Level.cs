@@ -1,5 +1,6 @@
 ﻿using RimWorld;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Verse;
@@ -44,11 +45,23 @@ namespace ItsSorceryFramework
         public override void Initialize()
         {
             base.Initialize();
-            if(pawn.health.hediffSet.GetFirstHediffOfDef(def.progressHediff) == null)
+
+            Hediff_ProgressLevel progressHediff = HediffMaker.MakeHediff(def.progressHediff, pawn, null) as Hediff_ProgressLevel;
+            progressHediff.Severity = def.progressHediff.initialSeverity;
+            progressHediff.schema = schema;
+            pawn.health.AddHediff(progressHediff, null, null, null);
+            hediff = progressHediff;
+
+            hediff.cachedCurStage = RefreshCurStage();
+
+            //SetupHediffStage(hediff as Hediff_ProgressLevel); // safety
+
+            /*if (pawn.health.hediffSet.GetFirstHediffOfDef(def.progressHediff) == null)
+                //HediffMaker.MakeHediff
                 HealthUtility.AdjustSeverity(pawn, def.progressHediff, def.progressHediff.initialSeverity);
             hediff = pawn.health.hediffSet.GetFirstHediffOfDef(def.progressHediff) as Hediff_ProgressLevel;
             hediff.progressTracker = this;
-            SetupHediffStage(hediff as Hediff_ProgressLevel);
+            SetupHediffStage(hediff as Hediff_ProgressLevel);*/
         }
 
         public override void ExposeData() => base.ExposeData();
@@ -72,6 +85,8 @@ namespace ItsSorceryFramework
             bool done = false;
             exp += experience;
 
+            List<Window> optionWindows = new List<Window>();
+
             while (!done)
             {
                 if (Maxed) break;
@@ -79,31 +94,38 @@ namespace ItsSorceryFramework
                 {
                     exp -= CurrentLevelEXPReq;
                     hediff.Severity += 1;
-                    NotifyLevelUp(hediff.Severity);
+                    NotifyLevelUp(hediff.Severity, ref optionWindows); // get benefits of level up + add windows
                 }
                 else done = true;
             }
 
-            if(CurrLevel > orgSev) NotifyTotalLevelUp(orgSev);
+            if(CurrLevel > orgSev) NotifyTotalLevelUp(orgSev, optionWindows); // notify total level up and add windows
         }
 
         public override void ForceLevelUp()
         {
             if (hediff == null || Maxed) return;
+            float orgSev = CurrLevel;
             hediff.Severity += 1;
-            NotifyLevelUp(hediff.Severity);
+            List<Window> windows = new List<Window>();
+            NotifyLevelUp(hediff.Severity, ref windows); // level up + get levels
+            NotifyTotalLevelUp(orgSev, windows); // notify level up + get windows
         }
 
-        public override void NotifyLevelUp(float sev)
+        public override void NotifyLevelUp(float sev, ref List<Window> windows)
         {
             ProgressLevelModifier factor = def.getLevelFactor(sev);
+
+            if (Prefs.DevMode && ItsSorceryUtility.settings.ShowItsSorceryDebug && !factor.options.NullOrEmpty()) 
+                Log.Message($"Level {CurrLevel} has {factor.options.Count} options to choose from; picking {factor.optionChoices}");
+
             if (factor != null)
             {
                 AdjustModifiers(factor);
                 AdjustAbilities(factor);
                 AdjustHediffs(factor);
                 points += factor.pointGain;
-                ApplyOptions(factor);
+                ApplyOptions(factor, ref windows);
             }
 
             ProgressLevelModifier special = def.getLevelSpecific(sev);
@@ -112,16 +134,27 @@ namespace ItsSorceryFramework
                 AdjustModifiers(special);
                 AdjustAbilities(special);
                 AdjustHediffs(special);
+                ApplyUnlocks(special); // only for modifiers within special
                 points += special.pointGain;
-                ApplyOptions(special);
+                ApplyOptions(special, ref windows);
             }
 
-            hediff.curStage = RefreshCurStage();
+            if (Prefs.DevMode && ItsSorceryUtility.settings.ShowItsSorceryDebug)
+            {
+                Log.Message($"{schema.def.defName}.{def.defName}:" +
+                        $"\nProgressTracker offets: {statOffsetsTotal.ToStringSafeEnumerable()}" +
+                        $"\nProgressTracker factors: {statFactorsTotal.ToStringSafeEnumerable()}" +
+                        $"\nProgressTracker cap mods: {capModsTotal.ToStringSafeEnumerable()}" +
+                        $"\nHediff ProgressTracker offets: {hediff.schema.progressTracker.statOffsetsTotal.ToStringSafeEnumerable()}" +
+                        $"\nHediff ProgressTracker factors: {hediff.schema.progressTracker.statFactorsTotal.ToStringSafeEnumerable()}" +
+                        $"\nHediff ProgressTracker cap mods: {hediff.schema.progressTracker.capModsTotal.ToStringSafeEnumerable()}");
+            }
+
+            hediff.cachedCurStage = RefreshCurStage();
         }
 
         public override HediffStage RefreshCurStage()
         {
-
             HediffStage stage = new HediffStage()
             {
                 statOffsets = CreateStatModifiers(statOffsetsTotal).ToList(),
@@ -132,8 +165,13 @@ namespace ItsSorceryFramework
             return stage;
         }
 
-        public override void NotifyTotalLevelUp(float orgSev)
+        public override void NotifyTotalLevelUp(float orgSev, List<Window> windows = null)
         {
+            if (!windows.NullOrEmpty())
+            {
+                foreach(var window in windows.Reverse<Window>()) Find.WindowStack.Add(window);
+            }
+
             Find.LetterStack.ReceiveLetter(def.progressLevelUpKey.Translate(pawn.Name.ToStringShort),
                 def.progressLevelUpDescKey.Translate(orgSev.ToString(), CurrLevel.ToString()), LetterDefOf.NeutralEvent);
         }
@@ -242,7 +280,7 @@ namespace ItsSorceryFramework
 
             float coordY = 0f;
             Rect allModRect = new Rect(modRectView.x, modRectView.y + coordY, modRectView.width, 500f);
-            coordY += DrawModifiers(allModRect);
+            coordY += DrawProspects(allModRect);
             modScrollViewHeight = coordY;
 
             Widgets.EndScrollView();
@@ -292,7 +330,7 @@ namespace ItsSorceryFramework
             Widgets.EndGroup();
         }
 
-        public override float DrawModifiers(Rect rect)
+        public override float DrawProspects(Rect rect)
         {
             float yMin = rect.yMin;
             float x = rect.x;
@@ -308,7 +346,7 @@ namespace ItsSorceryFramework
 
             if (projLevel > hediff.def.maxSeverity) return rect.yMin - yMin;
             Text.Font = GameFont.Small;
-            for (int i = (int)projLevel; i < (int)projLevel + 5; i++)
+            for (int i = (int)projLevel; i < (int)projLevel + ItsSorceryUtility.settings.ProgressViewProspectsNum; i++)
             {
                 if (i > hediff.def.maxSeverity) break;
 
@@ -317,47 +355,48 @@ namespace ItsSorceryFramework
                 ProgressLevelModifier special = def.getLevelSpecific(i);
                 tipString2 = TipStringExtra(special);
 
-                if (tipString.NullOrEmpty() && !HyperlinkCheck(factor) &&
-                    tipString2.NullOrEmpty() && !HyperlinkCheck(special)) continue;
+                if (tipString.NullOrEmpty() && !OptionsCheck(factor) && !HyperlinkCheck(factor)  &&
+                    tipString2.NullOrEmpty() && !OptionsCheck(special) && !HyperlinkCheck(special) && !SpecialUnlocksCheck(special)) continue;
 
                 Text.Font = GameFont.Small;
-                //Text.Font = GameFont.Medium;
                 if (CurLevelLabel.NullOrEmpty())
                     Widgets.LabelCacheHeight(ref rect, "ISF_LearningProgressLevel".Translate(i).Colorize(ColoredText.TipSectionTitleColor), true, false);
                 else
                     Widgets.LabelCacheHeight(ref rect, "ISF_LearningProgressLevelCustom".Translate(i, GetProgressLevelLabel(i)).Colorize(ColoredText.TipSectionTitleColor), true, false);
                 rect.yMin += rect.height;
-                //Text.Font = GameFont.Small;
 
-                Rect hyperlinkRect;
-
-                if (!tipString.NullOrEmpty() || HyperlinkCheck(factor))
+                if (!tipString.NullOrEmpty() || OptionsCheck(factor) || HyperlinkCheck(factor))
                 {
                     Text.Font = GameFont.Small;
-                    Widgets.LabelCacheHeight(ref rect, "Normal".Colorize(ColoredText.SubtleGrayColor), true, false);
+                    Widgets.LabelCacheHeight(ref rect, "ISF_LearningProgressLevelProspectsNormal".Translate().Colorize(ColoredText.SubtleGrayColor), true, false);
                     rect.yMin += rect.height;
 
-                    Widgets.LabelCacheHeight(ref rect, tipString, true, false);
-                    rect.yMin += rect.height;
+                    // draw modifiers
+                    rect.yMin += this.DrawModifiers(rect, factor, tipString);
 
-                    rect.xMin += 6f;
-                    hyperlinkRect = new Rect(rect.x, rect.yMin, rect.width, 500f);
-                    rect.yMin += this.DrawHyperlinks(hyperlinkRect, factor);
-                    rect.xMin -= 6f;
+                    // draw options
+                    rect.yMin += this.DrawOptions(rect, factor);
+
+                    // draw hyperlinks
+                    rect.yMin += this.DrawHyperlinks(rect, factor);
                 }
-                if (!tipString2.NullOrEmpty() || HyperlinkCheck(special))
+                if (!tipString2.NullOrEmpty() || OptionsCheck(special) || HyperlinkCheck(special) || SpecialUnlocksCheck(special))
                 {
                     Text.Font = GameFont.Small;
-                    Widgets.LabelCacheHeight(ref rect, "Special".Colorize(ColoredText.SubtleGrayColor), true, false);
+                    Widgets.LabelCacheHeight(ref rect, "ISF_LearningProgressLevelProspectsSpecial".Translate().Colorize(ColoredText.SubtleGrayColor), true, false);
                     rect.yMin += rect.height;
 
-                    Widgets.LabelCacheHeight(ref rect, tipString2, true, false);
-                    rect.yMin += rect.height;
+                    // draw modifiers
+                    rect.yMin += this.DrawModifiers(rect, special, tipString2);
 
-                    rect.xMin += 6f;
-                    hyperlinkRect = new Rect(rect.x, rect.yMin, rect.width, 500f);
-                    rect.yMin += this.DrawHyperlinks(hyperlinkRect, special);
-                    rect.xMin -= 6f;
+                    // draw options
+                    rect.yMin += this.DrawOptions(rect, special);
+
+                    // draw hyperlinks
+                    rect.yMin += this.DrawHyperlinks(rect, special);
+
+                    // draw special unlocks
+                    rect.yMin += this.DrawSpecialUnlocks(rect, special);
                 }
 
             }
@@ -370,11 +409,16 @@ namespace ItsSorceryFramework
             float yMin = rect.yMin;
             float x = rect.x;
 
-            /*Text.Font = GameFont.Medium;
-            Widgets.LabelCacheHeight(ref rect, "Energy", true, false);
-            rect.yMin += rect.height;*/
-            //Text.Font = GameFont.Small;
-            //rect.xMin += 22f;
+            if (schema.energyTrackers.NullOrEmpty())
+            {
+                Text.Font = GameFont.Medium;
+                Text.Anchor = TextAnchor.UpperCenter;
+                Widgets.LabelCacheHeight(ref rect, "ISF_EnergyTrackerCompNone".Translate(), true, false);
+                Text.Font = GameFont.Small;
+                Text.Anchor = TextAnchor.UpperLeft;
+                rect.yMin += rect.height;
+                return rect.yMin - yMin;
+            }
 
             foreach(var et in schema.energyTrackers) // for each energy tracker
             {

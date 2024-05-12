@@ -59,8 +59,8 @@ namespace ItsSorceryFramework
 
         public virtual void InitializeMetrics()
         {
-            if (!Prefs.DevMode) return;
-            Log.Message($"{schema.def.LabelCap} Stats; Learning node count: {AllNodes.Count}; Completion list count {completion.Count}");
+            if (Prefs.DevMode && ItsSorceryUtility.settings.ShowItsSorceryDebug)
+                Log.Message($"{schema.def.LabelCap} Stats; Learning node count: {AllNodes.Count}; Completion list count {completion.Count}");
         }
 
         public List<LearningTreeNodeDef> AllNodes => completion.Keys.ToList();
@@ -385,13 +385,19 @@ namespace ItsSorceryFramework
 
         public void CompletionModifiers(LearningTreeNodeDef node)
         {
-            ProgressTracker progressTracker = schema.progressTracker; // get progresstracker
-            progressTracker.AdjustModifiers(node.statOffsets, node.statFactors, node.capMods); // update list of statMods and capMods
-            progressTracker.hediff.curStage = progressTracker.RefreshCurStage(); // rebuild hediffstage with adjusted stats & set hediff curstage to it
+            schema.progressTracker.AdjustModifiers(node.statOffsets, node.statFactors, node.capMods); // update list of statMods and capMods
+            schema.progressTracker.hediff.cachedCurStage = schema.progressTracker.RefreshCurStage(); // rebuild hediffstage with adjusted stats & set hediff curstage to it
         }
 
-        
+        public void CompletionLearningUnlock(LearningTreeNodeDef node)
+        {
+            if (node.unlocks.NullOrEmpty()) return;
 
-        
+            foreach(var lt in schema.learningTrackers)
+            {
+                if (node.unlocks.Contains(lt.def)) lt.locked = false;
+            }
+        }
+
     }
 }

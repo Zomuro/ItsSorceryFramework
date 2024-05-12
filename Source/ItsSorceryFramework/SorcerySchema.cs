@@ -54,7 +54,7 @@ namespace ItsSorceryFramework
         {
             foreach(var et in energyTrackers)
             {
-                if (et.HasLimit) 
+                if (et.HasDeficitZone) 
                 {
                     hasLimits = true;
                     return;
@@ -139,6 +139,19 @@ namespace ItsSorceryFramework
                 etHeight = et.DrawOnGUI(ref tempRect);
                 coordY += etHeight;
                 tempRect.y += etHeight;
+            }
+            
+            // write out skill points, if setting is enabled
+            if (ItsSorceryUtility.settings.SchemaShowSkillPoints)
+            {
+                coordY += 10;
+                tempRect.y += 10;
+                Text.Anchor = TextAnchor.MiddleCenter;
+                Widgets.LabelCacheHeight(ref tempRect, "ISF_CurrentSkillPoints".Translate(progressTracker.def.skillPointLabelKey.Translate(),
+                    progressTracker.points - progressTracker.usedPoints));
+                    //$"{progressTracker.def.skillPointLabelKey.Translate().CapitalizeFirst()}: {progressTracker.points - progressTracker.usedPoints}"
+                Text.Anchor = TextAnchor.UpperLeft;
+                coordY += tempRect.height;
             }
 
             coordY += 10;

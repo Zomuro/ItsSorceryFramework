@@ -16,16 +16,6 @@ namespace ItsSorceryFramework
 			}
 		}
 
-
-        /*public override void PostSpawnSetup(bool respawningAfterLoad)
-		{
-			if (parent is Pawn p)
-			{
-				pawn = p;
-				SchemaTrackerInitalize();
-			}
-		}*/
-
 		public virtual void SchemaTrackerInitalize()
 		{
 			if(pawn != null)

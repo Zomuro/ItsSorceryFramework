@@ -7,6 +7,50 @@ namespace ItsSorceryFramework
 {
     public static class SorcerySchemaUtility
     {
+        public static List<EnergyTrackerDef> cachedEnergyTrackerDefs = new List<EnergyTrackerDef>();
+
+        public static List<LearningTrackerDef> cachedLearningTrackerDefs = new List<LearningTrackerDef>();
+
+        public static List<ProgressTrackerDef> cachedProgressTrackerDefs = new List<ProgressTrackerDef>();
+
+        public static List<SorcerySchemaDef> cachedSorcerySchemaDef = new List<SorcerySchemaDef>();
+
+        public static List<EnergyTrackerDef> EnergyTrackerDefs
+        {
+            get
+            {
+                if (cachedEnergyTrackerDefs.NullOrEmpty()) cachedEnergyTrackerDefs = DefDatabase<EnergyTrackerDef>.AllDefsListForReading;
+                return cachedEnergyTrackerDefs;
+            }
+        }
+
+        public static List<LearningTrackerDef> LearningTrackerDefs
+        {
+            get
+            {
+                if (cachedLearningTrackerDefs.NullOrEmpty()) cachedLearningTrackerDefs = DefDatabase<LearningTrackerDef>.AllDefsListForReading;
+                return cachedLearningTrackerDefs;
+            }
+        }
+
+        public static List<ProgressTrackerDef> ProgressTrackerDefs
+        {
+            get
+            {
+                if (cachedProgressTrackerDefs.NullOrEmpty()) cachedProgressTrackerDefs = DefDatabase<ProgressTrackerDef>.AllDefsListForReading;
+                return cachedProgressTrackerDefs;
+            }
+        }
+
+        public static List<SorcerySchemaDef> SorcerySchemaDefs
+        {
+            get
+            {
+                if (cachedSorcerySchemaDef.NullOrEmpty()) cachedSorcerySchemaDef = DefDatabase<SorcerySchemaDef>.AllDefsListForReading;
+                return cachedSorcerySchemaDef;
+            }
+        }
+
         public static SorcerySchema InitializeSorcerySchema(Pawn pawn, SorcerySchemaDef def)
         {
             return new SorcerySchema(pawn, def);
