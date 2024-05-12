@@ -448,6 +448,23 @@ namespace ItsSorceryFramework
             return stringBuilder.ToString();
         }
 
+        public string TipStringExtra(ProgressLevelOption option)
+        {
+            IEnumerable<StatDrawEntry> entries = option.SpecialDisplayMods();
+            if (entries.EnumerableNullOrEmpty()) return "";
+            StringBuilder stringBuilder = new StringBuilder();
+            foreach (StatDrawEntry statDrawEntry in entries)
+            {
+                if (statDrawEntry.ShouldDisplay())
+                {
+                    stringBuilder.AppendInNewLine("  - " + statDrawEntry.LabelCap + ": " + statDrawEntry.ValueString);
+                }
+            }
+            if (option.pointGain > 0) stringBuilder.AppendInNewLine("  - " + def.skillPointLabelKey.Translate().CapitalizeFirst() + ": " +
+                 option.pointGain);
+            return stringBuilder.ToString();
+        }
+
         public virtual float DrawEXPMethods(Rect rect)
         {
             float yMin = rect.yMin;
@@ -463,6 +480,22 @@ namespace ItsSorceryFramework
             foreach (ProgressEXPWorker worker in schema.progressTracker.def.Workers)
             {
                 rect.yMin += worker.DrawWorker(rect);
+            }
+
+            return rect.yMin - yMin;
+        }
+
+        public virtual float DrawModifiers(Rect rect, ProgressLevelOption option, string forceTipString = null)
+        {
+            float yMin = rect.yMin;
+
+            String tipString = forceTipString ?? TipStringExtra(option);
+            if (!tipString.NullOrEmpty())
+            {
+                Widgets.LabelCacheHeight(ref rect, "ISF_LearningProgressLevelProspectsModifiers".Translate(), true, false);
+                rect.yMin += rect.height;
+                Widgets.LabelCacheHeight(ref rect, tipString, true, false);
+                rect.yMin += rect.height;
             }
 
             return rect.yMin - yMin;
@@ -484,12 +517,62 @@ namespace ItsSorceryFramework
             return rect.yMin - yMin;
         }
 
+        public virtual bool OptionsCheck(ProgressLevelModifier mod)
+        {
+            if (mod == null) return false;
+
+            if (mod.options.NullOrEmpty() || mod.optionChoices == 0) return false;
+
+            return true;
+        }
+
+        public virtual float DrawOptions(Rect rect, ProgressLevelModifier mod)
+        {
+            float yMin = rect.yMin;
+            float x = rect.x;
+
+            // no options or not allowed to select one? don't bother showing this then
+            int selectCount = Math.Min(mod.optionChoices, mod.options.Count);
+            if (mod.options.NullOrEmpty() || selectCount == 0) return 0f;
+
+            bool showOptionSelectCount = selectCount <= 1 || selectCount >= mod.options.Count;
+            Widgets.LabelCacheHeight(ref rect, "ISF_LearningProgressLevelProspectsOptions".Translate(
+                showOptionSelectCount ? "" : $"({selectCount}/{mod.options.Count})"), true, false);
+            rect.yMin += rect.height;
+            rect.x += 12f;
+            foreach(var option in mod.options)
+            {
+                // draw label
+                Widgets.LabelCacheHeight(ref rect, option.label.CapitalizeFirst().Colorize(ColoredText.TipSectionTitleColor), true, false);
+                rect.yMin += rect.height;
+
+                // draw modifiers
+                rect.yMin += DrawModifiers(rect, option);
+
+                // draw hyperlinks
+                rect.yMin += DrawHyperlinks(rect, option);
+            }
+
+            rect.x = x;
+            return rect.yMin - yMin;
+        }
+
         public virtual bool HyperlinkCheck(ProgressLevelModifier mod)
         {
             if (mod == null) return false;
 
             if (mod.abilityGain.NullOrEmpty() && mod.abilityRemove.NullOrEmpty() && mod.hediffAdd.NullOrEmpty() &&
                 mod.hediffAdjust.NullOrEmpty() && mod.hediffRemove.NullOrEmpty()) return false;
+
+            return true;
+        }
+
+        public virtual bool HyperlinkCheck(ProgressLevelOption option)
+        {
+            if (option == null) return false;
+
+            if (option.abilityGain.NullOrEmpty() && option.abilityRemove.NullOrEmpty() && option.hediffAdd.NullOrEmpty() &&
+                option.hediffAdjust.NullOrEmpty() && option.hediffRemove.NullOrEmpty()) return false;
 
             return true;
         }
@@ -501,6 +584,114 @@ namespace ItsSorceryFramework
             List<NodeHediffProps> hediffAdd = mod.hediffAdd;
             List<NodeHediffProps> hediffAdjust = mod.hediffAdjust;
             List<HediffDef> hediffRemove = mod.hediffRemove;
+
+            if (abilityGain.NullOrEmpty() && abilityRemove.NullOrEmpty() && hediffAdd.NullOrEmpty() && hediffAdjust.NullOrEmpty() &&
+                hediffRemove.NullOrEmpty())
+            {
+                return 0f;
+            }
+
+            float yMin = rect.yMin;
+            float x = rect.x;
+            Dialog_InfoCard.Hyperlink hyperlink;
+
+            if (!abilityGain.NullOrEmpty())
+            {
+                Widgets.LabelCacheHeight(ref rect, "ISF_LearningProgressLevelProspectsAbilityGain".Translate(), true, false);
+                rect.yMin += rect.height;
+                rect.x += 6f;
+                foreach (AbilityDef abilityDef in abilityGain)
+                {
+                    Rect hyperRect = new Rect(rect.x, rect.yMin, rect.width, 24f);
+                    hyperlink = new Dialog_InfoCard.Hyperlink(abilityDef, -1);
+                    Widgets.HyperlinkWithIcon(hyperRect, hyperlink, null, 2f, 6f, new Color(0.8f, 0.85f, 1f), false);
+                    rect.yMin += 24f;
+                }
+                rect.x = x;
+            }
+
+            if (!abilityRemove.NullOrEmpty())
+            {
+                Widgets.LabelCacheHeight(ref rect, "ISF_LearningProgressLevelProspectsAbilityRemove".Translate(), true, false);
+                rect.yMin += rect.height;
+                rect.x += 6f;
+                foreach (AbilityDef abilityDef in abilityRemove)
+                {
+                    Rect hyperRect = new Rect(rect.x, rect.yMin, rect.width, 24f);
+                    hyperlink = new Dialog_InfoCard.Hyperlink(abilityDef, -1);
+                    Widgets.HyperlinkWithIcon(hyperRect, hyperlink, null, 2f, 6f, new Color(0.8f, 0.85f, 1f), false);
+                    rect.yMin += 24f;
+                }
+                rect.x = x;
+            }
+
+            if (!hediffAdd.NullOrEmpty())
+            {
+                Widgets.LabelCacheHeight(ref rect, "ISF_LearningProgressLevelProspectsHediffAdd".Translate(), true, false);
+                rect.yMin += rect.height;
+                rect.x += 6f;
+                foreach (NodeHediffProps prop in hediffAdd)
+                {
+                    Rect hyperRect = new Rect(rect.x, rect.yMin, rect.width, 24f);
+                    HediffDef hediffDef = prop.hediffDef;
+                    string sev;
+
+                    sev = hediffDef.stages.NullOrEmpty() ? prop.severity.ToStringWithSign("F0") :
+                        hediffDef.stages[hediffDef.StageAtSeverity(prop.severity)].label;
+                    hyperlink = new Dialog_InfoCard.Hyperlink(hediffDef, -1);
+                    Widgets.HyperlinkWithIcon(hyperRect, hyperlink, hediffDef.LabelCap + " ({0})".Translate(sev),
+                        2f, 6f, new Color(0.8f, 0.85f, 1f), false);
+                    rect.yMin += 24f;
+
+                }
+                rect.x = x;
+            }
+
+            if (!hediffAdjust.NullOrEmpty())
+            {
+                Widgets.LabelCacheHeight(ref rect, "ISF_LearningProgressLevelProspectsHediffAdjust".Translate(), true, false);
+                rect.yMin += rect.height;
+                rect.x += 6f;
+                foreach (NodeHediffProps prop in hediffAdjust)
+                {
+                    Rect hyperRect = new Rect(rect.x, rect.yMin, rect.width, 24f);
+                    HediffDef hediffDef = prop.hediffDef;
+                    string sev;
+
+                    sev = prop.severity.ToStringWithSign("F2");
+                    hyperlink = new Dialog_InfoCard.Hyperlink(hediffDef, -1);
+                    Widgets.HyperlinkWithIcon(hyperRect, hyperlink, hediffDef.LabelCap + " ({0})".Translate(sev),
+                        2f, 6f, new Color(0.8f, 0.85f, 1f), false);
+                    rect.yMin += 24f;
+                }
+                rect.x = x;
+            }
+
+            if (!hediffRemove.NullOrEmpty())
+            {
+                Widgets.LabelCacheHeight(ref rect, "ISF_LearningProgressLevelProspectsHediffRemove".Translate(), true, false);
+                rect.yMin += rect.height;
+                rect.x += 6f;
+                foreach (HediffDef hediffDef in hediffRemove)
+                {
+                    Rect hyperRect = new Rect(rect.x, rect.yMin, rect.width, 24f);
+                    hyperlink = new Dialog_InfoCard.Hyperlink(hediffDef, -1);
+                    Widgets.HyperlinkWithIcon(hyperRect, hyperlink, null, 2f, 6f, new Color(0.8f, 0.85f, 1f), false);
+                    rect.yMin += 24f;
+                }
+                rect.x = x;
+            }
+
+            return rect.yMin - yMin;
+        }
+
+        public virtual float DrawHyperlinks(Rect rect, ProgressLevelOption option)
+        {
+            List<AbilityDef> abilityGain = option.abilityGain;
+            List<AbilityDef> abilityRemove = option.abilityRemove;
+            List<NodeHediffProps> hediffAdd = option.hediffAdd;
+            List<NodeHediffProps> hediffAdjust = option.hediffAdjust;
+            List<HediffDef> hediffRemove = option.hediffRemove;
 
             if (abilityGain.NullOrEmpty() && abilityRemove.NullOrEmpty() && hediffAdd.NullOrEmpty() && hediffAdjust.NullOrEmpty() &&
                 hediffRemove.NullOrEmpty())

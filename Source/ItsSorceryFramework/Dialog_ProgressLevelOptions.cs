@@ -212,7 +212,7 @@ namespace ItsSorceryFramework
 		public string TipStringExtra(ProgressLevelOption option)
 		{
 			StringBuilder stringBuilder = new StringBuilder();
-			foreach (StatDrawEntry statDrawEntry in option.specialDisplayMods())
+			foreach (StatDrawEntry statDrawEntry in option.SpecialDisplayMods())
 			{
 				if (statDrawEntry.ShouldDisplay())
 				{
@@ -224,7 +224,7 @@ namespace ItsSorceryFramework
 			return stringBuilder.ToString();
 		}
 
-		private float DrawHyperlinks(Rect rect, ProgressLevelOption option)
+		public float DrawHyperlinks(Rect rect, ProgressLevelOption option)
 		{
 			List<AbilityDef> abilityGain = option.abilityGain;
 			List<AbilityDef> abilityRemove = option.abilityRemove;

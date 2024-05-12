@@ -355,8 +355,8 @@ namespace ItsSorceryFramework
                 ProgressLevelModifier special = def.getLevelSpecific(i);
                 tipString2 = TipStringExtra(special);
 
-                if (tipString.NullOrEmpty() && !HyperlinkCheck(factor) &&
-                    tipString2.NullOrEmpty() && !HyperlinkCheck(special) && !SpecialUnlocksCheck(special)) continue;
+                if (tipString.NullOrEmpty() && !OptionsCheck(factor) && !HyperlinkCheck(factor)  &&
+                    tipString2.NullOrEmpty() && !OptionsCheck(special) && !HyperlinkCheck(special) && !SpecialUnlocksCheck(special)) continue;
 
                 Text.Font = GameFont.Small;
                 if (CurLevelLabel.NullOrEmpty())
@@ -365,7 +365,7 @@ namespace ItsSorceryFramework
                     Widgets.LabelCacheHeight(ref rect, "ISF_LearningProgressLevelCustom".Translate(i, GetProgressLevelLabel(i)).Colorize(ColoredText.TipSectionTitleColor), true, false);
                 rect.yMin += rect.height;
 
-                if (!tipString.NullOrEmpty() || HyperlinkCheck(factor))
+                if (!tipString.NullOrEmpty() || OptionsCheck(factor) || HyperlinkCheck(factor))
                 {
                     Text.Font = GameFont.Small;
                     Widgets.LabelCacheHeight(ref rect, "ISF_LearningProgressLevelProspectsNormal".Translate().Colorize(ColoredText.SubtleGrayColor), true, false);
@@ -374,17 +374,23 @@ namespace ItsSorceryFramework
                     // draw modifiers
                     rect.yMin += this.DrawModifiers(rect, factor, tipString);
 
+                    // draw options
+                    rect.yMin += this.DrawOptions(rect, factor);
+
                     // draw hyperlinks
                     rect.yMin += this.DrawHyperlinks(rect, factor);
                 }
-                if (!tipString2.NullOrEmpty() || HyperlinkCheck(special) || SpecialUnlocksCheck(special))
+                if (!tipString2.NullOrEmpty() || OptionsCheck(special) || HyperlinkCheck(special) || SpecialUnlocksCheck(special))
                 {
                     Text.Font = GameFont.Small;
                     Widgets.LabelCacheHeight(ref rect, "ISF_LearningProgressLevelProspectsSpecial".Translate().Colorize(ColoredText.SubtleGrayColor), true, false);
                     rect.yMin += rect.height;
 
                     // draw modifiers
-                    rect.yMin += this.DrawModifiers(rect, factor, tipString2);
+                    rect.yMin += this.DrawModifiers(rect, special, tipString2);
+
+                    // draw options
+                    rect.yMin += this.DrawOptions(rect, special);
 
                     // draw hyperlinks
                     rect.yMin += this.DrawHyperlinks(rect, special);
