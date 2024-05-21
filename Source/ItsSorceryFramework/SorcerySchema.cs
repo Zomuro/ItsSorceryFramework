@@ -146,6 +146,7 @@ namespace ItsSorceryFramework
             {
                 coordY += 10;
                 tempRect.y += 10;
+                Text.Font = GameFont.Small;
                 Text.Anchor = TextAnchor.MiddleCenter;
                 Widgets.LabelCacheHeight(ref tempRect, "ISF_CurrentSkillPoints".Translate(progressTracker.def.skillPointLabelKey.Translate(),
                     progressTracker.points - progressTracker.usedPoints));
@@ -186,6 +187,7 @@ namespace ItsSorceryFramework
             Widgets.LabelCacheHeight(ref titleRect, def.LabelCap.ToString());
             coordY += titleRect.height;
 
+            Text.Font = GameFont.Small;
             Text.Anchor = TextAnchor.UpperLeft;
 
             return coordY;

@@ -9,7 +9,7 @@ using Verse;
 
 namespace ItsSorceryFramework
 {
-    public class ProgressTracker : IExposable
+    public abstract class ProgressTracker : IExposable
     {
         public Pawn pawn;
 

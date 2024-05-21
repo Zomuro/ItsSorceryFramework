@@ -2,7 +2,7 @@
 <Defs>
 	<!-- Demostration + Testing ProgressTracker def -->
 	<ItsSorceryFramework.ProgressTrackerDef Abstract = "True" Name = "ProgressTrackerBase">
-		<progressTrackerClass>ItsSorceryFramework.ProgressTracker</progressTrackerClass>
+		<progressTrackerClass>ItsSorceryFramework.ProgressTracker_Level</progressTrackerClass>
 		<progressHediff/>
 		<levelFactors/>
 		<levelSpecifics/>
@@ -20,6 +20,7 @@
 		<initialSeverity>1</initialSeverity>
 		<minSeverity>0</minSeverity>
 		<maxSeverity>100</maxSeverity>
+		<isBad>false</isBad>
 		<countsAsAddedPartOrImplant>false</countsAsAddedPartOrImplant>
 		<stages>	
 		</stages>

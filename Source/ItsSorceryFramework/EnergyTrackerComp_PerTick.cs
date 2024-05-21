@@ -38,18 +38,18 @@ namespace ItsSorceryFramework
         {
             if (Find.TickManager.TicksGame >= nextRecacheTick) ClearStatCache();
 
-            float energyChange = parent.InvMult * 1.TicksToSeconds() * RecoveryRate;
+            float energyChange = parent.InvMult * 1.TicksToSeconds() * RecoveryRate; // inverse system => -1; recovery rate 5
 
-            if (parent.InDeficit)
-            {
+            if (parent.InDeficit) parent.currentEnergy = Mathf.Clamp(parent.currentEnergy + energyChange * Props.deficitRecoveryFactor, parent.AbsMinEnergy, parent.AbsMaxEnergy);
+            /*{
                 if (!parent.def.inverse) parent.currentEnergy = Mathf.Max(parent.currentEnergy + energyChange * Props.deficitRecoveryFactor, parent.AbsMinEnergy);
                 else parent.currentEnergy = Mathf.Min(parent.currentEnergy + energyChange * Props.deficitRecoveryFactor, parent.AbsMaxEnergy);
-            }
-            else if (parent.InOvercharge)
-            {
+            }*/
+            else if (parent.InOvercharge) parent.currentEnergy = Mathf.Clamp(parent.currentEnergy + energyChange * Props.overchargeRecoveryFactor, parent.AbsMinEnergy, parent.AbsMaxEnergy);
+            /*{
                 if (!parent.def.inverse) parent.currentEnergy = Mathf.Min(parent.currentEnergy + energyChange * Props.overchargeRecoveryFactor, parent.AbsMaxEnergy);
                 else parent.currentEnergy = Mathf.Max(parent.currentEnergy + energyChange * Props.overchargeRecoveryFactor, parent.AbsMinEnergy);
-            }
+            }*/
             else parent.currentEnergy = Mathf.Clamp(parent.currentEnergy + energyChange, parent.MinEnergy, parent.MaxEnergy);
         } 
 

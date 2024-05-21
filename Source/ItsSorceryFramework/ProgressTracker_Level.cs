@@ -312,7 +312,7 @@ namespace ItsSorceryFramework
             Widgets.EndScrollView();
 
             // SORCERIES - see sorceries and change out what you want to use //
-            Rect sorceryRect = new Rect(0, rect.height * 2f / 3f, rect.width / 2f, rect.height * 3f).ContractedBy(20f);
+            Rect sorceryRect = new Rect(0, rect.height * 2f / 3f, rect.width / 2f, rect.height /3f).ContractedBy(20f);
             sorceryRect.height += 20f;
             Rect sorceryRectView = new Rect(sorceryRect.x, sorceryRect.y, sorceryRect.width - 20f * Prefs.UIScale, sorceryScrollViewHeight);
             Widgets.BeginScrollView(sorceryRect, ref this.sorceryScrollPosition, sorceryRectView, true);
