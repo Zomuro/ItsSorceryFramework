@@ -137,7 +137,7 @@ namespace ItsSorceryFramework
         {
             get
             {
-                if (cachedEnergyMin == float.MinValue) cachedEnergyMin = Math.Min(pawn.GetStatValue(def.energyMinStatDef ?? StatDefOf_ItsSorcery.ISF_MinEnergy, true), MaxEnergy);
+                if (cachedEnergyMin == float.MinValue) cachedEnergyMin = Math.Min(pawn.GetStatValue(def.energyMinStatDef ?? StatDefOf_ItsSorcery.ISF_MinEnergy, true, -1), MaxEnergy);
                 return cachedEnergyMin;
             }
         }
@@ -146,7 +146,7 @@ namespace ItsSorceryFramework
         {
             get
             {
-                if(cachedEnergyMax == float.MinValue) cachedEnergyMax = pawn.GetStatValue(def.energyMaxStatDef ?? StatDefOf_ItsSorcery.ISF_MaxEnergy, true);
+                if(cachedEnergyMax == float.MinValue) cachedEnergyMax = pawn.GetStatValue(def.energyMaxStatDef ?? StatDefOf_ItsSorcery.ISF_MaxEnergy, true, -1);
                 return cachedEnergyMax;
             }
         }
@@ -155,7 +155,7 @@ namespace ItsSorceryFramework
         {
             get
             {
-                if(cachedEnergyAbsMin == float.MinValue) cachedEnergyAbsMin = def.energyAbsMinStatDef is null ? MinEnergy : Math.Min(pawn.GetStatValue(def.energyAbsMinStatDef, true), MinEnergy);
+                if(cachedEnergyAbsMin == float.MinValue) cachedEnergyAbsMin = def.energyAbsMinStatDef is null ? MinEnergy : Math.Min(pawn.GetStatValue(def.energyAbsMinStatDef, true, -1), MinEnergy);
                 return cachedEnergyAbsMin;
             }
         }
@@ -164,7 +164,7 @@ namespace ItsSorceryFramework
         {
             get
             {
-                if (cachedEnergyAbsMax == float.MinValue) cachedEnergyAbsMax = def.energyAbsMaxStatDef is null ? MaxEnergy : Math.Max(pawn.GetStatValue(def.energyAbsMaxStatDef, true), MaxEnergy);
+                if (cachedEnergyAbsMax == float.MinValue) cachedEnergyAbsMax = def.energyAbsMaxStatDef is null ? MaxEnergy : Math.Max(pawn.GetStatValue(def.energyAbsMaxStatDef, true, -1), MaxEnergy);
                 return cachedEnergyAbsMax;
             }
         }
@@ -173,7 +173,7 @@ namespace ItsSorceryFramework
         {
             get
             {
-                if (cachedEnergyCostFactor == float.MinValue) cachedEnergyCostFactor = pawn.GetStatValue(def.energyCostFactorStatDef ?? StatDefOf_ItsSorcery.ISF_EnergyCostFactor, true);
+                if (cachedEnergyCostFactor == float.MinValue) cachedEnergyCostFactor = pawn.GetStatValue(def.energyCostFactorStatDef ?? StatDefOf_ItsSorcery.ISF_EnergyCostFactor, true, -1);
                 return cachedEnergyCostFactor;
             }
         }
@@ -194,6 +194,17 @@ namespace ItsSorceryFramework
         {
             int baseTicks = ItsSorceryUtility.settings.EnergyStatCacheTicks;
             nextRecacheTick = Find.TickManager.TicksGame + UnityEngine.Random.Range(baseTicks - 3, baseTicks + 3);
+
+            if (Prefs.DevMode && ItsSorceryUtility.settings.ShowItsSorceryDebug)
+            {
+                Log.Message($"{pawn.ThingID}.{schema.def.defName}.{def.defName} clearing cache ; refresh in {nextRecacheTick - Find.TickManager.TicksGame} ticks; prior cached values:" +
+                        $"\n{def.energyMinStatDef.defName}: {cachedEnergyMin}" +
+                        $"\n{def.energyMaxStatDef.defName}: {cachedEnergyMax}" +
+                        $"\n{def.energyAbsMinStatDef?.defName ?? def.energyMinStatDef.defName}: {cachedEnergyAbsMin}" +
+                        $"\n{def.energyAbsMaxStatDef?.defName ?? def.energyMaxStatDef.defName}: {cachedEnergyAbsMax}" +
+                        $"\n{def.energyCostFactorStatDef.defName}: {cachedEnergyCostFactor}");
+            }
+
             cachedEnergyMin = float.MinValue;
             cachedEnergyMax = float.MinValue;
             cachedEnergyAbsMin = float.MinValue;
@@ -477,32 +488,32 @@ namespace ItsSorceryFramework
             {
                 statDef = def.energyAbsMaxStatDef ?? StatDefOf_ItsSorcery.ISF_AbsMaxEnergy;
                 yield return new StatDrawEntry(finalCat,
-                        statDef, AbsMaxEnergy, pawnReq, ToStringNumberSense.Undefined, displayPriority, false);
+                        statDef, pawn.GetStatValue(statDef, true, -1), pawnReq, statDef.toStringNumberSense, displayPriority, false);
                 displayPriority--;
             }
 
             statDef = def.energyMaxStatDef ?? StatDefOf_ItsSorcery.ISF_MaxEnergy;
             yield return new StatDrawEntry(finalCat,
-                    statDef, MaxEnergy, pawnReq, ToStringNumberSense.Undefined, displayPriority, false);
+                    statDef, pawn.GetStatValue(statDef, true, -1), pawnReq, statDef.toStringNumberSense, displayPriority, false);
             displayPriority--;
 
             statDef = def.energyMinStatDef ?? StatDefOf_ItsSorcery.ISF_MinEnergy;
             yield return new StatDrawEntry(finalCat,
-                    statDef, MinEnergy, pawnReq, ToStringNumberSense.Undefined, displayPriority, false);
+                    statDef, pawn.GetStatValue(statDef, true, -1), pawnReq, statDef.toStringNumberSense, displayPriority, false);
             displayPriority--;
 
             if (AbsMinEnergy < MinEnergy) // only show if there's a difference between min energy and 0.
             {
                 statDef = def.energyAbsMinStatDef ?? StatDefOf_ItsSorcery.ISF_AbsMinEnergy;
                 yield return new StatDrawEntry(finalCat,
-                        statDef, AbsMinEnergy, pawnReq, ToStringNumberSense.Undefined, displayPriority, false);
+                        statDef, pawn.GetStatValue(statDef, true, -1), pawnReq, statDef.toStringNumberSense, displayPriority, false);
                 displayPriority--;
             }
 
             // shows a pawn's multiplier on relevant sorcery cost
             statDef = def.energyCostFactorStatDef ?? StatDefOf_ItsSorcery.ISF_EnergyCostFactor;
             yield return new StatDrawEntry(finalCat,
-                    statDef, pawn.GetStatValue(statDef), pawnReq, ToStringNumberSense.Factor, displayPriority, false);
+                    statDef, pawn.GetStatValue(statDef, true, -1), pawnReq, statDef.toStringNumberSense, displayPriority, false);
             displayPriority--;
         }
 
