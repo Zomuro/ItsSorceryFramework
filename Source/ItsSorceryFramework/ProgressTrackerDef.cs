@@ -56,7 +56,7 @@ namespace ItsSorceryFramework
 
             bool error = false;
 
-            int hediffCheckCount =  SorcerySchemaUtility.ProgressTrackerDefs.Where(x => x.progressHediff == progressHediff).Count();
+            int hediffCheckCount =  SorcerySchemaUtility.AllProgressTrackerDefs.Where(x => x.progressHediff == progressHediff).Count();
 
             if (hediffCheckCount > 1)
             {

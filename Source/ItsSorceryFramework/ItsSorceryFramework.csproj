@@ -65,6 +65,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DebugUtility.cs" />
     <Compile Include="CompProperties_LearningTreeItem.cs" />
     <Compile Include="CompLearningTreeItem.cs" />
     <Compile Include="CompProperties_UseEffectLearningTree.cs" />
