@@ -17,6 +17,8 @@ namespace ItsSorceryFramework
 
         public HediffDef progressHediff;
 
+        public IntRange levelRange = new IntRange(1, 10);
+
         public float baseEXP = 100f;
 
         public float scaling = 1.1f;

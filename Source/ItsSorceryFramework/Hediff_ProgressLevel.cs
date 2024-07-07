@@ -7,9 +7,9 @@ namespace ItsSorceryFramework
 		{
 			get
 			{
-				if (schema?.progressTracker != null)
+				if (Schema?.progressTracker != null)
 				{
-					if(schema.progressTracker.CurLevelLabel.NullOrEmpty())
+					if(Schema.progressTracker.CurLevelLabel.NullOrEmpty()) // no current level label from progress tracker?
                     {
 						if (Level == (int)def.maxSeverity)
 							return $"{def.label} (lvl. {Level}, MAX)";
@@ -19,8 +19,8 @@ namespace ItsSorceryFramework
 					else
 					{
 						if (Level == (int)def.maxSeverity)
-							return $"{def.label} ({schema.progressTracker.CurLevelLabel}, MAX)"; //def.label + " " + "ISF_LevelLabelCustomMax".Translate(schema.progressTracker.CurLevelLabel);
-						return $"{def.label} ({schema.progressTracker.CurLevelLabel})"; //def.label + " " + "ISF_LevelLabelCustom".Translate(schema.progressTracker.CurLevelLabel);
+							return $"{def.label} ({Schema.progressTracker.CurLevelLabel}, MAX)"; //def.label + " " + "ISF_LevelLabelCustomMax".Translate(schema.progressTracker.CurLevelLabel);
+						return $"{def.label} ({Schema.progressTracker.CurLevelLabel})"; //def.label + " " + "ISF_LevelLabelCustom".Translate(schema.progressTracker.CurLevelLabel);
 					}
 				}
 				return def.label + " x" + Level;

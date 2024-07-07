@@ -19,8 +19,8 @@ namespace ItsSorceryFramework
 
 				schema.progressTracker.ForceLevelUp();
 
-				Log.Message(schema.progressTracker.hediff.Severity.ToString());
-				Log.Message(caster.health.hediffSet.GetFirstHediffOfDef(schema.progressTracker.hediff.def).Severity.ToString());
+				Log.Message(schema.progressTracker.Hediff.Severity.ToString());
+				Log.Message(caster.health.hediffSet.GetFirstHediffOfDef(schema.progressTracker.Hediff.def).Severity.ToString());
 
 			}
 

@@ -174,7 +174,7 @@ namespace ItsSorceryFramework
         {
             get
             {
-                if (SorceryComp is null) return null;
+                if (SorceryComp?.schemaTracker?.sorcerySchemas is null) return null;
                 if (cachedHashSchema is null || cacheCount != SorceryComp.schemaTracker.sorcerySchemas.Count())
                 {
                     cachedHashSchema = new HashSet<SorcerySchema>(SorceryComp.schemaTracker.sorcerySchemas);

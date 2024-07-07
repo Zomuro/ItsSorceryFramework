@@ -10,7 +10,7 @@ namespace ItsSorceryFramework
     public class ProgressTracker_Level : ProgressTracker
     {
         // UI fields
-         private Vector2 leftDescScrollPosition = Vector2.zero;
+        private Vector2 leftDescScrollPosition = Vector2.zero;
 
         private Vector2 leftStatusScrollPosition = Vector2.zero;
 
@@ -45,26 +45,45 @@ namespace ItsSorceryFramework
         public override void Initialize()
         {
             base.Initialize();
-
-            Hediff_ProgressLevel progressHediff = HediffMaker.MakeHediff(def.progressHediff, pawn, null) as Hediff_ProgressLevel;
-            progressHediff.Severity = def.progressHediff.initialSeverity;
-            progressHediff.schema = schema;
-            pawn.health.AddHediff(progressHediff, null, null, null);
-            hediff = progressHediff;
-
-            hediff.cachedCurStage = RefreshCurStage();
-
-            //SetupHediffStage(hediff as Hediff_ProgressLevel); // safety
-
-            /*if (pawn.health.hediffSet.GetFirstHediffOfDef(def.progressHediff) == null)
-                //HediffMaker.MakeHediff
-                HealthUtility.AdjustSeverity(pawn, def.progressHediff, def.progressHediff.initialSeverity);
-            hediff = pawn.health.hediffSet.GetFirstHediffOfDef(def.progressHediff) as Hediff_ProgressLevel;
-            hediff.progressTracker = this;
-            SetupHediffStage(hediff as Hediff_ProgressLevel);*/
+            ResetHediff(); // used to create progress tracker's hediff during initialization... or when hediff is missing
         }
 
         public override void ExposeData() => base.ExposeData();
+
+        // set as a wrapper and null check method?
+        public override Hediff_Progress Hediff
+        {
+            get
+            {
+                if (hediff is null) ResetHediff(); // missing hediff => recreate hediff w/ proper curstage; existing hediff; relink
+                return hediff;
+            }
+            set { hediff = value; }
+        }
+
+        public override void ResetHediff()
+        {
+            // if the progress hediff already exists:
+            if (pawn.health.hediffSet.GetFirstHediffOfDef(def.progressHediff) != null)
+            {
+                Hediff_ProgressLevel existingHediff = pawn.health.hediffSet.GetFirstHediffOfDef(def.progressHediff) as Hediff_ProgressLevel;
+                existingHediff.Schema = schema; // ensure the hediff is linked to this progresstracker's schema
+                Hediff = existingHediff; // link the progresstracker to the hediff on the progress tracker's side
+            }
+
+            // else, we are going to create it
+            else
+            {
+                Hediff_ProgressLevel tempHediff = HediffMaker.MakeHediff(def.progressHediff, pawn, null) as Hediff_ProgressLevel; // define hediff w/ proper class
+                tempHediff.Severity = def.progressHediff.initialSeverity; // set initial severity
+                tempHediff.Schema = schema; // ensure the hediff is linked to this progresstracker's schema
+                pawn.health.AddHediff(tempHediff, null, null, null); // add to pawn
+                Hediff = tempHediff; // link the progresstracker to the hediff on the progress tracker's side
+            }
+
+            // finally, (re)set the hediffstage of the hediff
+            Hediff.cachedCurStage = RefreshCurStage();
+        }
 
         public override void ProgressTrackerTick()
         {
@@ -93,8 +112,8 @@ namespace ItsSorceryFramework
                 if (exp > CurrentLevelEXPReq)
                 {
                     exp -= CurrentLevelEXPReq;
-                    hediff.Severity += 1;
-                    NotifyLevelUp(hediff.Severity, ref optionWindows); // get benefits of level up + add windows
+                    CurrLevel += 1;
+                    NotifyLevelUp(CurrLevel, ref optionWindows); // get benefits of level up + add windows
                 }
                 else done = true;
             }
@@ -104,11 +123,11 @@ namespace ItsSorceryFramework
 
         public override void ForceLevelUp()
         {
-            if (hediff == null || Maxed) return;
+            if (Hediff == null || Maxed) return;
             float orgSev = CurrLevel;
-            hediff.Severity += 1;
+            CurrLevel += 1;
             List<Window> windows = new List<Window>();
-            NotifyLevelUp(hediff.Severity, ref windows); // level up + get levels
+            NotifyLevelUp(CurrLevel, ref windows); // level up + get levels
             NotifyTotalLevelUp(orgSev, windows); // notify level up + get windows
         }
 
@@ -145,12 +164,12 @@ namespace ItsSorceryFramework
                         $"\nProgressTracker offets: {statOffsetsTotal.ToStringSafeEnumerable()}" +
                         $"\nProgressTracker factors: {statFactorsTotal.ToStringSafeEnumerable()}" +
                         $"\nProgressTracker cap mods: {capModsTotal.ToStringSafeEnumerable()}" +
-                        $"\nHediff ProgressTracker offets: {hediff.schema.progressTracker.statOffsetsTotal.ToStringSafeEnumerable()}" +
-                        $"\nHediff ProgressTracker factors: {hediff.schema.progressTracker.statFactorsTotal.ToStringSafeEnumerable()}" +
-                        $"\nHediff ProgressTracker cap mods: {hediff.schema.progressTracker.capModsTotal.ToStringSafeEnumerable()}");
+                        $"\nHediff ProgressTracker offets: {Hediff.Schema.progressTracker.statOffsetsTotal.ToStringSafeEnumerable()}" +
+                        $"\nHediff ProgressTracker factors: {Hediff.Schema.progressTracker.statFactorsTotal.ToStringSafeEnumerable()}" +
+                        $"\nHediff ProgressTracker cap mods: {Hediff.Schema.progressTracker.capModsTotal.ToStringSafeEnumerable()}");
             }
 
-            hediff.cachedCurStage = RefreshCurStage();
+            Hediff.cachedCurStage = RefreshCurStage();
         }
 
         public override HediffStage RefreshCurStage()
@@ -252,7 +271,7 @@ namespace ItsSorceryFramework
             Widgets.LabelCacheHeight(ref modTitleRect, "ISF_LearningProgressLevelStatus".Translate(), true, false);
             coordY += modTitleRect.height;
 
-            String tipString = TipStringExtra(hediff.CurStage);
+            String tipString = TipStringExtra(Hediff.CurStage);
             if (tipString.NullOrEmpty()) tipString = "N/A";
 
             Text.Font = GameFont.Small; // Status info
@@ -344,11 +363,11 @@ namespace ItsSorceryFramework
             String tipString2;
             float projLevel = CurrLevel + 1;
 
-            if (projLevel > hediff.def.maxSeverity) return rect.yMin - yMin;
+            if (projLevel > Hediff.def.maxSeverity) return rect.yMin - yMin;
             Text.Font = GameFont.Small;
             for (int i = (int)projLevel; i < (int)projLevel + ItsSorceryUtility.settings.ProgressViewProspectsNum; i++)
             {
-                if (i > hediff.def.maxSeverity) break;
+                if (i > Hediff.def.maxSeverity) break;
 
                 ProgressLevelModifier factor = def.getLevelFactor(i);
                 tipString = TipStringExtra(factor);

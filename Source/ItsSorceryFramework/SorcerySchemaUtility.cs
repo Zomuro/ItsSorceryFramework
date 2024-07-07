@@ -90,7 +90,7 @@ namespace ItsSorceryFramework
             if (targetSchema is null) return;
 
             // remove schema hediff and schema
-            pawn.health.RemoveHediff(targetSchema.progressTracker.hediff);
+            pawn.health.RemoveHediff(targetSchema.progressTracker.Hediff);
             schemaComp.schemaTracker.sorcerySchemas.Remove(targetSchema);
         }
 
@@ -103,7 +103,7 @@ namespace ItsSorceryFramework
             if (targetSchema is null) return;
 
             // remove schema hediff and schema
-            pawn.health.RemoveHediff(targetSchema.progressTracker.hediff);
+            pawn.health.RemoveHediff(targetSchema.progressTracker.Hediff);
             schemaComp.schemaTracker.sorcerySchemas.Remove(targetSchema);
         }
 
@@ -144,7 +144,7 @@ namespace ItsSorceryFramework
 
         public static void RefreshProgressTracker(SorcerySchema schema)
         {
-            schema.progressTracker.hediff.cachedCurStage = schema.progressTracker.RefreshCurStage();
+            schema.progressTracker.Hediff.cachedCurStage = schema.progressTracker.RefreshCurStage();
         }
 
     }

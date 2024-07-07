@@ -17,7 +17,8 @@ namespace ItsSorceryFramework
 			DebugActionCategories.categoryOrders.Add("It's Sorcery!", 1600);
 		}
 
-		[DebugAction("It's Sorcery!", "Add SorcerySchema", false, false, false, false, 0, false, 
+        // Adds choice of schema to target pawn
+        [DebugAction("It's Sorcery!", "Add SorcerySchema", false, false, false, false, 0, false, 
             actionType = DebugActionType.ToolMapForPawns, allowedGameStates = AllowedGameStates.PlayingOnMap, displayPriority = 1000)]
         public static void AddSorcerySchema(Pawn pawn)
         {
@@ -41,6 +42,7 @@ namespace ItsSorceryFramework
             Find.WindowStack.Add(new Dialog_DebugOptionListLister(options, null));
         }
 
+        // Removes a schema from target pawn
         [DebugAction("It's Sorcery!", "Remove SorcerySchema", false, false, false, false, 0, false,
             actionType = DebugActionType.ToolMapForPawns, allowedGameStates = AllowedGameStates.PlayingOnMap, displayPriority = 999)]
         public static void RemoveSorcerySchema(Pawn pawn)
@@ -66,6 +68,7 @@ namespace ItsSorceryFramework
             Find.WindowStack.Add(new Dialog_DebugOptionListLister(options, null));
         }
 
+        // Removes all schemas from target pawn
         [DebugAction("It's Sorcery!", "Remove all SorcerySchema", false, false, false, false, 0, false,
             actionType = DebugActionType.ToolMapForPawns, allowedGameStates = AllowedGameStates.PlayingOnMap, displayPriority = 999)]
         public static void RemoveAllSorcerySchema(Pawn pawn)
@@ -79,10 +82,11 @@ namespace ItsSorceryFramework
 
             // clear out all sorcery schemas
             List<SorcerySchema> schemas = comp?.schemaTracker?.sorcerySchemas;
-            foreach (SorcerySchema schema in schemas) pawn.health.RemoveHediff(schema.progressTracker.hediff);
+            foreach (SorcerySchema schema in schemas) pawn.health.RemoveHediff(schema.progressTracker.Hediff);
             schemas.Clear();
         }
 
+        // Completely refresh ProgressTrackers
         [DebugAction("It's Sorcery!", "Refresh all ProgressTrackers", false, false, false, false, 0, false,
             actionType = DebugActionType.ToolMapForPawns, allowedGameStates = AllowedGameStates.PlayingOnMap, displayPriority = 999)]
         public static void RefreshProgressTrackers(Pawn pawn)
@@ -100,6 +104,33 @@ namespace ItsSorceryFramework
             }
         }
 
+        // Used to test new recovery method for hediffs
+        [DebugAction("It's Sorcery!", "Force ProgressTracker Reset", false, false, false, false, 0, false,
+            actionType = DebugActionType.ToolMapForPawns, allowedGameStates = AllowedGameStates.PlayingOnMap, displayPriority = 999)]
+        public static void ForceProgressTrackerReset(Pawn pawn)
+        {
+            Comp_ItsSorcery comp = pawn.GetComp<Comp_ItsSorcery>();
+            if (comp?.schemaTracker?.sorcerySchemas is null)
+            {
+                Messages.Message($"{pawn.Name.ToStringShort} has no It's Sorcery! comp.", MessageTypeDefOf.RejectInput);
+                return;
+            }
+
+            List<DebugMenuOption> options = new List<DebugMenuOption>();
+
+
+            foreach (SorcerySchema schema in comp?.schemaTracker?.sorcerySchemas)
+            {
+                options.Add(new DebugMenuOption(schema.def.label, DebugMenuOptionMode.Tool, delegate ()
+                {
+                    //pawn.health.RemoveHediff(schema.progressTracker.ProgressHediff);
+                    schema.progressTracker.Hediff = null;
+                    Log.Message($"Hediff Removed: {schema.progressTracker.Hediff.def.label}");
+                }));
+            }
+
+            Find.WindowStack.Add(new Dialog_DebugOptionListLister(options, null));
+        }
 
     }
 }
