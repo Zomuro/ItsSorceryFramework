@@ -1,5 +1,6 @@
 ﻿using RimWorld;
 using System;
+using System.Collections.Generic;
 using Verse;
 
 namespace ItsSorceryFramework
@@ -27,31 +28,40 @@ namespace ItsSorceryFramework
 
 		protected override void DisabledCheck()
 		{
-			// future zom's problem- created cached strings for this + whenever energycostfactor gets changed, clear cache of text constructed
+			SorceryDef def = (ability as Sorcery)?.sorceryDef;
+			Pawn pawn = ability.pawn;
+			disabled = false;
 
-			SorceryDef def = (this.ability as Sorcery)?.sorceryDef;
-			Pawn pawn = this.ability.pawn;
-			this.disabled = false;
-
-			if(Schema is null)
-            {
-				base.DisableWithReason("ISF_CommandDisableNoSchema".Translate(pawn.LabelShort, def.sorcerySchema.LabelCap));
+			if(Schema is null) // no schema? disable this sorcery- the person can't cast it
+			{
+				DisableWithReason("ISF_CommandDisableNoSchema".Translate(pawn.LabelShort, def.sorcerySchema.LabelCap));
 				return;
 			}
 
-			if(Schema.energyTrackers is null) // don't bother cost checking if no energy tracker
+			if(Schema.energyTrackers.NullOrEmpty()) // don't bother cost checking if no energy tracker
             {
 				base.DisabledCheck();
 				return;
 			}
 
-			foreach(var et in Schema.energyTrackers)
-            {
+			
+			List<string> disableByEnergyTrackers = new List<string>();
+			bool disableCheck = false;
+			foreach(var et in Schema.energyTrackers) // run through energytrackers and check if it's castable
+			{
+				// if it'd hit the energy limit, disable the gizmo and add to the reasons
 				if (et.WouldReachLimitEnergy(def.statBases.GetStatValueFromList(et.def.energyUnitStatDef, 0), def))
 				{
-					base.DisableWithReason(et.DisableCommandReason().Translate(pawn.NameFullColored));
-					//return;
+					disableByEnergyTrackers.Add(et.DisableCommandReason().Translate(pawn.NameFullColored));
+					disableCheck = true;
 				}
+			}
+
+            if (disableCheck) // if it turns out it isn't castable
+            {
+				// join together string list and set it as the reason
+				DisableWithReason(string.Join("\n", disableByEnergyTrackers));
+				return;
 			}
 
 			base.DisabledCheck();

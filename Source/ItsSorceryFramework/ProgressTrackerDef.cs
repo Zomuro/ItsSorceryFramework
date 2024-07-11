@@ -17,6 +17,8 @@ namespace ItsSorceryFramework
 
         public HediffDef progressHediff;
 
+        public IntRange levelRange = new IntRange(1, 10);
+
         public float baseEXP = 100f;
 
         public float scaling = 1.1f;
@@ -56,7 +58,7 @@ namespace ItsSorceryFramework
 
             bool error = false;
 
-            int hediffCheckCount =  SorcerySchemaUtility.ProgressTrackerDefs.Where(x => x.progressHediff == progressHediff).Count();
+            int hediffCheckCount =  SorcerySchemaUtility.AllProgressTrackerDefs.Where(x => x.progressHediff == progressHediff).Count();
 
             if (hediffCheckCount > 1)
             {

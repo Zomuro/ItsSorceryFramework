@@ -15,7 +15,7 @@ namespace ItsSorceryFramework
 
         public static List<SorcerySchemaDef> cachedSorcerySchemaDef = new List<SorcerySchemaDef>();
 
-        public static List<EnergyTrackerDef> EnergyTrackerDefs
+        public static List<EnergyTrackerDef> AllEnergyTrackerDefs
         {
             get
             {
@@ -24,7 +24,7 @@ namespace ItsSorceryFramework
             }
         }
 
-        public static List<LearningTrackerDef> LearningTrackerDefs
+        public static List<LearningTrackerDef> AllLearningTrackerDefs
         {
             get
             {
@@ -33,7 +33,7 @@ namespace ItsSorceryFramework
             }
         }
 
-        public static List<ProgressTrackerDef> ProgressTrackerDefs
+        public static List<ProgressTrackerDef> AllProgressTrackerDefs
         {
             get
             {
@@ -42,7 +42,7 @@ namespace ItsSorceryFramework
             }
         }
 
-        public static List<SorcerySchemaDef> SorcerySchemaDefs
+        public static List<SorcerySchemaDef> AllSorcerySchemaDefs
         {
             get
             {
@@ -84,20 +84,27 @@ namespace ItsSorceryFramework
         public static void RemoveSorcerySchema(Pawn pawn, SorcerySchemaDef def)
         {
             Comp_ItsSorcery schemaComp = GetSorceryComp(pawn);
-            if (schemaComp.schemaTracker.sorcerySchemas.FirstOrDefault(x => x.def == def) == null) return;
-            schemaComp.schemaTracker.sorcerySchemas.Remove(InitializeSorcerySchema(pawn, def));
+
+            // nullcheck if the pawn has a schema
+            SorcerySchema targetSchema = schemaComp?.schemaTracker?.sorcerySchemas?.FirstOrDefault(x => x.def == def);
+            if (targetSchema is null) return;
+
+            // remove schema hediff and schema
+            pawn.health.RemoveHediff(targetSchema.progressTracker.Hediff);
+            schemaComp.schemaTracker.sorcerySchemas.Remove(targetSchema);
         }
 
-        public static void RemoveSorcerySchema(Pawn pawn, SorcerySchemaDef def, out SorcerySchema schema)
+        public static void RemoveSorcerySchema(Pawn pawn, SorcerySchema schema)
         {
             Comp_ItsSorcery schemaComp = GetSorceryComp(pawn);
-            if (schemaComp.schemaTracker.sorcerySchemas.FirstOrDefault(x => x.def == def) == null) 
-            {
-                schema = null;
-                return;
-            }
-            schema = InitializeSorcerySchema(pawn, def);
-            schemaComp.schemaTracker.sorcerySchemas.Remove(schema);
+
+            // nullcheck if the pawn has a schema
+            SorcerySchema targetSchema = schemaComp?.schemaTracker?.sorcerySchemas?.FirstOrDefault(x => x == schema);
+            if (targetSchema is null) return;
+
+            // remove schema hediff and schema
+            pawn.health.RemoveHediff(targetSchema.progressTracker.Hediff);
+            schemaComp.schemaTracker.sorcerySchemas.Remove(targetSchema);
         }
 
         public static List<SorcerySchema> GetSorcerySchemaList(Pawn pawn)
@@ -133,6 +140,11 @@ namespace ItsSorceryFramework
                 if (et.def.energyUnitStatDef == unitStat) return et;
             }
             return null;
+        }
+
+        public static void RefreshProgressTracker(SorcerySchema schema)
+        {
+            schema.progressTracker.Hediff.cachedCurStage = schema.progressTracker.RefreshCurStage();
         }
 
     }

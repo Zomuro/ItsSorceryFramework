@@ -146,6 +146,7 @@ namespace ItsSorceryFramework
             {
                 coordY += 10;
                 tempRect.y += 10;
+                Text.Font = GameFont.Small;
                 Text.Anchor = TextAnchor.MiddleCenter;
                 Widgets.LabelCacheHeight(ref tempRect, "ISF_CurrentSkillPoints".Translate(progressTracker.def.skillPointLabelKey.Translate(),
                     progressTracker.points - progressTracker.usedPoints));
@@ -178,14 +179,18 @@ namespace ItsSorceryFramework
 
             def.ClearCachedData();
 
+            // design choice for later - shift title and other components down
+            //coordY += 24 + 5 + 5; // 5 units for initial height + button height + extra 5 for space
+
             // shows the label of the sorcery schema in the itab
             Text.Font = GameFont.Medium;
             Text.Anchor = TextAnchor.UpperCenter;
 
-            Rect titleRect = new Rect(rect.x + rect.width / 5, rect.y, rect.width * 3 / 5, 50f);
+            Rect titleRect = new Rect(rect.x + rect.width / 5, rect.y + coordY, rect.width * 3 / 5, 50f);
             Widgets.LabelCacheHeight(ref titleRect, def.LabelCap.ToString());
             coordY += titleRect.height;
 
+            Text.Font = GameFont.Small;
             Text.Anchor = TextAnchor.UpperLeft;
 
             return coordY;

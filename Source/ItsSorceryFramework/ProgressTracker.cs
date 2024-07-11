@@ -9,7 +9,7 @@ using Verse;
 
 namespace ItsSorceryFramework
 {
-    public class ProgressTracker : IExposable
+    public abstract class ProgressTracker : IExposable
     {
         public Pawn pawn;
 
@@ -17,9 +17,9 @@ namespace ItsSorceryFramework
 
         public SorcerySchema schema;
 
-        public Hediff_Progress hediff;
+        public Hediff_Progress hediff; // use get/set property ProgressHediff
 
-        public Dictionary<StatDef, float> statOffsetsTotal = new Dictionary<StatDef, float>();
+        public Dictionary<StatDef, float> statOffsetsTotal = new Dictionary<StatDef, float>(); 
 
         public Dictionary<StatDef, float> statFactorsTotal = new Dictionary<StatDef, float>();
 
@@ -31,6 +31,8 @@ namespace ItsSorceryFramework
 
         public int points = 0;
 
+        public int level = 1; // alternatively use CurrLevel, which wrap around this field
+
         private int cachedCurLevel = 0;
 
         private string cachedLevelLabel;
@@ -38,8 +40,6 @@ namespace ItsSorceryFramework
         private List<ProgressLevelLabel> cachedLevelLabels;
 
         private List<SorceryDef> cachedSorceryDefs = new List<SorceryDef>();
-
-        //private bool cacheDirtySorceries = true;
 
         public System.Random rand = new System.Random();
 
@@ -56,12 +56,15 @@ namespace ItsSorceryFramework
             this.schema = schema;
         }
 
+        public virtual void Initialize() { }
+
         public virtual void ExposeData()
         {
             Scribe_References.Look(ref pawn, "pawn");
             Scribe_Defs.Look(ref def, "def");
             Scribe_References.Look(ref schema, "schema");
             Scribe_References.Look(ref hediff, "hediff");
+            Scribe_Values.Look(ref level, "level", 1);
             Scribe_Values.Look(ref exp, "exp", 0f);
             Scribe_Values.Look(ref usedPoints, "usedPoints", 0);
             Scribe_Values.Look(ref points, "points", 0);
@@ -70,23 +73,38 @@ namespace ItsSorceryFramework
             Scribe_Collections.Look(ref capModsTotal, "capModsTotal", LookMode.Def, LookMode.Value);
         }
 
-        public virtual void Initialize()
-        {
 
+        // set as a wrapper and null check method
+        public virtual Hediff_Progress Hediff
+        {
+            get { return hediff; }
+            set { hediff = value; }
         }
 
-        public virtual void SetupHediffStage(Hediff_Progress hediff)
+        // use to define a clear hediff state (no bonuses from magic system)- UNUSED
+        public virtual void ClearHediffStage(Hediff_Progress hediff)
         {
             if (hediff.CurStage != null) hediff.def.stages.Clear();
 
             HediffStage newStage = new HediffStage()
             {
-                minSeverity = CurrLevel,
                 statOffsets = new List<StatModifier>(),
                 statFactors = new List<StatModifier>(),
                 capMods = new List<PawnCapacityModifier>()
             };
             hediff.cachedCurStage = newStage;
+        }
+
+        public virtual void ResetHediff()
+        {
+            Hediff_ProgressLevel tempHediff = HediffMaker.MakeHediff(def.progressHediff, pawn, null) as Hediff_ProgressLevel; // define hediff w/ proper class
+            tempHediff.Severity = def.progressHediff.initialSeverity; // set initial severity
+            tempHediff.Schema = schema; // ensure the hediff is linked to this progresstracker's schema
+            pawn.health.AddHediff(tempHediff, null, null, null); // add to pawn
+            Hediff = tempHediff; // link the progresstracker to the hediff on the progress tracker's side
+
+            // finally, (re)set the hediffstage of the hediff
+            Hediff.cachedCurStage = RefreshCurStage();
         }
 
         public virtual void ProgressTrackerTick() { }
@@ -126,7 +144,6 @@ namespace ItsSorceryFramework
             if (select < 0 || select > modifier.options.Count) options = LevelOptions(modifier).ToList();
             else options = LevelOptions(modifier).OrderBy(x => rand.Next()).Take(select).ToList();
             windows.Add(new Dialog_ProgressLevelOptions(options, this, CurrLevel));
-            //Find.WindowStack.Add(new Dialog_ProgressLevelOptions(options, this, CurrLevel));
         }
 
         public virtual IEnumerable<DebugMenuOption> LevelOptions(ProgressLevelModifier modifier)
@@ -308,9 +325,19 @@ namespace ItsSorceryFramework
                 "This pawn has leveled up.", LetterDefOf.NeutralEvent);
         }
 
-        public bool Maxed => (CurrLevel) >= hediff.def.maxSeverity;
+        public bool Maxed => (CurrLevel) >= def.levelRange.TrueMax; // hediff.def.maxSeverity;
 
-        public int CurrLevel => (int)hediff.Severity;
+        public int CurrLevel
+        {
+            get
+            {
+                 return Mathf.Clamp(level, def.levelRange.TrueMin, def.levelRange.TrueMax); //(int)hediff.Severity;
+            }
+            set
+            {
+                level = Mathf.Clamp(value, def.levelRange.TrueMin, def.levelRange.TrueMax);
+            }
+        }
 
         public virtual float CurrProgress => exp / CurrentLevelEXPReq;
 
@@ -374,7 +401,7 @@ namespace ItsSorceryFramework
             //Text.Font = GameFont.Small;
             rect.x += 22f;
 
-            String tipString = TipStringExtra(hediff.CurStage);
+            String tipString = TipStringExtra(Hediff.CurStage);
             if (!tipString.NullOrEmpty())
             {
                 Widgets.LabelCacheHeight(ref rect, "Current:", true, false);

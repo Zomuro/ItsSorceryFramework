@@ -114,7 +114,7 @@ namespace ItsSorceryFramework
                 Log.Warning($"It's Sorcery! Error: {defName} cannot have a null ProgressTracker.");
             }
 
-            int progressTrackerDupCount = SorcerySchemaUtility.SorcerySchemaDefs.Where(x => x.progressTrackerDef == progressTrackerDef).Count();
+            int progressTrackerDupCount = SorcerySchemaUtility.AllSorcerySchemaDefs.Where(x => x.progressTrackerDef == progressTrackerDef).Count();
             if (progressTrackerDupCount > 1)
             {
                 error = true;

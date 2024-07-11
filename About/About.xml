@@ -11,6 +11,9 @@
 			<steamWorkshopUrl>https://steamcommunity.com/workshop/filedetails/?id=2009463077</steamWorkshopUrl>
 		</li>
 	</modDependencies>
+	<loadAfter>
+		<li>brrainz.harmony</li>
+	</loadAfter>
 	<packageId>Zomuro.ItsSorcery</packageId>
 	<description>A general framework for magic systems in RimWorld. It offers a modular system that enables modders to easily design how magic works and is learned in-game. 
 	

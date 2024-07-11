@@ -17,10 +17,14 @@ namespace ItsSorceryFramework
 
 				SorcerySchema schema = SorcerySchemaUtility.FindSorcerySchema(caster, sorcery.sorceryDef.sorcerySchema);
 
+				int priorLevel = schema.progressTracker.CurrLevel;
 				schema.progressTracker.ForceLevelUp();
-
-				Log.Message(schema.progressTracker.hediff.Severity.ToString());
-				Log.Message(caster.health.hediffSet.GetFirstHediffOfDef(schema.progressTracker.hediff.def).Severity.ToString());
+				
+				if(Prefs.DevMode && ItsSorceryUtility.settings.ShowItsSorceryDebug)
+                {
+					Log.Message($"[It's Sorcery!] Prior level: {priorLevel}; Current level: {schema.progressTracker.CurrLevel}");
+				}
+				
 
 			}
 
