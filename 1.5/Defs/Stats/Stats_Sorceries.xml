@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+	<StatDef>
+		<defName>ISF_Sorcery_EnergyCost</defName>
+		<label>energy cost</label>
+		<category>ISF_Sorcery</category>
+		<description>The amount of energy a technique requires to cast.</description>
+		<defaultBaseValue>10</defaultBaseValue>
+		<showIfUndefined>false</showIfUndefined>
+		<displayPriorityInCategory>1</displayPriorityInCategory>
+	</StatDef>
+
+</Defs>
