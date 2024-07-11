@@ -19,7 +19,7 @@ namespace ItsSorceryFramework
 
         public Hediff_Progress hediff; // use get/set property ProgressHediff
 
-        public Dictionary<StatDef, float> statOffsetsTotal = new Dictionary<StatDef, float>();
+        public Dictionary<StatDef, float> statOffsetsTotal = new Dictionary<StatDef, float>(); 
 
         public Dictionary<StatDef, float> statFactorsTotal = new Dictionary<StatDef, float>();
 

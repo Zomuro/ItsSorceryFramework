@@ -136,7 +136,7 @@ namespace ItsSorceryFramework
             ProgressLevelModifier factor = def.getLevelFactor(sev);
 
             if (Prefs.DevMode && ItsSorceryUtility.settings.ShowItsSorceryDebug && !factor.options.NullOrEmpty()) 
-                Log.Message($"Level {CurrLevel} has {factor.options.Count} options to choose from; picking {factor.optionChoices}");
+                Log.Message($"[It's Sorcery!] Level {CurrLevel} has {factor.options.Count} options to choose from; picking {factor.optionChoices}");
 
             if (factor != null)
             {
@@ -160,7 +160,7 @@ namespace ItsSorceryFramework
 
             if (Prefs.DevMode && ItsSorceryUtility.settings.ShowItsSorceryDebug)
             {
-                Log.Message($"{schema.def.defName}.{def.defName}:" +
+                Log.Message($"[It's Sorcery!] {schema.def.defName}.{def.defName}:" +
                         $"\nProgressTracker offets: {statOffsetsTotal.ToStringSafeEnumerable()}" +
                         $"\nProgressTracker factors: {statFactorsTotal.ToStringSafeEnumerable()}" +
                         $"\nProgressTracker cap mods: {capModsTotal.ToStringSafeEnumerable()}" +

@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using LudeonTK;
 using RimWorld;
+using System.Collections.Generic;
 using Verse;
-using LudeonTK;
-using UnityEngine;
 
 namespace ItsSorceryFramework
 {
@@ -25,7 +20,7 @@ namespace ItsSorceryFramework
             Comp_ItsSorcery comp = pawn.GetComp<Comp_ItsSorcery>();
             if (comp?.schemaTracker?.sorcerySchemas is null)
             {
-                Messages.Message($"{pawn.Name.ToStringShort} has no It's Sorcery! comp.", MessageTypeDefOf.RejectInput);
+                Messages.Message($"[It's Sorcery!] {pawn.Name.ToStringShort} has no It's Sorcery! comp.", MessageTypeDefOf.RejectInput);
                 return;
             }
 
@@ -50,7 +45,7 @@ namespace ItsSorceryFramework
             Comp_ItsSorcery comp = pawn.GetComp<Comp_ItsSorcery>();
             if(comp?.schemaTracker?.sorcerySchemas is null)
             {
-                Messages.Message($"{pawn.Name.ToStringShort} has no It's Sorcery! comp.", MessageTypeDefOf.RejectInput);
+                Messages.Message($"[It's Sorcery!] {pawn.Name.ToStringShort} has no It's Sorcery! comp.", MessageTypeDefOf.RejectInput);
                 return;
             }
             
@@ -76,7 +71,7 @@ namespace ItsSorceryFramework
             Comp_ItsSorcery comp = pawn.GetComp<Comp_ItsSorcery>();
             if (comp?.schemaTracker?.sorcerySchemas is null)
             {
-                Messages.Message($"{pawn.Name.ToStringShort} has no It's Sorcery! comp.", MessageTypeDefOf.RejectInput);
+                Messages.Message($"[It's Sorcery!] {pawn.Name.ToStringShort} has no It's Sorcery! comp.", MessageTypeDefOf.RejectInput);
                 return;
             }
 
@@ -94,7 +89,7 @@ namespace ItsSorceryFramework
             Comp_ItsSorcery comp = pawn.GetComp<Comp_ItsSorcery>();
             if (comp?.schemaTracker?.sorcerySchemas is null)
             {
-                Messages.Message($"{pawn.Name.ToStringShort} has no It's Sorcery! comp.", MessageTypeDefOf.RejectInput);
+                Messages.Message($"[It's Sorcery!] {pawn.Name.ToStringShort} has no It's Sorcery! comp.", MessageTypeDefOf.RejectInput);
                 return;
             }
 
@@ -104,8 +99,35 @@ namespace ItsSorceryFramework
             }
         }
 
+        [DebugAction("It's Sorcery!", "Level Up ProgressTracker", false, false, false, false, 0, false,
+            actionType = DebugActionType.ToolMapForPawns, allowedGameStates = AllowedGameStates.PlayingOnMap, displayPriority = 999)]
+        public static void LevelUpProgressTracker(Pawn pawn)
+        {
+            Comp_ItsSorcery comp = pawn.GetComp<Comp_ItsSorcery>();
+            if (comp?.schemaTracker?.sorcerySchemas is null)
+            {
+                Messages.Message($"[It's Sorcery!] {pawn.Name.ToStringShort} has no It's Sorcery! comp.", MessageTypeDefOf.RejectInput);
+                return;
+            }
+
+            List<DebugMenuOption> options = new List<DebugMenuOption>();
+
+            foreach (SorcerySchema schema in comp?.schemaTracker?.sorcerySchemas)
+            {
+                options.Add(new DebugMenuOption(schema.def.label, DebugMenuOptionMode.Tool, delegate ()
+                {
+                    int priorLevel = schema.progressTracker.CurrLevel;
+                    schema.progressTracker.ForceLevelUp();
+                    Log.Message($"[It's Sorcery!] Prior level: {priorLevel}; Current level: {schema.progressTracker.CurrLevel}; " +
+                        $"Level range: {schema.progressTracker.def.levelRange.TrueMin}-{schema.progressTracker.def.levelRange.TrueMax}");
+                }));
+            }
+
+            Find.WindowStack.Add(new Dialog_DebugOptionListLister(options, null));
+        }
+
         // Used to test new recovery method for hediffs
-        [DebugAction("It's Sorcery!", "Force ProgressTracker Reset", false, false, false, false, 0, false,
+        /*[DebugAction("It's Sorcery!", "Force ProgressTracker Reset", false, false, false, false, 0, false,
             actionType = DebugActionType.ToolMapForPawns, allowedGameStates = AllowedGameStates.PlayingOnMap, displayPriority = 999)]
         public static void ForceProgressTrackerReset(Pawn pawn)
         {
@@ -118,7 +140,6 @@ namespace ItsSorceryFramework
 
             List<DebugMenuOption> options = new List<DebugMenuOption>();
 
-
             foreach (SorcerySchema schema in comp?.schemaTracker?.sorcerySchemas)
             {
                 options.Add(new DebugMenuOption(schema.def.label, DebugMenuOptionMode.Tool, delegate ()
@@ -130,7 +151,7 @@ namespace ItsSorceryFramework
             }
 
             Find.WindowStack.Add(new Dialog_DebugOptionListLister(options, null));
-        }
+        }*/
 
     }
 }

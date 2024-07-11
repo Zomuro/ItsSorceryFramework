@@ -67,7 +67,7 @@ namespace ItsSorceryFramework
             {
                 if (Prefs.DevMode && ItsSorceryUtility.settings.ShowItsSorceryDebug)
                 {
-					Log.Message($"Hediff {def.defName} ProgressTracker null? {Schema?.progressTracker is null}" +
+					Log.Message($"[It's Sorcery!] Hediff {def.defName} ProgressTracker null? {Schema?.progressTracker is null}" +
 						$"\nProgressTracker offets: {Schema?.progressTracker.statOffsetsTotal.ToStringSafeEnumerable()}" +
 						$"\nProgressTracker factors: {Schema?.progressTracker.statFactorsTotal.ToStringSafeEnumerable()}" +
 						$"\nProgressTracker cap mods: {Schema?.progressTracker.capModsTotal.ToStringSafeEnumerable()}");

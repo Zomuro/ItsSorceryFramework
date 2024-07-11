@@ -197,7 +197,7 @@ namespace ItsSorceryFramework
 
             if (Prefs.DevMode && ItsSorceryUtility.settings.ShowItsSorceryDebug)
             {
-                Log.Message($"{pawn.ThingID}.{schema.def.defName}.{def.defName} clearing cache ; refresh in {nextRecacheTick - Find.TickManager.TicksGame} ticks; prior cached values:" +
+                Log.Message($"[It's Sorcery!] {pawn.ThingID}.{schema.def.defName}.{def.defName} clearing cache ; refresh in {nextRecacheTick - Find.TickManager.TicksGame} ticks; prior cached values:" +
                         $"\n{def.energyMinStatDef.defName}: {cachedEnergyMin}" +
                         $"\n{def.energyMaxStatDef.defName}: {cachedEnergyMax}" +
                         $"\n{def.energyAbsMinStatDef?.defName ?? def.energyMinStatDef.defName}: {cachedEnergyAbsMin}" +
