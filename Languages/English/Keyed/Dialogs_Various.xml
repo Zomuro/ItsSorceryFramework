@@ -37,6 +37,8 @@
 	<ISF_LearningNodeLockedHediff>Hediff requirements not met.</ISF_LearningNodeLockedHediff>
 	<ISF_LearningNodeLockedLevel>Level requirements not met.</ISF_LearningNodeLockedLevel>
 	
+	<ISF_LearningNodeNotPlayer>{0} is not in your faction.</ISF_LearningNodeNotPlayer>
+	
 	<!-- SorcerySchemaDef Info window - Learning Trackers - Progress -->
 	<ISF_LearningLevelLabel>Level {0}</ISF_LearningLevelLabel>
 	<ISF_LearningLevelLabelCustom>{0} (lvl. {1})</ISF_LearningLevelLabelCustom>

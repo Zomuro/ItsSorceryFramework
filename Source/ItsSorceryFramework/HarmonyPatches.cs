@@ -315,7 +315,10 @@ namespace ItsSorceryFramework
             // no modextension for schemas = no work
             if (!__0.def.HasModExtension<ModExtension_SchemaAddition>()) return;
             ModExtension_SchemaAddition schemaExt = __0.def.GetModExtension<ModExtension_SchemaAddition>();
-            SorcerySchemaUtility.AddSorcerySchema(Traverse.Create(__instance).Field("pawn").GetValue<Pawn>(), schemaExt.schema);
+
+            SorcerySchema added_schema;
+            SorcerySchemaUtility.AddSorcerySchema(Traverse.Create(__instance).Field("pawn").GetValue<Pawn>(), schemaExt.schema, out added_schema);
+            PawnKindSchemaUtility.ResolveSchemaEnergy(ref added_schema);
         }
 
         // POSTFIX: using a specific mod extension, allow pawns to gain custom magic systems through genes
@@ -324,7 +327,10 @@ namespace ItsSorceryFramework
             // no modextension for schemas = no work
             if (!__0.HasModExtension<ModExtension_SchemaAddition>()) return;
             ModExtension_SchemaAddition schemaExt = __0.GetModExtension<ModExtension_SchemaAddition>();
-            SorcerySchemaUtility.AddSorcerySchema(__instance.pawn, schemaExt.schema);
+
+            SorcerySchema added_schema;
+            SorcerySchemaUtility.AddSorcerySchema(__instance.pawn, schemaExt.schema, out added_schema);
+            PawnKindSchemaUtility.ResolveSchemaEnergy(ref added_schema);
         }
 
         public static Dictionary<Pawn, Comp_ItsSorcery> cachedSchemaComps = new Dictionary<Pawn, Comp_ItsSorcery>();

@@ -117,7 +117,7 @@ namespace ItsSorceryFramework
                 options.Add(new DebugMenuOption(schema.def.label, DebugMenuOptionMode.Tool, delegate ()
                 {
                     int priorLevel = schema.progressTracker.CurrLevel;
-                    schema.progressTracker.ForceLevelUp();
+                    schema.progressTracker.ForceLevelUp(1, true);
                     Log.Message($"[It's Sorcery!] Prior level: {priorLevel}; Current level: {schema.progressTracker.CurrLevel}; " +
                         $"Level range: {schema.progressTracker.def.levelRange.TrueMin}-{schema.progressTracker.def.levelRange.TrueMax}");
                 }));

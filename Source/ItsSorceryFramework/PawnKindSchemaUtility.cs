@@ -1,5 +1,6 @@
 ﻿using RimWorld;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using Verse;
 
@@ -21,7 +22,8 @@ namespace ItsSorceryFramework
                 SorcerySchemaUtility.AddSorcerySchema(pawn, mapping.schema, out SorcerySchema schema); // add it
                 ResolveForcedLevel(mapping, ref schema); // if the mapping forces a minimum level, levels the pawn up to said stage
                 ResolveForcedPoints(mapping, ref schema); // adds points to match the forced point requirement or the current points, whichever is larger
-                ResolvePrereqs(mapping, ref schema); // finally, complete prerequisites as possible
+                ResolvePrereqs(mapping, ref schema); // complete prerequisites as possible
+                ResolveSchemaEnergy(ref schema); // finally, adjust the energytracker's current levels for spawn.
             }
         }
 
@@ -31,7 +33,7 @@ namespace ItsSorceryFramework
 
             // depending on the mapping's requirements, it will level up the schema and grant points depending on the system
             // level up until it reachs the right level OR the maximum level, whichever is first
-            while (!schema.progressTracker.Maxed && schema.progressTracker.CurrLevel < mapping.level) schema.progressTracker.ForceLevelUp();
+            while (!schema.progressTracker.Maxed && schema.progressTracker.CurrLevel < mapping.level) schema.progressTracker.ForceLevelUp(1, true);
         }
 
         public static void ResolveForcedPoints(SchemaNodeMap mapping, ref SorcerySchema schema)
@@ -42,11 +44,18 @@ namespace ItsSorceryFramework
 
         public static void ResolvePrereqs(SchemaNodeMap mapping, ref SorcerySchema schema)
         {
+            // unlock relevant nodes
+            HashSet<LearningTrackerDef> learningTrackerDefs = new HashSet<LearningTrackerDef>();
+            foreach (var node in mapping.requiredNodes) learningTrackerDefs.Add(node.nodeDef.learningTrackerDef); // slim down to only learningtrackers covered by required nodes
+            foreach (var learningTrackerDef in learningTrackerDefs) // iterate through learning trackers
+            {
+                LearningTracker l = schema.learningTrackers.FirstOrDefault(x => x.def == learningTrackerDef); //sanity nullcheck
+                if(l != null) l.locked = false; // make sure they are not null; then make sure it is unlocked
+            }
+            
             foreach (var nodeReq in mapping.requiredNodes) // for each node requirement within the mapping
             {
-                Log.Message("test1");
                 if (!schema.learningNodeRecord.completion.ContainsKey(nodeReq.nodeDef)) continue; // null check
-                Log.Message("test2");
                 if (!schema.learningNodeRecord.ExclusiveNodeFufilled(nodeReq.nodeDef)) // if there is an exlusive node conflict
                 {
                     Log.Message(schema.pawn.Name.ToStringShort +": " + nodeReq.nodeDef.defName + " could not be completed due to an exclusive node in the pawnkind.");
@@ -62,7 +71,7 @@ namespace ItsSorceryFramework
                     // level and point adjustment for consistency //
                     // level up magic till used points are exceeded by total points OR pawn is at maximum level
                     while (!schema.progressTracker.Maxed && schema.progressTracker.points < schema.progressTracker.usedPoints)
-                        schema.progressTracker.ForceLevelUp();
+                        schema.progressTracker.ForceLevelUp(1, true); // force level up one at a time, don't show msgs
 
                     // if the system happens to be maxed out, instead try to make up the point difference directly
                     if (schema.progressTracker.Maxed) 
@@ -81,7 +90,8 @@ namespace ItsSorceryFramework
                 }
                 else
                 {
-                    if(schema.learningNodeRecord.completion[nodeReq.nodeDef]) Log.Message(schema.pawn.Name.ToStringShort + ": " + nodeReq.nodeDef.defName + " is already complete.");
+                    if (!Prefs.DevMode || !ItsSorceryUtility.settings.ShowItsSorceryDebug) continue;
+                    if (schema.learningNodeRecord.completion[nodeReq.nodeDef]) Log.Message(schema.pawn.Name.ToStringShort + ": " + nodeReq.nodeDef.defName + " is already complete.");
                     else Log.Message(schema.pawn.Name.ToStringShort + ": " + nodeReq.nodeDef.defName + " could not be completed due to missing prerequisites.");
                 }
             }
@@ -147,8 +157,17 @@ namespace ItsSorceryFramework
 
         public static void ResolveForceLevelNode(SchemaNodeReq nodeReq, ref SorcerySchema schema)
         {
-            if (!nodeReq.forceLevel) return; // if the node req doesn't force hediff requirements, skip
-            while (!schema.progressTracker.Maxed && nodeReq.nodeDef.prereqLevel > schema.progressTracker.CurrLevel) schema.progressTracker.ForceLevelUp();
+            if (!nodeReq.forceLevel) return; // if the node req doesn't force level requirements, skip
+            while (!schema.progressTracker.Maxed && nodeReq.nodeDef.prereqLevel > schema.progressTracker.CurrLevel) schema.progressTracker.ForceLevelUp(1, true);
+        }
+
+        public static void ResolveSchemaEnergy(ref SorcerySchema schema)
+        {
+            foreach(var e in schema.energyTrackers)
+            {
+                if (e.def.inverse) e.currentEnergy = e.MinEnergy; // for inverse energy systems; energy is set to the normal minimum value
+                else e.currentEnergy = e.MaxEnergy; // for normal energy systems; energy is set to the normal maximum value
+            }
         }
 
     }

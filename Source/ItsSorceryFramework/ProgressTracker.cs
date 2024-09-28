@@ -111,7 +111,7 @@ namespace ItsSorceryFramework
 
         public virtual void AddExperience(float experience) { }
 
-        public virtual void ForceLevelUp() { }
+        public virtual void ForceLevelUp(int levels = 1, bool silent_msg = false) { }
 
         public virtual void NotifyLevelUp(float sev, ref List<Window> windows) { }
 
@@ -319,8 +319,9 @@ namespace ItsSorceryFramework
 
         public virtual HediffStage RefreshCurStage() => new HediffStage();
 
-        public virtual void NotifyTotalLevelUp(float orgSev, List<Window> windows = null)
+        public virtual void NotifyTotalLevelUp(float orgSev, List<Window> windows = null, bool silent_msg = false)
         {
+            if (silent_msg) return;
             Find.LetterStack.ReceiveLetter("Level up.",
                 "This pawn has leveled up.", LetterDefOf.NeutralEvent);
         }
@@ -867,7 +868,7 @@ namespace ItsSorceryFramework
             Text.Font = GameFont.Small;
             titleButtonRect.x = rect.x + rect.width / 3f;
             titleButtonRect.width = rect.width / 6f;
-            if (Widgets.ButtonText(titleButtonRect, "Selection")) Find.WindowStack.Add(new Dialog_SorcerySelection(AllSorceries));
+            if (pawn.Faction != null && pawn.Faction.IsPlayer && Widgets.ButtonText(titleButtonRect, "Selection")) Find.WindowStack.Add(new Dialog_SorcerySelection(AllSorceries));
 
             float scale = 50f;
             Color col = Color.white;

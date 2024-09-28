@@ -121,14 +121,25 @@ namespace ItsSorceryFramework
             if(CurrLevel > orgSev) NotifyTotalLevelUp(orgSev, optionWindows); // notify total level up and add windows
         }
 
-        public override void ForceLevelUp()
+        public override void ForceLevelUp(int levels, bool silent_msg = false)
         {
             if (Hediff == null || Maxed) return;
             float orgSev = CurrLevel;
-            CurrLevel += 1;
+            int level_inc = 0;
+
             List<Window> windows = new List<Window>();
-            NotifyLevelUp(CurrLevel, ref windows); // level up + get levels
-            NotifyTotalLevelUp(orgSev, windows); // notify level up + get windows
+            while (levels > level_inc)
+            {
+                if (Maxed) break;
+                CurrLevel += 1;
+                NotifyLevelUp(CurrLevel, ref windows); // level up + get 
+                level_inc++;
+            }
+
+            /*List<Window> windows = new List<Window>();
+            CurrLevel += 1;
+            NotifyLevelUp(CurrLevel, ref windows); */
+            NotifyTotalLevelUp(orgSev, windows, silent_msg); // notify level up + get windows
         }
 
         public override void NotifyLevelUp(float sev, ref List<Window> windows)
@@ -184,13 +195,17 @@ namespace ItsSorceryFramework
             return stage;
         }
 
-        public override void NotifyTotalLevelUp(float orgSev, List<Window> windows = null)
+        public override void NotifyTotalLevelUp(float orgSev, List<Window> windows = null, bool silent_msg = false)
         {
-            if (!windows.NullOrEmpty())
+            // if there are any option windows that show up, display them in reverse (lowest to highest lvl)
+            if (!windows.NullOrEmpty()) 
             {
                 foreach(var window in windows.Reverse<Window>()) Find.WindowStack.Add(window);
             }
 
+            // not player faction? don't show level ups!
+            // silent msg? don't bother running the rest of the method then!
+            if (pawn.Faction is null || !pawn.Faction.IsPlayer || silent_msg) return; 
             Find.LetterStack.ReceiveLetter(def.progressLevelUpKey.Translate(pawn.Name.ToStringShort),
                 def.progressLevelUpDescKey.Translate(orgSev.ToString(), CurrLevel.ToString()), LetterDefOf.NeutralEvent);
         }

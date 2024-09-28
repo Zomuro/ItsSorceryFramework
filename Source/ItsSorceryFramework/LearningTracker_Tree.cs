@@ -128,7 +128,15 @@ namespace ItsSorceryFramework
                 ProgressTracker progress = schema.progressTracker;
                 Rect confirmButton = new Rect(0f, outRect.yMax + 10f + this.leftViewDebugHeight, rect.width, this.leftStartAreaHeight);
                 string reason = "";
-                if (!LearningRecord.completion[selectedNode] && LearningRecord.PrereqFufilled(selectedNode) && LearningRecord.PrereqResearchFufilled(selectedNode) &&
+                if(!pawn.Faction.IsPlayer || pawn.Faction is null)
+                {
+                    Text.Anchor = TextAnchor.MiddleCenter;
+                    Widgets.DrawHighlight(confirmButton);
+                    reason = "ISF_LearningNodeNotPlayer".Translate(pawn.Name.ToStringShort);
+                    Widgets.Label(confirmButton.ContractedBy(5f), reason);
+                    Text.Anchor = TextAnchor.UpperLeft;
+                }
+                else if (!LearningRecord.completion[selectedNode] && LearningRecord.PrereqFufilled(selectedNode) && LearningRecord.PrereqResearchFufilled(selectedNode) &&
                     LearningRecord.PrereqStatFufilled(selectedNode) && LearningRecord.PrereqHediffFufilled(selectedNode) && LearningRecord.ExclusiveNodeFufilled(selectedNode) &&
                     LearningRecord.PrereqLevelFulfilled(selectedNode) && selectedNode.pointReq + progress.usedPoints <= progress.points) 
                 {
