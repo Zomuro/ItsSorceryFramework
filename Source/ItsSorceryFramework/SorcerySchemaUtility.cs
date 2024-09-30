@@ -51,14 +51,14 @@ namespace ItsSorceryFramework
             }
         }
 
-        public static SorcerySchema InitializeSorcerySchema(Pawn pawn, SorcerySchemaDef def)
-        {
-            return new SorcerySchema(pawn, def);
-        }
-
         public static Comp_ItsSorcery GetSorceryComp(Pawn pawn)
         {
             return pawn.TryGetComp<Comp_ItsSorcery>();
+        }
+
+        public static SorcerySchema InitializeSorcerySchema(Pawn pawn, SorcerySchemaDef def)
+        {
+            return new SorcerySchema(pawn, def);
         }
 
         public static void AddSorcerySchema(Pawn pawn, SorcerySchemaDef def)
@@ -145,6 +145,41 @@ namespace ItsSorceryFramework
         public static void RefreshProgressTracker(SorcerySchema schema)
         {
             schema.progressTracker.Hediff.cachedCurStage = schema.progressTracker.RefreshCurStage();
+        }
+
+        public static void AddQuickEnergyEntry(Pawn pawn, SorcerySchema schema, EnergyTracker energyTracker)
+        {
+            // null check pawn/comp
+            if (pawn == null) return;
+            Comp_ItsSorcery comp = GetSorceryComp(pawn);
+            if (comp is null) return;
+
+            // check if there's an entry already w/ the schema/energytracker combo - if so, skip
+            if (comp.schemaTracker.quickEnergyEntries.
+                FirstOrDefault(x => x.sorcerySchemaDef == schema.def && x.energyTrackerDef == energyTracker.def) != null) return;
+
+            // if adding another entry > 5, skip it.
+            if (comp.schemaTracker.quickEnergyEntries.Count + 1 > 5)
+            {
+                // add quick msg/popup stating a prior entry should be removed
+                /*Messages.Message("Pawn's quick energy gizmo is full; click on entries to remove them.", MessageTypeDefOf.RejectInput);*/
+                return;
+            }
+
+            // else add it
+            comp.schemaTracker.quickEnergyEntries.Add(new GizmoEntry_QuickEnergy(schema.def, energyTracker.def));
+        }
+
+        public static void RemoveQuickEnergyEntry(Pawn pawn, SorcerySchema schema, EnergyTracker energyTracker)
+        {
+            if (pawn == null) return;
+            Comp_ItsSorcery comp = GetSorceryComp(pawn);
+            if (comp is null) return;
+
+            GizmoEntry_QuickEnergy entry = comp.schemaTracker.quickEnergyEntries.
+                FirstOrDefault(x => x.sorcerySchemaDef == schema.def && x.energyTrackerDef == energyTracker.def);
+            if (entry is null) return;
+            comp.schemaTracker.quickEnergyEntries.Remove(entry);
         }
 
     }

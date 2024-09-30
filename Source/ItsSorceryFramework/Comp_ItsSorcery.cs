@@ -1,4 +1,8 @@
-﻿using Verse;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using RimWorld;
+using Verse;
 
 namespace ItsSorceryFramework
 {
@@ -6,7 +10,11 @@ namespace ItsSorceryFramework
     [StaticConstructorOnStartup]
     public class Comp_ItsSorcery : ThingComp
     {
-        public override void Initialize(CompProperties props)
+		public Pawn pawn;
+
+		public Pawn_SorcerySchemaTracker schemaTracker;
+
+		public override void Initialize(CompProperties props)
         {
             base.Initialize(props);
 			if (parent is Pawn p)
@@ -30,6 +38,12 @@ namespace ItsSorceryFramework
 			if (schemaTracker != null) schemaTracker.SchemaTrackerTick();
 		}
 
+		public override IEnumerable<Gizmo> CompGetGizmosExtra()
+		{
+			yield return schemaTracker.GetGizmo();
+			yield break;
+		}
+
 		public override void PostExposeData()
 		{
 			base.PostExposeData();
@@ -37,9 +51,7 @@ namespace ItsSorceryFramework
 			Scribe_Deep.Look(ref schemaTracker, true, "schemaTracker", this.parent as Pawn);
 		}
 
-		public Pawn pawn;
-
-		public Pawn_SorcerySchemaTracker schemaTracker;
+		
 
 	}
 }

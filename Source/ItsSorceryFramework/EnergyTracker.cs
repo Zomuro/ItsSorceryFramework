@@ -41,7 +41,7 @@ namespace ItsSorceryFramework
 
         public Texture2D cachedOverBarTex;
 
-        public int loadID = -1;
+        //public int loadID = -1;
 
         public Texture2D EmptyBarTex
         {
@@ -319,7 +319,8 @@ namespace ItsSorceryFramework
 
             // draws power bar & highlight energy costs
             barBox.height = labelBox.height; // set barbox to labelbox height for consistency
-            DrawEnergyBarTip(barBox);
+            DrawEnergyBarTip(barBox); // draw the tipbox when hovering over it
+            AddQuickEnergyEntry(barBox); // add to quick gizmo
             if (ItsSorceryUtility.settings.SchemaShowEnergyBar)
             {
                 DrawEnergyBar(barBox);
@@ -360,6 +361,11 @@ namespace ItsSorceryFramework
                 }
                 TooltipHandler.TipRegion(rect, tipString);
             }
+        }
+
+        public virtual void AddQuickEnergyEntry(Rect rect)
+        {
+            if (Widgets.ButtonInvisible(rect)) SorcerySchemaUtility.AddQuickEnergyEntry(pawn, schema, this);
         }
 
         public virtual void DrawEnergyBarThresholds(Rect rect)
