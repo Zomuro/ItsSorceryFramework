@@ -40,7 +40,8 @@ namespace ItsSorceryFramework
 
 		public override IEnumerable<Gizmo> CompGetGizmosExtra()
 		{
-			yield return schemaTracker.GetGizmo();
+			if(schemaTracker.ShowGizmo()) yield return schemaTracker.GetGizmo();
+
 			yield break;
 		}
 

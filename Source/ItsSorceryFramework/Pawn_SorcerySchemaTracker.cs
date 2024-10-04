@@ -12,7 +12,7 @@ namespace ItsSorceryFramework
 
         public List<GizmoEntry_QuickEnergy> quickEnergyEntries = new List<GizmoEntry_QuickEnergy>();
 
-        private Gizmo gizmo;
+        private Gizmo_QuickEnergy gizmo;
 
         /*public List<Tuple<SorcerySchemaDef, SorcerySchemaDef>> incompatibleSchemas = 
             new List<Tuple<SorcerySchemaDef, SorcerySchemaDef>>();*/
@@ -31,6 +31,10 @@ namespace ItsSorceryFramework
                 schema.SchemaTick();
             }
         }
+
+        public void UpdateGizmo() => (GetGizmo() as Gizmo_QuickEnergy).UpdateGizmo();
+
+        public bool ShowGizmo() => !quickEnergyEntries.NullOrEmpty();
 
         public Gizmo GetGizmo()
         {

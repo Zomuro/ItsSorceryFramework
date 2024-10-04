@@ -14,10 +14,22 @@ namespace ItsSorceryFramework
     {
 		public Pawn_SorcerySchemaTracker tracker;
 
+		public List<EnergyTracker> energyTrackers = new List<EnergyTracker>();
+
 		public Gizmo_QuickEnergy(Pawn_SorcerySchemaTracker tracker)
 		{
 			this.tracker = tracker;
 			Order = -95f;
+		}
+
+		public void UpdateGizmo()
+		{
+			List<EnergyTracker> updated_list = new List<EnergyTracker>();
+			foreach (var e in tracker.quickEnergyEntries){
+				updated_list.Add(SorcerySchemaUtility.GetEnergyTracker(tracker, e.sorcerySchemaDef, e.energyTrackerDef));
+			}
+
+			energyTrackers = updated_list;
 		}
 
 
@@ -31,6 +43,7 @@ namespace ItsSorceryFramework
 			if(tracker is null) return new GizmoResult(GizmoState.Clear);
 
 			Rect rect = new Rect(topLeft.x, topLeft.y, GetWidth(maxWidth), 75f);
+			Widgets.DrawWindowBackground(rect);
 			Widgets.Label(rect, "{0}/5".Translate(tracker.quickEnergyEntries.Count));
 
 			return new GizmoResult(GizmoState.Clear);

@@ -134,12 +134,35 @@ namespace ItsSorceryFramework
         }
 
         public static EnergyTracker GetEnergyTracker(SorcerySchema schema, StatDef unitStat)
-        {
+        {           
             foreach(var et in schema.energyTrackers)
             {
                 if (et.def.energyUnitStatDef == unitStat) return et;
             }
             return null;
+        }
+
+        public static EnergyTracker GetEnergyTracker(SorcerySchema schema, EnergyTrackerDef energyTrackerDef)
+        {
+            return schema.energyTrackers.FirstOrDefault(x => x.def == energyTrackerDef);
+        }
+
+        public static EnergyTracker GetEnergyTracker(Pawn pawn, SorcerySchemaDef schemaDef, EnergyTrackerDef energyTrackerDef)
+        {
+            List<SorcerySchema> schemas = GetSorcerySchemaList(pawn);
+            if (schemas.NullOrEmpty()) return null;
+
+            SorcerySchema schema = schemas.FirstOrDefault(x => x.def == schemaDef);
+            if (schema is null) return null;
+
+            return schema.energyTrackers.FirstOrDefault(x => x.def == energyTrackerDef);
+        }
+
+        public static EnergyTracker GetEnergyTracker(Pawn_SorcerySchemaTracker schemaTracker, SorcerySchemaDef schemaDef, EnergyTrackerDef energyTrackerDef)
+        {
+            SorcerySchema schema = schemaTracker.sorcerySchemas.FirstOrDefault(x => x.def == schemaDef);
+            if (schema is null) return null;
+            return schema.energyTrackers.FirstOrDefault(x => x.def == energyTrackerDef);
         }
 
         public static void RefreshProgressTracker(SorcerySchema schema)
@@ -156,18 +179,25 @@ namespace ItsSorceryFramework
 
             // check if there's an entry already w/ the schema/energytracker combo - if so, skip
             if (comp.schemaTracker.quickEnergyEntries.
-                FirstOrDefault(x => x.sorcerySchemaDef == schema.def && x.energyTrackerDef == energyTracker.def) != null) return;
+                FirstOrDefault(x => x.sorcerySchemaDef == schema.def && x.energyTrackerDef == energyTracker.def) != null)
+            {
+                // add quick msg/popup stating a prior entry should be removed
+                Messages.Message("ISF_QuickEnergyGizmoEntryExisting".Translate(energyTracker.EnergyLabel.CapitalizeFirst()), MessageTypeDefOf.RejectInput);
+                return;
+            }
 
             // if adding another entry > 5, skip it.
             if (comp.schemaTracker.quickEnergyEntries.Count + 1 > 5)
             {
                 // add quick msg/popup stating a prior entry should be removed
-                /*Messages.Message("Pawn's quick energy gizmo is full; click on entries to remove them.", MessageTypeDefOf.RejectInput);*/
+                Messages.Message("ISF_QuickEnergyGizmoEntryFull".Translate(pawn.Named("PAWN")), MessageTypeDefOf.RejectInput);
                 return;
             }
 
             // else add it
             comp.schemaTracker.quickEnergyEntries.Add(new GizmoEntry_QuickEnergy(schema.def, energyTracker.def));
+            Messages.Message("ISF_QuickEnergyGizmoEntryAdded".Translate(comp.schemaTracker.quickEnergyEntries.Count, 5), MessageTypeDefOf.TaskCompletion);
+            comp.schemaTracker.UpdateGizmo();
         }
 
         public static void RemoveQuickEnergyEntry(Pawn pawn, SorcerySchema schema, EnergyTracker energyTracker)
@@ -179,7 +209,11 @@ namespace ItsSorceryFramework
             GizmoEntry_QuickEnergy entry = comp.schemaTracker.quickEnergyEntries.
                 FirstOrDefault(x => x.sorcerySchemaDef == schema.def && x.energyTrackerDef == energyTracker.def);
             if (entry is null) return;
-            comp.schemaTracker.quickEnergyEntries.Remove(entry);
+            if (comp.schemaTracker.quickEnergyEntries.Remove(entry)) // successful removal => update gizmo
+            {
+                comp.schemaTracker.UpdateGizmo();
+                Messages.Message("ISF_QuickEnergyGizmoEntryRemoved".Translate(comp.schemaTracker.quickEnergyEntries.Count, 5), MessageTypeDefOf.TaskCompletion);
+            }
         }
 
     }
