@@ -295,7 +295,7 @@ namespace ItsSorceryFramework
             }
         }
 
-        public virtual float DrawOnGUI(ref Rect rect)
+        public virtual float DrawOnGUI(ref Rect rect, bool addToGizmo = true)
         {
             // get original rect
             Rect orgRect = new Rect(rect);
@@ -320,7 +320,12 @@ namespace ItsSorceryFramework
             // draws power bar & highlight energy costs
             barBox.height = labelBox.height; // set barbox to labelbox height for consistency
             DrawEnergyBarTip(barBox); // draw the tipbox when hovering over it
-            AddQuickEnergyEntry(barBox); // add to quick gizmo
+
+            // include invisible buttons to add/remove to the quick energy gizmo
+            if (addToGizmo) AddQuickEnergyEntry(barBox);
+            else RemoveQuickEnergyEntry(barBox);
+
+            // adds/removes the energy bar / energy highlight graphic part
             if (ItsSorceryUtility.settings.SchemaShowEnergyBar)
             {
                 DrawEnergyBar(barBox);
@@ -366,6 +371,11 @@ namespace ItsSorceryFramework
         public virtual void AddQuickEnergyEntry(Rect rect)
         {
             if (Widgets.ButtonInvisible(rect)) SorcerySchemaUtility.AddQuickEnergyEntry(pawn, schema, this);
+        }
+
+        public virtual void RemoveQuickEnergyEntry(Rect rect)
+        {
+            if (Widgets.ButtonInvisible(rect)) SorcerySchemaUtility.RemoveQuickEnergyEntry(pawn, schema, this);
         }
 
         public virtual void DrawEnergyBarThresholds(Rect rect)
