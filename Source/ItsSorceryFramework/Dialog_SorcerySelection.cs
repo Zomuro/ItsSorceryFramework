@@ -7,6 +7,13 @@ namespace ItsSorceryFramework
 {
     public class Dialog_SorcerySelection : Window
 	{
+
+		public List<Sorcery> allSorcery;
+
+		private Vector2 scrollPosition = Vector2.zero;
+
+		private float scrollViewHeight;
+
 		public override Vector2 InitialSize
 		{
 			get
@@ -40,10 +47,10 @@ namespace ItsSorceryFramework
 			// Title and subtitle of dialog
 			Text.Font = GameFont.Medium;
 			Rect titleRect = new Rect(rect);
-			Widgets.LabelCacheHeight(ref titleRect, "Sorcery Selection", true, false);
+			Widgets.LabelCacheHeight(ref titleRect, "ISF_LearningProgressSelectSorceryButton".Translate(), true, false);
 			titleRect.y+= titleRect.height;
 			Text.Font = GameFont.Tiny;
-			Widgets.LabelCacheHeight(ref titleRect, "Toggle sorceries for visibility. Grayed-out sorceries are not visible.", true, false);
+			Widgets.LabelCacheHeight(ref titleRect, "ISF_LearningProgressSelectSorceryDesc".Translate(), true, false);
 			titleRect.y += titleRect.height + 10f;
 			Text.Font = GameFont.Small;
 
@@ -54,8 +61,6 @@ namespace ItsSorceryFramework
 
 			Rect bounds = new Rect(titleRect.x, titleRect.y, rect.width, rect.yMax - titleRect.y); // scroll boundary rect
 			Rect viewRect = new Rect(bounds.x, bounds.y, bounds.width - 10f, scrollViewHeight); // scroll view rect
-			//Widgets.DrawBoxSolidWithOutline(bounds, Color.clear, Color.green); // outline bound box
-			//Widgets.DrawBoxSolidWithOutline(viewRect, Color.clear, Color.grey); // outline view
 
 			Widgets.BeginScrollView(bounds, ref scrollPosition, viewRect, true); // start scroll
 
@@ -92,14 +97,7 @@ namespace ItsSorceryFramework
 			scrollViewHeight = sorceriesRect.height; // set view rect height to elementwindow height
 
 			Widgets.EndScrollView();
-
-
 		}
 
-		public List<Sorcery> allSorcery;
-
-		private Vector2 scrollPosition = Vector2.zero;
-
-		private float scrollViewHeight;
 	}
 }

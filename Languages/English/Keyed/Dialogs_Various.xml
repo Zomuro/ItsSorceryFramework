@@ -60,6 +60,10 @@
 	<ISF_LearningProgressLevelProspectsHediffRemove>Hediffs removed</ISF_LearningProgressLevelProspectsHediffRemove>
 	<ISF_LearningProgressLevelProspectsUnlocks>Unlocks</ISF_LearningProgressLevelProspectsUnlocks>
 	
+	<!-- SorcerySchemaDef Info window - Learning Trackers - Progress - Sorcery Selection -->
+	<ISF_LearningProgressSelectSorceryButton>Sorcery Selection</ISF_LearningProgressSelectSorceryButton>
+	<ISF_LearningProgressSelectSorceryDesc>Toggle sorceries for visibility. Grayed-out sorceries are not visible.</ISF_LearningProgressSelectSorceryDesc>
+	
 	<!-- ProgressTrackerTags -->
 	<ISF_LearningProgressEXPCast>On cast:</ISF_LearningProgressEXPCast>
 	<ISF_LearningProgressEXPCastDesc>Gain experience = {0} the base energy cost.</ISF_LearningProgressEXPCastDesc>
