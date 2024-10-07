@@ -6,9 +6,9 @@
 	<ISF_CommandDisableReasonInvert>{0} will start overloading to cast this.</ISF_CommandDisableReasonInvert>	
 	<ISF_CommandDisableNoSchema>{0} does not possess the magic system {1}.</ISF_CommandDisableNoSchema>
 	
-	<!-- Dialog_QuickEnergyGizmo -->
-	<ISF_CommandQuickEnergyGizmoLabel>Toggle quick energy</ISF_CommandQuickEnergyGizmoLabel>
-	<ISF_CommandQuickEnergyGizmoNoTrackers>No energies are being tracked.</ISF_CommandQuickEnergyGizmoNoTrackers>
-	<ISF_CommandQuickEnergyGizmoDesc>View selected energies in a draggable window.</ISF_CommandQuickEnergyGizmoDesc>
+	<!-- Dialog_QuickEnergy -->
+	<ISF_CommandQuickEnergyViewLabel>Toggle quick energy view</ISF_CommandQuickEnergyViewLabel>
+	<ISF_CommandQuickEnergyViewNoTrackers>No energies are being tracked.</ISF_CommandQuickEnergyViewNoTrackers>
+	<ISF_CommandQuickEnergyViewDesc>View selected energies in a draggable window.</ISF_CommandQuickEnergyViewDesc>
 	
 </LanguageData>

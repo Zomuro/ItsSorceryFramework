@@ -14,6 +14,8 @@
 	<ISF_BarBaseTip>{0}: {1}.\nNormal range: {2} to {3}</ISF_BarBaseTip>
 	<ISF_BarUnderTip>Deficit range: {0} to {1}</ISF_BarUnderTip>
 	<ISF_BarOverTip>Overcharge range: {0} to {1}</ISF_BarOverTip>
+	<ISF_BarAddQuickEnergy>Click to add this energy to the quick energy viewer.</ISF_BarAddQuickEnergy>
+	<ISF_BarRemoveQuickEnergy>Click to remove this energy from the quick energy viewer.</ISF_BarRemoveQuickEnergy>
 	
 	<!-- ITab_Schema Skill Points -->
 	<ISF_CurrentSkillPoints>Current {0}: {1}</ISF_CurrentSkillPoints>

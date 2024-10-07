@@ -13,14 +13,9 @@ namespace ItsSorceryFramework
 
         public List<GizmoEntry_QuickEnergy> quickEnergyEntries = new List<GizmoEntry_QuickEnergy>();
 
-        //rivate Gizmo_QuickEnergy gizmo;
-
         private Gizmo gizmo;
 
         private Window window;
-
-        /*public List<Tuple<SorcerySchemaDef, SorcerySchemaDef>> incompatibleSchemas = 
-            new List<Tuple<SorcerySchemaDef, SorcerySchemaDef>>();*/
 
         public Pawn_SorcerySchemaTracker(Pawn pawn)
         {
@@ -41,23 +36,19 @@ namespace ItsSorceryFramework
         {
             // only visually update the gizmo/window when the window is open
             if(window != null) (window as Dialog_QuickEnergy).UpdateEnergy();
-            
-            //(GetGizmo() as Gizmo_QuickEnergy).UpdateGizmo();
         }
 
-        public bool ShowGizmo() => !quickEnergyEntries.NullOrEmpty();
+        public bool ShowGizmo() => true; // always show gizmo
 
         public Gizmo GetGizmo()
         {
-            //if (gizmo == null) gizmo = new Gizmo_QuickEnergy(this);
-
             if (gizmo == null)
             {
                 gizmo = new Command_Action
                 {
-                    icon = ContentFinder<Texture2D>.Get("UI/Commands/DesirePower", true), // get custom texture
-                    defaultLabel = "ISF_CommandQuickEnergyGizmoLabel".Translate(),
-                    defaultDesc = "ISF_CommandQuickEnergyGizmoDesc".Translate(),
+                    icon = ContentFinder<Texture2D>.Get("UI/Commands/ISF_QuickEnergy", true), // get custom texture
+                    defaultLabel = "ISF_CommandQuickEnergyViewLabel".Translate(),
+                    defaultDesc = "ISF_CommandQuickEnergyViewDesc".Translate(),
                     action = delegate ()
                     {
                         if (window is null || !Find.WindowStack.IsOpen(typeof(Dialog_QuickEnergy)))

@@ -9,13 +9,6 @@ namespace ItsSorceryFramework
 	[StaticConstructorOnStartup]
 	public class Dialog_QuickEnergy : Window
 	{
-
-		/*public List<Sorcery> allSorcery;
-
-		private Vector2 scrollPosition = Vector2.zero;
-
-		private float scrollViewHeight;*/
-
 		public Pawn_SorcerySchemaTracker tracker;
 
 		public List<EnergyTracker> energyTrackers = new List<EnergyTracker>();
@@ -69,21 +62,25 @@ namespace ItsSorceryFramework
 				return;
 			}
 
+			// no energy trackers? window should inform user they should select energy
             if (energyTrackers.NullOrEmpty())
             {
 				windowRect.height = windowBaseHeight;
 				Text.Anchor = TextAnchor.MiddleCenter;
-				Widgets.Label(inRect, "ISF_CommandQuickEnergyGizmoNoTrackers".Translate());
+				Widgets.Label(inRect, "ISF_CommandQuickEnergyViewNoTrackers".Translate());
 				Text.Anchor = TextAnchor.UpperLeft;
 				return;
 			}
 
 			// draw background rect
-			float finalHeight = 0f;
+			float totalBarHeight = 0f;
 			float heightAdj = Math.Max(windowBaseHeight, windowHeight);
-			//float yAdj = Math.Max(windowHeight - windowBaseHeight, 0);
 			Rect rect = new Rect(inRect.x, inRect.y, inRect.width, heightAdj);
-			Widgets.DrawWindowBackground(rect);
+
+			// make room for close x
+			rect.y += 10;
+			float topBuffer = 15f;
+			float bottomBuffer = 10f;
 
 			// draw energy bars within confines of the rect.
 			float barHeight = 0;
@@ -91,11 +88,10 @@ namespace ItsSorceryFramework
 			{
 				barHeight = et.DrawOnGUI(ref rect, false);
 				rect.y += barHeight;
-				finalHeight += barHeight;
+				totalBarHeight += barHeight;
 			}
-			windowHeight = finalHeight + 10f; //10f for buffer, -1 for boundary.
-
-			windowRect.height = windowHeight;
+			windowHeight = topBuffer + totalBarHeight + bottomBuffer; //15f for top buffer, total bar height for bars, 10f for bottom buffer.
+			windowRect.height = windowHeight; // set to final window height
 
 		}
 

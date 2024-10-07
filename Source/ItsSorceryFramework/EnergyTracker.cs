@@ -319,7 +319,7 @@ namespace ItsSorceryFramework
 
             // draws power bar & highlight energy costs
             barBox.height = labelBox.height; // set barbox to labelbox height for consistency
-            DrawEnergyBarTip(barBox); // draw the tipbox when hovering over it
+            DrawEnergyBarTip(barBox, addToGizmo); // draw the tipbox when hovering over it
 
             // include invisible buttons to add/remove to the quick energy gizmo
             if (addToGizmo) AddQuickEnergyEntry(barBox);
@@ -348,7 +348,7 @@ namespace ItsSorceryFramework
             DrawEnergyBarThresholds(rect);
         }
 
-        public virtual void DrawEnergyBarTip(Rect rect)
+        public virtual void DrawEnergyBarTip(Rect rect, bool addToGizmo = true)
         {
             if (Mouse.IsOver(rect))
             {
@@ -364,6 +364,10 @@ namespace ItsSorceryFramework
                     if (AbsMaxEnergy > MaxEnergy) tipString += "\n" + "ISF_BarUnderTip".Translate(MaxEnergy.ToString("F0"), AbsMaxEnergy.ToString("F0"));
                     if (AbsMinEnergy < MinEnergy) tipString += "\n" + "ISF_BarOverTip".Translate(AbsMinEnergy.ToString("F0"), MinEnergy.ToString("F0"));
                 }
+
+                tipString += "\n\n";
+                if (addToGizmo) tipString += "ISF_BarAddQuickEnergy".Translate().Colorize(ColoredText.TipSectionTitleColor);
+                else tipString += "ISF_BarRemoveQuickEnergy".Translate().Colorize(ColoredText.TipSectionTitleColor);
                 TooltipHandler.TipRegion(rect, tipString);
             }
         }
