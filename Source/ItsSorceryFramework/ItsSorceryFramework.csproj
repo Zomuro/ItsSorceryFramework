@@ -65,6 +65,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ProgressTrackerUtility.cs" />
+    <Compile Include="ProgressTrackerClassLedger.cs" />
+    <Compile Include="ProgressTrackerLedger.cs" />
     <Compile Include="Dialog_QuickEnergy.cs" />
     <Compile Include="GizmoEntry_QuickEnergy.cs" />
     <Compile Include="DebugUtility.cs" />
