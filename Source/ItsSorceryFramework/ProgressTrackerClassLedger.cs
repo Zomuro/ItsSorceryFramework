@@ -11,8 +11,18 @@ namespace ItsSorceryFramework
     public class ProgressTrackerClassLedger
     {
         public string progressTrackerClass = "";
-        
-        public Dictionary<StatDef, float> detStatOffsetsTotal = new Dictionary<StatDef, float>();
+
+        public Dictionary<StatDef, float> statOffsetsTotal = new Dictionary<StatDef, float>();
+
+        public Dictionary<StatDef, float> statFactorsTotal = new Dictionary<StatDef, float>();
+
+        public Dictionary<PawnCapacityDef, float> capModsTotal = new Dictionary<PawnCapacityDef, float>();
+
+        public Dictionary<HediffDef, float> hediffModsTotal = new Dictionary<HediffDef, float>();
+
+        public List<AbilityDef> abilityTotal = new List<AbilityDef>();
+
+        /*public Dictionary<StatDef, float> detStatOffsetsTotal = new Dictionary<StatDef, float>();
 
         public Dictionary<StatDef, float> detStatFactorsTotal = new Dictionary<StatDef, float>();
 
@@ -30,15 +40,62 @@ namespace ItsSorceryFramework
 
         public Dictionary<HediffDef, float> nondetHediffModsTotal = new Dictionary<HediffDef, float>();
 
-        public List<AbilityDef> nondetAbilityTotal = new List<AbilityDef>();
+        public List<AbilityDef> nondetAbilityTotal = new List<AbilityDef>();*/
 
-        public ProgressTrackerClassLedger(string progressTrackerClass, Dictionary<StatDef, float> detStatOffsetsTotal, Dictionary<StatDef, float> detStatFactorsTotal,
-            Dictionary<PawnCapacityDef, float> detCapModsTotal, Dictionary<HediffDef, float> detHediffModsTotal, List<AbilityDef> detAbilityTotal,
-            Dictionary<StatDef, float> nondetStatOffsetsTotal, Dictionary<StatDef, float> nondetStatFactorsTotal,
-            Dictionary<PawnCapacityDef, float> nondetCapModsTotal, Dictionary<HediffDef, float> nondetHediffModsTotal, List<AbilityDef> nondetAbilityTotal)
+        public ProgressTrackerClassLedger()
+        {
+            progressTrackerClass = "";
+            statOffsetsTotal = new Dictionary<StatDef, float>();
+            statFactorsTotal = new Dictionary<StatDef, float>();
+            capModsTotal = new Dictionary<PawnCapacityDef, float>();
+            hediffModsTotal = new Dictionary<HediffDef, float>();
+            abilityTotal = new List<AbilityDef>();
+
+
+            /*detStatOffsetsTotal = new Dictionary<StatDef, float>();
+            detStatFactorsTotal = new Dictionary<StatDef, float>();
+            detCapModsTotal = new Dictionary<PawnCapacityDef, float>();
+            detHediffModsTotal = new Dictionary<HediffDef, float>();
+            detAbilityTotal = new List<AbilityDef>();
+            nondetStatOffsetsTotal = new Dictionary<StatDef, float>();
+            nondetStatFactorsTotal = new Dictionary<StatDef, float>();
+            nondetCapModsTotal = new Dictionary<PawnCapacityDef, float>();
+            nondetHediffModsTotal = new Dictionary<HediffDef, float>();
+            nondetAbilityTotal = new List<AbilityDef>();*/
+        }
+
+        public ProgressTrackerClassLedger(string progressTrackerClass)
         {
             this.progressTrackerClass = progressTrackerClass;
-            this.detStatOffsetsTotal = detStatOffsetsTotal;
+            statOffsetsTotal = new Dictionary<StatDef, float>();
+            statFactorsTotal = new Dictionary<StatDef, float>();
+            capModsTotal = new Dictionary<PawnCapacityDef, float>();
+            hediffModsTotal = new Dictionary<HediffDef, float>();
+            abilityTotal = new List<AbilityDef>();
+
+            /*detStatOffsetsTotal = new Dictionary<StatDef, float>();
+            detStatFactorsTotal = new Dictionary<StatDef, float>();
+            detCapModsTotal = new Dictionary<PawnCapacityDef, float>();
+            detHediffModsTotal = new Dictionary<HediffDef, float>();
+            detAbilityTotal = new List<AbilityDef>();
+            nondetStatOffsetsTotal = new Dictionary<StatDef, float>();
+            nondetStatFactorsTotal = new Dictionary<StatDef, float>();
+            nondetCapModsTotal = new Dictionary<PawnCapacityDef, float>();
+            nondetHediffModsTotal = new Dictionary<HediffDef, float>();
+            nondetAbilityTotal = new List<AbilityDef>();*/
+        }
+
+        public ProgressTrackerClassLedger(string progressTrackerClass, Dictionary<StatDef, float> statOffsetsTotal, Dictionary<StatDef, float> statFactorsTotal,
+            Dictionary<PawnCapacityDef, float> capModsTotal, Dictionary<HediffDef, float> hediffModsTotal, List<AbilityDef> abilityTotal)
+        {
+            this.progressTrackerClass = progressTrackerClass;
+            this.statOffsetsTotal = statOffsetsTotal;
+            this.statFactorsTotal = statFactorsTotal;
+            this.capModsTotal = capModsTotal;
+            this.hediffModsTotal = hediffModsTotal;
+            this.abilityTotal = abilityTotal;
+
+            /*this.detStatOffsetsTotal = detStatOffsetsTotal;
             this.detStatFactorsTotal = detStatFactorsTotal;
             this.detCapModsTotal = detCapModsTotal;
             this.detHediffModsTotal = detHediffModsTotal;
@@ -47,22 +104,36 @@ namespace ItsSorceryFramework
             this.nondetStatFactorsTotal = nondetStatFactorsTotal;
             this.nondetCapModsTotal = nondetCapModsTotal;
             this.nondetHediffModsTotal = nondetHediffModsTotal;
-            this.nondetAbilityTotal = nondetAbilityTotal;
+            this.nondetAbilityTotal = nondetAbilityTotal;*/
         }
 
         public virtual void ExposeData()
         {
             Scribe_Values.Look(ref progressTrackerClass, "progressTrackerClass", "");
-            Scribe_Collections.Look(ref detStatOffsetsTotal, "detStatOffsetsTotal", LookMode.Def, LookMode.Value);
-            Scribe_Collections.Look(ref detStatFactorsTotal, "detStatFactorsTotal", LookMode.Def, LookMode.Value);
-            Scribe_Collections.Look(ref detCapModsTotal, "detCapModsTotal", LookMode.Def, LookMode.Value);
-            Scribe_Collections.Look(ref detHediffModsTotal, "detHediffModsTotal", LookMode.Def, LookMode.Value);
-            Scribe_Collections.Look(ref detAbilityTotal, "detAbilityTotal", LookMode.Def);
-            Scribe_Collections.Look(ref nondetStatOffsetsTotal, "nondetStatOffsetsTotal", LookMode.Def, LookMode.Value);
+            Scribe_Collections.Look(ref statOffsetsTotal, "statOffsetsTotal", LookMode.Def, LookMode.Value);
+            Scribe_Collections.Look(ref statFactorsTotal, "statFactorsTotal", LookMode.Def, LookMode.Value);
+            Scribe_Collections.Look(ref capModsTotal, "capModsTotal", LookMode.Def, LookMode.Value);
+            Scribe_Collections.Look(ref hediffModsTotal, "hediffModsTotal", LookMode.Def, LookMode.Value);
+            Scribe_Collections.Look(ref abilityTotal, "abilityTotal", LookMode.Def);
+
+            /*Scribe_Collections.Look(ref nondetStatOffsetsTotal, "nondetStatOffsetsTotal", LookMode.Def, LookMode.Value);
             Scribe_Collections.Look(ref nondetStatFactorsTotal, "nondetStatFactorsTotal", LookMode.Def, LookMode.Value);
             Scribe_Collections.Look(ref nondetCapModsTotal, "nondetCapModsTotal", LookMode.Def, LookMode.Value);
             Scribe_Collections.Look(ref nondetHediffModsTotal, "nondetHediffModsTotal", LookMode.Def, LookMode.Value);
-            Scribe_Collections.Look(ref nondetAbilityTotal, "nondetAbilityTotal", LookMode.Def);
+            Scribe_Collections.Look(ref nondetAbilityTotal, "nondetAbilityTotal", LookMode.Def);*/
+        }
+
+        public virtual Dictionary<StatDef, float> GetClassLedgerStatOffsets()
+        {
+            /*AdjustTotalStatMods(statOffsetsTotal, offsets);
+            AdjustTotalStatMods(statFactorsTotal, factorOffsets, true);
+            AdjustTotalCapMods(capModsTotal, capMods);*/
+
+
+
+            Dictionary<StatDef, float> temp = new Dictionary<StatDef, float>(){};
+
+            return temp;
         }
     }
 }

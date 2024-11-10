@@ -12,18 +12,36 @@ namespace ItsSorceryFramework
     {
         public int index = 0;
 
-        public int level = 0;
+        public int level = 1;
 
         public string currClass = "";
 
         public Dictionary<string, ProgressTrackerClassLedger> classLedgers = new Dictionary<string, ProgressTrackerClassLedger>();
 
+        public ProgressTrackerLedger()
+        {
+            index = 0;
+            level = 1;
+            currClass = "";
+            classLedgers = new Dictionary<string, ProgressTrackerClassLedger>();
+        }
+
+        // instantiate ledger
         public ProgressTrackerLedger(int index, int level, string currClass, Dictionary<string, ProgressTrackerClassLedger> classLedgers)
         {
             this.index = index;
             this.level = level;
             this.currClass = currClass;
             this.classLedgers = classLedgers;
+        }
+
+        // use another ledger as a base to create the next ledger entry
+        public ProgressTrackerLedger(ProgressTrackerLedger baseLedger)
+        {
+            index = baseLedger.index + 1;
+            level = baseLedger.level;
+            currClass = baseLedger.currClass;
+            classLedgers = baseLedger.classLedgers;
         }
 
         public virtual void ExposeData()

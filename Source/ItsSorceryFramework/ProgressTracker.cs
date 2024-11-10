@@ -25,9 +25,9 @@ namespace ItsSorceryFramework
 
         public Dictionary<PawnCapacityDef, float> capModsTotal = new Dictionary<PawnCapacityDef, float>();
 
-        /*public string currClass = "";
+        public string currClass = "";
 
-        public List<ProgressTrackerLedger> progressLedgers = new List<ProgressTrackerLedger>();
+        public List<ProgressTrackerLedger> progressLedgers = new List<ProgressTrackerLedger>();/*
 
         public Dictionary<StatDef, float> detStatOffsetsTotal = new Dictionary<StatDef, float>();
 
@@ -89,13 +89,7 @@ namespace ItsSorceryFramework
             Scribe_Collections.Look(ref capModsTotal, "capModsTotal", LookMode.Def, LookMode.Value);
 
             /*Scribe_Values.Look(ref currClass, "currClass", "");
-            Scribe_Collections.Look(ref progressLedgers, "progressLedgers", LookMode.Deep);
-            Scribe_Collections.Look(ref detStatOffsetsTotal, "detStatOffsetsTotal", LookMode.Def, LookMode.Value);
-            Scribe_Collections.Look(ref detStatFactorsTotal, "detStatFactorsTotal", LookMode.Def, LookMode.Value);
-            Scribe_Collections.Look(ref detCapModsTotal, "detCapModsTotal", LookMode.Def, LookMode.Value);
-            Scribe_Collections.Look(ref nondetStatOffsetsTotal, "nondetStatOffsetsTotal", LookMode.Def, LookMode.Value);
-            Scribe_Collections.Look(ref nondetStatFactorsTotal, "nondetStatFactorsTotal", LookMode.Def, LookMode.Value);
-            Scribe_Collections.Look(ref nondetCapModsTotal, "nondetCapModsTotal", LookMode.Def, LookMode.Value);*/
+            Scribe_Collections.Look(ref progressLedgers, "progressLedgers", LookMode.Deep);*/
         }
 
 
