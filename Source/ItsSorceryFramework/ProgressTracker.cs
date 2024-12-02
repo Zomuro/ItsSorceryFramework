@@ -27,7 +27,7 @@ namespace ItsSorceryFramework
 
         public string currClass = "";
 
-        public List<ProgressTrackerLedger> progressLedgers = new List<ProgressTrackerLedger>();/*
+        public List<ProgressDiffLedger> progressLedgers = new List<ProgressDiffLedger>();/*
 
         public Dictionary<StatDef, float> detStatOffsetsTotal = new Dictionary<StatDef, float>();
 
@@ -70,9 +70,13 @@ namespace ItsSorceryFramework
             this.pawn = pawn;
             this.def = def;
             this.schema = schema;
+            Initialize();
         }
 
-        public virtual void Initialize() { }
+        public virtual void Initialize() 
+        {
+            progressLedgers.Append(new ProgressDiffLedger());
+        }
 
         public virtual void ExposeData()
         {
@@ -88,8 +92,8 @@ namespace ItsSorceryFramework
             Scribe_Collections.Look(ref statFactorsTotal, "statFactorsTotal", LookMode.Def, LookMode.Value);
             Scribe_Collections.Look(ref capModsTotal, "capModsTotal", LookMode.Def, LookMode.Value);
 
-            /*Scribe_Values.Look(ref currClass, "currClass", "");
-            Scribe_Collections.Look(ref progressLedgers, "progressLedgers", LookMode.Deep);*/
+            Scribe_Values.Look(ref currClass, "currClass", "");
+            Scribe_Collections.Look(ref progressLedgers, "progressLedgers", LookMode.Deep);
         }
 
 
@@ -191,8 +195,72 @@ namespace ItsSorceryFramework
             }
         }
 
+        public virtual void CreateNewProgressTrackerLedger()
+        {
+            ProgressDiffLedger updateBaseLedger = new ProgressDiffLedger(progressLedgers.Last());
+            progressLedgers.Append(updateBaseLedger);
+        }
+
+        public virtual void AdjustClassLedgerTotalStatMods(ref Dictionary<StatDef, float> stats, List<StatModifier> statMods)
+        {
+            if (statMods.NullOrEmpty()) return;
+
+            foreach (StatModifier statMod in statMods)
+            {
+                if (stats.Keys.Contains(statMod.stat))
+                {
+                    stats[statMod.stat] += statMod.value;
+                    continue;
+                }
+
+                stats[statMod.stat] = statMod.value;
+            }
+        }
+
+        public virtual void AdjustClassLedgerTotalCapMods(ref Dictionary<PawnCapacityDef, float> caps, List<PawnCapacityModifier> capMods)
+        {
+            if (capMods.NullOrEmpty()) return;
+
+            foreach (PawnCapacityModifier capMod in capMods)
+            {
+                if (caps.Keys.Contains(capMod.capacity))
+                {
+                    caps[capMod.capacity] += capMod.offset;
+                    continue;
+                }
+
+                caps[capMod.capacity] = capMod.offset;
+            }
+        }
+
+        public virtual void AdjustClassLedger(List<StatModifier> statOffsets, List<StatModifier> statFactorOffsets, List<PawnCapacityModifier> capMods)
+        {
+            // get most recent ledger
+            ProgressDiffLedger currLedger = progressLedgers.Last();
+
+            // if the ledger has a class ledger of the current class, modify that
+            if (currLedger.classLedgers.ContainsKey(currClass))
+            {
+                ProgressDiffClassLedger currClassLedger = currLedger.classLedgers[currClass];
+                AdjustClassLedgerTotalStatMods(ref currClassLedger.statOffsetsTotal, statOffsets);
+                AdjustClassLedgerTotalStatMods(ref currClassLedger.statFactorsTotal, statFactorOffsets);
+                AdjustClassLedgerTotalCapMods(ref currClassLedger.capModsTotal, capMods);
+            }
+            
+            // if the ledger does not have a class ledger for the current class, make one and adjust it.
+            else
+            {
+                currLedger.classLedgers[currClass] = new ProgressDiffClassLedger(currClass);
+                ProgressDiffClassLedger currClassLedger = currLedger.classLedgers[currClass];
+                AdjustClassLedgerTotalStatMods(ref currClassLedger.statOffsetsTotal, statOffsets);
+                AdjustClassLedgerTotalStatMods(ref currClassLedger.statFactorsTotal, statFactorOffsets);
+                AdjustClassLedgerTotalCapMods(ref currClassLedger.capModsTotal, capMods);
+            }
+        }
+
         public virtual void AdjustModifiers(ProgressLevelModifier modulo)
         {
+            // adjust this to go through diff log
             AdjustTotalStatMods(statOffsetsTotal, modulo.statOffsets);
             AdjustTotalStatMods(statFactorsTotal, modulo.statFactorOffsets, true);
             AdjustTotalCapMods(capModsTotal, modulo.capMods);
@@ -200,6 +268,7 @@ namespace ItsSorceryFramework
 
         public virtual void AdjustModifiers(ProgressLevelOption option)
         {
+            // adjust this to go through diff log
             AdjustTotalStatMods(statOffsetsTotal, option.statOffsets);
             AdjustTotalStatMods(statFactorsTotal, option.statFactorOffsets, true);
             AdjustTotalCapMods(capModsTotal, option.capMods);
@@ -208,6 +277,7 @@ namespace ItsSorceryFramework
         public virtual void AdjustModifiers(List<StatModifier> offsets = null, List<StatModifier> factorOffsets = null,
             List<PawnCapacityModifier> capMods = null)
         {
+            // adjust this to go through diff log
             AdjustTotalStatMods(statOffsetsTotal, offsets);
             AdjustTotalStatMods(statFactorsTotal, factorOffsets, true);
             AdjustTotalCapMods(capModsTotal, capMods);
@@ -246,9 +316,11 @@ namespace ItsSorceryFramework
             }
         }
 
-        public virtual IEnumerable<StatModifier> CreateStatModifiers(Dictionary<StatDef, float> stats)
+        public virtual IEnumerable<StatModifier> CreateStatModifiers(Dictionary<StatDef, float> stats, bool factor = false)
         {
-            foreach (var pair in stats) yield return new StatModifier() { stat = pair.Key, value = pair.Value };
+            float factorAdj = factor ? 1f : 0f;
+
+            foreach (var pair in stats) yield return new StatModifier() { stat = pair.Key, value = pair.Value + factorAdj };
 
             yield break;
         }

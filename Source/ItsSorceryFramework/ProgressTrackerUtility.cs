@@ -189,17 +189,17 @@ namespace ItsSorceryFramework
             }
         }
 
-        public static ProgressTrackerLedger CreateNextLedgerBase(ProgressTracker progressTracker)
+        public static ProgressDiffLedger CreateNextLedgerBase(ProgressTracker progressTracker)
         {
-            ProgressTrackerLedger lastLedger = progressTracker.progressLedgers.LastOrDefault();
+            ProgressDiffLedger lastLedger = progressTracker.progressLedgers.LastOrDefault();
             if (lastLedger is null)
             {
-                return new ProgressTrackerLedger(0, progressTracker.CurrLevel, progressTracker.currClass, new Dictionary<string, ProgressTrackerClassLedger>() { 
-                    { "", new ProgressTrackerClassLedger("")} 
+                return new ProgressDiffLedger(0, progressTracker.CurrLevel, progressTracker.currClass, new Dictionary<string, ProgressDiffClassLedger>() { 
+                    { "", new ProgressDiffClassLedger("")} 
                 });
             }
 
-            return new ProgressTrackerLedger(lastLedger);
+            return new ProgressDiffLedger(lastLedger);
         }
 
         /*public static ProgressTrackerClassLedger UpdateClassLedger(ProgressTracker progressTracker, ProgressTrackerLedger ledger)

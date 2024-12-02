@@ -37,10 +37,10 @@ namespace ItsSorceryFramework
         // initalizer- created via activator via SorcerySchema
         public ProgressTracker_Level(Pawn pawn) : base(pawn) { }
 
-        public ProgressTracker_Level(Pawn pawn, ProgressTrackerDef def, SorcerySchema schema) : base(pawn, def, schema)
-        {
+        public ProgressTracker_Level(Pawn pawn, ProgressTrackerDef def, SorcerySchema schema) : base(pawn, def, schema) { }
+        /*{
             Initialize();
-        }
+        }*/
 
         public override void Initialize()
         {
@@ -191,7 +191,7 @@ namespace ItsSorceryFramework
                 statFactors = CreateStatModifiers(statFactorsTotal).ToList(),
                 capMods = CreateCapModifiers(capModsTotal).ToList()
             };
-
+            
             return stage;
         }
 

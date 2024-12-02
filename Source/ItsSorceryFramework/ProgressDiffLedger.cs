@@ -8,7 +8,7 @@ using Verse;
 
 namespace ItsSorceryFramework
 {
-    public class ProgressTrackerLedger : IExposable
+    public class ProgressDiffLedger : IExposable
     {
         public int index = 0;
 
@@ -16,18 +16,18 @@ namespace ItsSorceryFramework
 
         public string currClass = "";
 
-        public Dictionary<string, ProgressTrackerClassLedger> classLedgers = new Dictionary<string, ProgressTrackerClassLedger>();
+        public Dictionary<string, ProgressDiffClassLedger> classLedgers = new Dictionary<string, ProgressDiffClassLedger>();
 
-        public ProgressTrackerLedger()
+        public ProgressDiffLedger()
         {
             index = 0;
             level = 1;
             currClass = "";
-            classLedgers = new Dictionary<string, ProgressTrackerClassLedger>();
+            classLedgers = new Dictionary<string, ProgressDiffClassLedger>();
         }
 
         // instantiate ledger
-        public ProgressTrackerLedger(int index, int level, string currClass, Dictionary<string, ProgressTrackerClassLedger> classLedgers)
+        public ProgressDiffLedger(int index, int level, string currClass, Dictionary<string, ProgressDiffClassLedger> classLedgers)
         {
             this.index = index;
             this.level = level;
@@ -36,7 +36,7 @@ namespace ItsSorceryFramework
         }
 
         // use another ledger as a base to create the next ledger entry
-        public ProgressTrackerLedger(ProgressTrackerLedger baseLedger)
+        public ProgressDiffLedger(ProgressDiffLedger baseLedger)
         {
             index = baseLedger.index + 1;
             level = baseLedger.level;
