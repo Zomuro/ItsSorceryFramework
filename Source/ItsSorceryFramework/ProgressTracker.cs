@@ -27,7 +27,9 @@ namespace ItsSorceryFramework
 
         public string currClass = "";
 
-        public List<ProgressDiffLedger> progressLedgers = new List<ProgressDiffLedger>();/*
+        public ProgressDiffLog progressDiffLog = new ProgressDiffLog();
+
+        /*public List<ProgressDiffLedger> progressLedgers = new List<ProgressDiffLedger>();
 
         public Dictionary<StatDef, float> detStatOffsetsTotal = new Dictionary<StatDef, float>();
 
@@ -75,7 +77,8 @@ namespace ItsSorceryFramework
 
         public virtual void Initialize() 
         {
-            progressLedgers.Append(new ProgressDiffLedger());
+            //progressLedgers.Append(new ProgressDiffLedger());
+            progressDiffLog = new ProgressDiffLog(this);
         }
 
         public virtual void ExposeData()
@@ -93,7 +96,7 @@ namespace ItsSorceryFramework
             Scribe_Collections.Look(ref capModsTotal, "capModsTotal", LookMode.Def, LookMode.Value);
 
             Scribe_Values.Look(ref currClass, "currClass", "");
-            Scribe_Collections.Look(ref progressLedgers, "progressLedgers", LookMode.Deep);
+            Scribe_Deep.Look(ref progressDiffLog, "progressDiffLog");
         }
 
 
@@ -195,75 +198,24 @@ namespace ItsSorceryFramework
             }
         }
 
-        public virtual void CreateNewProgressTrackerLedger()
-        {
-            ProgressDiffLedger updateBaseLedger = new ProgressDiffLedger(progressLedgers.Last());
-            progressLedgers.Append(updateBaseLedger);
-        }
-
-        public virtual void AdjustClassLedgerTotalStatMods(ref Dictionary<StatDef, float> stats, List<StatModifier> statMods)
-        {
-            if (statMods.NullOrEmpty()) return;
-
-            foreach (StatModifier statMod in statMods)
-            {
-                if (stats.Keys.Contains(statMod.stat))
-                {
-                    stats[statMod.stat] += statMod.value;
-                    continue;
-                }
-
-                stats[statMod.stat] = statMod.value;
-            }
-        }
-
-        public virtual void AdjustClassLedgerTotalCapMods(ref Dictionary<PawnCapacityDef, float> caps, List<PawnCapacityModifier> capMods)
-        {
-            if (capMods.NullOrEmpty()) return;
-
-            foreach (PawnCapacityModifier capMod in capMods)
-            {
-                if (caps.Keys.Contains(capMod.capacity))
-                {
-                    caps[capMod.capacity] += capMod.offset;
-                    continue;
-                }
-
-                caps[capMod.capacity] = capMod.offset;
-            }
-        }
-
-        public virtual void AdjustClassLedger(List<StatModifier> statOffsets, List<StatModifier> statFactorOffsets, List<PawnCapacityModifier> capMods)
-        {
-            // get most recent ledger
-            ProgressDiffLedger currLedger = progressLedgers.Last();
-
-            // if the ledger has a class ledger of the current class, modify that
-            if (currLedger.classLedgers.ContainsKey(currClass))
-            {
-                ProgressDiffClassLedger currClassLedger = currLedger.classLedgers[currClass];
-                AdjustClassLedgerTotalStatMods(ref currClassLedger.statOffsetsTotal, statOffsets);
-                AdjustClassLedgerTotalStatMods(ref currClassLedger.statFactorsTotal, statFactorOffsets);
-                AdjustClassLedgerTotalCapMods(ref currClassLedger.capModsTotal, capMods);
-            }
-            
-            // if the ledger does not have a class ledger for the current class, make one and adjust it.
-            else
-            {
-                currLedger.classLedgers[currClass] = new ProgressDiffClassLedger(currClass);
-                ProgressDiffClassLedger currClassLedger = currLedger.classLedgers[currClass];
-                AdjustClassLedgerTotalStatMods(ref currClassLedger.statOffsetsTotal, statOffsets);
-                AdjustClassLedgerTotalStatMods(ref currClassLedger.statFactorsTotal, statFactorOffsets);
-                AdjustClassLedgerTotalCapMods(ref currClassLedger.capModsTotal, capMods);
-            }
-        }
-
         public virtual void AdjustModifiers(ProgressLevelModifier modulo)
         {
             // adjust this to go through diff log
             AdjustTotalStatMods(statOffsetsTotal, modulo.statOffsets);
             AdjustTotalStatMods(statFactorsTotal, modulo.statFactorOffsets, true);
             AdjustTotalCapMods(capModsTotal, modulo.capMods);
+        }
+
+        public virtual void AdjustModifiers(ProgressLevelModifier modulo, ref ProgressDiffClassLedger classLedger)
+        {
+            // adjust this to go through diff log
+            AdjustTotalStatMods(statOffsetsTotal, modulo.statOffsets);
+            AdjustTotalStatMods(statFactorsTotal, modulo.statFactorOffsets, true);
+            AdjustTotalCapMods(capModsTotal, modulo.capMods);
+
+            classLedger.statOffsetsTotal = ProgressDiffLogUtility.ListToDiffDict(modulo.statOffsets);
+            classLedger.statFactorsTotal = ProgressDiffLogUtility.ListToDiffDict(modulo.statFactorOffsets);
+            classLedger.capModsTotal = ProgressDiffLogUtility.ListToDiffDict(modulo.capMods);
         }
 
         public virtual void AdjustModifiers(ProgressLevelOption option)
@@ -274,13 +226,40 @@ namespace ItsSorceryFramework
             AdjustTotalCapMods(capModsTotal, option.capMods);
         }
 
+        public virtual void AdjustModifiers(ProgressLevelOption option, ref ProgressDiffClassLedger classLedger)
+        {
+            // adjust this to go through diff log
+            AdjustTotalStatMods(statOffsetsTotal, option.statOffsets);
+            AdjustTotalStatMods(statFactorsTotal, option.statFactorOffsets, true);
+            AdjustTotalCapMods(capModsTotal, option.capMods);
+
+            classLedger.statOffsetsTotal = ProgressDiffLogUtility.ListToDiffDict(option.statOffsets);
+            classLedger.statFactorsTotal = ProgressDiffLogUtility.ListToDiffDict(option.statFactorOffsets);
+            classLedger.capModsTotal = ProgressDiffLogUtility.ListToDiffDict(option.capMods);
+        }
+
         public virtual void AdjustModifiers(List<StatModifier> offsets = null, List<StatModifier> factorOffsets = null,
             List<PawnCapacityModifier> capMods = null)
         {
             // adjust this to go through diff log
             AdjustTotalStatMods(statOffsetsTotal, offsets);
+            //AdjustTotalStatMods(statFactorsTotal, factorOffsets);
             AdjustTotalStatMods(statFactorsTotal, factorOffsets, true);
             AdjustTotalCapMods(capModsTotal, capMods);
+        }
+
+        public virtual void AdjustModifiers(ref ProgressDiffClassLedger classLedger, List<StatModifier> offsets = null, 
+            List<StatModifier> factorOffsets = null, List<PawnCapacityModifier> capMods = null)
+        {
+            // adjust this to go through diff log
+            AdjustTotalStatMods(statOffsetsTotal, offsets);
+            //AdjustTotalStatMods(statFactorsTotal, factorOffsets);
+            AdjustTotalStatMods(statFactorsTotal, factorOffsets, true);
+            AdjustTotalCapMods(capModsTotal, capMods);
+
+            classLedger.statOffsetsTotal = ProgressDiffLogUtility.ListToDiffDict(offsets);
+            classLedger.statFactorsTotal = ProgressDiffLogUtility.ListToDiffDict(factorOffsets);
+            classLedger.capModsTotal = ProgressDiffLogUtility.ListToDiffDict(capMods);
         }
 
         public virtual void AdjustTotalStatMods(Dictionary<StatDef, float> stats, List<StatModifier> statMods, bool factor = false)
@@ -347,6 +326,23 @@ namespace ItsSorceryFramework
             }
         }
 
+        public virtual void AdjustAbilities(ref ProgressDiffClassLedger progressDiffClassLedger, ProgressLevelModifier modifier)
+        {
+            Pawn_AbilityTracker abilityTracker = this.pawn.abilities;
+
+            foreach (AbilityDef abilityDef in modifier.abilityGain)
+            {
+                abilityTracker.GainAbility(abilityDef);
+            }
+
+            foreach (AbilityDef abilityDef in modifier.abilityRemove)
+            {
+                abilityTracker.RemoveAbility(abilityDef);
+            }
+
+            progressDiffClassLedger.abilityTotal = ProgressDiffLogUtility.ListToDiffDict(modifier.abilityGain, modifier.abilityRemove);
+        }
+
         public virtual void AdjustAbilities(ProgressLevelOption option)
         {
             Pawn_AbilityTracker abilityTracker = pawn.abilities;
@@ -360,6 +356,23 @@ namespace ItsSorceryFramework
             {
                 abilityTracker.RemoveAbility(abilityDef);
             }
+        }
+
+        public virtual void AdjustAbilities(ref ProgressDiffClassLedger progressDiffClassLedger, ProgressLevelOption option)
+        {
+            Pawn_AbilityTracker abilityTracker = this.pawn.abilities;
+
+            foreach (AbilityDef abilityDef in option.abilityGain)
+            {
+                abilityTracker.GainAbility(abilityDef);
+            }
+
+            foreach (AbilityDef abilityDef in option.abilityRemove)
+            {
+                abilityTracker.RemoveAbility(abilityDef);
+            }
+
+            progressDiffClassLedger.abilityTotal = ProgressDiffLogUtility.ListToDiffDict(option.abilityGain, option.abilityRemove);
         }
 
         public virtual void AdjustHediffs(ProgressLevelModifier modifier)
@@ -383,6 +396,43 @@ namespace ItsSorceryFramework
                 hediff = pawn.health.hediffSet.GetFirstHediffOfDef(hediffDef);
                 if (hediff != null) pawn.health.RemoveHediff(hediff);
             }
+        }
+
+        public virtual void AdjustHediffs(ProgressLevelModifier modifier, ref ProgressDiffClassLedger progressDiffClassLedger)
+        {
+            Dictionary<HediffDef, float> returnDict = new Dictionary<HediffDef, float>() { };
+
+            Hediff hediff;
+            foreach (NodeHediffProps props in modifier.hediffAdd)
+            {
+                hediff = HediffMaker.MakeHediff(props.hediffDef, pawn, null);
+                hediff.Severity = props.severity;
+
+                if (returnDict.ContainsKey(props.hediffDef)) returnDict[props.hediffDef] += props.severity;
+                else returnDict[props.hediffDef] = props.severity;
+
+                pawn.health.AddHediff(hediff, null, null, null);
+            }
+
+            foreach (NodeHediffProps props in modifier.hediffAdjust)
+            {
+                HealthUtility.AdjustSeverity(pawn, props.hediffDef, props.severity);
+                if (returnDict.ContainsKey(props.hediffDef)) returnDict[props.hediffDef] += props.severity;
+                else returnDict[props.hediffDef] = props.severity;
+            }
+
+            foreach (HediffDef hediffDef in modifier.hediffRemove)
+            {
+                hediff = pawn.health.hediffSet.GetFirstHediffOfDef(hediffDef);
+                if (hediff != null)
+                {
+                    if (returnDict.ContainsKey(hediffDef)) returnDict[hediffDef] -= hediff.Severity;
+                    else returnDict[hediffDef] = -hediff.Severity;
+                    pawn.health.RemoveHediff(hediff);
+                }            
+            }
+
+            progressDiffClassLedger.hediffModsTotal = returnDict;
         }
 
         public virtual void AdjustHediffs(ProgressLevelOption option)

@@ -26,6 +26,22 @@ namespace ItsSorceryFramework
             classLedgers = new Dictionary<string, ProgressDiffClassLedger>();
         }
 
+        public ProgressDiffLedger(int index, int level)
+        {
+            this.index = index;
+            this.level = level;
+            currClass = "";
+            classLedgers = new Dictionary<string, ProgressDiffClassLedger>();
+        }
+
+        public ProgressDiffLedger(int index, int level, string currClass)
+        {
+            this.index = index;
+            this.level = level;
+            this.currClass = currClass;
+            classLedgers = new Dictionary<string, ProgressDiffClassLedger>();
+        }
+
         // instantiate ledger
         public ProgressDiffLedger(int index, int level, string currClass, Dictionary<string, ProgressDiffClassLedger> classLedgers)
         {
@@ -35,14 +51,14 @@ namespace ItsSorceryFramework
             this.classLedgers = classLedgers;
         }
 
-        // use another ledger as a base to create the next ledger entry
+        /*// use another ledger as a base to create the next ledger entry
         public ProgressDiffLedger(ProgressDiffLedger baseLedger)
         {
             index = baseLedger.index + 1;
             level = baseLedger.level;
             currClass = baseLedger.currClass;
             classLedgers = baseLedger.classLedgers;
-        }
+        }*/
 
         public virtual void ExposeData()
         {
@@ -51,6 +67,7 @@ namespace ItsSorceryFramework
             Scribe_Values.Look(ref currClass, "currClass");
             Scribe_Collections.Look(ref classLedgers, "classLedgers", LookMode.Value, LookMode.Deep);
         }
+
 
     }
 }

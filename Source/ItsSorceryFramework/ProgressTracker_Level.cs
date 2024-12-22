@@ -144,11 +144,14 @@ namespace ItsSorceryFramework
 
         public override void NotifyLevelUp(float sev, ref List<Window> windows)
         {
+            // begin the new log here
+            ProgressDiffLedger progressDiffLedger = progressDiffLog.PrepNewLedger(this);
+            ProgressDiffClassLedger progressDiffClassLedger = new ProgressDiffClassLedger();
+            
             ProgressLevelModifier factor = def.getLevelFactor(sev);
-
             if (Prefs.DevMode && ItsSorceryUtility.settings.ShowItsSorceryDebug && !factor.options.NullOrEmpty()) 
-                Log.Message($"[It's Sorcery!] Level {CurrLevel} has {factor.options.Count} options to choose from; picking {factor.optionChoices}");
-
+                Log.Message($"[It's Sorcery!] Level {CurrLevel} has {factor.options.Count} factor options to choose from; picking {factor.optionChoices}");
+            
             if (factor != null)
             {
                 AdjustModifiers(factor);
@@ -159,6 +162,9 @@ namespace ItsSorceryFramework
             }
 
             ProgressLevelModifier special = def.getLevelSpecific(sev);
+            if (Prefs.DevMode && ItsSorceryUtility.settings.ShowItsSorceryDebug && !special.options.NullOrEmpty())
+                Log.Message($"[It's Sorcery!] Level {CurrLevel} has {special.options.Count} special options to choose from; picking {special.optionChoices}");
+
             if (special != null)
             {
                 AdjustModifiers(special);
@@ -188,7 +194,8 @@ namespace ItsSorceryFramework
             HediffStage stage = new HediffStage()
             {
                 statOffsets = CreateStatModifiers(statOffsetsTotal).ToList(),
-                statFactors = CreateStatModifiers(statFactorsTotal).ToList(),
+                statFactors = CreateStatModifiers(statFactorsTotal).ToList(), // assumes multiplier is baked in
+                //statFactors = CreateStatModifiers(statFactorsTotal, true).ToList(), // will bake in the multiplier effect for statfactors
                 capMods = CreateCapModifiers(capModsTotal).ToList()
             };
             

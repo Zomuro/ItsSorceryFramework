@@ -189,7 +189,7 @@ namespace ItsSorceryFramework
             }
         }
 
-        public static ProgressDiffLedger CreateNextLedgerBase(ProgressTracker progressTracker)
+        /*public static ProgressDiffLedger CreateNextLedgerBase(ProgressTracker progressTracker)
         {
             ProgressDiffLedger lastLedger = progressTracker.progressLedgers.LastOrDefault();
             if (lastLedger is null)
@@ -200,7 +200,7 @@ namespace ItsSorceryFramework
             }
 
             return new ProgressDiffLedger(lastLedger);
-        }
+        }*/
 
         /*public static ProgressTrackerClassLedger UpdateClassLedger(ProgressTracker progressTracker, ProgressTrackerLedger ledger)
         {
