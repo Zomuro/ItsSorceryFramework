@@ -84,9 +84,20 @@ namespace ItsSorceryFramework
                     ResolveForceSkill(nodeReq, ref schema); // if set, forces pawn to have the proper skill level before completing the node
                     ResolveForceLevelNode(nodeReq, ref schema); // if set, forces pawn to be leveled up to a certain level
 
-                    schema.learningNodeRecord.CompletionAbilities(nodeReq.nodeDef); // adjust abilities
-                    schema.learningNodeRecord.CompletionHediffs(nodeReq.nodeDef); // adjust hediffs
-                    schema.learningNodeRecord.CompletionModifiers(nodeReq.nodeDef); // adjust stat modifiers
+                    // complete and record node completion results //
+                    // prep record in diff log
+                    ProgressDiffLog diffLog = schema.progressTracker.progressDiffLog;
+                    ProgressDiffLedger progressDiffLedger = diffLog.PrepNewLedger(schema.progressTracker);
+                    ProgressDiffClassLedger progressDiffClassLedger = new ProgressDiffClassLedger();
+
+                    // complete node and record results
+                    schema.learningNodeRecord.CompletionAbilities(nodeReq.nodeDef, ref progressDiffClassLedger); // adjust abilities
+                    schema.learningNodeRecord.CompletionHediffs(nodeReq.nodeDef, ref progressDiffClassLedger); // adjust hediffs
+                    schema.learningNodeRecord.CompletionModifiers(nodeReq.nodeDef, ref progressDiffClassLedger); // adjust stat modifiers
+
+                    // add record to diff log
+                    progressDiffLedger.classLedgers[""] = progressDiffClassLedger;
+                    diffLog.AddLedger(progressDiffLedger);
                 }
                 else
                 {

@@ -143,10 +143,17 @@ namespace ItsSorceryFramework
                     if (Widgets.ButtonText(confirmButton, "ISF_SkillPointUse".Translate(selectedNode.pointReq, 
                         progress.def.skillPointLabelKey.Translate())))
                     {
+                        ProgressDiffLog diffLog = schema.progressTracker.progressDiffLog;
+                        ProgressDiffLedger progressDiffLedger = diffLog.PrepNewLedger(schema.progressTracker);
+                        ProgressDiffClassLedger progressDiffClassLedger = new ProgressDiffClassLedger();
+
                         LearningRecord.completion[selectedNode] = true;
-                        LearningRecord.CompletionAbilities(selectedNode);
-                        LearningRecord.CompletionHediffs(selectedNode);
-                        LearningRecord.CompletionModifiers(selectedNode);
+                        LearningRecord.CompletionAbilities(selectedNode, ref progressDiffClassLedger);
+                        LearningRecord.CompletionHediffs(selectedNode, ref progressDiffClassLedger);
+                        LearningRecord.CompletionModifiers(selectedNode, ref progressDiffClassLedger);
+                        progressDiffLedger.classLedgers[schema.progressTracker.currClass] = progressDiffClassLedger;
+                        diffLog.AddLedger(progressDiffLedger);
+
                         LearningRecord.CompletionLearningUnlock(selectedNode);
                         schema.progressTracker.usedPoints += selectedNode.pointReq;
 
@@ -197,11 +204,19 @@ namespace ItsSorceryFramework
                     Rect debugButton = new Rect(confirmButton.x, outRect.yMax, 120f, 30f);
                     if (Widgets.ButtonText(debugButton, "Debug: Finish now", true, true, true, null))
                     {
+                        ProgressDiffLog diffLog = schema.progressTracker.progressDiffLog;
+                        ProgressDiffLedger progressDiffLedger = diffLog.PrepNewLedger(schema.progressTracker);
+                        ProgressDiffClassLedger progressDiffClassLedger = new ProgressDiffClassLedger();
+
                         LearningRecord.completion[selectedNode] = true;
-                        LearningRecord.CompletionAbilities(selectedNode);
-                        LearningRecord.CompletionHediffs(selectedNode);
-                        LearningRecord.CompletionModifiers(selectedNode);
+                        LearningRecord.CompletionAbilities(selectedNode, ref progressDiffClassLedger);
+                        LearningRecord.CompletionHediffs(selectedNode, ref progressDiffClassLedger);
+                        LearningRecord.CompletionModifiers(selectedNode, ref progressDiffClassLedger);
+                        progressDiffLedger.classLedgers[""] = progressDiffClassLedger;
+                        diffLog.AddLedger(progressDiffLedger);
+
                         LearningRecord.CompletionLearningUnlock(selectedNode);
+                        
                         foreach (var et in schema.energyTrackers) et.ClearStatCache();
                     }
                     Text.Font = GameFont.Small;

@@ -23,11 +23,13 @@ namespace ItsSorceryFramework
 
 		public int setLevel = -1;
 
+		public string setClass = "";
+
 		public override Vector2 InitialSize => new Vector2(800, 600);
 
 		public override bool IsDebug => false;
 
-		public Dialog_ProgressLevelOptions(IEnumerable<DebugMenuOption> options, ProgressTracker progressTracker, int level) : base(options)
+		public Dialog_ProgressLevelOptions(IEnumerable<DebugMenuOption> options, ProgressTracker progressTracker, int level, string currClass) : base(options)
 		{
 			tracker = progressTracker;
 			closeOnClickedOutside = false;
@@ -36,6 +38,7 @@ namespace ItsSorceryFramework
 			doCloseX = Prefs.DevMode; // true if in dev mode; false otherwise
 			onlyOneOfTypeAllowed = false;
 			setLevel = level;
+			setClass = currClass;
 		}
 
 		protected override int HighlightedIndex
@@ -128,10 +131,18 @@ namespace ItsSorceryFramework
 				//Rect confirmButtonRect = new Rect(confirmRect.x + confirmRect.width /4, confirmRect.y + confirmRect.height / 4,  confirmRect.width / 2, confirmRect.height / 2);
 				if(Widgets.ButtonText(confirmRect, "ISF_ProgressLevelOptionsConfirm".Translate())) // if hit w/ a selected option, adjust the following
                 {
-					tracker.AdjustModifiers(selectedOption);
-					tracker.AdjustAbilities(selectedOption);
-					tracker.AdjustHediffs(selectedOption);
+					// begin the new log here
+					ProgressDiffLedger progressDiffLedger = tracker.progressDiffLog.PrepNewLedger(tracker);
+					progressDiffLedger.level = setLevel;
+					ProgressDiffClassLedger progressDiffClassLedger = new ProgressDiffClassLedger();
+
+					tracker.AdjustModifiers(selectedOption, ref progressDiffClassLedger);
+					tracker.AdjustAbilities(selectedOption, ref progressDiffClassLedger);
+					tracker.AdjustHediffs(selectedOption, ref progressDiffClassLedger);
 					tracker.points += selectedOption.pointGain;
+
+					progressDiffLedger.classLedgers[setClass] = progressDiffClassLedger;
+					tracker.progressDiffLog.AddLedger(progressDiffLedger);
 					tracker.Hediff.cachedCurStage = tracker.RefreshCurStage();
 
 					if (Prefs.DevMode && ItsSorceryUtility.settings.ShowItsSorceryDebug)

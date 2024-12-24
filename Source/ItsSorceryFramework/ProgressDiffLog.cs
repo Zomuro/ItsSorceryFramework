@@ -91,69 +91,62 @@ namespace ItsSorceryFramework
         public virtual void LogModifiers(ProgressLevelModifier modulo, ref ProgressDiffClassLedger classLedger)
         {
             //ProgressDiffClassLedger classLedger = new ProgressDiffClassLedger();
-            classLedger.statOffsetsTotal = ProgressDiffLogUtility.ListToDiffDict(modulo.statOffsets);
-            classLedger.statFactorsTotal = ProgressDiffLogUtility.ListToDiffDict(modulo.statFactorOffsets);
-            classLedger.capModsTotal = ProgressDiffLogUtility.ListToDiffDict(modulo.capMods);
+            classLedger.statOffsetsTotal.DiffDictSum<StatDef, float>(ProgressDiffLogUtility.ListToDiffDict(modulo.statOffsets));
+            classLedger.statFactorsTotal.DiffDictSum<StatDef, float>(ProgressDiffLogUtility.ListToDiffDict(modulo.statFactorOffsets));
+            classLedger.capModsTotal.DiffDictSum<PawnCapacityDef, float>(ProgressDiffLogUtility.ListToDiffDict(modulo.capMods));
 
-            // adjust this to go through diff log
-            /*AdjustTotalStatMods(statOffsetsTotal, modulo.statOffsets);
-            AdjustTotalStatMods(statFactorsTotal, modulo.statFactorOffsets, true);
-            AdjustTotalCapMods(capModsTotal, modulo.capMods);*/
+            /*classLedger.statOffsetsTotal = ProgressDiffLogUtility.ListToDiffDict(modulo.statOffsets);
+            classLedger.statFactorsTotal = ProgressDiffLogUtility.ListToDiffDict(modulo.statFactorOffsets);
+            classLedger.capModsTotal = ProgressDiffLogUtility.ListToDiffDict(modulo.capMods);*/
         }
 
         // Logs modifiers from the ProgressLevelOption
         public virtual void LogModifiers(ProgressLevelOption option, ref ProgressDiffClassLedger classLedger)
         {
-            //ProgressDiffClassLedger classLedger = new ProgressDiffClassLedger();
-            classLedger.statOffsetsTotal = ProgressDiffLogUtility.ListToDiffDict(option.statOffsets);
-            classLedger.statFactorsTotal = ProgressDiffLogUtility.ListToDiffDict(option.statFactorOffsets);
-            classLedger.capModsTotal = ProgressDiffLogUtility.ListToDiffDict(option.capMods);
+            classLedger.statOffsetsTotal.DiffDictSum<StatDef, float>(ProgressDiffLogUtility.ListToDiffDict(option.statOffsets));
+            classLedger.statFactorsTotal.DiffDictSum<StatDef, float>(ProgressDiffLogUtility.ListToDiffDict(option.statFactorOffsets));
+            classLedger.capModsTotal.DiffDictSum<PawnCapacityDef, float>(ProgressDiffLogUtility.ListToDiffDict(option.capMods));
 
-            // adjust this to go through diff log
-            /*AdjustTotalStatMods(statOffsetsTotal, modulo.statOffsets);
-            AdjustTotalStatMods(statFactorsTotal, modulo.statFactorOffsets, true);
-            AdjustTotalCapMods(capModsTotal, modulo.capMods);*/
+            //ProgressDiffClassLedger classLedger = new ProgressDiffClassLedger();
+            /*classLedger.statOffsetsTotal = ProgressDiffLogUtility.ListToDiffDict(option.statOffsets);
+            classLedger.statFactorsTotal = ProgressDiffLogUtility.ListToDiffDict(option.statFactorOffsets);
+            classLedger.capModsTotal = ProgressDiffLogUtility.ListToDiffDict(option.capMods);*/
         }
 
         public virtual void LogModifiers(ref ProgressDiffClassLedger classLedger, List<StatModifier> offsets = null, List<StatModifier> factorOffsets = null,
             List<PawnCapacityModifier> capMods = null)
         {
+            classLedger.statOffsetsTotal.DiffDictSum<StatDef, float>(ProgressDiffLogUtility.ListToDiffDict(offsets));
+            classLedger.statFactorsTotal.DiffDictSum<StatDef, float>(ProgressDiffLogUtility.ListToDiffDict(factorOffsets));
+            classLedger.capModsTotal.DiffDictSum<PawnCapacityDef, float>(ProgressDiffLogUtility.ListToDiffDict(capMods));
 
-            classLedger.statOffsetsTotal = ProgressDiffLogUtility.ListToDiffDict(offsets);
+            /*classLedger.statOffsetsTotal = ProgressDiffLogUtility.ListToDiffDict(offsets);
             classLedger.statFactorsTotal = ProgressDiffLogUtility.ListToDiffDict(factorOffsets);
-            classLedger.capModsTotal = ProgressDiffLogUtility.ListToDiffDict(capMods);
-
-            // adjust this to go through diff log
-            /*AdjustTotalStatMods(statOffsetsTotal, offsets);
-            //AdjustTotalStatMods(statFactorsTotal, factorOffsets);
-            AdjustTotalStatMods(statFactorsTotal, factorOffsets, true);
-            AdjustTotalCapMods(capModsTotal, capMods);*/
+            classLedger.capModsTotal = ProgressDiffLogUtility.ListToDiffDict(capMods);*/
         }
 
-        public virtual void LogHediffs(ProgressLevelOption option, ref ProgressDiffClassLedger classLedger)
+        public virtual void LogHediffs(ProgressLevelModifier modifier, ref ProgressDiffClassLedger classLedger)
         {
-            //ProgressDiffClassLedger classLedger = new ProgressDiffClassLedger();
-            classLedger.statOffsetsTotal = ProgressDiffLogUtility.ListToDiffDict(option.statOffsets);
-            classLedger.statFactorsTotal = ProgressDiffLogUtility.ListToDiffDict(option.statFactorOffsets);
-            classLedger.capModsTotal = ProgressDiffLogUtility.ListToDiffDict(option.capMods);
+            // integrated into the progress tracker itself
+        }
 
-            // adjust this to go through diff log
-            /*AdjustTotalStatMods(statOffsetsTotal, modulo.statOffsets);
-            AdjustTotalStatMods(statFactorsTotal, modulo.statFactorOffsets, true);
-            AdjustTotalCapMods(capModsTotal, modulo.capMods);*/
+
+        public virtual void LogAbilities(ProgressLevelModifier modifier, ref ProgressDiffClassLedger classLedger)
+        {
+            classLedger.abilityTotal.DiffDictSum<AbilityDef, int>(ProgressDiffLogUtility.ListToDiffDict(modifier.abilityGain, modifier.abilityRemove));
+            //classLedger.abilityTotal = ProgressDiffLogUtility.ListToDiffDict(modifier.abilityGain, modifier.abilityRemove);
         }
 
         public virtual void LogAbilities(ProgressLevelOption option, ref ProgressDiffClassLedger classLedger)
         {
-            //ProgressDiffClassLedger classLedger = new ProgressDiffClassLedger();
-            classLedger.statOffsetsTotal = ProgressDiffLogUtility.ListToDiffDict(option.statOffsets);
-            classLedger.statFactorsTotal = ProgressDiffLogUtility.ListToDiffDict(option.statFactorOffsets);
-            classLedger.capModsTotal = ProgressDiffLogUtility.ListToDiffDict(option.capMods);
+            classLedger.abilityTotal.DiffDictSum<AbilityDef, int>(ProgressDiffLogUtility.ListToDiffDict(option.abilityGain, option.abilityRemove));
+            //classLedger.abilityTotal = ProgressDiffLogUtility.ListToDiffDict(option.abilityGain, option.abilityRemove);
+        }
 
-            // adjust this to go through diff log
-            /*AdjustTotalStatMods(statOffsetsTotal, modulo.statOffsets);
-            AdjustTotalStatMods(statFactorsTotal, modulo.statFactorOffsets, true);
-            AdjustTotalCapMods(capModsTotal, modulo.capMods);*/
+        public virtual void LogAbilities(LearningTreeNodeDef node, ref ProgressDiffClassLedger classLedger)
+        {
+            classLedger.abilityTotal.DiffDictSum<AbilityDef, int>(ProgressDiffLogUtility.ListToDiffDict(node.abilityGain, node.abilityRemove));
+            //classLedger.abilityTotal = ProgressDiffLogUtility.ListToDiffDict(option.abilityGain, option.abilityRemove);
         }
 
         public ProgressDiffClassLedger TotalDiff(string progressClass = "")

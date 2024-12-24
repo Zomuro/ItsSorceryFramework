@@ -38,9 +38,6 @@ namespace ItsSorceryFramework
         public ProgressTracker_Level(Pawn pawn) : base(pawn) { }
 
         public ProgressTracker_Level(Pawn pawn, ProgressTrackerDef def, SorcerySchema schema) : base(pawn, def, schema) { }
-        /*{
-            Initialize();
-        }*/
 
         public override void Initialize()
         {
@@ -147,37 +144,44 @@ namespace ItsSorceryFramework
             // begin the new log here
             ProgressDiffLedger progressDiffLedger = progressDiffLog.PrepNewLedger(this);
             ProgressDiffClassLedger progressDiffClassLedger = new ProgressDiffClassLedger();
-            
+
+            // for factors of the level
             ProgressLevelModifier factor = def.getLevelFactor(sev);
-            if (Prefs.DevMode && ItsSorceryUtility.settings.ShowItsSorceryDebug && !factor.options.NullOrEmpty()) 
-                Log.Message($"[It's Sorcery!] Level {CurrLevel} has {factor.options.Count} factor options to choose from; picking {factor.optionChoices}");
-            
             if (factor != null)
             {
-                AdjustModifiers(factor);
-                AdjustAbilities(factor);
-                AdjustHediffs(factor);
+                // debug statement about levelmodifier's options
+                if (Prefs.DevMode && ItsSorceryUtility.settings.ShowItsSorceryDebug && !factor.options.NullOrEmpty())
+                    Log.Message($"[It's Sorcery!] Level {CurrLevel} has {factor.options.Count} factor options to choose from; picking {factor.optionChoices}");
+
+                // adjust modifiers
+                AdjustModifiers(factor, ref progressDiffClassLedger);
+                AdjustAbilities(factor, ref progressDiffClassLedger);
+                AdjustHediffs(factor, ref progressDiffClassLedger);
                 points += factor.pointGain;
-                ApplyOptions(factor, ref windows);
+                ApplyOptions(factor, ref windows, ref progressDiffClassLedger);
             }
 
+            // for that specific level
             ProgressLevelModifier special = def.getLevelSpecific(sev);
-            if (Prefs.DevMode && ItsSorceryUtility.settings.ShowItsSorceryDebug && !special.options.NullOrEmpty())
-                Log.Message($"[It's Sorcery!] Level {CurrLevel} has {special.options.Count} special options to choose from; picking {special.optionChoices}");
-
             if (special != null)
             {
-                AdjustModifiers(special);
-                AdjustAbilities(special);
-                AdjustHediffs(special);
+                // debug statement about levelmodifier's options
+                if (Prefs.DevMode && ItsSorceryUtility.settings.ShowItsSorceryDebug && !special.options.NullOrEmpty())
+                    Log.Message($"[It's Sorcery!] Level {CurrLevel} has {special.options.Count} special options to choose from; picking {special.optionChoices}");
+
+                // adjust modifiers
+                AdjustModifiers(special, ref progressDiffClassLedger);
+                AdjustAbilities(special, ref progressDiffClassLedger);
+                AdjustHediffs(special, ref progressDiffClassLedger);
                 ApplyUnlocks(special); // only for modifiers within special
                 points += special.pointGain;
-                ApplyOptions(special, ref windows);
+                ApplyOptions(special, ref windows, ref progressDiffClassLedger);
             }
 
+            // debug validating that hediff and progresstracker modifiers are the same
             if (Prefs.DevMode && ItsSorceryUtility.settings.ShowItsSorceryDebug)
             {
-                Log.Message($"[It's Sorcery!] {schema.def.defName}.{def.defName}:" +
+                Log.Message($"[It's Sorcery!] {schema.def.label} Modifier Validation:" +
                         $"\nProgressTracker offets: {statOffsetsTotal.ToStringSafeEnumerable()}" +
                         $"\nProgressTracker factors: {statFactorsTotal.ToStringSafeEnumerable()}" +
                         $"\nProgressTracker cap mods: {capModsTotal.ToStringSafeEnumerable()}" +
@@ -186,6 +190,8 @@ namespace ItsSorceryFramework
                         $"\nHediff ProgressTracker cap mods: {Hediff.Schema.progressTracker.capModsTotal.ToStringSafeEnumerable()}");
             }
 
+            progressDiffLedger.classLedgers[currClass] = progressDiffClassLedger;
+            progressDiffLog.AddLedger(progressDiffLedger);
             Hediff.cachedCurStage = RefreshCurStage();
         }
 
@@ -209,6 +215,10 @@ namespace ItsSorceryFramework
             {
                 foreach(var window in windows.Reverse<Window>()) Find.WindowStack.Add(window);
             }
+
+            // debug info
+            if (Prefs.DevMode && ItsSorceryUtility.settings.ShowItsSorceryDebug)
+                Log.Message($"[It's Sorcery!] {schema.def.label} Diff Log Total:\n{progressDiffLog.TotalDiff()}");
 
             // not player faction? don't show level ups!
             // silent msg? don't bother running the rest of the method then!

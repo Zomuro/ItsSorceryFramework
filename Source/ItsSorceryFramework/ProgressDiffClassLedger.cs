@@ -8,7 +8,7 @@ using Verse;
 
 namespace ItsSorceryFramework
 {
-    public class ProgressDiffClassLedger
+    public class ProgressDiffClassLedger : IExposable
     {
         //public string progressTrackerClass = "";
 
@@ -62,6 +62,15 @@ namespace ItsSorceryFramework
             Scribe_Collections.Look(ref capModsTotal, "capModsTotal", LookMode.Def, LookMode.Value);
             Scribe_Collections.Look(ref hediffModsTotal, "hediffModsTotal", LookMode.Def, LookMode.Value);
             Scribe_Collections.Look(ref abilityTotal, "abilityTotal", LookMode.Def, LookMode.Value);
+        }
+
+        public override string ToString()
+        {
+            return $"statOffsetsTotal = {{{ProgressDiffLogUtility.DebugDictLog(statOffsetsTotal)}}}" +
+                $"\nstatFactorsTotal = {{{ProgressDiffLogUtility.DebugDictLog(statFactorsTotal)}}}" +
+                $"\ncapModsTotal = {{{ProgressDiffLogUtility.DebugDictLog(capModsTotal)}}}" +
+                $"\nhediffModsTotal = {{{ProgressDiffLogUtility.DebugDictLog(hediffModsTotal)}}}" +
+                $"\nabilityTotal = {{{ProgressDiffLogUtility.DebugDictLog(abilityTotal)}}}";
         }
 
     }

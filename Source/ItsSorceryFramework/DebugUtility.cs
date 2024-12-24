@@ -126,6 +126,65 @@ namespace ItsSorceryFramework
             Find.WindowStack.Add(new Dialog_DebugOptionListLister(options, null));
         }
 
+        [DebugAction("It's Sorcery!", "Get ProgressDiffLog Ledgers", false, false, false, false, 0, false,
+            actionType = DebugActionType.ToolMapForPawns, allowedGameStates = AllowedGameStates.PlayingOnMap, displayPriority = 999)]
+        public static void PrintProgressDiffLogLedgers(Pawn pawn)
+        {
+            Comp_ItsSorcery comp = pawn.GetComp<Comp_ItsSorcery>();
+            if (comp?.schemaTracker?.sorcerySchemas is null)
+            {
+                Messages.Message($"[It's Sorcery!] {pawn.Name.ToStringShort} has no It's Sorcery! comp.", MessageTypeDefOf.RejectInput);
+                return;
+            }
+
+            List<DebugMenuOption> options = new List<DebugMenuOption>();
+
+            foreach (SorcerySchema schema in comp?.schemaTracker?.sorcerySchemas)
+            {
+                options.Add(new DebugMenuOption(schema.def.label, DebugMenuOptionMode.Tool, delegate ()
+                {
+                    string returnStr = "";
+                    foreach(var ledger in schema.progressTracker.progressDiffLog.progressDiffLedgers)
+                    {
+                        returnStr += $"\nIndex {ledger.index}:";
+                        foreach (var c in ledger.classLedgers)
+                        {
+                            returnStr += $"\nClass ({c.Key})\nLevel ({ledger.level})\n{c.Value}\n";
+                        }
+                    }
+
+                    Log.Message($"[It's Sorcery!] {schema.def.label} Diff Log Ledgers:{returnStr}");
+                }));
+            }
+
+            Find.WindowStack.Add(new Dialog_DebugOptionListLister(options, null));
+        }
+
+        [DebugAction("It's Sorcery!", "Get ProgressDiffLog TotalDiff", false, false, false, false, 0, false,
+            actionType = DebugActionType.ToolMapForPawns, allowedGameStates = AllowedGameStates.PlayingOnMap, displayPriority = 999)]
+        public static void PrintProgressDiffLogTotalDiff(Pawn pawn)
+        {
+            Comp_ItsSorcery comp = pawn.GetComp<Comp_ItsSorcery>();
+            if (comp?.schemaTracker?.sorcerySchemas is null)
+            {
+                Messages.Message($"[It's Sorcery!] {pawn.Name.ToStringShort} has no It's Sorcery! comp.", MessageTypeDefOf.RejectInput);
+                return;
+            }
+
+            List<DebugMenuOption> options = new List<DebugMenuOption>();
+
+            foreach (SorcerySchema schema in comp?.schemaTracker?.sorcerySchemas)
+            {
+                options.Add(new DebugMenuOption(schema.def.label, DebugMenuOptionMode.Tool, delegate ()
+                {
+                    string returnStr = schema.progressTracker.progressDiffLog.TotalDiff().ToString();
+                    Log.Message($"[It's Sorcery!] {schema.def.label} Total Diff:\n{returnStr}");
+                }));
+            }
+
+            Find.WindowStack.Add(new Dialog_DebugOptionListLister(options, null));
+        }
+
         // Used to test new recovery method for hediffs
         /*[DebugAction("It's Sorcery!", "Force ProgressTracker Reset", false, false, false, false, 0, false,
             actionType = DebugActionType.ToolMapForPawns, allowedGameStates = AllowedGameStates.PlayingOnMap, displayPriority = 999)]

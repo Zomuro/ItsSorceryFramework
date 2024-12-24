@@ -79,6 +79,8 @@ namespace ItsSorceryFramework
         {
             //progressLedgers.Append(new ProgressDiffLedger());
             progressDiffLog = new ProgressDiffLog(this);
+            if (Prefs.DevMode && ItsSorceryUtility.settings.ShowItsSorceryDebug)
+                Log.Message($"[It's Sorcery!] {this.schema.def.label} Diff Log Initalized: {progressDiffLog.TotalDiff()}");
         }
 
         public virtual void ExposeData()
@@ -169,7 +171,38 @@ namespace ItsSorceryFramework
             List<DebugMenuOption> options;
             if (select < 0 || select > modifier.options.Count) options = LevelOptions(modifier).ToList();
             else options = LevelOptions(modifier).OrderBy(x => rand.Next()).Take(select).ToList();
-            windows.Add(new Dialog_ProgressLevelOptions(options, this, CurrLevel));
+            windows.Add(new Dialog_ProgressLevelOptions(options, this, CurrLevel, currClass));
+        }
+
+        public virtual void ApplyOptions(ProgressLevelModifier modifier, ref List<Window> windows, ref ProgressDiffClassLedger classLedger)
+        {
+            int select = Math.Min(modifier.optionChoices, modifier.options.Count);
+
+            if (modifier.options.NullOrEmpty() || select == 0) return; // empty options -> skip rest
+            if (modifier.options.Count == 1) // only one option = autoselect that option
+            {
+                AdjustModifiers(modifier.options[0], ref classLedger);
+                AdjustAbilities(modifier.options[0], ref classLedger);
+                AdjustHediffs(modifier.options[0], ref classLedger);
+                points += modifier.options[0].pointGain;
+                return;
+            }
+
+            if (!pawn.Faction.IsPlayer) // if we try to apply options to a NPC, just choose a random option.
+            {
+                ProgressLevelOption option = modifier.options.RandomElement();
+                AdjustModifiers(option, ref classLedger);
+                AdjustAbilities(option, ref classLedger);
+                AdjustHediffs(option, ref classLedger);
+                points += option.pointGain;
+                return;
+            }
+
+            // if there's a proper list of 2+ options for the progresslevelmodifier, create a window for selection.
+            List<DebugMenuOption> options;
+            if (select < 0 || select > modifier.options.Count) options = LevelOptions(modifier).ToList();
+            else options = LevelOptions(modifier).OrderBy(x => rand.Next()).Take(select).ToList();
+            windows.Add(new Dialog_ProgressLevelOptions(options, this, CurrLevel, currClass));
         }
 
         public virtual IEnumerable<DebugMenuOption> LevelOptions(ProgressLevelModifier modifier)
@@ -213,9 +246,10 @@ namespace ItsSorceryFramework
             AdjustTotalStatMods(statFactorsTotal, modulo.statFactorOffsets, true);
             AdjustTotalCapMods(capModsTotal, modulo.capMods);
 
-            classLedger.statOffsetsTotal = ProgressDiffLogUtility.ListToDiffDict(modulo.statOffsets);
+            progressDiffLog.LogModifiers(modulo, ref classLedger);
+            /*classLedger.statOffsetsTotal = ProgressDiffLogUtility.ListToDiffDict(modulo.statOffsets);
             classLedger.statFactorsTotal = ProgressDiffLogUtility.ListToDiffDict(modulo.statFactorOffsets);
-            classLedger.capModsTotal = ProgressDiffLogUtility.ListToDiffDict(modulo.capMods);
+            classLedger.capModsTotal = ProgressDiffLogUtility.ListToDiffDict(modulo.capMods);*/
         }
 
         public virtual void AdjustModifiers(ProgressLevelOption option)
@@ -233,9 +267,10 @@ namespace ItsSorceryFramework
             AdjustTotalStatMods(statFactorsTotal, option.statFactorOffsets, true);
             AdjustTotalCapMods(capModsTotal, option.capMods);
 
-            classLedger.statOffsetsTotal = ProgressDiffLogUtility.ListToDiffDict(option.statOffsets);
+            progressDiffLog.LogModifiers(option, ref classLedger);
+            /*classLedger.statOffsetsTotal = ProgressDiffLogUtility.ListToDiffDict(option.statOffsets);
             classLedger.statFactorsTotal = ProgressDiffLogUtility.ListToDiffDict(option.statFactorOffsets);
-            classLedger.capModsTotal = ProgressDiffLogUtility.ListToDiffDict(option.capMods);
+            classLedger.capModsTotal = ProgressDiffLogUtility.ListToDiffDict(option.capMods);*/
         }
 
         public virtual void AdjustModifiers(List<StatModifier> offsets = null, List<StatModifier> factorOffsets = null,
@@ -257,9 +292,10 @@ namespace ItsSorceryFramework
             AdjustTotalStatMods(statFactorsTotal, factorOffsets, true);
             AdjustTotalCapMods(capModsTotal, capMods);
 
-            classLedger.statOffsetsTotal = ProgressDiffLogUtility.ListToDiffDict(offsets);
+            progressDiffLog.LogModifiers(ref classLedger, offsets, factorOffsets, capMods);
+            /*classLedger.statOffsetsTotal = ProgressDiffLogUtility.ListToDiffDict(offsets);
             classLedger.statFactorsTotal = ProgressDiffLogUtility.ListToDiffDict(factorOffsets);
-            classLedger.capModsTotal = ProgressDiffLogUtility.ListToDiffDict(capMods);
+            classLedger.capModsTotal = ProgressDiffLogUtility.ListToDiffDict(capMods);*/
         }
 
         public virtual void AdjustTotalStatMods(Dictionary<StatDef, float> stats, List<StatModifier> statMods, bool factor = false)
@@ -326,7 +362,7 @@ namespace ItsSorceryFramework
             }
         }
 
-        public virtual void AdjustAbilities(ref ProgressDiffClassLedger progressDiffClassLedger, ProgressLevelModifier modifier)
+        public virtual void AdjustAbilities(ProgressLevelModifier modifier, ref ProgressDiffClassLedger classLedger)
         {
             Pawn_AbilityTracker abilityTracker = this.pawn.abilities;
 
@@ -340,7 +376,8 @@ namespace ItsSorceryFramework
                 abilityTracker.RemoveAbility(abilityDef);
             }
 
-            progressDiffClassLedger.abilityTotal = ProgressDiffLogUtility.ListToDiffDict(modifier.abilityGain, modifier.abilityRemove);
+            progressDiffLog.LogAbilities(modifier, ref classLedger);
+            //classLedger.abilityTotal = ProgressDiffLogUtility.ListToDiffDict(modifier.abilityGain, modifier.abilityRemove);
         }
 
         public virtual void AdjustAbilities(ProgressLevelOption option)
@@ -358,7 +395,7 @@ namespace ItsSorceryFramework
             }
         }
 
-        public virtual void AdjustAbilities(ref ProgressDiffClassLedger progressDiffClassLedger, ProgressLevelOption option)
+        public virtual void AdjustAbilities(ProgressLevelOption option, ref ProgressDiffClassLedger classLedger)
         {
             Pawn_AbilityTracker abilityTracker = this.pawn.abilities;
 
@@ -372,7 +409,8 @@ namespace ItsSorceryFramework
                 abilityTracker.RemoveAbility(abilityDef);
             }
 
-            progressDiffClassLedger.abilityTotal = ProgressDiffLogUtility.ListToDiffDict(option.abilityGain, option.abilityRemove);
+            progressDiffLog.LogAbilities(option, ref classLedger);
+            //classLedger.abilityTotal = ProgressDiffLogUtility.ListToDiffDict(option.abilityGain, option.abilityRemove);
         }
 
         public virtual void AdjustHediffs(ProgressLevelModifier modifier)
@@ -398,7 +436,7 @@ namespace ItsSorceryFramework
             }
         }
 
-        public virtual void AdjustHediffs(ProgressLevelModifier modifier, ref ProgressDiffClassLedger progressDiffClassLedger)
+        public virtual void AdjustHediffs(ProgressLevelModifier modifier, ref ProgressDiffClassLedger classLedger)
         {
             Dictionary<HediffDef, float> returnDict = new Dictionary<HediffDef, float>() { };
 
@@ -432,7 +470,8 @@ namespace ItsSorceryFramework
                 }            
             }
 
-            progressDiffClassLedger.hediffModsTotal = returnDict;
+            classLedger.hediffModsTotal.DiffDictSum<HediffDef, float>(returnDict);
+            //classLedger.hediffModsTotal = returnDict;
         }
 
         public virtual void AdjustHediffs(ProgressLevelOption option)
@@ -456,6 +495,43 @@ namespace ItsSorceryFramework
                 hediff = pawn.health.hediffSet.GetFirstHediffOfDef(hediffDef);
                 if (hediff != null) pawn.health.RemoveHediff(hediff);
             }
+        }
+
+        public virtual void AdjustHediffs(ProgressLevelOption option, ref ProgressDiffClassLedger classLedger)
+        {
+            Dictionary<HediffDef, float> returnDict = new Dictionary<HediffDef, float>() { };
+
+            Hediff hediff;
+            foreach (NodeHediffProps props in option.hediffAdd)
+            {
+                hediff = HediffMaker.MakeHediff(props.hediffDef, pawn, null);
+                hediff.Severity = props.severity;
+
+                if (returnDict.ContainsKey(props.hediffDef)) returnDict[props.hediffDef] += props.severity;
+                else returnDict[props.hediffDef] = props.severity;
+
+                pawn.health.AddHediff(hediff, null, null, null);
+            }
+
+            foreach (NodeHediffProps props in option.hediffAdjust)
+            {
+                HealthUtility.AdjustSeverity(pawn, props.hediffDef, props.severity);
+                if (returnDict.ContainsKey(props.hediffDef)) returnDict[props.hediffDef] += props.severity;
+                else returnDict[props.hediffDef] = props.severity;
+            }
+
+            foreach (HediffDef hediffDef in option.hediffRemove)
+            {
+                hediff = pawn.health.hediffSet.GetFirstHediffOfDef(hediffDef);
+                if (hediff != null)
+                {
+                    if (returnDict.ContainsKey(hediffDef)) returnDict[hediffDef] -= hediff.Severity;
+                    else returnDict[hediffDef] = -hediff.Severity;
+                    pawn.health.RemoveHediff(hediff);
+                }
+            }
+
+            classLedger.hediffModsTotal.DiffDictSum<HediffDef, float>(returnDict);
         }
 
         public virtual HediffStage RefreshCurStage() => new HediffStage();

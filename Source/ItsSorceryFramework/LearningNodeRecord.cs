@@ -360,6 +360,23 @@ namespace ItsSorceryFramework
             }
         }
 
+        public void CompletionAbilities(LearningTreeNodeDef node, ref ProgressDiffClassLedger classLedger)
+        {
+            Pawn_AbilityTracker abilityTracker = this.pawn.abilities;
+
+            foreach (AbilityDef abilityDef in node.abilityGain)
+            {
+                abilityTracker.GainAbility(abilityDef);
+            }
+
+            foreach (AbilityDef abilityDef in node.abilityRemove)
+            {
+                abilityTracker.RemoveAbility(abilityDef);
+            }
+
+            schema.progressTracker.progressDiffLog.LogAbilities(node, ref classLedger);
+        }
+
         public void CompletionHediffs(LearningTreeNodeDef node)
         {
             Hediff hediff;
@@ -383,9 +400,52 @@ namespace ItsSorceryFramework
             }
         }
 
+        public void CompletionHediffs(LearningTreeNodeDef node, ref ProgressDiffClassLedger classLedger)
+        {
+            Dictionary<HediffDef, float> returnDict = new Dictionary<HediffDef, float>() { };
+
+            Hediff hediff;
+            foreach (NodeHediffProps props in node.hediffAdd)
+            {
+                hediff = HediffMaker.MakeHediff(props.hediffDef, pawn, null);
+                hediff.Severity = props.severity;
+
+                if (returnDict.ContainsKey(props.hediffDef)) returnDict[props.hediffDef] += props.severity;
+                else returnDict[props.hediffDef] = props.severity;
+
+                pawn.health.AddHediff(hediff, null, null, null);
+            }
+
+            foreach (NodeHediffProps props in node.hediffAdjust)
+            {
+                HealthUtility.AdjustSeverity(pawn, props.hediffDef, props.severity);
+                if (returnDict.ContainsKey(props.hediffDef)) returnDict[props.hediffDef] += props.severity;
+                else returnDict[props.hediffDef] = props.severity;
+            }
+
+            foreach (HediffDef hediffDef in node.hediffRemove)
+            {
+                hediff = pawn.health.hediffSet.GetFirstHediffOfDef(hediffDef);
+                if (hediff != null)
+                {
+                    if (returnDict.ContainsKey(hediffDef)) returnDict[hediffDef] -= hediff.Severity;
+                    else returnDict[hediffDef] = -hediff.Severity;
+                    pawn.health.RemoveHediff(hediff);
+                }
+            }
+
+            classLedger.hediffModsTotal.DiffDictSum<HediffDef, float>(returnDict);
+        }
+
         public void CompletionModifiers(LearningTreeNodeDef node)
         {
             schema.progressTracker.AdjustModifiers(node.statOffsets, node.statFactors, node.capMods); // update list of statMods and capMods
+            schema.progressTracker.Hediff.cachedCurStage = schema.progressTracker.RefreshCurStage(); // rebuild hediffstage with adjusted stats & set hediff curstage to it
+        }
+
+        public void CompletionModifiers(LearningTreeNodeDef node, ref ProgressDiffClassLedger classLedger)
+        {
+            schema.progressTracker.AdjustModifiers(ref classLedger, node.statOffsets, node.statFactors, node.capMods); // update list of statMods and capMods
             schema.progressTracker.Hediff.cachedCurStage = schema.progressTracker.RefreshCurStage(); // rebuild hediffstage with adjusted stats & set hediff curstage to it
         }
 
