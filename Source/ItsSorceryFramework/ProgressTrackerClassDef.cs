@@ -7,78 +7,66 @@ using Verse;
 
 namespace ItsSorceryFramework
 {
-    public class ProgressTrackerDef : Def
+    public class ProgressTrackerClassDef : Def
     {
-        public Type progressTrackerClass = typeof(ProgressTracker);
+        /*public Type progressTrackerClass = typeof(ProgressTracker);
 
         public string bgPath;
 
-        private Texture2D trackerBG;
+        private Texture2D trackerBG;*/
 
-        public HediffDef progressHediff;
+        //public HediffDef progressHediff;
 
-        //public IntRange levelRange = new IntRange(Int32.MinValue.ChangeType<int>(), Int32.MaxValue.ChangeType<int>());
+        //public IntRange levelRange = new IntRange(1, 10);
 
-        public float baseEXP = 100f;
+        public IntRange levelRange = new IntRange(Int32.MinValue.ChangeType<int>(), Int32.MaxValue.ChangeType<int>());
 
-        public float scaling = 1.1f;
+        public List<ProgressTrackerClassDef> prereqClasses = new List<ProgressTrackerClassDef>();
 
-        //public float maxEXP = 1000f;
+        public List<ProgressTrackerClassDef> exclusiveClasses = new List<ProgressTrackerClassDef>();
 
-        public List<ProgressTrackerClassDef> classes = new List<ProgressTrackerClassDef>();
+        /*public float baseEXP = 100f;
 
-        public ProgressTrackerClassDef baseClass; 
+        public float scaling = 1.1f;*/
 
-        /*public List<ProgressLevelModifier> levelFactors = new List<ProgressLevelModifier>();
+        public List<ProgressLevelModifier> levelFactors = new List<ProgressLevelModifier>();
 
         public List<ProgressLevelModifier> levelSpecifics = new List<ProgressLevelModifier>();
 
         public List<ProgressEXPTagDef> expTags = new List<ProgressEXPTagDef>();
 
-        public List<ProgressLevelLabel> levelLabels = new List<ProgressLevelLabel>();*/
+        public List<ProgressLevelLabel> levelLabels = new List<ProgressLevelLabel>();
 
-        [MustTranslate]
+        /*[MustTranslate]
         public string progressLevelUpKey = "ISF_LevelUp";
 
         [MustTranslate]
         public string progressLevelUpDescKey = "ISF_LevelUpMessage";
 
         [MustTranslate]
-        public string skillPointLabelKey = "ISF_SkillPointLabel";
+        public string skillPointLabelKey = "ISF_SkillPointLabel";*/
 
-        //private HashSet<ProgressEXPWorker> cachedEXPWorkers = new HashSet<ProgressEXPWorker>();
+        private HashSet<ProgressEXPWorker> cachedEXPWorkers = new HashSet<ProgressEXPWorker>();
 
-        /*public float maxLevel 
-        {
-            get 
-            {
-                return progressHediff?.maxSeverity ?? 0f;
-            }
-        }*/
-
-        public override void ResolveReferences()
+        /*public override void ResolveReferences()
         {
             base.ResolveReferences();
 
             bool error = false;
 
-            int hediffCheckCount =  SorcerySchemaUtility.AllProgressTrackerDefs.Where(x => x.progressHediff == progressHediff).Count();
+            *//*int hediffCheckCount =  SorcerySchemaUtility.AllProgressTrackerDefs.Where(x => x.progressHediff == progressHediff).Count();
 
             if (hediffCheckCount > 1)
             {
                 error = true;
                 Log.Warning($"It's Sorcery! Error: {defName} should not have the same hediff as other ProgressTrackerDefs.");
-            }
-            if (classes.Contains(baseClass))
-            {
-                error = true;
-                Log.Warning($"It's Sorcery! Error: {defName}'s base class {baseClass} should not be contained in the class list.");
-            }
+            }*//*
+            
 
-            if (error) Log.Error("The ProgressTrackerDef " + defName + " has errors.");
-        }
+            if (error) Log.Error("The ProgressTrackerClassDef " + defName + " has errors.");
+        }*/
 
-        /*public IEnumerable<StatDrawEntry> SpecialDisplayMods(ProgressLevelModifier levelMod)
+        public IEnumerable<StatDrawEntry> SpecialDisplayMods(ProgressLevelModifier levelMod)
         {
             if (levelMod == null) yield break;
 
@@ -164,9 +152,9 @@ namespace ItsSorceryFramework
                 }
                 return cachedEXPWorkers;
             }
-        }*/
+        }
 
-        public Texture2D BGIcon
+        /*public Texture2D BGIcon
         {
             get
             {
@@ -183,17 +171,16 @@ namespace ItsSorceryFramework
                 }
                 return trackerBG;
             }
-        }
+        }*/
     }
 
-    /*public class ProgressLevelLabel
+    public class ProgressLevelLabel
     {
         public int level = 1;
 
         public string label = "level";
-    }*/
+    }
 
-    
 
 
 

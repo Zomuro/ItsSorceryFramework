@@ -125,10 +125,10 @@ namespace ItsSorceryFramework
             classLedger.capModsTotal = ProgressDiffLogUtility.ListToDiffDict(capMods);*/
         }
 
-        public virtual void LogHediffs(ProgressLevelModifier modifier, ref ProgressDiffClassLedger classLedger)
+        /*public virtual void LogHediffs(ProgressLevelModifier modifier, ref ProgressDiffClassLedger classLedger)
         {
             // integrated into the progress tracker itself
-        }
+        }*/
 
 
         public virtual void LogAbilities(ProgressLevelModifier modifier, ref ProgressDiffClassLedger classLedger)

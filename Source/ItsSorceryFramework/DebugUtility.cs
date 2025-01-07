@@ -119,7 +119,8 @@ namespace ItsSorceryFramework
                     int priorLevel = schema.progressTracker.CurrLevel;
                     schema.progressTracker.ForceLevelUp(1, true);
                     Log.Message($"[It's Sorcery!] Prior level: {priorLevel}; Current level: {schema.progressTracker.CurrLevel}; " +
-                        $"Level range: {schema.progressTracker.def.levelRange.TrueMin}-{schema.progressTracker.def.levelRange.TrueMax}");
+                        $"Level range: {schema.progressTracker.currClassDef.levelRange.TrueMin}-{schema.progressTracker.currClassDef.levelRange.TrueMax}");
+                    //{schema.progressTracker.def.levelRange.TrueMin}-{schema.progressTracker.def.levelRange.TrueMax}
                 }));
             }
 
@@ -153,7 +154,7 @@ namespace ItsSorceryFramework
                         }
                     }
 
-                    Log.Message($"[It's Sorcery!] {schema.def.label} Diff Log Ledgers:{returnStr}");
+                    Log.Message($"[It's Sorcery!] {pawn.Name.ToStringShort} {schema.def.label} Diff Log Ledgers:{returnStr}");
                 }));
             }
 
@@ -178,7 +179,7 @@ namespace ItsSorceryFramework
                 options.Add(new DebugMenuOption(schema.def.label, DebugMenuOptionMode.Tool, delegate ()
                 {
                     string returnStr = schema.progressTracker.progressDiffLog.TotalDiff().ToString();
-                    Log.Message($"[It's Sorcery!] {schema.def.label} Total Diff:\n{returnStr}");
+                    Log.Message($"[It's Sorcery!] {pawn.Name.ToStringShort} {schema.def.label} Total Diff:\n{returnStr}");
                 }));
             }
 

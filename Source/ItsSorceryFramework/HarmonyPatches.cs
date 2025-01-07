@@ -147,8 +147,10 @@ namespace ItsSorceryFramework
 
             foreach (var schema in comp.schemaTracker.sorcerySchemas)
             {
-                if (schema.def.progressTrackerDef.Workers.EnumerableNullOrEmpty()) continue;
-                foreach (var worker in schema.def.progressTrackerDef.Workers.Where(x => x.GetType() == progressWorkerClass))
+                // schema.def.progressTrackerDef.Workers
+                HashSet<ProgressEXPWorker> workers = schema.progressTracker.currClassDef.Workers;
+                if (workers.EnumerableNullOrEmpty()) continue;
+                foreach (var worker in workers.Where(x => x.GetType() == progressWorkerClass))
                 {
                     if (!worker.def.damageDefs.NullOrEmpty() && !worker.def.damageDefs.Contains(dinfo.Def)) continue;
                     worker.TryExecute(schema.progressTracker, dinfo.Amount);
@@ -213,8 +215,10 @@ namespace ItsSorceryFramework
 
             foreach (var schema in comp.schemaTracker.sorcerySchemas)
             {
-                if (schema.def.progressTrackerDef.Workers.EnumerableNullOrEmpty()) continue;
-                foreach (var worker in schema.def.progressTrackerDef.Workers.Where(x => x.GetType() == typeof(ProgressEXPWorker_OnSkillEXP)))
+                // schema.def.progressTrackerDef.Workers
+                HashSet<ProgressEXPWorker> workers = schema.progressTracker.currClassDef.Workers;
+                if (workers.EnumerableNullOrEmpty()) continue;
+                foreach (var worker in workers.Where(x => x.GetType() == typeof(ProgressEXPWorker_OnSkillEXP)))
                 {
                     if (!worker.def.skillDefs.NullOrEmpty() && !worker.def.skillDefs.Contains(__instance.def)) continue;
                     worker.TryExecute(schema.progressTracker, __0);
@@ -235,8 +239,10 @@ namespace ItsSorceryFramework
 
                 foreach (var schema in comp.schemaTracker.sorcerySchemas)
                 {
-                    if (schema.def.progressTrackerDef.Workers.EnumerableNullOrEmpty()) continue;
-                    foreach (var worker in schema.def.progressTrackerDef.Workers.Where(x => x.GetType() == typeof(ProgressEXPWorker_OnKill)))
+                    // schema.def.progressTrackerDef.Workers
+                    HashSet<ProgressEXPWorker> workers = schema.progressTracker.currClassDef.Workers;
+                    if (workers.EnumerableNullOrEmpty()) continue;
+                    foreach (var worker in workers.Where(x => x.GetType() == typeof(ProgressEXPWorker_OnKill)))
                     {
                         if (!worker.def.damageDefs.NullOrEmpty() && !worker.def.damageDefs.Contains(__0.Value.Def)) continue;
                         worker.TryExecute(schema.progressTracker);
@@ -265,9 +271,10 @@ namespace ItsSorceryFramework
             String text;
             foreach (SorcerySchema schema in schemas)
             {
-                if (schema.progressTracker.def.Workers.EnumerableNullOrEmpty()) continue;
+                // schema.progressTracker.def.Workers
+                if (schema.progressTracker.currClassDef.Workers.EnumerableNullOrEmpty()) continue;
 
-                ProgressEXPWorker_UseItem itemWorker = schema.progressTracker.def.Workers.FirstOrDefault(x => x.GetType() == typeof(ProgressEXPWorker_UseItem)) as ProgressEXPWorker_UseItem;
+                ProgressEXPWorker_UseItem itemWorker = schema.progressTracker.currClassDef.Workers.FirstOrDefault(x => x.GetType() == typeof(ProgressEXPWorker_UseItem)) as ProgressEXPWorker_UseItem;
                 if (itemWorker == null || itemWorker.def.expItems.NullOrEmpty()) continue;
                 foreach(var item in itemWorker.def.expItems)
                 {

@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	<!-- ProgressTrackerClassDef base -->
+	<ItsSorceryFramework.ProgressTrackerClassDef Abstract = "True" Name = "ProgressTrackerClassBase">
+		<levelRange/>
+		<levelFactors/>
+		<levelSpecifics/>
+		<levelLabels/>
+		<expTags/>
+	</ItsSorceryFramework.ProgressTrackerClassDef>	
+	
+</Defs>

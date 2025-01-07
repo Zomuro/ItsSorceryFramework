@@ -39,6 +39,8 @@ namespace ItsSorceryFramework
 
         public ProgressTracker_Level(Pawn pawn, ProgressTrackerDef def, SorcerySchema schema) : base(pawn, def, schema) { }
 
+        public ProgressTracker_Level(Pawn pawn, ProgressTrackerDef def, SorcerySchema schema, ProgressTrackerClassDef classDef) : base(pawn, def, schema, classDef) { }
+
         public override void Initialize()
         {
             base.Initialize();
@@ -85,9 +87,10 @@ namespace ItsSorceryFramework
         public override void ProgressTrackerTick()
         {
             if(Find.TickManager.TicksGame % 60 == 0)
-            {               
-                if (def.Workers.EnumerableNullOrEmpty()) return;
-                foreach (var worker in def.Workers.Where(x => x.GetType() == typeof(ProgressEXPWorker_Passive) || 
+            {
+                // def.Workers
+                if (currClassDef.Workers.EnumerableNullOrEmpty()) return;
+                foreach (var worker in currClassDef.Workers.Where(x => x.GetType() == typeof(ProgressEXPWorker_Passive) || 
                     x.GetType() == typeof(ProgressEXPWorker_DuringJob)))
                 {
                     worker.TryExecute(this);
@@ -146,7 +149,7 @@ namespace ItsSorceryFramework
             ProgressDiffClassLedger progressDiffClassLedger = new ProgressDiffClassLedger();
 
             // for factors of the level
-            ProgressLevelModifier factor = def.getLevelFactor(sev);
+            ProgressLevelModifier factor = currClassDef.GetLevelFactor(sev);  // def.GetLevelFactor(sev);
             if (factor != null)
             {
                 // debug statement about levelmodifier's options
@@ -162,7 +165,7 @@ namespace ItsSorceryFramework
             }
 
             // for that specific level
-            ProgressLevelModifier special = def.getLevelSpecific(sev);
+            ProgressLevelModifier special = currClassDef.GetLevelSpecific(sev);  // def.GetLevelSpecific(sev);
             if (special != null)
             {
                 // debug statement about levelmodifier's options
@@ -397,13 +400,13 @@ namespace ItsSorceryFramework
 
             if (projLevel > Hediff.def.maxSeverity) return rect.yMin - yMin;
             Text.Font = GameFont.Small;
-            for (int i = (int)projLevel; i < (int)projLevel + ItsSorceryUtility.settings.ProgressViewProspectsNum; i++)
+            for (int i = (int)projLevel; i < Math.Min((int)projLevel + ItsSorceryUtility.settings.ProgressViewProspectsNum, currClassDef.levelRange.TrueMax); i++)
             {
                 if (i > Hediff.def.maxSeverity) break;
 
-                ProgressLevelModifier factor = def.getLevelFactor(i);
+                ProgressLevelModifier factor = currClassDef.GetLevelFactor(i); // def.GetLevelFactor(i);
                 tipString = TipStringExtra(factor);
-                ProgressLevelModifier special = def.getLevelSpecific(i);
+                ProgressLevelModifier special = currClassDef.GetLevelSpecific(i); // def.GetLevelSpecific(i);
                 tipString2 = TipStringExtra(special);
 
                 if (tipString.NullOrEmpty() && !OptionsCheck(factor) && !HyperlinkCheck(factor)  &&

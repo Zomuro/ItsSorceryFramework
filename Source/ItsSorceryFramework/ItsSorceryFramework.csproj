@@ -69,6 +69,7 @@
     <Compile Include="ProgressDiffLog.cs" />
     <Compile Include="ProgressDiffClassLedger.cs" />
     <Compile Include="ProgressDiffLedger.cs" />
+    <Compile Include="ProgressTrackerClassDef.cs" />
     <Compile Include="ProgressTrackerUtility.cs" />
     <Compile Include="Dialog_QuickEnergy.cs" />
     <Compile Include="GizmoEntry_QuickEnergy.cs" />

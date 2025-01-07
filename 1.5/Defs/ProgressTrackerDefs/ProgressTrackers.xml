@@ -4,11 +4,11 @@
 	<ItsSorceryFramework.ProgressTrackerDef Abstract = "True" Name = "ProgressTrackerBase">
 		<progressTrackerClass>ItsSorceryFramework.ProgressTracker_Level</progressTrackerClass>
 		<progressHediff/>
-		<levelRange>1~10</levelRange>
-		<levelFactors/>
-		<levelSpecifics/>
-		<levelLabels/>
-		<expTags/>
+		<!-- <levelRange>1~10</levelRange> -->
+		<!-- <levelFactors/> -->
+		<!-- <levelSpecifics/> -->
+		<!-- <levelLabels/> -->
+		<!-- <expTags/> -->
 	</ItsSorceryFramework.ProgressTrackerDef>
 	
 	<ItsSorceryFramework.ProgressTrackerDef Abstract = "True" ParentName = "ProgressTrackerBase" Name = "ProgressTrackerLevelBase">

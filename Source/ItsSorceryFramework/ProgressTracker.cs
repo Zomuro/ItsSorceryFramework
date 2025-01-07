@@ -27,21 +27,9 @@ namespace ItsSorceryFramework
 
         public string currClass = "";
 
+        public ProgressTrackerClassDef currClassDef;
+
         public ProgressDiffLog progressDiffLog = new ProgressDiffLog();
-
-        /*public List<ProgressDiffLedger> progressLedgers = new List<ProgressDiffLedger>();
-
-        public Dictionary<StatDef, float> detStatOffsetsTotal = new Dictionary<StatDef, float>();
-
-        public Dictionary<StatDef, float> detStatFactorsTotal = new Dictionary<StatDef, float>();
-
-        public Dictionary<PawnCapacityDef, float> detCapModsTotal = new Dictionary<PawnCapacityDef, float>();
-
-        public Dictionary<StatDef, float> nondetStatOffsetsTotal = new Dictionary<StatDef, float>();
-
-        public Dictionary<StatDef, float> nondetStatFactorsTotal = new Dictionary<StatDef, float>();
-
-        public Dictionary<PawnCapacityDef, float> nondetCapModsTotal = new Dictionary<PawnCapacityDef, float>();*/
 
         public float exp = 0f;
 
@@ -72,6 +60,16 @@ namespace ItsSorceryFramework
             this.pawn = pawn;
             this.def = def;
             this.schema = schema;
+            this.currClassDef = def.baseClass;
+            Initialize();
+        }
+
+        public ProgressTracker(Pawn pawn, ProgressTrackerDef def, SorcerySchema schema, ProgressTrackerClassDef classDef)
+        {
+            this.pawn = pawn;
+            this.def = def;
+            this.schema = schema;
+            this.currClassDef = classDef;
             Initialize();
         }
 
@@ -98,6 +96,7 @@ namespace ItsSorceryFramework
             Scribe_Collections.Look(ref capModsTotal, "capModsTotal", LookMode.Def, LookMode.Value);
 
             Scribe_Values.Look(ref currClass, "currClass", "");
+            Scribe_Defs.Look(ref currClassDef, "currClassDef");
             Scribe_Deep.Look(ref progressDiffLog, "progressDiffLog");
         }
 
@@ -543,17 +542,17 @@ namespace ItsSorceryFramework
                 "This pawn has leveled up.", LetterDefOf.NeutralEvent);
         }
 
-        public bool Maxed => (CurrLevel) >= def.levelRange.TrueMax; // hediff.def.maxSeverity;
+        public bool Maxed => (CurrLevel) >= currClassDef.levelRange.TrueMax; // def.levelRange.TrueMax; // hediff.def.maxSeverity;
 
         public int CurrLevel
         {
             get
             {
-                 return Mathf.Clamp(level, def.levelRange.TrueMin, def.levelRange.TrueMax); //(int)hediff.Severity;
+                 return Mathf.Clamp(level, currClassDef.levelRange.TrueMin, currClassDef.levelRange.TrueMax);  // Mathf.Clamp(level, def.levelRange.TrueMin, def.levelRange.TrueMax); //(int)hediff.Severity;
             }
             set
             {
-                level = Mathf.Clamp(value, def.levelRange.TrueMin, def.levelRange.TrueMax);
+                level = Mathf.Clamp(value, currClassDef.levelRange.TrueMin, currClassDef.levelRange.TrueMax); // Mathf.Clamp(value, def.levelRange.TrueMin, def.levelRange.TrueMax);
             }
         }
 
@@ -569,6 +568,7 @@ namespace ItsSorceryFramework
                 if(cachedCurLevel != CurrLevel || cachedLevelLabel.NullOrEmpty())
                 {
                     cachedLevelLabel = GetProgressLevelLabel(CurrLevel);
+                    cachedCurLevel = CurrLevel;
                 }
 
                 return cachedLevelLabel;
@@ -582,7 +582,7 @@ namespace ItsSorceryFramework
             {
                 if(cachedLevelLabels == null)
                 {
-                    cachedLevelLabels = def.levelLabels?.OrderByDescending(x => x.level).ToList();
+                    cachedLevelLabels = currClassDef.levelLabels?.OrderByDescending(x => x.level).ToList(); //def.levelLabels?.OrderByDescending(x => x.level).ToList();
                 }
                 return cachedLevelLabels;
             }
@@ -591,9 +591,9 @@ namespace ItsSorceryFramework
         // grab the level label at a specific level
         public string GetProgressLevelLabel(int level)
         {
-            if(def.levelLabels.NullOrEmpty()) return null;
+            if(currClassDef.levelLabels.NullOrEmpty()) return null; //def.levelLabels.NullOrEmpty()
 
-            foreach(var levelLabel in LevelLabelsDesc)
+            foreach (var levelLabel in LevelLabelsDesc)
             {
                 if (levelLabel.level <= level) return levelLabel.label;
             }
@@ -678,7 +678,7 @@ namespace ItsSorceryFramework
 
         public virtual string TipStringExtra(ProgressLevelModifier mods)
         {
-            IEnumerable<StatDrawEntry> entries = def.specialDisplayMods(mods);
+            IEnumerable<StatDrawEntry> entries = currClassDef.SpecialDisplayMods(mods);  //def.SpecialDisplayMods(mods);
             if (entries.EnumerableNullOrEmpty()) return "";
             StringBuilder stringBuilder = new StringBuilder();
             foreach (StatDrawEntry statDrawEntry in entries)
@@ -721,8 +721,10 @@ namespace ItsSorceryFramework
             //Text.Font = GameFont.Small;
             rect.x += 22f;
 
-            if (schema.progressTracker.def.Workers.EnumerableNullOrEmpty()) return rect.yMin - yMin;
-            foreach (ProgressEXPWorker worker in schema.progressTracker.def.Workers)
+            HashSet<ProgressEXPWorker> workers = schema.progressTracker.currClassDef.Workers;
+            // schema.progressTracker.def.Workers
+            if (workers.EnumerableNullOrEmpty()) return rect.yMin - yMin;
+            foreach (ProgressEXPWorker worker in workers)
             {
                 rect.yMin += worker.DrawWorker(rect);
             }
