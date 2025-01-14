@@ -193,7 +193,7 @@ namespace ItsSorceryFramework
                         $"\nHediff ProgressTracker cap mods: {Hediff.Schema.progressTracker.capModsTotal.ToStringSafeEnumerable()}");
             }
 
-            progressDiffLedger.classLedgers[currClass] = progressDiffClassLedger;
+            progressDiffLedger.classDiffLedgers[currClassDef] = progressDiffClassLedger;
             progressDiffLog.AddLedger(progressDiffLedger);
             Hediff.cachedCurStage = RefreshCurStage();
         }
@@ -221,7 +221,7 @@ namespace ItsSorceryFramework
 
             // debug info
             if (Prefs.DevMode && ItsSorceryUtility.settings.ShowItsSorceryDebug)
-                Log.Message($"[It's Sorcery!] {schema.def.label} Diff Log Total:\n{progressDiffLog.TotalDiff()}");
+                Log.Message($"[It's Sorcery!] {schema.def.label} Diff Log Total:\n{progressDiffLog.TotalDiff(null)}");
 
             // not player faction? don't show level ups!
             // silent msg? don't bother running the rest of the method then!

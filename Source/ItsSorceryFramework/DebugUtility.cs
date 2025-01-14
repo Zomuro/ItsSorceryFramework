@@ -148,7 +148,7 @@ namespace ItsSorceryFramework
                     foreach(var ledger in schema.progressTracker.progressDiffLog.progressDiffLedgers)
                     {
                         returnStr += $"\nIndex {ledger.index}:";
-                        foreach (var c in ledger.classLedgers)
+                        foreach (var c in ledger.classDiffLedgers)
                         {
                             returnStr += $"\nClass ({c.Key})\nLevel ({ledger.level})\n{c.Value}\n";
                         }
@@ -178,7 +178,7 @@ namespace ItsSorceryFramework
             {
                 options.Add(new DebugMenuOption(schema.def.label, DebugMenuOptionMode.Tool, delegate ()
                 {
-                    string returnStr = schema.progressTracker.progressDiffLog.TotalDiff().ToString();
+                    string returnStr = schema.progressTracker.progressDiffLog.TotalDiff(null).ToString();
                     Log.Message($"[It's Sorcery!] {pawn.Name.ToStringShort} {schema.def.label} Total Diff:\n{returnStr}");
                 }));
             }

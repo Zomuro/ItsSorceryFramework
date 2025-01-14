@@ -41,7 +41,7 @@ namespace ItsSorceryFramework
             List<DebugMenuOption> options;
             if (select < 0 || select > modifier.options.Count) options = progressTracker.LevelOptions(modifier).ToList();
             else options = progressTracker.LevelOptions(modifier).OrderBy(x => rand.Next()).Take(select).ToList();
-            windows.Add(new Dialog_ProgressLevelOptions(options, progressTracker, progressTracker.CurrLevel, progressTracker.currClass));
+            windows.Add(new Dialog_ProgressLevelOptions(options, progressTracker, progressTracker.CurrLevel, progressTracker.currClassDef));
         }
 
         public static void AdjustModifiers(ref ProgressTracker progressTracker, ProgressLevelModifier modulo)

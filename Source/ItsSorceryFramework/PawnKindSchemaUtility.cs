@@ -96,7 +96,7 @@ namespace ItsSorceryFramework
                     schema.learningNodeRecord.CompletionModifiers(nodeReq.nodeDef, ref progressDiffClassLedger); // adjust stat modifiers
 
                     // add record to diff log
-                    progressDiffLedger.classLedgers[""] = progressDiffClassLedger;
+                    progressDiffLedger.classDiffLedgers[ISF_DefOf.ISF_Generic_Class] = progressDiffClassLedger;
                     diffLog.AddLedger(progressDiffLedger);
                 }
                 else

@@ -25,7 +25,7 @@ namespace ItsSorceryFramework
 
         public Dictionary<PawnCapacityDef, float> capModsTotal = new Dictionary<PawnCapacityDef, float>();
 
-        public string currClass = "";
+        //public string currClass = "";
 
         public ProgressTrackerClassDef currClassDef;
 
@@ -78,7 +78,7 @@ namespace ItsSorceryFramework
             //progressLedgers.Append(new ProgressDiffLedger());
             progressDiffLog = new ProgressDiffLog(this);
             if (Prefs.DevMode && ItsSorceryUtility.settings.ShowItsSorceryDebug)
-                Log.Message($"[It's Sorcery!] {this.schema.def.label} Diff Log Initalized: {progressDiffLog.TotalDiff()}");
+                Log.Message($"[It's Sorcery!] {this.schema.def.label} Diff Log Initalized: {progressDiffLog.TotalDiff(null)}");
         }
 
         public virtual void ExposeData()
@@ -95,7 +95,7 @@ namespace ItsSorceryFramework
             Scribe_Collections.Look(ref statFactorsTotal, "statFactorsTotal", LookMode.Def, LookMode.Value);
             Scribe_Collections.Look(ref capModsTotal, "capModsTotal", LookMode.Def, LookMode.Value);
 
-            Scribe_Values.Look(ref currClass, "currClass", "");
+            //Scribe_Values.Look(ref currClass, "currClass", "");
             Scribe_Defs.Look(ref currClassDef, "currClassDef");
             Scribe_Deep.Look(ref progressDiffLog, "progressDiffLog");
         }
@@ -170,7 +170,7 @@ namespace ItsSorceryFramework
             List<DebugMenuOption> options;
             if (select < 0 || select > modifier.options.Count) options = LevelOptions(modifier).ToList();
             else options = LevelOptions(modifier).OrderBy(x => rand.Next()).Take(select).ToList();
-            windows.Add(new Dialog_ProgressLevelOptions(options, this, CurrLevel, currClass));
+            windows.Add(new Dialog_ProgressLevelOptions(options, this, CurrLevel, currClassDef));
         }
 
         public virtual void ApplyOptions(ProgressLevelModifier modifier, ref List<Window> windows, ref ProgressDiffClassLedger classLedger)
@@ -201,7 +201,7 @@ namespace ItsSorceryFramework
             List<DebugMenuOption> options;
             if (select < 0 || select > modifier.options.Count) options = LevelOptions(modifier).ToList();
             else options = LevelOptions(modifier).OrderBy(x => rand.Next()).Take(select).ToList();
-            windows.Add(new Dialog_ProgressLevelOptions(options, this, CurrLevel, currClass));
+            windows.Add(new Dialog_ProgressLevelOptions(options, this, CurrLevel, currClassDef));
         }
 
         public virtual IEnumerable<DebugMenuOption> LevelOptions(ProgressLevelModifier modifier)

@@ -12,31 +12,41 @@ namespace ItsSorceryFramework
     {
         public List<ProgressDiffLedger> progressDiffLedgers = new List<ProgressDiffLedger>();
 
-        public string progressClass = "";
+        //public string progressClass = "";
+
+       // public ProgressTrackerClassDef currClassDef;
 
         public ProgressDiffLog()
         {
             progressDiffLedgers = new List<ProgressDiffLedger>();
-            progressClass = "";
-            /*new ProgressDiffLedger(0, progressTracker.CurrLevel, progressTracker.currClass, 
-                new Dictionary<string, ProgressDiffClassLedger>() {
-                    { "", new ProgressDiffClassLedger("")}
-                });*/
+            //progressClass = "";
+        }
+
+        public ProgressDiffLog(ProgressTrackerClassDef initClassDef)
+        {
+            progressDiffLedgers = new List<ProgressDiffLedger>();
+            //currClassDef = initClassDef;
+            //progressClass = "";
         }
 
         public ProgressDiffLog(string progressClass)
         {
             progressDiffLedgers = new List<ProgressDiffLedger>();
-            this.progressClass = progressClass;
+            //this.progressClass = progressClass;
         }
 
         public ProgressDiffLog(ProgressTracker progressTracker)
         {
             progressDiffLedgers = new List<ProgressDiffLedger>();
-            progressClass = progressTracker.currClass;
-            progressDiffLedgers.Add(new ProgressDiffLedger(0, progressTracker.CurrLevel, "",
+            //progressClass = progressTracker.currClass;
+            /*progressDiffLedgers.Add(new ProgressDiffLedger(0, progressTracker.CurrLevel, "",
                 new Dictionary<string, ProgressDiffClassLedger>() {
                     { "", new ProgressDiffClassLedger()}
+                }));*/
+
+            progressDiffLedgers.Add(new ProgressDiffLedger(0, progressTracker.CurrLevel, ISF_DefOf.ISF_Generic_Class,
+                new Dictionary<ProgressTrackerClassDef, ProgressDiffClassLedger>() {
+                    { ISF_DefOf.ISF_Generic_Class, new ProgressDiffClassLedger()}
                 }));
         }
 
@@ -45,11 +55,11 @@ namespace ItsSorceryFramework
             Scribe_Collections.Look(ref progressDiffLedgers, "progressLedgers", LookMode.Deep);
         }
 
-        public string CurrClass
+        /*public string CurrClass
         {
             get { return progressClass; }
             set { progressClass = value; }
-        }
+        }*/
 
         public virtual void AddNewLedger(ProgressTracker progressTracker, Dictionary<StatDef, float> statOffsetsTotal, Dictionary<StatDef, float> statFactorsTotal,
             Dictionary<PawnCapacityDef, float> capModsTotal, Dictionary<HediffDef, float> hediffModsTotal, Dictionary<AbilityDef, int> abilityTotal)
@@ -57,17 +67,25 @@ namespace ItsSorceryFramework
             ProgressDiffClassLedger newClassLedger = new ProgressDiffClassLedger(statOffsetsTotal, 
                 statFactorsTotal, capModsTotal, hediffModsTotal, abilityTotal);
 
-            ProgressDiffLedger newLedger = new ProgressDiffLedger(GetNextLedgerID, progressTracker.CurrLevel, progressTracker.currClass, 
+            /*ProgressDiffLedger newLedger = new ProgressDiffLedger(GetNextLedgerID, progressTracker.CurrLevel, progressTracker.currClass, 
                 new Dictionary<string, ProgressDiffClassLedger>() {
-                    { progressTracker.currClass, newClassLedger}});
+                    { progressTracker.currClass, newClassLedger}});*/
+
+            ProgressDiffLedger newLedger = new ProgressDiffLedger(GetNextLedgerID, progressTracker.CurrLevel, progressTracker.currClassDef,
+                new Dictionary<ProgressTrackerClassDef, ProgressDiffClassLedger>() {
+                    { progressTracker.currClassDef, new ProgressDiffClassLedger()}
+                });
 
             progressDiffLedgers.Add(newLedger);
         }
 
         public virtual ProgressDiffLedger PrepNewLedger(ProgressTracker progressTracker)
         {
-            ProgressDiffLedger newLedger = new ProgressDiffLedger(GetNextLedgerID, progressTracker.CurrLevel, progressTracker.currClass,
-                new Dictionary<string, ProgressDiffClassLedger>() {});
+            /*ProgressDiffLedger newLedger = new ProgressDiffLedger(GetNextLedgerID, progressTracker.CurrLevel, progressTracker.currClass,
+                new Dictionary<string, ProgressDiffClassLedger>() {});*/
+
+            ProgressDiffLedger newLedger = new ProgressDiffLedger(GetNextLedgerID, progressTracker.CurrLevel, progressTracker.currClassDef,
+                new Dictionary<ProgressTrackerClassDef, ProgressDiffClassLedger>() { });
 
             return newLedger;
         }
@@ -79,8 +97,10 @@ namespace ItsSorceryFramework
             ProgressDiffLedger lastLedger = progressDiffLedgers.LastOrDefault();
             if (lastLedger is null)
             {
-                return new ProgressDiffLedger(0, progressTracker.CurrLevel, progressTracker.currClass, new Dictionary<string, ProgressDiffClassLedger>() {
-                    { "", new ProgressDiffClassLedger()}});
+                /*return new ProgressDiffLedger(0, progressTracker.CurrLevel, progressTracker.currClass, new Dictionary<string, ProgressDiffClassLedger>() {
+                    { "", new ProgressDiffClassLedger()}});*/
+                return new ProgressDiffLedger(0, progressTracker.CurrLevel, ISF_DefOf.ISF_Generic_Class, new Dictionary<ProgressTrackerClassDef, ProgressDiffClassLedger>() {
+                    { ISF_DefOf.ISF_Generic_Class, new ProgressDiffClassLedger()}});
             }
             return lastLedger;
         }
@@ -90,14 +110,9 @@ namespace ItsSorceryFramework
         // Logs modifiers from the ProgressLevelModifier
         public virtual void LogModifiers(ProgressLevelModifier modulo, ref ProgressDiffClassLedger classLedger)
         {
-            //ProgressDiffClassLedger classLedger = new ProgressDiffClassLedger();
             classLedger.statOffsetsTotal.DiffDictSum<StatDef, float>(ProgressDiffLogUtility.ListToDiffDict(modulo.statOffsets));
             classLedger.statFactorsTotal.DiffDictSum<StatDef, float>(ProgressDiffLogUtility.ListToDiffDict(modulo.statFactorOffsets));
             classLedger.capModsTotal.DiffDictSum<PawnCapacityDef, float>(ProgressDiffLogUtility.ListToDiffDict(modulo.capMods));
-
-            /*classLedger.statOffsetsTotal = ProgressDiffLogUtility.ListToDiffDict(modulo.statOffsets);
-            classLedger.statFactorsTotal = ProgressDiffLogUtility.ListToDiffDict(modulo.statFactorOffsets);
-            classLedger.capModsTotal = ProgressDiffLogUtility.ListToDiffDict(modulo.capMods);*/
         }
 
         // Logs modifiers from the ProgressLevelOption
@@ -106,11 +121,6 @@ namespace ItsSorceryFramework
             classLedger.statOffsetsTotal.DiffDictSum<StatDef, float>(ProgressDiffLogUtility.ListToDiffDict(option.statOffsets));
             classLedger.statFactorsTotal.DiffDictSum<StatDef, float>(ProgressDiffLogUtility.ListToDiffDict(option.statFactorOffsets));
             classLedger.capModsTotal.DiffDictSum<PawnCapacityDef, float>(ProgressDiffLogUtility.ListToDiffDict(option.capMods));
-
-            //ProgressDiffClassLedger classLedger = new ProgressDiffClassLedger();
-            /*classLedger.statOffsetsTotal = ProgressDiffLogUtility.ListToDiffDict(option.statOffsets);
-            classLedger.statFactorsTotal = ProgressDiffLogUtility.ListToDiffDict(option.statFactorOffsets);
-            classLedger.capModsTotal = ProgressDiffLogUtility.ListToDiffDict(option.capMods);*/
         }
 
         public virtual void LogModifiers(ref ProgressDiffClassLedger classLedger, List<StatModifier> offsets = null, List<StatModifier> factorOffsets = null,
@@ -119,37 +129,24 @@ namespace ItsSorceryFramework
             classLedger.statOffsetsTotal.DiffDictSum<StatDef, float>(ProgressDiffLogUtility.ListToDiffDict(offsets));
             classLedger.statFactorsTotal.DiffDictSum<StatDef, float>(ProgressDiffLogUtility.ListToDiffDict(factorOffsets));
             classLedger.capModsTotal.DiffDictSum<PawnCapacityDef, float>(ProgressDiffLogUtility.ListToDiffDict(capMods));
-
-            /*classLedger.statOffsetsTotal = ProgressDiffLogUtility.ListToDiffDict(offsets);
-            classLedger.statFactorsTotal = ProgressDiffLogUtility.ListToDiffDict(factorOffsets);
-            classLedger.capModsTotal = ProgressDiffLogUtility.ListToDiffDict(capMods);*/
         }
-
-        /*public virtual void LogHediffs(ProgressLevelModifier modifier, ref ProgressDiffClassLedger classLedger)
-        {
-            // integrated into the progress tracker itself
-        }*/
-
 
         public virtual void LogAbilities(ProgressLevelModifier modifier, ref ProgressDiffClassLedger classLedger)
         {
             classLedger.abilityTotal.DiffDictSum<AbilityDef, int>(ProgressDiffLogUtility.ListToDiffDict(modifier.abilityGain, modifier.abilityRemove));
-            //classLedger.abilityTotal = ProgressDiffLogUtility.ListToDiffDict(modifier.abilityGain, modifier.abilityRemove);
         }
 
         public virtual void LogAbilities(ProgressLevelOption option, ref ProgressDiffClassLedger classLedger)
         {
             classLedger.abilityTotal.DiffDictSum<AbilityDef, int>(ProgressDiffLogUtility.ListToDiffDict(option.abilityGain, option.abilityRemove));
-            //classLedger.abilityTotal = ProgressDiffLogUtility.ListToDiffDict(option.abilityGain, option.abilityRemove);
         }
 
         public virtual void LogAbilities(LearningTreeNodeDef node, ref ProgressDiffClassLedger classLedger)
         {
             classLedger.abilityTotal.DiffDictSum<AbilityDef, int>(ProgressDiffLogUtility.ListToDiffDict(node.abilityGain, node.abilityRemove));
-            //classLedger.abilityTotal = ProgressDiffLogUtility.ListToDiffDict(option.abilityGain, option.abilityRemove);
         }
 
-        public ProgressDiffClassLedger TotalDiff(string progressClass = "")
+        /*public ProgressDiffClassLedger TotalDiff(string progressClass = "")
         {
             ProgressDiffClassLedger totalLedger = new ProgressDiffClassLedger();
 
@@ -187,22 +184,57 @@ namespace ItsSorceryFramework
             }
 
             return totalLedger;
+        }*/
+
+        public ProgressDiffClassLedger TotalDiff(ProgressTrackerClassDef progressDiffClass)
+        {
+            ProgressDiffClassLedger totalLedger = new ProgressDiffClassLedger();
+
+            // for each diff ledger
+            foreach (var l in progressDiffLedgers)
+            {
+                // if the progressledger somehow has no assiociated class ledger, ignore it in the calc
+                if (l.classDiffLedgers.NullOrEmpty()) continue;
+
+                // in the case we specify the generic case (or null), we want everything
+                if (progressDiffClass is null || progressDiffClass == ISF_DefOf.ISF_Generic_Class)
+                {
+                    // for each diff ledger, add class diff ledgers to the summing dicts
+                    foreach (var cl in l.classDiffLedgers.Values)
+                    {
+                        totalLedger.statOffsetsTotal.DiffDictSum<StatDef, float>(cl.statOffsetsTotal);
+                        totalLedger.statFactorsTotal.DiffDictSum<StatDef, float>(cl.statFactorsTotal);
+                        totalLedger.capModsTotal.DiffDictSum<PawnCapacityDef, float>(cl.capModsTotal);
+                        totalLedger.hediffModsTotal.DiffDictSum<HediffDef, float>(cl.hediffModsTotal);
+                        totalLedger.abilityTotal.DiffDictSum<AbilityDef, int>(cl.abilityTotal);
+                    }
+                    continue;
+                }
+
+                // otherwise, only get diffs for a specific class - the general/base class ("") is not included
+                if (l.classDiffLedgers.ContainsKey(progressDiffClass))
+                {
+                    totalLedger.statOffsetsTotal.DiffDictSum<StatDef, float>(l.classDiffLedgers[progressDiffClass].statOffsetsTotal);
+                    totalLedger.statFactorsTotal.DiffDictSum<StatDef, float>(l.classDiffLedgers[progressDiffClass].statFactorsTotal);
+                    totalLedger.capModsTotal.DiffDictSum<PawnCapacityDef, float>(l.classDiffLedgers[progressDiffClass].capModsTotal);
+                    totalLedger.hediffModsTotal.DiffDictSum<HediffDef, float>(l.classDiffLedgers[progressDiffClass].hediffModsTotal);
+                    totalLedger.abilityTotal.DiffDictSum<AbilityDef, int>(l.classDiffLedgers[progressDiffClass].abilityTotal);
+                    continue;
+                }
+            }
+
+            return totalLedger;
         }
 
         public void ApplyTotalDiff(ref ProgressTracker progressTracker)
         {
             // get the sum of all entries in the diff log
-            ProgressDiffClassLedger totalDiff = TotalDiff();
+            ProgressDiffClassLedger totalDiff = TotalDiff(null);
 
             // see ProgressDiffLogUtility for extension methods
-            // stat offset assignment
-            progressTracker.statOffsetsTotal = totalDiff.statOffsetsTotal.DiffDictClean<StatDef, float>();
-
-            // stat factor assignment
-            progressTracker.statFactorsTotal = totalDiff.statFactorsTotal.DiffDictClean<StatDef, float>();
-
-            // cap mod offset assignment
-            progressTracker.capModsTotal = totalDiff.capModsTotal.DiffDictClean<PawnCapacityDef, float>();
+            progressTracker.statOffsetsTotal = totalDiff.statOffsetsTotal.DiffDictClean<StatDef, float>(); // stat offset assignment
+            progressTracker.statFactorsTotal = totalDiff.statFactorsTotal.DiffDictClean<StatDef, float>(); // stat factor assignment           
+            progressTracker.capModsTotal = totalDiff.capModsTotal.DiffDictClean<PawnCapacityDef, float>(); // cap mod offset assignment
 
             // hediff portion
             foreach (var hediffPair in totalDiff.hediffModsTotal)

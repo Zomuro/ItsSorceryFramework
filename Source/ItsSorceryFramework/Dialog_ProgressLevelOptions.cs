@@ -23,13 +23,13 @@ namespace ItsSorceryFramework
 
 		public int setLevel = -1;
 
-		public string setClass = "";
+		public ProgressTrackerClassDef setClassDef;
 
 		public override Vector2 InitialSize => new Vector2(800, 600);
 
 		public override bool IsDebug => false;
 
-		public Dialog_ProgressLevelOptions(IEnumerable<DebugMenuOption> options, ProgressTracker progressTracker, int level, string currClass) : base(options)
+		public Dialog_ProgressLevelOptions(IEnumerable<DebugMenuOption> options, ProgressTracker progressTracker, int level, ProgressTrackerClassDef currClassDef) : base(options)
 		{
 			tracker = progressTracker;
 			closeOnClickedOutside = false;
@@ -38,7 +38,7 @@ namespace ItsSorceryFramework
 			doCloseX = Prefs.DevMode; // true if in dev mode; false otherwise
 			onlyOneOfTypeAllowed = false;
 			setLevel = level;
-			setClass = currClass;
+			setClassDef = currClassDef;
 		}
 
 		protected override int HighlightedIndex
@@ -141,7 +141,7 @@ namespace ItsSorceryFramework
 					tracker.AdjustHediffs(selectedOption, ref progressDiffClassLedger);
 					tracker.points += selectedOption.pointGain;
 
-					progressDiffLedger.classLedgers[setClass] = progressDiffClassLedger;
+					progressDiffLedger.classDiffLedgers[setClassDef] = progressDiffClassLedger;
 					tracker.progressDiffLog.AddLedger(progressDiffLedger);
 					tracker.Hediff.cachedCurStage = tracker.RefreshCurStage();
 

@@ -151,7 +151,7 @@ namespace ItsSorceryFramework
                         LearningRecord.CompletionAbilities(selectedNode, ref progressDiffClassLedger);
                         LearningRecord.CompletionHediffs(selectedNode, ref progressDiffClassLedger);
                         LearningRecord.CompletionModifiers(selectedNode, ref progressDiffClassLedger);
-                        progressDiffLedger.classLedgers[schema.progressTracker.currClass] = progressDiffClassLedger;
+                        progressDiffLedger.classDiffLedgers[schema.progressTracker.currClassDef] = progressDiffClassLedger;
                         diffLog.AddLedger(progressDiffLedger);
 
                         LearningRecord.CompletionLearningUnlock(selectedNode);
@@ -212,7 +212,7 @@ namespace ItsSorceryFramework
                         LearningRecord.CompletionAbilities(selectedNode, ref progressDiffClassLedger);
                         LearningRecord.CompletionHediffs(selectedNode, ref progressDiffClassLedger);
                         LearningRecord.CompletionModifiers(selectedNode, ref progressDiffClassLedger);
-                        progressDiffLedger.classLedgers[""] = progressDiffClassLedger;
+                        progressDiffLedger.classDiffLedgers[ISF_DefOf.ISF_Generic_Class] = progressDiffClassLedger;
                         diffLog.AddLedger(progressDiffLedger);
 
                         LearningRecord.CompletionLearningUnlock(selectedNode);
