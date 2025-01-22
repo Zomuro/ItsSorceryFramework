@@ -56,6 +56,16 @@ namespace ItsSorceryFramework
             }
         }*/
 
+        public List<ProgressTrackerClassDef> AllClasses
+        {
+            get
+            {
+                List<ProgressTrackerClassDef> classList = classes;
+                classList.Add(baseClass);
+                return classList.Distinct().ToList();
+            }
+        }
+
         public override void ResolveReferences()
         {
             base.ResolveReferences();
@@ -69,102 +79,19 @@ namespace ItsSorceryFramework
                 error = true;
                 Log.Warning($"It's Sorcery! Error: {defName} should not have the same hediff as other ProgressTrackerDefs.");
             }
-            if (classes.Contains(baseClass))
+            if (baseClass is null)
+            {
+                error = true;
+                Log.Warning($"It's Sorcery! Error: {defName} should have a base class specified.");
+            }
+            /*if (classes.Contains(baseClass))
             {
                 error = true;
                 Log.Warning($"It's Sorcery! Error: {defName}'s base class {baseClass} should not be contained in the class list.");
-            }
+            }*/
 
             if (error) Log.Error("The ProgressTrackerDef " + defName + " has errors.");
         }
-
-        /*public IEnumerable<StatDrawEntry> SpecialDisplayMods(ProgressLevelModifier levelMod)
-        {
-            if (levelMod == null) yield break;
-
-            if (!levelMod.capMods.NullOrEmpty())
-            {
-                foreach (PawnCapacityModifier capMod in levelMod.capMods)
-                {
-                    if (capMod.offset != 0f)
-                    {
-                        yield return new StatDrawEntry(StatCategoryDefOf.CapacityEffects,
-                            capMod.capacity.GetLabelFor().CapitalizeFirst(),
-                            (capMod.offset * 100f).ToString("+#;-#") + "%",
-                            capMod.capacity.description, 4060, null, null, false);
-                    }
-                }
-            }
-
-            if (!levelMod.statOffsets.NullOrEmpty())
-            {
-                foreach (StatModifier statMod in levelMod.statOffsets)
-                {
-                    yield return new StatDrawEntry(StatCategoryDefOf.CapacityEffects,
-                        statMod.stat.LabelCap, statMod.stat.Worker.ValueToString(statMod.value, false, ToStringNumberSense.Offset),
-                        statMod.stat.description, 4070, null, null, false);
-                }
-            }
-
-            if (!levelMod.statFactorOffsets.NullOrEmpty())
-            {
-                foreach (StatModifier statMod in levelMod.statFactorOffsets)
-                {
-                    yield return new StatDrawEntry(StatCategoryDefOf.CapacityEffects,
-                        statMod.stat.LabelCap, statMod.stat.Worker.ValueToString(statMod.value+1, false, ToStringNumberSense.Factor),
-                        statMod.stat.description, 4070, null, null, false);
-                }
-            }
-
-            yield break;
-        }
-
-        public ProgressLevelModifier GetLevelFactor(float severity) 
-		{
-            if (levelFactors.NullOrEmpty()) return null;
-
-            foreach (ProgressLevelModifier factor in levelFactors.OrderByDescending(x => x.level))
-            {
-                // if the level devided by the modulo leaves a remainder of 0
-                if (severity % factor.level == 0)
-                {
-                    return factor;
-                }
-            }
-            return null;
-		}
-
-        public ProgressLevelModifier GetLevelSpecific(float severity)
-        {
-            if (levelSpecifics.NullOrEmpty()) return null;
-
-            foreach (ProgressLevelModifier factor in levelSpecifics.OrderByDescending(x => x.level))
-            {
-                // if the level devided by the modulo leaves a remainder of 0
-                if (severity == factor.level)
-                {
-                    return factor;
-                }
-            }
-            return null;
-        }
-
-        public HashSet<ProgressEXPWorker> Workers
-        {
-            get
-            {
-                if (cachedEXPWorkers.EnumerableNullOrEmpty())
-                {
-                    foreach(ProgressEXPTagDef tag in expTags)
-                    {
-                        ProgressEXPWorker EXPWorker = (ProgressEXPWorker)Activator.CreateInstance(tag.workerClass);
-                        EXPWorker.def = tag;
-                        cachedEXPWorkers.Add(EXPWorker);
-                    }
-                }
-                return cachedEXPWorkers;
-            }
-        }*/
 
         public Texture2D BGIcon
         {

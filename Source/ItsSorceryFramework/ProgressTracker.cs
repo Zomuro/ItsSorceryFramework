@@ -25,8 +25,6 @@ namespace ItsSorceryFramework
 
         public Dictionary<PawnCapacityDef, float> capModsTotal = new Dictionary<PawnCapacityDef, float>();
 
-        //public string currClass = "";
-
         public ProgressTrackerClassDef currClassDef;
 
         public ProgressDiffLog progressDiffLog = new ProgressDiffLog();
@@ -69,13 +67,12 @@ namespace ItsSorceryFramework
             this.pawn = pawn;
             this.def = def;
             this.schema = schema;
-            this.currClassDef = classDef;
+            this.currClassDef = classDef is null? def.baseClass : classDef;
             Initialize();
         }
 
         public virtual void Initialize() 
         {
-            //progressLedgers.Append(new ProgressDiffLedger());
             progressDiffLog = new ProgressDiffLog(this);
             if (Prefs.DevMode && ItsSorceryUtility.settings.ShowItsSorceryDebug)
                 Log.Message($"[It's Sorcery!] {this.schema.def.label} Diff Log Initalized: {progressDiffLog.TotalDiff(null)}");
@@ -95,7 +92,6 @@ namespace ItsSorceryFramework
             Scribe_Collections.Look(ref statFactorsTotal, "statFactorsTotal", LookMode.Def, LookMode.Value);
             Scribe_Collections.Look(ref capModsTotal, "capModsTotal", LookMode.Def, LookMode.Value);
 
-            //Scribe_Values.Look(ref currClass, "currClass", "");
             Scribe_Defs.Look(ref currClassDef, "currClassDef");
             Scribe_Deep.Look(ref progressDiffLog, "progressDiffLog");
         }

@@ -161,7 +161,7 @@ namespace ItsSorceryFramework
             Find.WindowStack.Add(new Dialog_DebugOptionListLister(options, null));
         }
 
-        [DebugAction("It's Sorcery!", "Get ProgressDiffLog TotalDiff", false, false, false, false, 0, false,
+        [DebugAction("It's Sorcery!", "Get Overall ProgressDiffLog TotalDiff", false, false, false, false, 0, false,
             actionType = DebugActionType.ToolMapForPawns, allowedGameStates = AllowedGameStates.PlayingOnMap, displayPriority = 999)]
         public static void PrintProgressDiffLogTotalDiff(Pawn pawn)
         {
@@ -186,15 +186,14 @@ namespace ItsSorceryFramework
             Find.WindowStack.Add(new Dialog_DebugOptionListLister(options, null));
         }
 
-        // Used to test new recovery method for hediffs
-        /*[DebugAction("It's Sorcery!", "Force ProgressTracker Reset", false, false, false, false, 0, false,
+        [DebugAction("It's Sorcery!", "Get Class ProgressDiffLog TotalDiff", false, false, false, false, 0, false,
             actionType = DebugActionType.ToolMapForPawns, allowedGameStates = AllowedGameStates.PlayingOnMap, displayPriority = 999)]
-        public static void ForceProgressTrackerReset(Pawn pawn)
+        public static void PrintProgressClassDiffLogTotalDiff(Pawn pawn)
         {
             Comp_ItsSorcery comp = pawn.GetComp<Comp_ItsSorcery>();
             if (comp?.schemaTracker?.sorcerySchemas is null)
             {
-                Messages.Message($"{pawn.Name.ToStringShort} has no It's Sorcery! comp.", MessageTypeDefOf.RejectInput);
+                Messages.Message($"[It's Sorcery!] {pawn.Name.ToStringShort} has no It's Sorcery! comp.", MessageTypeDefOf.RejectInput);
                 return;
             }
 
@@ -204,14 +203,28 @@ namespace ItsSorceryFramework
             {
                 options.Add(new DebugMenuOption(schema.def.label, DebugMenuOptionMode.Tool, delegate ()
                 {
-                    //pawn.health.RemoveHediff(schema.progressTracker.ProgressHediff);
-                    schema.progressTracker.Hediff = null;
-                    Log.Message($"Hediff Removed: {schema.progressTracker.Hediff.def.label}");
+                    // get class defs
+                    List<ProgressTrackerClassDef> classDefs = schema.progressTracker.def.classes;
+                    classDefs.Add(schema.progressTracker.def.baseClass);
+                    HashSet<ProgressTrackerClassDef> classDefsSet = new HashSet<ProgressTrackerClassDef>(classDefs);
+
+                    // select which class to see the total diff of
+                    List<DebugMenuOption> classOptions = new List<DebugMenuOption>();
+                    foreach (ProgressTrackerClassDef classDef in classDefsSet)
+                    {
+                        classOptions.Add(new DebugMenuOption(classDef.label, DebugMenuOptionMode.Tool, delegate ()
+                        {
+                            string returnStr = schema.progressTracker.progressDiffLog.TotalDiff(classDef).ToString();
+                            Log.Message($"[It's Sorcery!] {pawn.Name.ToStringShort} {schema.def.label} {classDef.label} Total Diff:\n{returnStr}");
+                        }));
+                    }
+                    Find.WindowStack.Add(new Dialog_DebugOptionListLister(classOptions, null));
+
                 }));
             }
 
             Find.WindowStack.Add(new Dialog_DebugOptionListLister(options, null));
-        }*/
+        }
 
     }
 }

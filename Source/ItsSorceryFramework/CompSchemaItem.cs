@@ -20,8 +20,16 @@ namespace ItsSorceryFramework
 
 		protected override string FloatMenuOptionLabel(Pawn pawn)
 		{
-			if (SchemaProps.schemaDef == null) return "Need to add a sorcery schema def.";
-			return string.Format(base.Props.useLabel, SchemaProps.schemaDef.label);
+			if (SchemaProps.schemaDef == null) 
+				return "Need to add a sorcery schema def.";
+
+			if (SchemaProps.progressTrackerClassDef != null && 
+				!SchemaProps.schemaDef.progressTrackerDef.AllClasses.Contains(SchemaProps.progressTrackerClassDef)) 
+				return "The specified ProgressTrackerClassDef must be in the ProgressTracker's list of classes.";
+
+			string classLabel = SchemaProps.progressTrackerClassDef is null ? SchemaProps.schemaDef.progressTrackerDef.baseClass.label : $" ({SchemaProps.progressTrackerClassDef.label})";
+
+			return string.Format(Props.useLabel, SchemaProps.schemaDef.label) + classLabel;
 		}
 	}
 }

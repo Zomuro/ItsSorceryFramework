@@ -47,6 +47,15 @@ namespace ItsSorceryFramework
             DetermineHasLimits();
         }
 
+        public SorcerySchema(Pawn pawn, SorcerySchemaDef def, ProgressTrackerClassDef progressTrackerClassDef)
+        {
+            this.pawn = pawn;
+            this.def = def;
+            InitializeTrackers(progressTrackerClassDef); // setup energy, learning, and progress trackers
+            InitializeNodeCompletion(); // setup record of learning nodes
+            DetermineHasLimits();
+        }
+
         public string GetUniqueLoadID() => pawn.GetUniqueLoadID() + "_SorcerySchema_" + def.defName;
 
         // not the thing that makes me happy, but gotta do this
@@ -62,7 +71,7 @@ namespace ItsSorceryFramework
             }
         }
 
-        public virtual void InitializeTrackers()
+        public virtual void InitializeTrackers(ProgressTrackerClassDef progressTrackerClassDef = null)
         {
             foreach (EnergyTrackerDef etDef in def.energyTrackerDefs)
             {
@@ -79,7 +88,7 @@ namespace ItsSorceryFramework
             }
 
             progressTracker = Activator.CreateInstance(def.progressTrackerDef.progressTrackerClass,
-                new object[] { pawn, def.progressTrackerDef, this }) as ProgressTracker;
+                new object[] { pawn, def.progressTrackerDef, this, progressTrackerClassDef }) as ProgressTracker;
         }
 
         public virtual void InitializeNodeCompletion()

@@ -61,11 +61,23 @@ namespace ItsSorceryFramework
             return new SorcerySchema(pawn, def);
         }
 
+        public static SorcerySchema InitializeSorcerySchema(Pawn pawn, SorcerySchemaDef def, ProgressTrackerClassDef progressTrackerClassDef)
+        {
+            return new SorcerySchema(pawn, def, progressTrackerClassDef);
+        }
+
         public static void AddSorcerySchema(Pawn pawn, SorcerySchemaDef def)
         {
             Comp_ItsSorcery schemaComp = GetSorceryComp(pawn);
             if (schemaComp.schemaTracker.sorcerySchemas.FirstOrDefault(x => x.def == def) != null) return;
             schemaComp.schemaTracker.sorcerySchemas.Add(InitializeSorcerySchema(pawn, def));
+        }
+
+        public static void AddSorcerySchema(Pawn pawn, SorcerySchemaDef def, ProgressTrackerClassDef progressTrackerClassDef = null)
+        {
+            Comp_ItsSorcery schemaComp = GetSorceryComp(pawn);
+            if (schemaComp.schemaTracker.sorcerySchemas.FirstOrDefault(x => x.def == def) != null) return;
+            schemaComp.schemaTracker.sorcerySchemas.Add(InitializeSorcerySchema(pawn, def, progressTrackerClassDef));
         }
 
         public static void AddSorcerySchema(Pawn pawn, SorcerySchemaDef def, out SorcerySchema schema)
