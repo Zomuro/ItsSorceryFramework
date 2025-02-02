@@ -37,6 +37,8 @@ namespace ItsSorceryFramework
 
         public int level = 1; // alternatively use CurrLevel, which wrap around this field
 
+        public System.Random rand = new System.Random();
+        
         private int cachedCurLevel = 0;
 
         private string cachedLevelLabel;
@@ -45,7 +47,9 @@ namespace ItsSorceryFramework
 
         private List<SorceryDef> cachedSorceryDefs = new List<SorceryDef>();
 
-        public System.Random rand = new System.Random();
+        private Dictionary<ProgressTrackerClassDef, HashSet<ProgressTrackerClassDef>> cachedPrereqMapping;
+
+        private Dictionary<ProgressTrackerClassDef, HashSet<ProgressTrackerClassDef>> cachedExclusiveMapping;
 
         // initalizer- created via activator via SorcerySchema
         public ProgressTracker(Pawn pawn)
@@ -595,6 +599,66 @@ namespace ItsSorceryFramework
             }
             return null;
         }
+
+        public Dictionary<ProgressTrackerClassDef, HashSet<ProgressTrackerClassDef>> PrereqMapping
+        {
+            get
+            {
+                // if there's already a prereq mapping made, return it
+                if (!cachedPrereqMapping.NullOrEmpty()) return cachedPrereqMapping;
+
+                // otherwise we create it - a dictionary showing what classdefs each classdef is a prerequisite of
+                cachedPrereqMapping = new Dictionary<ProgressTrackerClassDef, HashSet<ProgressTrackerClassDef>>();
+                foreach (var classDef in def.classes)
+                {
+                    // no prereq classes = classdef at bottom of mapping
+                    if (classDef.prereqClasses.NullOrEmpty()) continue;
+
+                    // iterate through class defs
+                    foreach (var prereqClassDef in classDef.prereqClasses)
+                    {
+                        // dict doesn't have classdef key? init new classdef/hashset entry
+                        if (!cachedPrereqMapping.ContainsKey(prereqClassDef))
+                            cachedPrereqMapping[prereqClassDef] = new HashSet<ProgressTrackerClassDef>() { classDef };
+                        // otherwise add to hashset value
+                        else
+                            cachedPrereqMapping[prereqClassDef].Add(classDef);
+
+                    }
+                }
+                return cachedPrereqMapping;
+            }
+        }
+
+        /*public Dictionary<ProgressTrackerClassDef, HashSet<ProgressTrackerClassDef>> ExclusiveMapping
+        {
+            get
+            {
+                // if there's already a exclusive mapping made, return it
+                if (!cachedExclusiveMapping.NullOrEmpty()) return cachedExclusiveMapping;
+
+                // otherwise we create it - a dictionary showing what classdefs are exclusive to what
+                cachedExclusiveMapping = new Dictionary<ProgressTrackerClassDef, HashSet<ProgressTrackerClassDef>>();
+                foreach (var classDef in def.classes)
+                {
+                    // no exclusive classes => skip it
+                    if (classDef.ExclusiveClassDefs.NullOrEmpty()) continue;
+
+                    // iterate through class defs
+                    foreach (var exclusiveClassDef in classDef.ExclusiveClassDefs)
+                    {
+                        // dict doesn't have classdef key? init new classdef/hashset entry
+                        if (!cachedExclusiveMapping.ContainsKey(exclusiveClassDef))
+                            cachedExclusiveMapping[exclusiveClassDef] = new HashSet<ProgressTrackerClassDef>() { classDef };
+                        // otherwise add to hashset value
+                        else
+                            cachedExclusiveMapping[exclusiveClassDef].Add(classDef);
+
+                    }
+                }
+                return cachedExclusiveMapping;
+            }
+        }*/
 
         public virtual void DrawLeftGUI(Rect rect)
         {

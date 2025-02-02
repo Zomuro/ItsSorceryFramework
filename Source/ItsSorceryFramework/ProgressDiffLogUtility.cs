@@ -44,6 +44,20 @@ namespace ItsSorceryFramework
             return baseDict;
         }
 
+        public static Dictionary<K, float> InvertDictValues<K, V>(Dictionary<K, float> dict)
+        {
+            Dictionary<K, float> returnDict = new Dictionary<K, float>() { };
+            foreach (var i in dict) returnDict[i.Key] = -1f * i.Value;
+            return returnDict;
+        }
+
+        public static Dictionary<K, int> InvertDictValues<K, V>(Dictionary<K, int> dict)
+        {
+            Dictionary<K, int> returnDict = new Dictionary<K, int>() { };
+            foreach (var i in dict) returnDict[i.Key] = -1 * i.Value;
+            return returnDict;
+        }
+
         public static Dictionary<K, int> DiffDictSum<K, V>(Dictionary<K, int> dict)
         {
             Dictionary<K, int> returnDict = new Dictionary<K, int>() { };

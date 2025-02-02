@@ -9,25 +9,13 @@ namespace ItsSorceryFramework
 {
     public class ProgressTrackerClassDef : Def
     {
-        /*public Type progressTrackerClass = typeof(ProgressTracker);
-
-        public string bgPath;
-
-        private Texture2D trackerBG;*/
-
-        //public HediffDef progressHediff;
-
-        //public IntRange levelRange = new IntRange(1, 10);
-
         public IntRange levelRange = new IntRange(Int32.MinValue.ChangeType<int>(), Int32.MaxValue.ChangeType<int>());
 
         public List<ProgressTrackerClassDef> prereqClasses = new List<ProgressTrackerClassDef>();
 
-        public List<ProgressTrackerClassDef> exclusiveClasses = new List<ProgressTrackerClassDef>();
+        public List<ProgressAltClassMap> altClasses = new List<ProgressAltClassMap>();
 
-        /*public float baseEXP = 100f;
-
-        public float scaling = 1.1f;*/
+        //public List<ProgressTrackerClassDef> exclusiveClasses = new List<ProgressTrackerClassDef>();
 
         public List<ProgressLevelModifier> levelFactors = new List<ProgressLevelModifier>();
 
@@ -37,16 +25,11 @@ namespace ItsSorceryFramework
 
         public List<ProgressLevelLabel> levelLabels = new List<ProgressLevelLabel>();
 
-        /*[MustTranslate]
-        public string progressLevelUpKey = "ISF_LevelUp";
-
-        [MustTranslate]
-        public string progressLevelUpDescKey = "ISF_LevelUpMessage";
-
-        [MustTranslate]
-        public string skillPointLabelKey = "ISF_SkillPointLabel";*/
-
         private HashSet<ProgressEXPWorker> cachedEXPWorkers = new HashSet<ProgressEXPWorker>();
+
+        private List<ProgressTrackerClassDef> cachedAltClasses = new List<ProgressTrackerClassDef>();
+
+        private List<ProgressTrackerClassDef> cachedExclusiveClasses = new List<ProgressTrackerClassDef>();
 
         /*public override void ResolveReferences()
         {
@@ -154,26 +137,34 @@ namespace ItsSorceryFramework
             }
         }
 
-        /*public Texture2D BGIcon
+        public List<ProgressTrackerClassDef> AltClassDefs
         {
             get
             {
-                if (trackerBG == null)
-                {
-                    if (!bgPath.NullOrEmpty())
-                    {
-                        trackerBG = ContentFinder<Texture2D>.Get(bgPath, true);
-                    }
-                    else
-                    {
-                        trackerBG = BaseContent.BadTex;
-                    }
-                }
-                return trackerBG;
+                if (cachedAltClasses.EnumerableNullOrEmpty()) cachedAltClasses = altClasses.Select(x => x.classDef).ToList();
+                return cachedAltClasses;
+            }
+        }
+
+        /*public List<ProgressTrackerClassDef> ExclusiveClassDefs
+        {
+            get
+            {
+                if (cachedExclusiveClasses.EnumerableNullOrEmpty()) cachedExclusiveClasses = altClasses.Where(x => x.exclusive == false).Select(x => x.classDef).ToList();
+                return cachedExclusiveClasses;
             }
         }*/
     }
 
+    public class ProgressAltClassMap
+    {
+        public ProgressTrackerClassDef classDef;
+
+        public bool levelReset = false;
+
+        public bool benefitReset = false;
+    }
+    
     public class ProgressLevelLabel
     {
         public int level = 1;
