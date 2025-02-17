@@ -13,7 +13,7 @@ namespace ItsSorceryFramework
 
         public List<ProgressTrackerClassDef> prereqClasses = new List<ProgressTrackerClassDef>();
 
-        public List<ProgressAltClassMap> altClasses = new List<ProgressAltClassMap>();
+        public List<ProgressLinkedClassMap> linkedClasses = new List<ProgressLinkedClassMap>();
 
         //public List<ProgressTrackerClassDef> exclusiveClasses = new List<ProgressTrackerClassDef>();
 
@@ -25,11 +25,34 @@ namespace ItsSorceryFramework
 
         public List<ProgressLevelLabel> levelLabels = new List<ProgressLevelLabel>();
 
+
+        // class change validation fields
+        public LearningNodePrereqMode prereqClassMode = LearningNodePrereqMode.All;
+
+        public int prereqClassModeMin = 1;
+
+        public LearningNodePrereqMode prereqResearchMode = LearningNodePrereqMode.All;
+
+        public int prereqResearchModeMin = 1;
+
+        public int prereqLevel = 0;
+
+        public List<ProgressTrackerClassDef> prereqsClassDefs = new List<ProgressTrackerClassDef>();
+
+        public List<ResearchProjectDef> prereqsResearch = new List<ResearchProjectDef>();
+
+        public Dictionary<HediffDef, float> prereqsHediff = new Dictionary<HediffDef, float>();
+
+        public List<NodeStatReqs> prereqsStats = new List<NodeStatReqs>();
+
+        public List<NodeSkillReqs> prereqsSkills = new List<NodeSkillReqs>();
+
+        public List<LearningTrackerDef> unlocks;
+
+        // cacheing fields
         private HashSet<ProgressEXPWorker> cachedEXPWorkers = new HashSet<ProgressEXPWorker>();
 
-        private List<ProgressTrackerClassDef> cachedAltClasses = new List<ProgressTrackerClassDef>();
-
-        private List<ProgressTrackerClassDef> cachedExclusiveClasses = new List<ProgressTrackerClassDef>();
+        private List<ProgressTrackerClassDef> cachedLinkedClasses = new List<ProgressTrackerClassDef>();
 
         /*public override void ResolveReferences()
         {
@@ -82,7 +105,7 @@ namespace ItsSorceryFramework
                 foreach (StatModifier statMod in levelMod.statFactorOffsets)
                 {
                     yield return new StatDrawEntry(StatCategoryDefOf.CapacityEffects,
-                        statMod.stat.LabelCap, statMod.stat.Worker.ValueToString(statMod.value+1, false, ToStringNumberSense.Factor),
+                        statMod.stat.LabelCap, statMod.stat.Worker.ValueToString(statMod.value + 1, false, ToStringNumberSense.Factor),
                         statMod.stat.description, 4070, null, null, false);
                 }
             }
@@ -137,12 +160,12 @@ namespace ItsSorceryFramework
             }
         }
 
-        public List<ProgressTrackerClassDef> AltClassDefs
+        public List<ProgressTrackerClassDef> LinkedClassDefs
         {
             get
             {
-                if (cachedAltClasses.EnumerableNullOrEmpty()) cachedAltClasses = altClasses.Select(x => x.classDef).ToList();
-                return cachedAltClasses;
+                if (cachedLinkedClasses.EnumerableNullOrEmpty()) cachedLinkedClasses = linkedClasses.Select(x => x.classDef).ToList();
+                return cachedLinkedClasses;
             }
         }
 
@@ -156,7 +179,7 @@ namespace ItsSorceryFramework
         }*/
     }
 
-    public class ProgressAltClassMap
+    public class ProgressLinkedClassMap
     {
         public ProgressTrackerClassDef classDef;
 

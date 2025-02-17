@@ -203,8 +203,8 @@ namespace ItsSorceryFramework
             HediffStage stage = new HediffStage()
             {
                 statOffsets = CreateStatModifiers(statOffsetsTotal).ToList(),
-                statFactors = CreateStatModifiers(statFactorsTotal).ToList(), // assumes multiplier is baked in
-                //statFactors = CreateStatModifiers(statFactorsTotal, true).ToList(), // will bake in the multiplier effect for statfactors
+                //statFactors = CreateStatModifiers(statFactorsTotal).ToList(), // assumes multiplier is baked in
+                statFactors = CreateStatModifiers(statFactorsTotal, true).ToList(), // will bake in the multiplier effect for statfactors
                 capMods = CreateCapModifiers(capModsTotal).ToList()
             };
             

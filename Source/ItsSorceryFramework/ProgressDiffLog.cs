@@ -19,30 +19,16 @@ namespace ItsSorceryFramework
         public ProgressDiffLog()
         {
             progressDiffLedgers = new List<ProgressDiffLedger>();
-            //progressClass = "";
         }
 
         public ProgressDiffLog(ProgressTrackerClassDef initClassDef)
         {
             progressDiffLedgers = new List<ProgressDiffLedger>();
-            //currClassDef = initClassDef;
-            //progressClass = "";
-        }
-
-        public ProgressDiffLog(string progressClass)
-        {
-            progressDiffLedgers = new List<ProgressDiffLedger>();
-            //this.progressClass = progressClass;
         }
 
         public ProgressDiffLog(ProgressTracker progressTracker)
         {
             progressDiffLedgers = new List<ProgressDiffLedger>();
-            //progressClass = progressTracker.currClass;
-            /*progressDiffLedgers.Add(new ProgressDiffLedger(0, progressTracker.CurrLevel, "",
-                new Dictionary<string, ProgressDiffClassLedger>() {
-                    { "", new ProgressDiffClassLedger()}
-                }));*/
 
             progressDiffLedgers.Add(new ProgressDiffLedger(0, progressTracker.CurrLevel, ISF_DefOf.ISF_Generic_Class,
                 new Dictionary<ProgressTrackerClassDef, ProgressDiffClassLedger>() {
@@ -55,31 +41,285 @@ namespace ItsSorceryFramework
             Scribe_Collections.Look(ref progressDiffLedgers, "progressLedgers", LookMode.Deep);
         }
 
-        /*public virtual bool ValidateClassChange(ProgressTracker progressTracker, ProgressTrackerClassDef targetClassDef)
+        public bool PrereqClassesFufilled(ProgressTrackerClassDef targetClassDef)
         {
-            // get relevant alternative and prerequisite classes
-            List<ProgressTrackerClassDef> altClasses = targetClassDef.AltClassDefs;
-            if (targetClassDef.prereqClasses.Contains(progressTracker.currClassDef) ||
-                progressTracker.currClassDef.AltClassDefs.Contains(targetClassDef)) return false;
+            HashSet<ProgressTrackerClassDef> priorClassDefs = GetClassSet;
+            
+            switch (targetClassDef.prereqClassMode)
+            {
+                case LearningNodePrereqMode.All:
+                    // if even a single class def isn't in the history, return false
+                    foreach (var prereqClassDef in targetClassDef.prereqsClassDefs)
+                        if (!priorClassDefs.Contains(prereqClassDef)) return false;
+                    
+                    return true;
+
+                case LearningNodePrereqMode.Or:
+                    foreach (var prereqClassDef in targetClassDef.prereqsClassDefs)
+                        if (priorClassDefs.Contains(prereqClassDef)) return false;
+
+                    return false;
+
+                case LearningNodePrereqMode.Min:
+                    if (targetClassDef.prereqClassModeMin <= 0) return true;
+
+                    int count = 0;
+                    int check = Math.Min(targetClassDef.prereqClassModeMin, targetClassDef.prereqClasses.Count());
+                    foreach (var prereqClassDef in targetClassDef.prereqsClassDefs)
+                    {
+                        if (priorClassDefs.Contains(prereqClassDef)) count++;
+                        if (count >= check) return true;
+                    }
+                    return false;
+
+                default:
+                    break;
+            }
+
+            return true;
+        }
+
+        public bool PrereqResearchFufilled(ProgressTrackerClassDef targetClassDef)
+        {
+            switch (targetClassDef.prereqResearchMode)
+            {
+                case LearningNodePrereqMode.All:
+                    foreach (ResearchProjectDef prereq in targetClassDef.prereqsResearch)
+                    {
+                        if (!prereq.IsFinished) return false;
+                    }
+                    return true;
+
+                case LearningNodePrereqMode.Or:
+                    foreach (ResearchProjectDef prereq in targetClassDef.prereqsResearch)
+                    {
+                        if (prereq.IsFinished) return true;
+                    }
+                    return false;
+
+                case LearningNodePrereqMode.Min:
+                    if (targetClassDef.prereqResearchModeMin <= 0) return true;
+
+                    int count = 0;
+                    int check = Math.Min(targetClassDef.prereqResearchModeMin, targetClassDef.prereqsResearch.Count());
+                    foreach (ResearchProjectDef prereq in targetClassDef.prereqsResearch)
+                    {
+                        if (prereq.IsFinished) count++;
+                        if (count >= check) return true;
+                    }
+                    return false;
+
+                default:
+                    break;
+            }
+
+            return true;
+        }
+
+        public bool PrereqLevelFulfilled(ProgressTracker progressTracker, ProgressTrackerClassDef targetClassDef)
+        {
+            if (targetClassDef.prereqLevel <= 0 || targetClassDef.prereqLevel <= progressTracker.CurrLevel) return true;
+            return false;
+        }
+
+        public bool PrereqHediffFufilled(ProgressTracker progressTracker, ProgressTrackerClassDef targetClassDef)
+        {
+            Hediff hediff;
+            foreach (var pair in targetClassDef.prereqsHediff)
+            {
+                hediff = progressTracker.pawn.health.hediffSet.GetFirstHediffOfDef(pair.Key);
+                if (hediff == null) return false;
+                else if (hediff.Severity < pair.Value) return false;
+            }
+
+            return true;
+        }
+
+        public bool PrereqFailSkillCase(Pawn pawn, SkillDef skillDef, int level, LearningNodeStatPrereqMode mode)
+        {
+            switch (mode)
+            {
+                case LearningNodeStatPrereqMode.Equal:
+                    if (pawn.skills.GetSkill(skillDef).GetLevel() != level) return true;
+                    break;
+
+                case LearningNodeStatPrereqMode.NotEqual:
+                    if (pawn.skills.GetSkill(skillDef).GetLevel() == level) return true;
+                    break;
+
+                case LearningNodeStatPrereqMode.Greater:
+                    if (pawn.skills.GetSkill(skillDef).GetLevel() <= level) return true;
+                    break;
+
+                case LearningNodeStatPrereqMode.GreaterEqual:
+                    if (pawn.skills.GetSkill(skillDef).GetLevel() < level) return true;
+                    break;
+
+                case LearningNodeStatPrereqMode.Lesser:
+                    if (pawn.skills.GetSkill(skillDef).GetLevel() >= level) return true;
+                    break;
+
+                case LearningNodeStatPrereqMode.LesserEqual:
+                    if (pawn.skills.GetSkill(skillDef).GetLevel() > level) return true;
+                    break;
+
+                default:
+                    break;
+            }
 
             return false;
         }
-        
-        public virtual void AdjustClass(ProgressTracker progressTracker, ProgressTrackerClassDef targetClassDef)
-        {
-            // handle current class diff info
-            ProgressDiffClassLedger currClassDiff = TotalDiff(progressTracker.currClassDef); // get current class diff
 
-            // in the case that class is exclusive, invert diff to counter class effects and add new ledger
-            ProgressDiffClassLedger negateDiff = InvertDiff(currClassDiff); 
-            AddNewLedger(progressTracker, negateDiff.statOffsetsTotal, negateDiff.statFactorsTotal, negateDiff.capModsTotal, negateDiff.hediffModsTotal, negateDiff.abilityTotal);
+        public bool PrereqSkillFufilled(ProgressTracker progressTracker, ProgressTrackerClassDef targetClassDef)
+        {
+            if (targetClassDef.prereqsSkills.NullOrEmpty()) return true;
+            foreach (var skillReqsCase in targetClassDef.prereqsSkills)
+            {
+                foreach (var skillLevel in skillReqsCase.skillReqs)
+                {
+                    if (PrereqFailSkillCase(progressTracker.pawn, skillLevel.skillDef, skillLevel.ClampedLevel, skillReqsCase.mode)) return false;
+                }
+            }
+
+            return true;
+        }
+
+        public bool PrereqFailStatCase(Pawn pawn, StatModifier statMod, LearningNodeStatPrereqMode mode)
+        {
+            switch (mode)
+            {
+                case LearningNodeStatPrereqMode.Equal:
+                    if (pawn.GetStatValue(statMod.stat) != statMod.value) return true;
+                    break;
+
+                case LearningNodeStatPrereqMode.NotEqual:
+                    if (pawn.GetStatValue(statMod.stat) == statMod.value) return true;
+                    break;
+
+                case LearningNodeStatPrereqMode.Greater:
+                    if (pawn.GetStatValue(statMod.stat) <= statMod.value) return true;
+                    break;
+
+                case LearningNodeStatPrereqMode.GreaterEqual:
+                    if (pawn.GetStatValue(statMod.stat) < statMod.value) return true;
+                    break;
+
+                case LearningNodeStatPrereqMode.Lesser:
+                    if (pawn.GetStatValue(statMod.stat) >= statMod.value) return true;
+                    break;
+
+                case LearningNodeStatPrereqMode.LesserEqual:
+                    if (pawn.GetStatValue(statMod.stat) > statMod.value) return true;
+                    break;
+
+                default:
+                    break;
+            }
+
+            return false;
+        }
+
+        public bool PrereqStatFufilled(ProgressTracker progressTracker, ProgressTrackerClassDef targetClassDef)
+        {
+            if (targetClassDef.prereqsStats.NullOrEmpty()) return true;
+            foreach (var statReqsCase in targetClassDef.prereqsStats)
+            {
+                foreach (var statMod in statReqsCase.statReqs)
+                {
+                    if (PrereqFailStatCase(progressTracker.pawn, statMod, statReqsCase.mode)) return false;
+                }
+            }
+
+            return true;
+        }
+
+        public virtual bool ValidateClassChange(ProgressTracker progressTracker, ProgressTrackerClassDef targetClassDef, out string failString)
+        {
+            // failstring and fail bool
+            failString = "";
+            bool success = true;
+
+            // get relevant linked classes - if the target class def isn't in it, it's not validated
+            List<ProgressTrackerClassDef> linkedClasses = progressTracker.currClassDef.LinkedClassDefs;
+            if (!linkedClasses.Contains(targetClassDef))
+            {
+                failString = $"Target class ({targetClassDef.label}) is not linked to current class ({progressTracker.currClassDef.label}).";
+                return false;
+            }
+
+            List<string> fails = new List<string>();
+            if (!PrereqClassesFufilled(targetClassDef)) // if the pawn hasn't been through all the class defs, fail val     
+            {
+                success = false;
+                fails.Append("Missing class requirements.");
+            }
+                   
+            if (!PrereqResearchFufilled(targetClassDef)) // if all research is not fufilled, fail val
+            {
+                success = false;
+                fails.Append("Missing research requirements.");
+            }
+
+            if (!PrereqLevelFulfilled(progressTracker, targetClassDef)) // if curr level < prereq level, fail val
+            {
+                success = false;
+                fails.Append("Below level requirement.");
+            }
+
+            if (!PrereqHediffFufilled(progressTracker, targetClassDef)) // if all hediffs are not fufilled, fail val
+            {
+                success = false;
+                fails.Append("Unfulfilled hediff requirements.");
+            }
+
+            if (!PrereqSkillFufilled(progressTracker, targetClassDef)) // if all skills not fufilled
+            {
+                success = false;
+                fails.Append("Unfulfilled skill requirements.");
+            }
+
+            if (!PrereqStatFufilled(progressTracker, targetClassDef)) // if all stats not fufilled
+            {
+                success = false;
+                fails.Append("Unfulfilled stat requirements.");
+            }
+
+            // construct fail string
+            failString = fails.NullOrEmpty() ? "" : string.Join("\n", fails);
+
+            return success;
+        }
+
+        public virtual void AdjustClass(ProgressTracker progressTracker, ProgressTrackerClassDef targetClassDef, bool resetLevel = true, bool resetBenefits = false)
+        {
+            // handle benefits
+            if (resetBenefits) // if true, add a new ledger removing the benefits of the current class
+            {
+                // handle current class diff info
+                ProgressDiffClassLedger currClassDiff = TotalDiff(progressTracker.currClassDef); // get current class diff
+
+                // in the case that class is exclusive, invert diff to counter class effects and add new ledger
+                ProgressDiffClassLedger negateDiff = InvertDiff(currClassDiff);
+                AddNewLedger(progressTracker, negateDiff.statOffsetsTotal, negateDiff.statFactorsTotal, negateDiff.capModsTotal, negateDiff.hediffModsTotal, negateDiff.abilityTotal);
+
+                // finally apply the finalized total diff info.
+                ApplyTotalDiff(ref progressTracker);
+            }
 
             // change class
             progressTracker.currClassDef = targetClassDef;
 
-            // if class is exclusive, reset level to starting level of target class 
-            progressTracker.level = targetClassDef.levelRange.TrueMin;
-        }*/
+            // handle level
+            int orgLevel = progressTracker.level;
+            progressTracker.level = targetClassDef.levelRange.TrueMin; // set to min of target level
+
+            if (!resetLevel) // if we do not want to reset level, instead changing back to the original
+            { 
+                int levelDiff = orgLevel - progressTracker.level;
+                progressTracker.ForceLevelUp(levelDiff, false);
+            }
+
+        }
 
         public virtual void AddNewLedger(ProgressTracker progressTracker, Dictionary<StatDef, float> statOffsetsTotal, Dictionary<StatDef, float> statFactorsTotal,
             Dictionary<PawnCapacityDef, float> capModsTotal, Dictionary<HediffDef, float> hediffModsTotal, Dictionary<AbilityDef, int> abilityTotal)
@@ -199,6 +439,9 @@ namespace ItsSorceryFramework
             return totalLedger;
         }*/
 
+        // get all ProgressTrackerClassDef classes that have ever been in the diff log
+        public HashSet<ProgressTrackerClassDef> GetClassSet => progressDiffLedgers.Select(x => x.currClassDef).ToHashSet();
+
         public ProgressDiffClassLedger TotalDiff(ProgressTrackerClassDef progressDiffClass)
         {
             ProgressDiffClassLedger totalLedger = new ProgressDiffClassLedger();
@@ -272,6 +515,9 @@ namespace ItsSorceryFramework
 
             // ability portion
             foreach (var abilityPair in totalDiff.abilityTotal) ApplyAbilities(progressTracker.pawn, abilityPair.Key, abilityPair.Value);
+
+            // reset progresstracker hediff to apply stat/capmod modifiers
+            progressTracker.ResetHediff();
         }
 
         public void ApplyHediffSeverity(Pawn pawn, HediffDef hdDef, float newSev)

@@ -47,9 +47,9 @@ namespace ItsSorceryFramework
 
         private List<SorceryDef> cachedSorceryDefs = new List<SorceryDef>();
 
-        private Dictionary<ProgressTrackerClassDef, HashSet<ProgressTrackerClassDef>> cachedPrereqMapping;
+        private Dictionary<ProgressTrackerClassDef, HashSet<ProgressTrackerClassDef>> cachedLinkedMapping;
 
-        private Dictionary<ProgressTrackerClassDef, HashSet<ProgressTrackerClassDef>> cachedExclusiveMapping;
+        /*private Dictionary<ProgressTrackerClassDef, HashSet<ProgressTrackerClassDef>> cachedExclusiveMapping;*/
 
         // initalizer- created via activator via SorcerySchema
         public ProgressTracker(Pawn pawn)
@@ -142,7 +142,7 @@ namespace ItsSorceryFramework
 
         public virtual void NotifyLevelUp(float sev, ref List<Window> windows) { }
 
-        public virtual void ApplyOptions(ProgressLevelModifier modifier, ref List<Window> windows)
+        /*public virtual void ApplyOptions(ProgressLevelModifier modifier, ref List<Window> windows)
         {
             int select = Math.Min(modifier.optionChoices, modifier.options.Count);
 
@@ -171,7 +171,7 @@ namespace ItsSorceryFramework
             if (select < 0 || select > modifier.options.Count) options = LevelOptions(modifier).ToList();
             else options = LevelOptions(modifier).OrderBy(x => rand.Next()).Take(select).ToList();
             windows.Add(new Dialog_ProgressLevelOptions(options, this, CurrLevel, currClassDef));
-        }
+        }*/
 
         public virtual void ApplyOptions(ProgressLevelModifier modifier, ref List<Window> windows, ref ProgressDiffClassLedger classLedger)
         {
@@ -230,49 +230,45 @@ namespace ItsSorceryFramework
             }
         }
 
-        public virtual void AdjustModifiers(ProgressLevelModifier modulo)
+        /*public virtual void AdjustModifiers(ProgressLevelModifier modulo)
         {
             // adjust this to go through diff log
             AdjustTotalStatMods(statOffsetsTotal, modulo.statOffsets);
             AdjustTotalStatMods(statFactorsTotal, modulo.statFactorOffsets, true);
             AdjustTotalCapMods(capModsTotal, modulo.capMods);
-        }
+        }*/
 
         public virtual void AdjustModifiers(ProgressLevelModifier modulo, ref ProgressDiffClassLedger classLedger)
         {
             // adjust this to go through diff log
             AdjustTotalStatMods(statOffsetsTotal, modulo.statOffsets);
-            AdjustTotalStatMods(statFactorsTotal, modulo.statFactorOffsets, true);
+            AdjustTotalStatMods(statFactorsTotal, modulo.statFactorOffsets);
+            //AdjustTotalStatMods(statFactorsTotal, modulo.statFactorOffsets, true);
             AdjustTotalCapMods(capModsTotal, modulo.capMods);
 
             progressDiffLog.LogModifiers(modulo, ref classLedger);
-            /*classLedger.statOffsetsTotal = ProgressDiffLogUtility.ListToDiffDict(modulo.statOffsets);
-            classLedger.statFactorsTotal = ProgressDiffLogUtility.ListToDiffDict(modulo.statFactorOffsets);
-            classLedger.capModsTotal = ProgressDiffLogUtility.ListToDiffDict(modulo.capMods);*/
         }
 
-        public virtual void AdjustModifiers(ProgressLevelOption option)
+        /*public virtual void AdjustModifiers(ProgressLevelOption option)
         {
             // adjust this to go through diff log
             AdjustTotalStatMods(statOffsetsTotal, option.statOffsets);
             AdjustTotalStatMods(statFactorsTotal, option.statFactorOffsets, true);
             AdjustTotalCapMods(capModsTotal, option.capMods);
-        }
+        }*/
 
         public virtual void AdjustModifiers(ProgressLevelOption option, ref ProgressDiffClassLedger classLedger)
         {
             // adjust this to go through diff log
             AdjustTotalStatMods(statOffsetsTotal, option.statOffsets);
-            AdjustTotalStatMods(statFactorsTotal, option.statFactorOffsets, true);
+            AdjustTotalStatMods(statFactorsTotal, option.statFactorOffsets);
+            //AdjustTotalStatMods(statFactorsTotal, option.statFactorOffsets, true);
             AdjustTotalCapMods(capModsTotal, option.capMods);
 
             progressDiffLog.LogModifiers(option, ref classLedger);
-            /*classLedger.statOffsetsTotal = ProgressDiffLogUtility.ListToDiffDict(option.statOffsets);
-            classLedger.statFactorsTotal = ProgressDiffLogUtility.ListToDiffDict(option.statFactorOffsets);
-            classLedger.capModsTotal = ProgressDiffLogUtility.ListToDiffDict(option.capMods);*/
         }
 
-        public virtual void AdjustModifiers(List<StatModifier> offsets = null, List<StatModifier> factorOffsets = null,
+        /*public virtual void AdjustModifiers(List<StatModifier> offsets = null, List<StatModifier> factorOffsets = null,
             List<PawnCapacityModifier> capMods = null)
         {
             // adjust this to go through diff log
@@ -280,7 +276,7 @@ namespace ItsSorceryFramework
             //AdjustTotalStatMods(statFactorsTotal, factorOffsets);
             AdjustTotalStatMods(statFactorsTotal, factorOffsets, true);
             AdjustTotalCapMods(capModsTotal, capMods);
-        }
+        }*/
 
         public virtual void AdjustModifiers(ref ProgressDiffClassLedger classLedger, List<StatModifier> offsets = null, 
             List<StatModifier> factorOffsets = null, List<PawnCapacityModifier> capMods = null)
@@ -292,9 +288,6 @@ namespace ItsSorceryFramework
             AdjustTotalCapMods(capModsTotal, capMods);
 
             progressDiffLog.LogModifiers(ref classLedger, offsets, factorOffsets, capMods);
-            /*classLedger.statOffsetsTotal = ProgressDiffLogUtility.ListToDiffDict(offsets);
-            classLedger.statFactorsTotal = ProgressDiffLogUtility.ListToDiffDict(factorOffsets);
-            classLedger.capModsTotal = ProgressDiffLogUtility.ListToDiffDict(capMods);*/
         }
 
         public virtual void AdjustTotalStatMods(Dictionary<StatDef, float> stats, List<StatModifier> statMods, bool factor = false)
@@ -600,65 +593,35 @@ namespace ItsSorceryFramework
             return null;
         }
 
-        public Dictionary<ProgressTrackerClassDef, HashSet<ProgressTrackerClassDef>> PrereqMapping
+        public Dictionary<ProgressTrackerClassDef, HashSet<ProgressTrackerClassDef>> LinkedClassMapping
         {
             get
             {
                 // if there's already a prereq mapping made, return it
-                if (!cachedPrereqMapping.NullOrEmpty()) return cachedPrereqMapping;
+                if (!cachedLinkedMapping.NullOrEmpty()) return cachedLinkedMapping;
 
                 // otherwise we create it - a dictionary showing what classdefs each classdef is a prerequisite of
-                cachedPrereqMapping = new Dictionary<ProgressTrackerClassDef, HashSet<ProgressTrackerClassDef>>();
+                cachedLinkedMapping = new Dictionary<ProgressTrackerClassDef, HashSet<ProgressTrackerClassDef>>();
                 foreach (var classDef in def.classes)
                 {
                     // no prereq classes = classdef at bottom of mapping
-                    if (classDef.prereqClasses.NullOrEmpty()) continue;
+                    if (classDef.LinkedClassDefs.NullOrEmpty()) continue;
 
                     // iterate through class defs
-                    foreach (var prereqClassDef in classDef.prereqClasses)
+                    foreach (var linkedClassDef in classDef.LinkedClassDefs)
                     {
                         // dict doesn't have classdef key? init new classdef/hashset entry
-                        if (!cachedPrereqMapping.ContainsKey(prereqClassDef))
-                            cachedPrereqMapping[prereqClassDef] = new HashSet<ProgressTrackerClassDef>() { classDef };
+                        if (!cachedLinkedMapping.ContainsKey(linkedClassDef))
+                            cachedLinkedMapping[linkedClassDef] = new HashSet<ProgressTrackerClassDef>() { classDef };
                         // otherwise add to hashset value
                         else
-                            cachedPrereqMapping[prereqClassDef].Add(classDef);
+                            cachedLinkedMapping[linkedClassDef].Add(classDef);
 
                     }
                 }
-                return cachedPrereqMapping;
+                return cachedLinkedMapping;
             }
         }
-
-        /*public Dictionary<ProgressTrackerClassDef, HashSet<ProgressTrackerClassDef>> ExclusiveMapping
-        {
-            get
-            {
-                // if there's already a exclusive mapping made, return it
-                if (!cachedExclusiveMapping.NullOrEmpty()) return cachedExclusiveMapping;
-
-                // otherwise we create it - a dictionary showing what classdefs are exclusive to what
-                cachedExclusiveMapping = new Dictionary<ProgressTrackerClassDef, HashSet<ProgressTrackerClassDef>>();
-                foreach (var classDef in def.classes)
-                {
-                    // no exclusive classes => skip it
-                    if (classDef.ExclusiveClassDefs.NullOrEmpty()) continue;
-
-                    // iterate through class defs
-                    foreach (var exclusiveClassDef in classDef.ExclusiveClassDefs)
-                    {
-                        // dict doesn't have classdef key? init new classdef/hashset entry
-                        if (!cachedExclusiveMapping.ContainsKey(exclusiveClassDef))
-                            cachedExclusiveMapping[exclusiveClassDef] = new HashSet<ProgressTrackerClassDef>() { classDef };
-                        // otherwise add to hashset value
-                        else
-                            cachedExclusiveMapping[exclusiveClassDef].Add(classDef);
-
-                    }
-                }
-                return cachedExclusiveMapping;
-            }
-        }*/
 
         public virtual void DrawLeftGUI(Rect rect)
         {

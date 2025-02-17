@@ -5,18 +5,9 @@ namespace ItsSorceryFramework
 {
     public class CompSchemaItem : CompUsable
 	{
-		public override void PostExposeData()
-		{
-			base.PostExposeData();
-		}
+		public override void PostExposeData() => base.PostExposeData();
 
-		public CompProperties_SchemaItem SchemaProps
-		{
-			get
-			{
-				return (CompProperties_SchemaItem)this.props;
-			}
-		}
+		public CompProperties_SchemaItem SchemaProps => (CompProperties_SchemaItem)this.props;
 
 		protected override string FloatMenuOptionLabel(Pawn pawn)
 		{
@@ -27,7 +18,7 @@ namespace ItsSorceryFramework
 				!SchemaProps.schemaDef.progressTrackerDef.AllClasses.Contains(SchemaProps.progressTrackerClassDef)) 
 				return "The specified ProgressTrackerClassDef must be in the ProgressTracker's list of classes.";
 
-			string classLabel = SchemaProps.progressTrackerClassDef is null ? SchemaProps.schemaDef.progressTrackerDef.baseClass.label : $" ({SchemaProps.progressTrackerClassDef.label})";
+			string classLabel = SchemaProps.progressTrackerClassDef is null ? $" ({SchemaProps.schemaDef.progressTrackerDef.baseClass.label})" : $" ({SchemaProps.progressTrackerClassDef.label})";
 
 			return string.Format(Props.useLabel, SchemaProps.schemaDef.label) + classLabel;
 		}

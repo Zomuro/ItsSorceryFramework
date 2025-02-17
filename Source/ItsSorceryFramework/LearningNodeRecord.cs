@@ -151,7 +151,7 @@ namespace ItsSorceryFramework
                     if (node.prereqResearchModeMin <= 0) return true;
 
                     int count = 0;
-                    int check = Math.Min(node.prereqResearchModeMin, node.prereqs.Count());
+                    int check = Math.Min(node.prereqResearchModeMin, node.prereqsResearch.Count());
                     foreach (ResearchProjectDef prereq in node.prereqsResearch)
                     {
                         if (prereq.IsFinished) count++;
@@ -172,7 +172,7 @@ namespace ItsSorceryFramework
             if (!node.prereqs.NullOrEmpty()) prereqCount = node.prereqs.Where(x => completion[x]).Count();
 
             int prereqResearchCount = 0;
-            if (!node.prereqs.NullOrEmpty()) prereqResearchCount = node.prereqsResearch.Where(x => x.IsFinished).Count();
+            if (!node.prereqsResearch.NullOrEmpty()) prereqResearchCount = node.prereqsResearch.Where(x => x.IsFinished).Count();
 
             return new Tuple<int, int>(prereqCount, prereqResearchCount);
         }
@@ -437,11 +437,11 @@ namespace ItsSorceryFramework
             classLedger.hediffModsTotal.DiffDictSum<HediffDef, float>(returnDict);
         }
 
-        public void CompletionModifiers(LearningTreeNodeDef node)
+        /*public void CompletionModifiers(LearningTreeNodeDef node)
         {
             schema.progressTracker.AdjustModifiers(node.statOffsets, node.statFactors, node.capMods); // update list of statMods and capMods
             schema.progressTracker.Hediff.cachedCurStage = schema.progressTracker.RefreshCurStage(); // rebuild hediffstage with adjusted stats & set hediff curstage to it
-        }
+        }*/
 
         public void CompletionModifiers(LearningTreeNodeDef node, ref ProgressDiffClassLedger classLedger)
         {

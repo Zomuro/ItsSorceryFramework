@@ -151,7 +151,7 @@ namespace ItsSorceryFramework
                         LearningRecord.CompletionAbilities(selectedNode, ref progressDiffClassLedger);
                         LearningRecord.CompletionHediffs(selectedNode, ref progressDiffClassLedger);
                         LearningRecord.CompletionModifiers(selectedNode, ref progressDiffClassLedger);
-                        progressDiffLedger.classDiffLedgers[schema.progressTracker.currClassDef] = progressDiffClassLedger;
+                        progressDiffLedger.classDiffLedgers[ISF_DefOf.ISF_Generic_Class] = progressDiffClassLedger;
                         diffLog.AddLedger(progressDiffLedger);
 
                         LearningRecord.CompletionLearningUnlock(selectedNode);
@@ -296,7 +296,7 @@ namespace ItsSorceryFramework
 
             if (!node.prereqsResearch.NullOrEmpty())
             {
-                Widgets.LabelCacheHeight(ref rect, "ISF_LearningNodeResearchPrereqs".Translate() + ":" + LearningRecord.PrereqsModeNotif(node.prereqResearchMode, node.prereqResearchModeMin, prereqsDone.Item2), true, false);
+                Widgets.LabelCacheHeight(ref rect, "ISF_LearningNodeResearchPrereqs".Translate() + LearningRecord.PrereqsModeNotif(node.prereqResearchMode, node.prereqResearchModeMin, prereqsDone.Item2), true, false);
                 rect.yMin += rect.height;
                 rect.xMin += 6f;
                 foreach (ResearchProjectDef prereq in node.prereqsResearch)
