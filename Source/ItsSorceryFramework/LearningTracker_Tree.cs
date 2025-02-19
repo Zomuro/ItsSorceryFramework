@@ -17,7 +17,7 @@ namespace ItsSorceryFramework
 
         private Vector2 cachedViewSize;
 
-        private ScrollPositioner scrollPositioner = new ScrollPositioner();
+        //private ScrollPositioner scrollPositioner = new ScrollPositioner();
 
         private float leftStartAreaHeight = 68f;
 

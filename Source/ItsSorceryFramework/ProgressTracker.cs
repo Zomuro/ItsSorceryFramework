@@ -29,6 +29,8 @@ namespace ItsSorceryFramework
 
         public ProgressDiffLog progressDiffLog = new ProgressDiffLog();
 
+        public List<ProgressLinkedClassMap> classChangeOpps = new List<ProgressLinkedClassMap>();
+
         public float exp = 0f;
 
         public int usedPoints = 0;
@@ -98,6 +100,7 @@ namespace ItsSorceryFramework
 
             Scribe_Defs.Look(ref currClassDef, "currClassDef");
             Scribe_Deep.Look(ref progressDiffLog, "progressDiffLog");
+            Scribe_Collections.Look(ref classChangeOpps, "classChangeOpps", LookMode.Deep);
         }
 
 

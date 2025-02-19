@@ -12,9 +12,7 @@ namespace ItsSorceryFramework
     {
         public List<ProgressDiffLedger> progressDiffLedgers = new List<ProgressDiffLedger>();
 
-        //public string progressClass = "";
-
-       // public ProgressTrackerClassDef currClassDef;
+        //public List<ProgressLinkedClassMap>
 
         public ProgressDiffLog()
         {
@@ -64,7 +62,7 @@ namespace ItsSorceryFramework
                     if (targetClassDef.prereqClassModeMin <= 0) return true;
 
                     int count = 0;
-                    int check = Math.Min(targetClassDef.prereqClassModeMin, targetClassDef.prereqClasses.Count());
+                    int check = Math.Min(targetClassDef.prereqClassModeMin, targetClassDef.prereqsClassDefs.Count());
                     foreach (var prereqClassDef in targetClassDef.prereqsClassDefs)
                     {
                         if (priorClassDefs.Contains(prereqClassDef)) count++;
@@ -398,46 +396,6 @@ namespace ItsSorceryFramework
         {
             classLedger.abilityTotal.DiffDictSum<AbilityDef, int>(ProgressDiffLogUtility.ListToDiffDict(node.abilityGain, node.abilityRemove));
         }
-
-        /*public ProgressDiffClassLedger TotalDiff(string progressClass = "")
-        {
-            ProgressDiffClassLedger totalLedger = new ProgressDiffClassLedger();
-
-            // for each diff ledger
-            foreach (var l in progressDiffLedgers)
-            {
-                // if the progressledger somehow has no assiociated class ledger, ignore it in the calc
-                if (l.classLedgers.NullOrEmpty()) continue;
-
-                // in the case we specify the generic case, we want everything
-                if (progressClass == "")
-                {
-                    // for each diff ledger, add class diff ledgers to the summing dicts
-                    foreach (var cl in l.classLedgers.Values)
-                    {
-                        totalLedger.statOffsetsTotal.DiffDictSum<StatDef, float>(cl.statOffsetsTotal);
-                        totalLedger.statFactorsTotal.DiffDictSum<StatDef, float>(cl.statFactorsTotal);
-                        totalLedger.capModsTotal.DiffDictSum<PawnCapacityDef, float>(cl.capModsTotal);
-                        totalLedger.hediffModsTotal.DiffDictSum<HediffDef, float>(cl.hediffModsTotal);
-                        totalLedger.abilityTotal.DiffDictSum<AbilityDef, int>(cl.abilityTotal);
-                    }
-                    continue;
-                }
-
-                // otherwise, only get diffs for a specific class - the general/base class ("") is not included
-                if (l.classLedgers.ContainsKey(progressClass))
-                {
-                    totalLedger.statOffsetsTotal.DiffDictSum<StatDef, float>(l.classLedgers[progressClass].statOffsetsTotal);
-                    totalLedger.statFactorsTotal.DiffDictSum<StatDef, float>(l.classLedgers[progressClass].statFactorsTotal);
-                    totalLedger.capModsTotal.DiffDictSum<PawnCapacityDef, float>(l.classLedgers[progressClass].capModsTotal);
-                    totalLedger.hediffModsTotal.DiffDictSum<HediffDef, float>(l.classLedgers[progressClass].hediffModsTotal);
-                    totalLedger.abilityTotal.DiffDictSum<AbilityDef, int>(l.classLedgers[progressClass].abilityTotal);
-                    continue;
-                }
-            }
-
-            return totalLedger;
-        }*/
 
         // get all ProgressTrackerClassDef classes that have ever been in the diff log
         public HashSet<ProgressTrackerClassDef> GetClassSet => progressDiffLedgers.Select(x => x.currClassDef).ToHashSet();

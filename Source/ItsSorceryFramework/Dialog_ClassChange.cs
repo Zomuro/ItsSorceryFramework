@@ -11,45 +11,41 @@ namespace ItsSorceryFramework
 {
     public class Dialog_ClassChange : Window
     {
-		List<ProgressTrackerClassDef> allClassDefs;
+        public List<ProgressLinkedClassMap> classChangeOptions;
 
-		ProgressTracker progressTracker;
+        public ProgressTracker progressTracker;
 
-		ProgressTrackerClassDef currClassDef;
+        public ProgressLinkedClassMap currClassChangeOption;
+
+        public bool debugShowClassOptions = false;
 
         private Vector2 cachedViewSize;
 
-        private ScrollPositioner scrollPositioner = new ScrollPositioner();
-
-        private float leftStartAreaHeight = 68f;
-
-        private float leftViewDebugHeight;
+        private float leftScrollViewHeight;
 
         private Vector2 leftScrollPosition = Vector2.zero;
 
-        private float leftScrollViewHeight;
+        //private ScrollPositioner scrollPositioner = new ScrollPositioner();
 
-        public override Vector2 InitialSize
-		{
-			get
-			{
-				return new Vector2(600, 400);
-			}
-		}
+        private float rightStartAreaHeight = 68f;
 
-		public override bool IsDebug
-		{
-			get
-			{
-				return false;
-			}
-		}
+        private float rightViewDebugHeight;
 
-		public Dialog_ClassChange(ProgressTracker progressTracker, List<ProgressTrackerClassDef> classDefs) : base()
+        private Vector2 rightScrollPosition = Vector2.zero;
+
+        private float rightScrollViewHeight;
+
+        public override Vector2 InitialSize => new Vector2(800, 600);
+
+        public override bool IsDebug => false;
+
+        public List<ProgressLinkedClassMap> AllClassChangeOptions => !debugShowClassOptions ? classChangeOptions : progressTracker.currClassDef.linkedClasses;
+
+        public Dialog_ClassChange(ProgressTracker progressTracker, List<ProgressLinkedClassMap> classChangeOptions) : base()
 		{
 			this.progressTracker = progressTracker;
-			allClassDefs = classDefs;
-			currClassDef = allClassDefs.NullOrEmpty() ? null : allClassDefs[0];
+			this.classChangeOptions = classChangeOptions;
+            currClassChangeOption = this.classChangeOptions.NullOrEmpty() ? null : this.classChangeOptions[0];
 			closeOnClickedOutside = true;
 			forcePause = true;
 			closeOnCancel = true;
@@ -58,47 +54,97 @@ namespace ItsSorceryFramework
 
 		public override void DoWindowContents(Rect inRect)
 		{
-			Rect rect = new Rect(inRect);
+            Rect leftRect = new Rect(inRect.x, inRect.y, inRect.width / 3f, inRect.height);
+            Widgets.DrawMenuSection(leftRect);
 
-			
-		}
+            Rect rightRect = new Rect(leftRect.xMax, inRect.y, inRect.width - leftRect.width, inRect.height);
+
+            DrawLeftGUI(leftRect.ContractedBy(10f)); // draw all class change options
+            DrawRightGUI(rightRect.ContractedBy(10f)); // draw information on class change requirements and enable the class change
+        }
 
 		public virtual void DrawLeftGUI(Rect rect)
         {
-			Rect listingRect = rect.ContractedBy(5f);
+            // create outer bounds of most info
+            float coordY = 0f;
+            Rect outRect = new Rect(rect.x, rect.y, rect.width, rect.height - 30f); // - 20
 
-			Listing_Standard listing = new Listing_Standard();
-			listing.Begin(listingRect);
+            // class label
+            Text.Font = GameFont.Medium;
+            GenUI.SetLabelAlign(TextAnchor.MiddleLeft);
+            Rect labelRect = new Rect(0f, coordY, outRect.width, 50f);
+            Widgets.LabelCacheHeight(ref labelRect, "Class Opportunities", true, false);
+            coordY += labelRect.height;
+            GenUI.ResetLabelAlign();
+            Text.Font = GameFont.Small;
 
-			// for all class
-			foreach(var c in allClassDefs)
+            // create listing to list all class change options
+            /*Rect listingBaseRect = new Rect(outRect.x, coordY, outRect.width, outRect.height);
+            listingBaseRect.yMax = outRect.yMax;*/
+
+            Rect listingRectOut = new Rect(outRect.x, coordY, outRect.width, outRect.height);
+            listingRectOut.yMax = outRect.yMax;
+            listingRectOut = listingRectOut.ContractedBy(10f);
+
+            Rect listingRectView = new Rect(listingRectOut);
+            listingRectView.width -= 16f;
+            listingRectView.height = leftScrollViewHeight;
+
+            // begin scroll view of the listing
+            Widgets.BeginScrollView(listingRectOut, ref leftScrollPosition, listingRectView, true);
+
+            // FIX LISTING LOCATION - issue w/ the UI location of it relative to the rect - see why class label works
+            // create listing for showing all class change options & start listing
+            Listing_Standard listing = new Listing_Standard(listingRectOut, () => leftScrollPosition);
+            listing.ColumnWidth = listingRectView.width;
+            listing.Begin(listingRectOut);
+
+			// for all classes, create debug button for class change option
+			foreach(var c in AllClassChangeOptions)
             {
 				// creates button to select class; if class selected changes curr class info displayed
-				if(listing.ButtonDebug(c.label, currClassDef != null && c == currClassDef))
+				if(listing.ButtonDebug(c.classDef.label, currClassChangeOption != null && c == currClassChangeOption))
                 {
-					currClassDef = c;
+                    currClassChangeOption = c;
                 }
             }
+            
+            // end listing and get proper height of all the options for the scroll view
+            listing.End();
+            leftScrollViewHeight = listing.CurHeight;
+            Widgets.EndScrollView();
 
-			listing.End();
+            // finally, add a dev mode toggle to force show all class change options.
+            if (Prefs.DevMode)
+            {
+                Text.Font = GameFont.Tiny;
+                Rect debugButton = new Rect(outRect.x, outRect.yMax, outRect.width, 30f);
+                bool orgCheckboxBool = debugShowClassOptions;
+                Widgets.CheckboxLabeled(debugButton, "Debug: all class options", ref debugShowClassOptions);
+                Text.Font = GameFont.Small;
+
+                // if we toggle between debug and not - set the current class change option to null to prevent access to debug
+                if (orgCheckboxBool != debugShowClassOptions) currClassChangeOption = null;
+            }
 
         }
 
         public virtual void DrawRightGUI(Rect rect)
         {
-            float outRectHeight = rect.height - (10f + leftStartAreaHeight) - 45f;
+            float outRectHeight = rect.height - (10f + rightStartAreaHeight) - 45f;
 
             Widgets.BeginGroup(rect);
 
-            if (currClassDef is null)
+            // end this function early if there is no class option to display
+            if (currClassChangeOption is null)
             {
                 Widgets.EndGroup();
                 return;
             }
 
-            Rect outRect = new Rect(0f, 0f, rect.width, outRectHeight - leftViewDebugHeight);
-            Rect viewRect = new Rect(0f, 0f, outRect.width - 20f, leftScrollViewHeight);
-            Widgets.BeginScrollView(outRect, ref this.leftScrollPosition, viewRect, true);
+            Rect outRect = new Rect(0f, 0f, rect.width, outRectHeight - rightViewDebugHeight);
+            Rect viewRect = new Rect(0f, 0f, outRect.width - 20f, rightScrollViewHeight);
+            Widgets.BeginScrollView(outRect, ref this.rightScrollPosition, viewRect, true);
 
             float coordY = 0f;
 
@@ -106,43 +152,33 @@ namespace ItsSorceryFramework
             Text.Font = GameFont.Medium;
             GenUI.SetLabelAlign(TextAnchor.MiddleLeft);
             Rect labelRect = new Rect(0f, coordY, viewRect.width, 50f);
-            Widgets.LabelCacheHeight(ref labelRect, currClassDef.LabelCap, true, false);
+            Widgets.LabelCacheHeight(ref labelRect, currClassChangeOption.classDef.LabelCap, true, false);
             coordY += labelRect.height;
 
             // class desc
             GenUI.ResetLabelAlign();
             Text.Font = GameFont.Small;
             Rect descRect = new Rect(0f, coordY, viewRect.width, 0f);
-            Widgets.LabelCacheHeight(ref descRect, currClassDef.description, true, false);
+            Widgets.LabelCacheHeight(ref descRect, currClassChangeOption.classDef.description, true, false);
             coordY += descRect.height;
-
-            /*Rect pointRect = new Rect(0f, coordY, viewRect.width, 500f);
-            coordY += DrawPointReq(selectedNode, pointRect);*/
 
             // draw reqs
             Rect prereqRect = new Rect(0f, coordY, viewRect.width, 500f);
-            coordY += DrawClassPrereqs(prereqRect, currClassDef);
+            coordY += DrawClassPrereqs(prereqRect, currClassChangeOption.classDef);
 
-            /*Rect exclusiveRect = new Rect(0f, coordY, viewRect.width, 500f);
-            coordY += DrawExclusive(selectedNode, exclusiveRect);
-
-            Rect hyperlinkRect = new Rect(0f, coordY, viewRect.width, 500f);
-            coordY += DrawHyperlinks(hyperlinkRect, selectedNode);
-
-            Rect statModRect = new Rect(0f, coordY, viewRect.width, 500f);
-            coordY += DrawStatMods(statModRect, selectedNode);*/
-
+            // draw unlocks
             Rect unlockRect = new Rect(0f, coordY, viewRect.width, 500f);
-            coordY += DrawUnlockedLearningTrackers(unlockRect, currClassDef);
+            coordY += DrawUnlockedLearningTrackers(unlockRect, currClassChangeOption.classDef);
 
+            // draw content class is from
             Rect contentRect = new Rect(0f, coordY, viewRect.width, 500f);
-            coordY += DrawContentSource(contentRect, currClassDef);
+            coordY += DrawContentSource(contentRect, currClassChangeOption.classDef);
             coordY += 3f;
-            leftScrollViewHeight = coordY;
+            rightScrollViewHeight = coordY;
             Widgets.EndScrollView();
 
             Pawn pawn = progressTracker.pawn;
-            Rect confirmButton = new Rect(0f, outRect.yMax + 10f + this.leftViewDebugHeight, rect.width, this.leftStartAreaHeight);
+            Rect confirmButton = new Rect(0f, outRect.yMax + 10f + this.rightViewDebugHeight, rect.width, this.rightStartAreaHeight);
             string reason = "";
             if (!pawn.Faction.IsPlayer || pawn.Faction is null)
             {
@@ -152,90 +188,52 @@ namespace ItsSorceryFramework
                 Widgets.Label(confirmButton.ContractedBy(5f), reason);
                 Text.Anchor = TextAnchor.UpperLeft;
             }
-            else if (progressTracker.progressDiffLog.ValidateClassChange(progressTracker, currClassDef, out reason))
+            else if (progressTracker.progressDiffLog.ValidateClassChange(progressTracker, currClassChangeOption.classDef, out reason))
             {
                 if (Widgets.ButtonText(confirmButton, "ISF_ClassChangeConfirm".Translate()))
                 {
-                    LearningNodeRecord LearningRecord = progressTracker.schema.learningNodeRecord;
-
                     ProgressDiffLog diffLog = progressTracker.progressDiffLog;
-                    ProgressDiffLedger progressDiffLedger = diffLog.PrepNewLedger(progressTracker);
-                    ProgressDiffClassLedger progressDiffClassLedger = new ProgressDiffClassLedger();
-
-
-                    progressDiffLedger.classDiffLedgers[progressTracker.currClassDef] = progressDiffClassLedger;
-                    diffLog.AddLedger(progressDiffLedger);
-
-                    CompletionLearningUnlock(currClassDef);
+                    diffLog.AdjustClass(progressTracker, currClassChangeOption.classDef, currClassChangeOption.levelReset, currClassChangeOption.benefitReset);
+                    CompletionLearningUnlock(currClassChangeOption.classDef);
 
                     foreach (var et in progressTracker.schema.energyTrackers) et.ClearStatCache();
-                }
-            }
-
-
-
-
-            /*else if (!LearningRecord.completion[selectedNode] && LearningRecord.PrereqFufilled(selectedNode) && LearningRecord.PrereqResearchFufilled(selectedNode) &&
-                LearningRecord.PrereqStatFufilled(selectedNode) && LearningRecord.PrereqHediffFufilled(selectedNode) && LearningRecord.ExclusiveNodeFufilled(selectedNode) &&
-                LearningRecord.PrereqLevelFulfilled(selectedNode) && selectedNode.pointReq + progress.usedPoints <= progress.points)
-            {
-                if (Widgets.ButtonText(confirmButton, "ISF_SkillPointUse".Translate(selectedNode.pointReq,
-                    progress.def.skillPointLabelKey.Translate())))
-                {
-                    ProgressDiffLog diffLog = schema.progressTracker.progressDiffLog;
-                    ProgressDiffLedger progressDiffLedger = diffLog.PrepNewLedger(schema.progressTracker);
-                    ProgressDiffClassLedger progressDiffClassLedger = new ProgressDiffClassLedger();
-
-                    LearningRecord.completion[selectedNode] = true;
-                    LearningRecord.CompletionAbilities(selectedNode, ref progressDiffClassLedger);
-                    LearningRecord.CompletionHediffs(selectedNode, ref progressDiffClassLedger);
-                    LearningRecord.CompletionModifiers(selectedNode, ref progressDiffClassLedger);
-                    progressDiffLedger.classDiffLedgers[schema.progressTracker.currClassDef] = progressDiffClassLedger;
-                    diffLog.AddLedger(progressDiffLedger);
-
-                    LearningRecord.CompletionLearningUnlock(selectedNode);
-                    schema.progressTracker.usedPoints += selectedNode.pointReq;
-
-                    foreach (var et in schema.energyTrackers) et.ClearStatCache();
                 }
             }
             else
             {
                 Text.Anchor = TextAnchor.MiddleCenter;
-                if (LearningRecord.completion[selectedNode]) reason = "ISF_LearningNodeReasonCompleted".Translate();
-                else if (!LearningRecord.ExclusiveNodeFufilled(selectedNode)) reason = "ISF_LearningNodeReasonExclusive".Translate();
-                else
-                {
-                    reason = "ISF_ClassChangeLocked".Translate();
-
-                    *//*if (selectedNode.pointReq + progress.usedPoints > progress.points) reason += "\n" +
-                            "ISF_LearningNodeLockedPoints".Translate(schema.progressTracker.def.skillPointLabelKey.Translate());*//*
-
-                    if (!PrereqFufilled(selectedNode)) reason += "\n" + "ISF_LearningNodeLockedNodes".Translate();
-
-                    if (!PrereqResearchFufilled(selectedNode)) reason += "\n" + "ISF_LearningNodeLockedResearch".Translate();
-
-                    if (!PrereqLevelFulfilled(selectedNode)) reason += "\n" + "ISF_LearningNodeLockedLevel".Translate();
-
-                    if (!PrereqStatFufilled(selectedNode)) reason += "\n" + "ISF_LearningNodeLockedStat".Translate();
-
-                    if (!PrereqSkillFufilled(selectedNode)) reason += "\n" + "ISF_LearningNodeLockedSkill".Translate();
-
-                    if (!PrereqHediffFufilled(selectedNode)) reason += "\n" + "ISF_LearningNodeLockedHediff".Translate();
-                }
-
-                this.leftStartAreaHeight = Mathf.Max(Text.CalcHeight(reason, confirmButton.width - 10f) + 10f, 68f);
+                reason = "ISF_ClassChangeLocked".Translate() + "\n" + reason;
+                
+                this.rightStartAreaHeight = Mathf.Max(Text.CalcHeight(reason, confirmButton.width - 10f) + 10f, 68f);
                 Widgets.DrawHighlight(confirmButton);
                 Widgets.Label(confirmButton.ContractedBy(5f), reason);
                 Text.Anchor = TextAnchor.UpperLeft;
-            }*/
+            }
+
+            Text.Anchor = TextAnchor.UpperLeft;
+            this.rightViewDebugHeight = 0f;
+            if (Prefs.DevMode)
+            {
+                Text.Font = GameFont.Tiny;
+                Rect debugButton = new Rect(confirmButton.x, outRect.yMax, 120f, 30f);
+                if (Widgets.ButtonText(debugButton, "Debug: Finish now", true, true, true, null))
+                {
+                    ProgressDiffLog diffLog = progressTracker.progressDiffLog;
+                    diffLog.AdjustClass(progressTracker, currClassChangeOption.classDef, currClassChangeOption.levelReset, currClassChangeOption.benefitReset);
+                    CompletionLearningUnlock(currClassChangeOption.classDef);
+
+                    foreach (var et in progressTracker.schema.energyTrackers) et.ClearStatCache();
+                }
+                Text.Font = GameFont.Small;
+                this.rightViewDebugHeight = debugButton.height;
+            }
 
             Widgets.EndGroup();
         }
 
         private float DrawClassPrereqs(Rect rect, ProgressTrackerClassDef classDef)
         {
-            if (classDef.prereqClasses.NullOrEmpty() && classDef.prereqsResearch.NullOrEmpty() && classDef.prereqLevel <= 0 && classDef.prereqsStats.NullOrEmpty() &&
+            if (classDef.prereqsClassDefs.NullOrEmpty() && classDef.prereqsResearch.NullOrEmpty() && classDef.prereqLevel <= 0 && classDef.prereqsStats.NullOrEmpty() &&
                 classDef.prereqsSkills.NullOrEmpty() && classDef.prereqsHediff.NullOrEmpty()) return 0f;
             float xMin = rect.xMin;
             float yMin = rect.yMin;
@@ -244,13 +242,13 @@ namespace ItsSorceryFramework
             Tuple<int, int> prereqsDone = PrereqsDone(classDef);
             ProgressDiffLog diffLog = progressTracker.progressDiffLog;
 
-            if (!classDef.prereqClasses.NullOrEmpty()) // show completed prior classes
+            if (!classDef.prereqsClassDefs.NullOrEmpty()) // show completed prior classes
             {
                 HashSet<ProgressTrackerClassDef> classesDone = progressTracker.progressDiffLog.GetClassSet;
                 Widgets.LabelCacheHeight(ref rect, "ISF_ClassChangePrereqs".Translate() + LearningRecord.PrereqsModeNotif(classDef.prereqClassMode, classDef.prereqClassModeMin, prereqsDone.Item1), true, false);
                 rect.yMin += rect.height;
                 rect.xMin += 6f;
-                foreach (ProgressTrackerClassDef prereqClass in classDef.prereqClasses)
+                foreach (ProgressTrackerClassDef prereqClass in classDef.prereqsClassDefs)
                 {
                     SetPrereqStatusColor(classesDone.Contains(prereqClass));
                     Widgets.LabelCacheHeight(ref rect, prereqClass.LabelCap, true, false);
@@ -278,7 +276,7 @@ namespace ItsSorceryFramework
 
             if (classDef.prereqLevel > 0) // show completed level req
             {
-                SetPrereqStatusColor(diffLog.PrereqLevelFulfilled(progressTracker, classDef)); //!LearningRecord.PrereqLevelFulfilled(node)
+                SetPrereqStatusColor(diffLog.PrereqLevelFulfilled(progressTracker, classDef));
                 Widgets.LabelCacheHeight(ref rect, "ISF_ClassChangeLevelReq".Translate(classDef.prereqLevel), true, false);
                 rect.yMin += rect.height;
                 GUI.color = Color.white;

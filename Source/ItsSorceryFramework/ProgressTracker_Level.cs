@@ -281,6 +281,12 @@ namespace ItsSorceryFramework
 
             coordY += xpBar.height * 1.5f;
 
+            // CLASS CHANGE BUTTON
+            Text.Font = GameFont.Small;
+            Rect classChangeRect = new Rect(0f + viewRect.width * 2f / 5f, coordY, viewRect.width / 5, 35f);
+            if (pawn.Faction != null && pawn.Faction.IsPlayer && Widgets.ButtonText(classChangeRect, "Classes")) Find.WindowStack.Add(new Dialog_ClassChange(this, classChangeOpps));
+            coordY += classChangeRect.height * 1.5f;
+
             // DESCRIPTION //
             GenUI.ResetLabelAlign();
             

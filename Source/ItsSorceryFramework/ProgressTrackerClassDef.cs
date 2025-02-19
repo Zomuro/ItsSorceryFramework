@@ -11,11 +11,7 @@ namespace ItsSorceryFramework
     {
         public IntRange levelRange = new IntRange(Int32.MinValue.ChangeType<int>(), Int32.MaxValue.ChangeType<int>());
 
-        public List<ProgressTrackerClassDef> prereqClasses = new List<ProgressTrackerClassDef>();
-
         public List<ProgressLinkedClassMap> linkedClasses = new List<ProgressLinkedClassMap>();
-
-        //public List<ProgressTrackerClassDef> exclusiveClasses = new List<ProgressTrackerClassDef>();
 
         public List<ProgressLevelModifier> levelFactors = new List<ProgressLevelModifier>();
 
@@ -168,24 +164,25 @@ namespace ItsSorceryFramework
                 return cachedLinkedClasses;
             }
         }
-
-        /*public List<ProgressTrackerClassDef> ExclusiveClassDefs
-        {
-            get
-            {
-                if (cachedExclusiveClasses.EnumerableNullOrEmpty()) cachedExclusiveClasses = altClasses.Where(x => x.exclusive == false).Select(x => x.classDef).ToList();
-                return cachedExclusiveClasses;
-            }
-        }*/
     }
 
-    public class ProgressLinkedClassMap
+    public class ProgressLinkedClassMap : IExposable
     {
         public ProgressTrackerClassDef classDef;
 
         public bool levelReset = false;
 
         public bool benefitReset = false;
+
+        public bool removePostClassChange = true;
+
+        public virtual void ExposeData()
+        {
+            Scribe_Defs.Look(ref classDef, "classDef");
+            Scribe_Values.Look(ref levelReset, "levelReset", false);
+            Scribe_Values.Look(ref benefitReset, "classDef", false);
+            Scribe_Values.Look(ref removePostClassChange, "removePostClassChange", true);
+        }
     }
     
     public class ProgressLevelLabel
