@@ -19,17 +19,15 @@ namespace ItsSorceryFramework
 
         public bool debugShowClassOptions = false;
 
-        private Vector2 cachedViewSize;
-
         private float leftScrollViewHeight;
 
         private Vector2 leftScrollPosition = Vector2.zero;
 
         //private ScrollPositioner scrollPositioner = new ScrollPositioner();
 
-        private float rightStartAreaHeight = 68f;
+        private float rightConfirmHeight = 50f;
 
-        private float rightViewDebugHeight;
+        private float rightDebugHeight;
 
         private Vector2 rightScrollPosition = Vector2.zero;
 
@@ -39,7 +37,7 @@ namespace ItsSorceryFramework
 
         public override bool IsDebug => false;
 
-        public List<ProgressLinkedClassMap> AllClassChangeOptions => !debugShowClassOptions ? classChangeOptions : progressTracker.currClassDef.linkedClasses;
+        public List<ProgressLinkedClassMap> AllClassChangeOptions => Prefs.DevMode && debugShowClassOptions ? progressTracker.currClassDef.linkedClasses : classChangeOptions;
 
         public Dialog_ClassChange(ProgressTracker progressTracker, List<ProgressLinkedClassMap> classChangeOptions) : base()
 		{
@@ -71,18 +69,15 @@ namespace ItsSorceryFramework
 
             // class label
             Text.Font = GameFont.Medium;
-            GenUI.SetLabelAlign(TextAnchor.MiddleLeft);
-            Rect labelRect = new Rect(0f, coordY, outRect.width, 50f);
+            GenUI.SetLabelAlign(TextAnchor.UpperCenter);
+            Rect labelRect = new Rect(outRect.x, outRect.y + coordY, outRect.width, 50f);
             Widgets.LabelCacheHeight(ref labelRect, "Class Opportunities", true, false);
             coordY += labelRect.height;
             GenUI.ResetLabelAlign();
             Text.Font = GameFont.Small;
 
-            // create listing to list all class change options
-            /*Rect listingBaseRect = new Rect(outRect.x, coordY, outRect.width, outRect.height);
-            listingBaseRect.yMax = outRect.yMax;*/
-
-            Rect listingRectOut = new Rect(outRect.x, coordY, outRect.width, outRect.height);
+            // create listing outer and view rects
+            Rect listingRectOut = new Rect(outRect.x, outRect.y + coordY, outRect.width, outRect.height);
             listingRectOut.yMax = outRect.yMax;
             listingRectOut = listingRectOut.ContractedBy(10f);
 
@@ -93,17 +88,16 @@ namespace ItsSorceryFramework
             // begin scroll view of the listing
             Widgets.BeginScrollView(listingRectOut, ref leftScrollPosition, listingRectView, true);
 
-            // FIX LISTING LOCATION - issue w/ the UI location of it relative to the rect - see why class label works
             // create listing for showing all class change options & start listing
-            Listing_Standard listing = new Listing_Standard(listingRectOut, () => leftScrollPosition);
+            Listing_Standard listing = new Listing_Standard(rect, () => leftScrollPosition);
             listing.ColumnWidth = listingRectView.width;
             listing.Begin(listingRectOut);
 
 			// for all classes, create debug button for class change option
 			foreach(var c in AllClassChangeOptions)
             {
-				// creates button to select class; if class selected changes curr class info displayed
-				if(listing.ButtonDebug(c.classDef.label, currClassChangeOption != null && c == currClassChangeOption))
+                // creates button to select class; if class selected changes curr class info displayed
+                if (listing.ButtonDebug(c.classDef.label, currClassChangeOption != null && c == currClassChangeOption))
                 {
                     currClassChangeOption = c;
                 }
@@ -131,8 +125,7 @@ namespace ItsSorceryFramework
 
         public virtual void DrawRightGUI(Rect rect)
         {
-            float outRectHeight = rect.height - (10f + rightStartAreaHeight) - 45f;
-
+            // sets all coordinates to be relative to the input rect
             Widgets.BeginGroup(rect);
 
             // end this function early if there is no class option to display
@@ -142,94 +135,123 @@ namespace ItsSorceryFramework
                 return;
             }
 
-            Rect outRect = new Rect(0f, 0f, rect.width, outRectHeight - rightViewDebugHeight);
-            Rect viewRect = new Rect(0f, 0f, outRect.width - 20f, rightScrollViewHeight);
+            // define bounding and view rect of scroll window
+            float outRectHeight = rect.height - rightDebugHeightAdj - rightConfirmHeightAdj; // account for debug & confirm buttons
+            Rect outRect = new Rect(0,0, rect.width, outRectHeight); 
+            Rect viewRect = new Rect(outRect.x, outRect.y, outRect.width - 20f, rightScrollViewHeight);
             Widgets.BeginScrollView(outRect, ref this.rightScrollPosition, viewRect, true);
 
-            float coordY = 0f;
+            float coordY = 0f; // coord Y to keep track of info y coord
 
             // class label
+            Text.Anchor = TextAnchor.UpperLeft;
             Text.Font = GameFont.Medium;
-            GenUI.SetLabelAlign(TextAnchor.MiddleLeft);
-            Rect labelRect = new Rect(0f, coordY, viewRect.width, 50f);
+            Rect labelRect = new Rect(0, coordY, viewRect.width, 50f);
             Widgets.LabelCacheHeight(ref labelRect, currClassChangeOption.classDef.LabelCap, true, false);
             coordY += labelRect.height;
 
             // class desc
-            GenUI.ResetLabelAlign();
             Text.Font = GameFont.Small;
-            Rect descRect = new Rect(0f, coordY, viewRect.width, 0f);
+            Rect descRect = new Rect(0, coordY, viewRect.width, 0f);
             Widgets.LabelCacheHeight(ref descRect, currClassChangeOption.classDef.description, true, false);
             coordY += descRect.height;
 
             // draw reqs
-            Rect prereqRect = new Rect(0f, coordY, viewRect.width, 500f);
+            Rect prereqRect = new Rect(0, coordY, viewRect.width, 500f);
             coordY += DrawClassPrereqs(prereqRect, currClassChangeOption.classDef);
 
             // draw unlocks
-            Rect unlockRect = new Rect(0f, coordY, viewRect.width, 500f);
+            Rect unlockRect = new Rect(0, coordY, viewRect.width, 500f);
             coordY += DrawUnlockedLearningTrackers(unlockRect, currClassChangeOption.classDef);
 
             // draw content class is from
-            Rect contentRect = new Rect(0f, coordY, viewRect.width, 500f);
+            Rect contentRect = new Rect(0, coordY, viewRect.width, 500f);
             coordY += DrawContentSource(contentRect, currClassChangeOption.classDef);
-            coordY += 3f;
+            coordY += 5f;
             rightScrollViewHeight = coordY;
             Widgets.EndScrollView();
 
+            // get pawn for later + confirm button sizing
             Pawn pawn = progressTracker.pawn;
-            Rect confirmButton = new Rect(0f, outRect.yMax + 10f + this.rightViewDebugHeight, rect.width, this.rightStartAreaHeight);
-            string reason = "";
-            if (!pawn.Faction.IsPlayer || pawn.Faction is null)
-            {
-                Text.Anchor = TextAnchor.MiddleCenter;
-                Widgets.DrawHighlight(confirmButton);
-                reason = "ISF_ClassChangeNotPlayer".Translate(pawn.Name.ToStringShort);
-                Widgets.Label(confirmButton.ContractedBy(5f), reason);
-                Text.Anchor = TextAnchor.UpperLeft;
-            }
-            else if (progressTracker.progressDiffLog.ValidateClassChange(progressTracker, currClassChangeOption.classDef, out reason))
-            {
-                if (Widgets.ButtonText(confirmButton, "ISF_ClassChangeConfirm".Translate()))
-                {
-                    ProgressDiffLog diffLog = progressTracker.progressDiffLog;
-                    diffLog.AdjustClass(progressTracker, currClassChangeOption.classDef, currClassChangeOption.levelReset, currClassChangeOption.benefitReset);
-                    CompletionLearningUnlock(currClassChangeOption.classDef);
-
-                    foreach (var et in progressTracker.schema.energyTrackers) et.ClearStatCache();
-                }
-            }
-            else
-            {
-                Text.Anchor = TextAnchor.MiddleCenter;
-                reason = "ISF_ClassChangeLocked".Translate() + "\n" + reason;
-                
-                this.rightStartAreaHeight = Mathf.Max(Text.CalcHeight(reason, confirmButton.width - 10f) + 10f, 68f);
-                Widgets.DrawHighlight(confirmButton);
-                Widgets.Label(confirmButton.ContractedBy(5f), reason);
-                Text.Anchor = TextAnchor.UpperLeft;
-            }
-
+            Rect confirmButton = new Rect(0, outRectHeight + rightDebugHeightAdj, outRect.width, rightConfirmHeight);
             Text.Anchor = TextAnchor.UpperLeft;
-            this.rightViewDebugHeight = 0f;
+
+            // draw debug button if in debug mode
+            rightDebugHeight = 0f;
             if (Prefs.DevMode)
             {
                 Text.Font = GameFont.Tiny;
-                Rect debugButton = new Rect(confirmButton.x, outRect.yMax, 120f, 30f);
+                Rect debugButton = new Rect(0, outRect.yMax, 120f, 30f);
+                debugButton.y += 10f;
+
                 if (Widgets.ButtonText(debugButton, "Debug: Finish now", true, true, true, null))
                 {
                     ProgressDiffLog diffLog = progressTracker.progressDiffLog;
                     diffLog.AdjustClass(progressTracker, currClassChangeOption.classDef, currClassChangeOption.levelReset, currClassChangeOption.benefitReset);
                     CompletionLearningUnlock(currClassChangeOption.classDef);
+                    progressTracker.ResetLevelLabel();
 
                     foreach (var et in progressTracker.schema.energyTrackers) et.ClearStatCache();
+
+                    currClassChangeOption = null;
+
+                    Text.Anchor = TextAnchor.UpperLeft;
+                    Text.Font = GameFont.Small;
+                    return;
                 }
                 Text.Font = GameFont.Small;
-                this.rightViewDebugHeight = debugButton.height;
+                rightDebugHeight = debugButton.height;
             }
+
+            // draw confirm button / locked button
+            confirmButton.y += 10f;
+            bool validChange = progressTracker.progressDiffLog.ValidateClassChange(progressTracker, currClassChangeOption.classDef, out string reason);
+            Text.Anchor = TextAnchor.MiddleCenter; // force label to middle center for confirm button / fail
+
+            if (!pawn.Faction.IsPlayer || pawn.Faction is null)
+            {
+                rightConfirmHeight = 50f;
+                Widgets.DrawHighlight(confirmButton);
+                reason = "ISF_ClassChangeNotPlayer".Translate(pawn.Name.ToStringShort);
+                Widgets.Label(confirmButton.ContractedBy(5f), reason);
+            }
+            else if (validChange)
+            {
+                rightConfirmHeight = 50f;
+                if (Widgets.ButtonText(confirmButton, "ISF_ClassChangeConfirm".Translate()))
+                {
+                    ProgressDiffLog diffLog = progressTracker.progressDiffLog;
+                    diffLog.AdjustClass(progressTracker, currClassChangeOption.classDef, currClassChangeOption.levelReset, currClassChangeOption.benefitReset);
+                    CompletionLearningUnlock(currClassChangeOption.classDef);
+                    progressTracker.ResetLevelLabel();
+
+                    foreach (var et in progressTracker.schema.energyTrackers) et.ClearStatCache();
+
+                    currClassChangeOption = null;
+
+                    Text.Anchor = TextAnchor.UpperLeft;
+                    Text.Font = GameFont.Small;
+                    return;
+                }
+            }
+            else
+            {
+                string failReason = "ISF_ClassChangeLocked".Translate() + "\n" + reason;
+                rightConfirmHeight = Mathf.Max(Text.CalcHeight(failReason, confirmButton.width - 10f) + 10f, 50f);
+                Widgets.DrawHighlight(confirmButton);
+                Widgets.Label(confirmButton.ContractedBy(5f), failReason);
+            }
+
+            // revert back to default for consistency
+            Text.Anchor = TextAnchor.UpperLeft;
+            Text.Font = GameFont.Small;
 
             Widgets.EndGroup();
         }
+
+        private float rightConfirmHeightAdj => rightConfirmHeight + 10f;
+
+        private float rightDebugHeightAdj => rightDebugHeight == 0 ? rightDebugHeight : rightDebugHeight + 10f;
 
         private float DrawClassPrereqs(Rect rect, ProgressTrackerClassDef classDef)
         {
@@ -339,132 +361,6 @@ namespace ItsSorceryFramework
                 }
                 GUI.color = Color.white;
                 rect.xMin = xMin;
-            }
-
-            return rect.yMin - yMin;
-        }
-
-
-        private float DrawHyperlinks(Rect rect, LearningTreeNodeDef node)
-        {
-            List<AbilityDef> abilityGain = node.abilityGain;
-            List<AbilityDef> abilityRemove = node.abilityRemove;
-            List<NodeHediffProps> hediffAdd = node.hediffAdd;
-            List<NodeHediffProps> hediffAdjust = node.hediffAdjust;
-            List<HediffDef> hediffRemove = node.hediffRemove;
-
-            if (abilityGain.NullOrEmpty() && abilityRemove.NullOrEmpty() && hediffAdd.NullOrEmpty() && hediffAdjust.NullOrEmpty() &&
-                hediffRemove.NullOrEmpty())
-            {
-                return 0f;
-            }
-
-            float yMin = rect.yMin;
-            float x = rect.x;
-            Dialog_InfoCard.Hyperlink hyperlink;
-
-            if (!abilityGain.NullOrEmpty())
-            {
-                Widgets.LabelCacheHeight(ref rect, "ISF_LearningNodeAbilityGain".Translate(), true, false);
-                rect.yMin += rect.height;
-                rect.x += 6f;
-                foreach (AbilityDef abilityDef in abilityGain)
-                {
-                    Rect hyperRect = new Rect(rect.x, rect.yMin, rect.width, 24f);
-                    hyperlink = new Dialog_InfoCard.Hyperlink(abilityDef, -1);
-                    Widgets.HyperlinkWithIcon(hyperRect, hyperlink, null, 2f, 6f, new Color(0.8f, 0.85f, 1f), false);
-                    rect.yMin += 24f;
-                }
-                rect.x = x;
-            }
-
-            if (!abilityRemove.NullOrEmpty())
-            {
-                Widgets.LabelCacheHeight(ref rect, "ISF_LearningNodeAbilityRemove".Translate(), true, false);
-                rect.yMin += rect.height;
-                rect.x += 6f;
-                foreach (AbilityDef abilityDef in abilityRemove)
-                {
-                    Rect hyperRect = new Rect(rect.x, rect.yMin, rect.width, 24f);
-                    hyperlink = new Dialog_InfoCard.Hyperlink(abilityDef, -1);
-                    Widgets.HyperlinkWithIcon(hyperRect, hyperlink, null, 2f, 6f, new Color(0.8f, 0.85f, 1f), false);
-                    rect.yMin += 24f;
-                }
-                rect.x = x;
-            }
-
-            if (!hediffAdd.NullOrEmpty())
-            {
-                Widgets.LabelCacheHeight(ref rect, "ISF_LearningNodeHediffAdd".Translate(), true, false);
-                rect.yMin += rect.height;
-                rect.x += 6f;
-                foreach (NodeHediffProps prop in hediffAdd)
-                {
-                    Rect hyperRect = new Rect(rect.x, rect.yMin, rect.width, 24f);
-                    HediffDef hediffDef = prop.hediffDef;
-                    string sev;
-
-                    sev = hediffDef.stages.NullOrEmpty() ? prop.severity.ToStringWithSign("F0") :
-                        hediffDef.stages[hediffDef.StageAtSeverity(prop.severity)].label;
-                    hyperlink = new Dialog_InfoCard.Hyperlink(hediffDef, -1);
-                    Widgets.HyperlinkWithIcon(hyperRect, hyperlink, hediffDef.LabelCap + " ({0})".Translate(sev),
-                        2f, 6f, new Color(0.8f, 0.85f, 1f), false);
-                    rect.yMin += 24f;
-
-                }
-                rect.x = x;
-            }
-
-            if (!hediffAdjust.NullOrEmpty())
-            {
-                Widgets.LabelCacheHeight(ref rect, "ISF_LearningNodeHediffAdjust".Translate(), true, false);
-                rect.yMin += rect.height;
-                rect.x += 6f;
-                foreach (NodeHediffProps prop in hediffAdjust)
-                {
-                    Rect hyperRect = new Rect(rect.x, rect.yMin, rect.width, 24f);
-                    HediffDef hediffDef = prop.hediffDef;
-                    string sev;
-
-                    sev = prop.severity.ToStringWithSign("F0");
-                    hyperlink = new Dialog_InfoCard.Hyperlink(hediffDef, -1);
-                    Widgets.HyperlinkWithIcon(hyperRect, hyperlink, hediffDef.LabelCap + " ({0})".Translate(sev),
-                        2f, 6f, new Color(0.8f, 0.85f, 1f), false);
-                    rect.yMin += 24f;
-                }
-                rect.x = x;
-            }
-
-            if (!hediffRemove.NullOrEmpty())
-            {
-                Widgets.LabelCacheHeight(ref rect, "ISF_LearningNodeHediffRemove".Translate(), true, false);
-                rect.yMin += rect.height;
-                rect.x += 6f;
-                foreach (HediffDef hediffDef in hediffRemove)
-                {
-                    Rect hyperRect = new Rect(rect.x, rect.yMin, rect.width, 24f);
-                    hyperlink = new Dialog_InfoCard.Hyperlink(hediffDef, -1);
-                    Widgets.HyperlinkWithIcon(hyperRect, hyperlink, null, 2f, 6f, new Color(0.8f, 0.85f, 1f), false);
-                    rect.yMin += 24f;
-                }
-                rect.x = x;
-            }
-
-            return rect.yMin - yMin;
-        }
-
-        private float DrawStatMods(Rect rect, LearningTreeNodeDef node)
-        {
-            float yMin = rect.yMin;
-            float x = rect.x;
-
-            String tipString = TipStringExtra(node);
-            if (!tipString.NullOrEmpty())
-            {
-                Widgets.LabelCacheHeight(ref rect, "ISF_LearningNodeMods".Translate(), true, false);
-                rect.yMin += rect.height;
-                Widgets.LabelCacheHeight(ref rect, tipString, true, false);
-                rect.yMin += rect.height;
             }
 
             return rect.yMin - yMin;

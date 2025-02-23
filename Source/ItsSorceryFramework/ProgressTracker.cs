@@ -51,8 +51,6 @@ namespace ItsSorceryFramework
 
         private Dictionary<ProgressTrackerClassDef, HashSet<ProgressTrackerClassDef>> cachedLinkedMapping;
 
-        /*private Dictionary<ProgressTrackerClassDef, HashSet<ProgressTrackerClassDef>> cachedExclusiveMapping;*/
-
         // initalizer- created via activator via SorcerySchema
         public ProgressTracker(Pawn pawn)
         {
@@ -145,37 +143,6 @@ namespace ItsSorceryFramework
 
         public virtual void NotifyLevelUp(float sev, ref List<Window> windows) { }
 
-        /*public virtual void ApplyOptions(ProgressLevelModifier modifier, ref List<Window> windows)
-        {
-            int select = Math.Min(modifier.optionChoices, modifier.options.Count);
-
-            if (modifier.options.NullOrEmpty() || select == 0) return; // empty options -> skip rest
-            if (modifier.options.Count == 1) // only one option = autoselect that option
-            {
-                AdjustModifiers(modifier.options[0]);
-                AdjustAbilities(modifier.options[0]);
-                AdjustHediffs(modifier.options[0]);
-                points += modifier.options[0].pointGain;
-                return;
-            }
-
-            if (!pawn.Faction.IsPlayer) // if we try to apply options to a NPC, just choose a random option.
-            {
-                ProgressLevelOption option = modifier.options.RandomElement();
-                AdjustModifiers(option);
-                AdjustAbilities(option);
-                AdjustHediffs(option);
-                points += option.pointGain;
-                return;
-            }
-
-            // if there's a proper list of 2+ options for the progresslevelmodifier, create a window for selection.
-            List<DebugMenuOption> options;
-            if (select < 0 || select > modifier.options.Count) options = LevelOptions(modifier).ToList();
-            else options = LevelOptions(modifier).OrderBy(x => rand.Next()).Take(select).ToList();
-            windows.Add(new Dialog_ProgressLevelOptions(options, this, CurrLevel, currClassDef));
-        }*/
-
         public virtual void ApplyOptions(ProgressLevelModifier modifier, ref List<Window> windows, ref ProgressDiffClassLedger classLedger)
         {
             int select = Math.Min(modifier.optionChoices, modifier.options.Count);
@@ -233,14 +200,6 @@ namespace ItsSorceryFramework
             }
         }
 
-        /*public virtual void AdjustModifiers(ProgressLevelModifier modulo)
-        {
-            // adjust this to go through diff log
-            AdjustTotalStatMods(statOffsetsTotal, modulo.statOffsets);
-            AdjustTotalStatMods(statFactorsTotal, modulo.statFactorOffsets, true);
-            AdjustTotalCapMods(capModsTotal, modulo.capMods);
-        }*/
-
         public virtual void AdjustModifiers(ProgressLevelModifier modulo, ref ProgressDiffClassLedger classLedger)
         {
             // adjust this to go through diff log
@@ -252,14 +211,6 @@ namespace ItsSorceryFramework
             progressDiffLog.LogModifiers(modulo, ref classLedger);
         }
 
-        /*public virtual void AdjustModifiers(ProgressLevelOption option)
-        {
-            // adjust this to go through diff log
-            AdjustTotalStatMods(statOffsetsTotal, option.statOffsets);
-            AdjustTotalStatMods(statFactorsTotal, option.statFactorOffsets, true);
-            AdjustTotalCapMods(capModsTotal, option.capMods);
-        }*/
-
         public virtual void AdjustModifiers(ProgressLevelOption option, ref ProgressDiffClassLedger classLedger)
         {
             // adjust this to go through diff log
@@ -270,16 +221,6 @@ namespace ItsSorceryFramework
 
             progressDiffLog.LogModifiers(option, ref classLedger);
         }
-
-        /*public virtual void AdjustModifiers(List<StatModifier> offsets = null, List<StatModifier> factorOffsets = null,
-            List<PawnCapacityModifier> capMods = null)
-        {
-            // adjust this to go through diff log
-            AdjustTotalStatMods(statOffsetsTotal, offsets);
-            //AdjustTotalStatMods(statFactorsTotal, factorOffsets);
-            AdjustTotalStatMods(statFactorsTotal, factorOffsets, true);
-            AdjustTotalCapMods(capModsTotal, capMods);
-        }*/
 
         public virtual void AdjustModifiers(ref ProgressDiffClassLedger classLedger, List<StatModifier> offsets = null, 
             List<StatModifier> factorOffsets = null, List<PawnCapacityModifier> capMods = null)
@@ -594,6 +535,12 @@ namespace ItsSorceryFramework
                 if (levelLabel.level <= level) return levelLabel.label;
             }
             return null;
+        }
+
+        public void ResetLevelLabel()
+        {
+            cachedLevelLabels = null;
+            cachedLevelLabel = null;
         }
 
         public Dictionary<ProgressTrackerClassDef, HashSet<ProgressTrackerClassDef>> LinkedClassMapping

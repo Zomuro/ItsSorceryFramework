@@ -234,7 +234,7 @@ namespace ItsSorceryFramework
         public virtual bool ValidateClassChange(ProgressTracker progressTracker, ProgressTrackerClassDef targetClassDef, out string failString)
         {
             // failstring and fail bool
-            failString = "";
+            //failString = "";
             bool success = true;
 
             // get relevant linked classes - if the target class def isn't in it, it's not validated
@@ -249,37 +249,37 @@ namespace ItsSorceryFramework
             if (!PrereqClassesFufilled(targetClassDef)) // if the pawn hasn't been through all the class defs, fail val     
             {
                 success = false;
-                fails.Append("Missing class requirements.");
+                fails.Add("Missing class requirements.");
             }
                    
             if (!PrereqResearchFufilled(targetClassDef)) // if all research is not fufilled, fail val
             {
                 success = false;
-                fails.Append("Missing research requirements.");
+                fails.Add("Missing research requirements.");
             }
 
             if (!PrereqLevelFulfilled(progressTracker, targetClassDef)) // if curr level < prereq level, fail val
             {
                 success = false;
-                fails.Append("Below level requirement.");
+                fails.Add("Below level requirement.");
             }
 
             if (!PrereqHediffFufilled(progressTracker, targetClassDef)) // if all hediffs are not fufilled, fail val
             {
                 success = false;
-                fails.Append("Unfulfilled hediff requirements.");
+                fails.Add("Unfulfilled hediff requirements.");
             }
 
             if (!PrereqSkillFufilled(progressTracker, targetClassDef)) // if all skills not fufilled
             {
                 success = false;
-                fails.Append("Unfulfilled skill requirements.");
+                fails.Add("Unfulfilled skill requirements.");
             }
 
             if (!PrereqStatFufilled(progressTracker, targetClassDef)) // if all stats not fufilled
             {
                 success = false;
-                fails.Append("Unfulfilled stat requirements.");
+                fails.Add("Unfulfilled stat requirements.");
             }
 
             // construct fail string
