@@ -177,6 +177,7 @@ namespace ItsSorceryFramework
                 AdjustAbilities(special, ref progressDiffClassLedger);
                 AdjustHediffs(special, ref progressDiffClassLedger);
                 ApplyUnlocks(special); // only for modifiers within special
+                ApplyClasses(special);
                 points += special.pointGain;
                 ApplyOptions(special, ref windows, ref progressDiffClassLedger);
             }

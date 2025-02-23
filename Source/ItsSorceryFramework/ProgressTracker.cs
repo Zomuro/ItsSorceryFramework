@@ -200,6 +200,14 @@ namespace ItsSorceryFramework
             }
         }
 
+        public virtual void ApplyClasses(ProgressLevelModifier modifier)
+        {
+            if (modifier.specialClasses.NullOrEmpty()) return; // no classes that could be unlocked? skip
+
+            classChangeOpps.AddRange(modifier.specialClasses);
+            classChangeOpps = classChangeOpps.ToHashSet().ToList();
+        }
+
         public virtual void AdjustModifiers(ProgressLevelModifier modulo, ref ProgressDiffClassLedger classLedger)
         {
             // adjust this to go through diff log

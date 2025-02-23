@@ -65,6 +65,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CompProperties_ClassItem.cs" />
+    <Compile Include="CompProperties_UseEffectClass.cs" />
+    <Compile Include="CompClassItem.cs" />
+    <Compile Include="CompUseEffect_Class.cs" />
     <Compile Include="Dialog_ClassChange.cs" />
     <Compile Include="ISF_DefOf.cs" />
     <Compile Include="ProgressDiffLogUtility.cs" />

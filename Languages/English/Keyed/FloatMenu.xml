@@ -9,6 +9,9 @@
 	<ISF_UseEXPItemNoPath>No path: </ISF_UseEXPItemNoPath>
 	<ISF_UseEXPItem>Use {0} to gain {1} experience for {2}.</ISF_UseEXPItem>
 	<ISF_UseSchemaItemFail>{USER_labelShort} already knows {1}.</ISF_UseSchemaItemFail>
+	<ISF_UseItemMissingSchema>{USER_labelShort} does not have the right schema ({1}).</ISF_UseItemMissingSchema>
+	<ISF_UseClassItemFailNoLink>{USER_labelShort} has no link to the class ({1}).</ISF_UseClassItemFailNoLink>
+	<ISF_UseClassItemFail>{USER_labelShort} already has the opportunity for {1}.</ISF_UseClassItemFail>
 	<ISF_UseLearningTreeItemFail_Schema>{USER_labelShort} does not know {1}.</ISF_UseLearningTreeItemFail_Schema>
 	<ISF_UseLearningTreeItemFail_Learning>{USER_labelShort} does not know {1}.</ISF_UseLearningTreeItemFail_Learning>
 	<ISF_UseLearningTreeItemFail_Unlocked>{USER_labelShort} has already unlocked {1} ({2}).</ISF_UseLearningTreeItemFail_Unlocked>

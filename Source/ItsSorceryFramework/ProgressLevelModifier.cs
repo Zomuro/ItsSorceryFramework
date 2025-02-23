@@ -32,6 +32,8 @@ namespace ItsSorceryFramework
 
         public List<LearningTrackerDef> specialUnlocks = new List<LearningTrackerDef>();
 
+        public List<ProgressLinkedClassMap> specialClasses = new List<ProgressLinkedClassMap>();
+
 
     }
 }

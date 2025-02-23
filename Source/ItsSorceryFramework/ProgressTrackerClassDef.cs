@@ -50,24 +50,6 @@ namespace ItsSorceryFramework
 
         private List<ProgressTrackerClassDef> cachedLinkedClasses = new List<ProgressTrackerClassDef>();
 
-        /*public override void ResolveReferences()
-        {
-            base.ResolveReferences();
-
-            bool error = false;
-
-            *//*int hediffCheckCount =  SorcerySchemaUtility.AllProgressTrackerDefs.Where(x => x.progressHediff == progressHediff).Count();
-
-            if (hediffCheckCount > 1)
-            {
-                error = true;
-                Log.Warning($"It's Sorcery! Error: {defName} should not have the same hediff as other ProgressTrackerDefs.");
-            }*//*
-            
-
-            if (error) Log.Error("The ProgressTrackerClassDef " + defName + " has errors.");
-        }*/
-
         public IEnumerable<StatDrawEntry> SpecialDisplayMods(ProgressLevelModifier levelMod)
         {
             if (levelMod == null) yield break;
@@ -180,9 +162,19 @@ namespace ItsSorceryFramework
         {
             Scribe_Defs.Look(ref classDef, "classDef");
             Scribe_Values.Look(ref levelReset, "levelReset", false);
-            Scribe_Values.Look(ref benefitReset, "classDef", false);
+            Scribe_Values.Look(ref benefitReset, "benefitReset", false);
             Scribe_Values.Look(ref removePostClassChange, "removePostClassChange", true);
         }
+
+        public override bool Equals(object obj)
+        {
+            // equality for hash comparisons based on class def
+            ProgressLinkedClassMap compareMapping = obj as ProgressLinkedClassMap;
+            return classDef == compareMapping.classDef;
+        }
+
+        // hashcode = classdef - we only want unique mappings based on class def; avoid duplicate mappings to the same class
+        public override int GetHashCode() => classDef.GetHashCode(); 
     }
     
     public class ProgressLevelLabel
