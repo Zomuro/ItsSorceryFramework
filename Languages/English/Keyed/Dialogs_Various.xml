@@ -58,6 +58,7 @@
 	<ISF_LearningProgressLevelProspectsHediffAdjust>Hediff adjustments</ISF_LearningProgressLevelProspectsHediffAdjust>
 	<ISF_LearningProgressLevelProspectsHediffRemove>Hediffs removed</ISF_LearningProgressLevelProspectsHediffRemove>
 	<ISF_LearningProgressLevelProspectsUnlocks>Unlocks</ISF_LearningProgressLevelProspectsUnlocks>
+	<ISF_LearningProgressLevelProspectsClassChoice>Class choice(s)</ISF_LearningProgressLevelProspectsClassChoice>
 	
 	<!-- SorcerySchemaDef Info window - Learning Trackers - Progress - Sorcery Selection -->
 	<ISF_LearningProgressSelectSorceryButton>Sorcery Selection</ISF_LearningProgressSelectSorceryButton>
@@ -109,6 +110,10 @@
 	<ISF_ProgressLevelOptionsConfirm>Confirm</ISF_ProgressLevelOptionsConfirm>
 	
 	<!-- Dialog_ClassChange -->
+	<ISF_ClassChangeConfirm>Change class</ISF_ClassChangeConfirm>
+	<ISF_ClassChangeNoChoices>No class choice(s)</ISF_ClassChangeNoChoices>
+	<ISF_ClassChangeClassChoicesLabel>Class choices</ISF_ClassChangeClassChoicesLabel>
+	
 	<ISF_ClassChangePrereqs>Class prerequisites:</ISF_ClassChangePrereqs>
 	<ISF_ClassChangeResearchPrereqs>Research prerequisites:</ISF_ClassChangeResearchPrereqs>
 	<ISF_ClassChangeLevelReq>Level requirement: {0}</ISF_ClassChangeLevelReq>
@@ -118,7 +123,5 @@
 	<ISF_ClassChangeUnlocks>Unlocks:</ISF_ClassChangeUnlocks>
 	<ISF_ClassChangeNotPlayer>{0} is not in your faction.</ISF_ClassChangeNotPlayer>
 	<ISF_ClassChangeLocked>Locked:</ISF_ClassChangeLocked>
-	
-	<ISF_ClassChangeConfirm>Change class</ISF_ClassChangeConfirm>
 	
 </LanguageData>

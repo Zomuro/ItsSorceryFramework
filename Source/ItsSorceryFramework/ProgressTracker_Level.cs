@@ -136,9 +136,6 @@ namespace ItsSorceryFramework
                 level_inc++;
             }
 
-            /*List<Window> windows = new List<Window>();
-            CurrLevel += 1;
-            NotifyLevelUp(CurrLevel, ref windows); */
             NotifyTotalLevelUp(orgSev, windows, silent_msg); // notify level up + get windows
         }
 
@@ -284,8 +281,10 @@ namespace ItsSorceryFramework
 
             // CLASS CHANGE BUTTON
             Text.Font = GameFont.Small;
-            Rect classChangeRect = new Rect(0f + viewRect.width * 2f / 5f, coordY, viewRect.width / 5, 35f);
-            if (pawn.Faction != null && pawn.Faction.IsPlayer && Widgets.ButtonText(classChangeRect, "Classes")) Find.WindowStack.Add(new Dialog_ClassChange(this, classChangeOpps));
+            Rect classChangeRect = new Rect(0f + viewRect.width * 3f / 10f, coordY, viewRect.width * 2f / 5f, 35f);
+            if (pawn.Faction != null && pawn.Faction.IsPlayer && 
+                Widgets.ButtonText(classChangeRect, "ISF_LearningProgressLevelProspectsClassChoice".Translate())) 
+                Find.WindowStack.Add(new Dialog_ClassChange(this));
             coordY += classChangeRect.height * 1.5f;
 
             // DESCRIPTION //
@@ -417,7 +416,7 @@ namespace ItsSorceryFramework
                 tipString2 = TipStringExtra(special);
 
                 if (tipString.NullOrEmpty() && !OptionsCheck(factor) && !HyperlinkCheck(factor)  &&
-                    tipString2.NullOrEmpty() && !OptionsCheck(special) && !HyperlinkCheck(special) && !SpecialUnlocksCheck(special)) continue;
+                    tipString2.NullOrEmpty() && !OptionsCheck(special) && !HyperlinkCheck(special) && !SpecialUnlocksCheck(special) && !SpecialClassesCheck(special)) continue;
 
                 Text.Font = GameFont.Small;
                 if (CurLevelLabel.NullOrEmpty())
@@ -433,31 +432,34 @@ namespace ItsSorceryFramework
                     rect.yMin += rect.height;
 
                     // draw modifiers
-                    rect.yMin += this.DrawModifiers(rect, factor, tipString);
+                    rect.yMin += DrawModifiers(rect, factor, tipString);
 
                     // draw options
-                    rect.yMin += this.DrawOptions(rect, factor);
+                    rect.yMin += DrawOptions(rect, factor);
 
                     // draw hyperlinks
-                    rect.yMin += this.DrawHyperlinks(rect, factor);
+                    rect.yMin += DrawHyperlinks(rect, factor);
                 }
-                if (!tipString2.NullOrEmpty() || OptionsCheck(special) || HyperlinkCheck(special) || SpecialUnlocksCheck(special))
+                if (!tipString2.NullOrEmpty() || OptionsCheck(special) || HyperlinkCheck(special) || SpecialUnlocksCheck(special) || SpecialClassesCheck(special))
                 {
                     Text.Font = GameFont.Small;
                     Widgets.LabelCacheHeight(ref rect, "ISF_LearningProgressLevelProspectsSpecial".Translate().Colorize(ColoredText.SubtleGrayColor), true, false);
                     rect.yMin += rect.height;
 
                     // draw modifiers
-                    rect.yMin += this.DrawModifiers(rect, special, tipString2);
+                    rect.yMin += DrawModifiers(rect, special, tipString2);
 
                     // draw options
-                    rect.yMin += this.DrawOptions(rect, special);
+                    rect.yMin += DrawOptions(rect, special);
 
                     // draw hyperlinks
-                    rect.yMin += this.DrawHyperlinks(rect, special);
+                    rect.yMin += DrawHyperlinks(rect, special);
 
                     // draw special unlocks
-                    rect.yMin += this.DrawSpecialUnlocks(rect, special);
+                    rect.yMin += DrawSpecialUnlocks(rect, special);
+
+                    // draw special class choices
+                    rect.yMin += DrawSpecialClasses(rect, special);
                 }
 
             }

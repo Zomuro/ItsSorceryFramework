@@ -109,6 +109,7 @@ namespace ItsSorceryFramework
             set { hediff = value; }
         }
 
+
         // use to define a clear hediff state (no bonuses from magic system)- UNUSED
         public virtual void ClearHediffStage(Hediff_Progress hediff)
         {
@@ -133,6 +134,12 @@ namespace ItsSorceryFramework
 
             // finally, (re)set the hediffstage of the hediff
             Hediff.cachedCurStage = RefreshCurStage();
+        }
+
+        public virtual void CleanClassChangeOpps()
+        {
+            List<ProgressLinkedClassMap> classMapList = classChangeOpps.Where(x => !x.removePostClassChange).ToList();
+            classChangeOpps = classMapList;
         }
 
         public virtual void ProgressTrackerTick() { }
@@ -291,21 +298,6 @@ namespace ItsSorceryFramework
             yield break;
         }
 
-        public virtual void AdjustAbilities(ProgressLevelModifier modifier)
-        {
-            Pawn_AbilityTracker abilityTracker = this.pawn.abilities;
-
-            foreach (AbilityDef abilityDef in modifier.abilityGain)
-            {
-                abilityTracker.GainAbility(abilityDef);
-            }
-
-            foreach (AbilityDef abilityDef in modifier.abilityRemove)
-            {
-                abilityTracker.RemoveAbility(abilityDef);
-            }
-        }
-
         public virtual void AdjustAbilities(ProgressLevelModifier modifier, ref ProgressDiffClassLedger classLedger)
         {
             Pawn_AbilityTracker abilityTracker = this.pawn.abilities;
@@ -321,22 +313,6 @@ namespace ItsSorceryFramework
             }
 
             progressDiffLog.LogAbilities(modifier, ref classLedger);
-            //classLedger.abilityTotal = ProgressDiffLogUtility.ListToDiffDict(modifier.abilityGain, modifier.abilityRemove);
-        }
-
-        public virtual void AdjustAbilities(ProgressLevelOption option)
-        {
-            Pawn_AbilityTracker abilityTracker = pawn.abilities;
-
-            foreach (AbilityDef abilityDef in option.abilityGain)
-            {
-                abilityTracker.GainAbility(abilityDef);
-            }
-
-            foreach (AbilityDef abilityDef in option.abilityRemove)
-            {
-                abilityTracker.RemoveAbility(abilityDef);
-            }
         }
 
         public virtual void AdjustAbilities(ProgressLevelOption option, ref ProgressDiffClassLedger classLedger)
@@ -354,30 +330,6 @@ namespace ItsSorceryFramework
             }
 
             progressDiffLog.LogAbilities(option, ref classLedger);
-            //classLedger.abilityTotal = ProgressDiffLogUtility.ListToDiffDict(option.abilityGain, option.abilityRemove);
-        }
-
-        public virtual void AdjustHediffs(ProgressLevelModifier modifier)
-        {
-            Hediff hediff;
-            foreach (NodeHediffProps props in modifier.hediffAdd)
-            {
-                hediff = HediffMaker.MakeHediff(props.hediffDef, pawn, null);
-                hediff.Severity = props.severity;
-
-                pawn.health.AddHediff(hediff, null, null, null);
-            }
-
-            foreach (NodeHediffProps props in modifier.hediffAdjust)
-            {
-                HealthUtility.AdjustSeverity(pawn, props.hediffDef, props.severity);
-            }
-
-            foreach (HediffDef hediffDef in modifier.hediffRemove)
-            {
-                hediff = pawn.health.hediffSet.GetFirstHediffOfDef(hediffDef);
-                if (hediff != null) pawn.health.RemoveHediff(hediff);
-            }
         }
 
         public virtual void AdjustHediffs(ProgressLevelModifier modifier, ref ProgressDiffClassLedger classLedger)
@@ -415,30 +367,6 @@ namespace ItsSorceryFramework
             }
 
             classLedger.hediffModsTotal.DiffDictSum<HediffDef, float>(returnDict);
-            //classLedger.hediffModsTotal = returnDict;
-        }
-
-        public virtual void AdjustHediffs(ProgressLevelOption option)
-        {
-            Hediff hediff;
-            foreach (NodeHediffProps props in option.hediffAdd)
-            {
-                hediff = HediffMaker.MakeHediff(props.hediffDef, pawn, null);
-                hediff.Severity = props.severity;
-
-                pawn.health.AddHediff(hediff, null, null, null);
-            }
-
-            foreach (NodeHediffProps props in option.hediffAdjust)
-            {
-                HealthUtility.AdjustSeverity(pawn, props.hediffDef, props.severity);
-            }
-
-            foreach (HediffDef hediffDef in option.hediffRemove)
-            {
-                hediff = pawn.health.hediffSet.GetFirstHediffOfDef(hediffDef);
-                if (hediff != null) pawn.health.RemoveHediff(hediff);
-            }
         }
 
         public virtual void AdjustHediffs(ProgressLevelOption option, ref ProgressDiffClassLedger classLedger)
@@ -1046,6 +974,39 @@ namespace ItsSorceryFramework
                 {
                     if (!schema.def.learningTrackerDefs.Contains(unlock)) continue;
                     Widgets.LabelCacheHeight(ref rect, "  - " + unlock.LabelCap, true, false);
+                    rect.yMin += rect.height;
+                }
+                rect.x = x;
+            }
+
+            return rect.yMin - yMin;
+        }
+
+        public virtual bool SpecialClassesCheck(ProgressLevelModifier mod)
+        {
+            if (mod == null) return false;
+
+            if (mod.specialClasses.NullOrEmpty()) return false;
+
+            return true;
+        }
+
+        public virtual float DrawSpecialClasses(Rect rect, ProgressLevelModifier mod)
+        {
+            float yMin = rect.yMin;
+            float x = rect.x;
+
+            List<ProgressLinkedClassMap> specialClasses = mod.specialClasses;
+
+            if (!specialClasses.NullOrEmpty())
+            {
+                Widgets.LabelCacheHeight(ref rect, "ISF_LearningProgressLevelProspectsClassChoice".Translate(), true, false);
+                rect.yMin += rect.height;
+                rect.x += 6f;
+                foreach (var c in specialClasses)
+                {
+                    if (!currClassDef.linkedClasses.Contains(c)) continue;
+                    Widgets.LabelCacheHeight(ref rect, "  - " + c.classDef.label, true, false);
                     rect.yMin += rect.height;
                 }
                 rect.x = x;

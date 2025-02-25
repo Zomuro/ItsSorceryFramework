@@ -11,7 +11,7 @@ namespace ItsSorceryFramework
 {
     public class Dialog_ClassChange : Window
     {
-        public List<ProgressLinkedClassMap> classChangeOptions;
+        //public List<ProgressLinkedClassMap> classChangeOptions;
 
         public ProgressTracker progressTracker;
 
@@ -37,13 +37,13 @@ namespace ItsSorceryFramework
 
         public override bool IsDebug => false;
 
-        public List<ProgressLinkedClassMap> AllClassChangeOptions => Prefs.DevMode && debugShowClassOptions ? progressTracker.currClassDef.linkedClasses : classChangeOptions;
+        public List<ProgressLinkedClassMap> AllClassChangeOptions => Prefs.DevMode && debugShowClassOptions ? progressTracker.currClassDef.linkedClasses : progressTracker.classChangeOpps; // classChangeOptions;
 
-        public Dialog_ClassChange(ProgressTracker progressTracker, List<ProgressLinkedClassMap> classChangeOptions) : base()
+        public Dialog_ClassChange(ProgressTracker progressTracker) : base() //, List<ProgressLinkedClassMap> classChangeOptions
 		{
 			this.progressTracker = progressTracker;
-			this.classChangeOptions = classChangeOptions;
-            currClassChangeOption = this.classChangeOptions.NullOrEmpty() ? null : this.classChangeOptions[0];
+			//this.classChangeOptions = classChangeOptions;
+            currClassChangeOption = progressTracker.classChangeOpps.NullOrEmpty() ? null : progressTracker.classChangeOpps[0];
 			closeOnClickedOutside = true;
 			forcePause = true;
 			closeOnCancel = true;
@@ -71,7 +71,7 @@ namespace ItsSorceryFramework
             Text.Font = GameFont.Medium;
             GenUI.SetLabelAlign(TextAnchor.UpperCenter);
             Rect labelRect = new Rect(outRect.x, outRect.y + coordY, outRect.width, 50f);
-            Widgets.LabelCacheHeight(ref labelRect, "Class Opportunities", true, false);
+            Widgets.LabelCacheHeight(ref labelRect, "ISF_ClassChangeClassChoicesLabel".Translate(), true, false);
             coordY += labelRect.height;
             GenUI.ResetLabelAlign();
             Text.Font = GameFont.Small;
@@ -93,8 +93,10 @@ namespace ItsSorceryFramework
             listing.ColumnWidth = listingRectView.width;
             listing.Begin(listingRectOut);
 
-			// for all classes, create debug button for class change option
-			foreach(var c in AllClassChangeOptions)
+            if (AllClassChangeOptions.NullOrEmpty()) listing.Label("ISF_ClassChangeNoChoices".Translate());
+
+            // for all classes, create debug button for class change option
+            foreach (var c in AllClassChangeOptions)
             {
                 // creates button to select class; if class selected changes curr class info displayed
                 if (listing.ButtonDebug(c.classDef.label, currClassChangeOption != null && c == currClassChangeOption))
@@ -186,17 +188,11 @@ namespace ItsSorceryFramework
 
                 if (Widgets.ButtonText(debugButton, "Debug: Finish now", true, true, true, null))
                 {
-                    ProgressDiffLog diffLog = progressTracker.progressDiffLog;
-                    diffLog.AdjustClass(progressTracker, currClassChangeOption.classDef, currClassChangeOption.levelReset, currClassChangeOption.benefitReset);
-                    CompletionLearningUnlock(currClassChangeOption.classDef);
-                    progressTracker.ResetLevelLabel();
-
-                    foreach (var et in progressTracker.schema.energyTrackers) et.ClearStatCache();
-
-                    currClassChangeOption = null;
+                    CompleteClassChange();
 
                     Text.Anchor = TextAnchor.UpperLeft;
                     Text.Font = GameFont.Small;
+                    Close(true);
                     return;
                 }
                 Text.Font = GameFont.Small;
@@ -220,17 +216,11 @@ namespace ItsSorceryFramework
                 rightConfirmHeight = 50f;
                 if (Widgets.ButtonText(confirmButton, "ISF_ClassChangeConfirm".Translate()))
                 {
-                    ProgressDiffLog diffLog = progressTracker.progressDiffLog;
-                    diffLog.AdjustClass(progressTracker, currClassChangeOption.classDef, currClassChangeOption.levelReset, currClassChangeOption.benefitReset);
-                    CompletionLearningUnlock(currClassChangeOption.classDef);
-                    progressTracker.ResetLevelLabel();
-
-                    foreach (var et in progressTracker.schema.energyTrackers) et.ClearStatCache();
-
-                    currClassChangeOption = null;
+                    CompleteClassChange();
 
                     Text.Anchor = TextAnchor.UpperLeft;
                     Text.Font = GameFont.Small;
+                    Close(true);
                     return;
                 }
             }
@@ -247,6 +237,19 @@ namespace ItsSorceryFramework
             Text.Font = GameFont.Small;
 
             Widgets.EndGroup();
+        }
+
+        public void CompleteClassChange()
+        {
+            ProgressDiffLog diffLog = progressTracker.progressDiffLog;
+            diffLog.AdjustClass(progressTracker, currClassChangeOption.classDef, currClassChangeOption.levelReset, currClassChangeOption.benefitReset);
+            CompletionLearningUnlock(currClassChangeOption.classDef);
+            progressTracker.ResetLevelLabel();
+
+            foreach (var et in progressTracker.schema.energyTrackers) et.ClearStatCache();
+
+            currClassChangeOption = null;
+            progressTracker.CleanClassChangeOpps();
         }
 
         private float rightConfirmHeightAdj => rightConfirmHeight + 10f;
