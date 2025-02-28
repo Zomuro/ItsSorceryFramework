@@ -5,7 +5,7 @@
 	
 	<ISF_UsedSchemaItem>{USER_labelShort} has learned {1}.</ISF_UsedSchemaItem>
 	<ISF_UsedLearningTreeItem>{USER_labelShort} has unlocked {1} in {2}.</ISF_UsedLearningTreeItem>
-	<ISF_UsedClassItem>{USER_labelShort} has gained a class opportunity ({1}).</ISF_UsedClassItem>
+	<ISF_UsedClassItem>{USER_labelShort} has gained a class choice ({1}).</ISF_UsedClassItem>
 	
 	<ISF_QuickEnergyGizmoEntryAdded>Quick energy gizmo entry added ({0}/{1}).</ISF_QuickEnergyGizmoEntryAdded>
 	<ISF_QuickEnergyGizmoEntryRemoved>Quick energy gizmo entry removed ({0}/{1}).</ISF_QuickEnergyGizmoEntryRemoved>

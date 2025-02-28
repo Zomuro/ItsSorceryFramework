@@ -11,6 +11,9 @@ namespace ItsSorceryFramework
 
 		protected override string FloatMenuOptionLabel(Pawn pawn)
 		{
+			if (SorcerySchemaUtility.GetSorceryComp(pawn) is null)
+				return "Pawn does not have a It's Sorcery! comp.";
+
 			if (SchemaProps.schemaDef == null) 
 				return "Need to add a sorcery schema def.";
 

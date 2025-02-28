@@ -31,7 +31,7 @@ namespace ItsSorceryFramework
 			{
 				return "ISF_UseSchemaItemFail".Translate(p.Named("USER"), Props.schemaDef.label);
 			}
-			return base.CanBeUsedBy(p);
+			return false;
 		}
 	}
 }

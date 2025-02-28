@@ -3,14 +3,17 @@ using Verse;
 
 namespace ItsSorceryFramework
 {
-    public class CompClassItem : CompUsable
+    public class CompClassChoiceItem : CompUsable
 	{
 		public override void PostExposeData() => base.PostExposeData();
 
-		public CompProperties_ClassItem ClassProps => (CompProperties_ClassItem)props;
+		public CompProperties_ClassChoiceItem ClassProps => (CompProperties_ClassChoiceItem)props;
 
 		protected override string FloatMenuOptionLabel(Pawn pawn)
 		{
+			if (SorcerySchemaUtility.GetSorceryComp(pawn) is null)
+				return "Pawn does not have a It's Sorcery! comp.";
+
 			if (ClassProps.schemaDef == null) 
 				return "Need to add a sorcery schema def.";
 

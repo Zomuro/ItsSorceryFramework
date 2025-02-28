@@ -55,7 +55,7 @@ namespace ItsSorceryFramework
 			{
 				return "ISF_UseLearningTreeItemFail_Unlocked".Translate(p.Named("USER"), Props.learningTrackerDef.label, Props.schemaDef.label);
 			}
-			return base.CanBeUsedBy(p);
+			return false;
 		}
 	}
 }

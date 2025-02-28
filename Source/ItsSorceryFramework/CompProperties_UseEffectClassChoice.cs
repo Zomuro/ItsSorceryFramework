@@ -2,11 +2,11 @@
 
 namespace ItsSorceryFramework
 {
-    public class CompProperties_UseEffectClass : CompProperties_UseEffect
+    public class CompProperties_UseEffectClassChoice : CompProperties_UseEffect
 	{
-		public CompProperties_UseEffectClass()
+		public CompProperties_UseEffectClassChoice()
 		{
-			this.compClass = typeof(CompUseEffect_Class);
+			this.compClass = typeof(CompUseEffect_ClassChoice);
 		}
 
 		// input sorcery schema for the use effect

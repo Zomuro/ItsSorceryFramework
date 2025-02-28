@@ -3,13 +3,13 @@ using Verse;
 
 namespace ItsSorceryFramework
 {
-    public class CompUseEffect_Class : CompUseEffect
+    public class CompUseEffect_ClassChoice : CompUseEffect
 	{
-		public CompProperties_UseEffectClass Props
+		public CompProperties_UseEffectClassChoice Props
 		{
 			get
 			{
-				return (CompProperties_UseEffectClass)this.props;
+				return (CompProperties_UseEffectClassChoice)this.props;
 			}
 		}
 
@@ -19,6 +19,8 @@ namespace ItsSorceryFramework
 
 			SorcerySchema schema = SorcerySchemaUtility.FindSorcerySchema(usedBy, Props.schemaDef);
 			if (schema is null) return;
+
+			schema.progressTracker.classChangeOpps.AddDistinct(Props.classMapping); // add class opportunity
 
 			if (PawnUtility.ShouldSendNotificationAbout(usedBy))
 			{
@@ -43,7 +45,7 @@ namespace ItsSorceryFramework
 			if (schema.progressTracker.classChangeOpps.Contains(Props.classMapping))
 				return "ISF_UseClassItemFail".Translate(p.Named("USER"), Props.classMapping.classDef.label);
 
-			return base.CanBeUsedBy(p);
+			return false;
 		}
 	}
 }
