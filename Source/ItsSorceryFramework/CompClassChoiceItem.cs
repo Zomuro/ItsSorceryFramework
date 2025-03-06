@@ -23,9 +23,9 @@ namespace ItsSorceryFramework
 			if (!ClassProps.schemaDef.progressTrackerDef.AllClasses.Contains(ClassProps.classMapping.classDef))
 				return "The specified ProgressTrackerClassDef must be in the ProgressTracker's list of classes.";
 
-			string classLabel = $" ({ClassProps.classMapping.classDef.label})";
+			string classFinalLabel = $"{ClassProps.schemaDef.label} ({ClassProps.classMapping.classDef.label})";
 
-			return string.Format(Props.useLabel, ClassProps.schemaDef.label) + classLabel;
+			return string.Format(Props.useLabel, classFinalLabel);
 		}
 	}
 }

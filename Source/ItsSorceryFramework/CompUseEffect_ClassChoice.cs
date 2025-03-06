@@ -45,7 +45,7 @@ namespace ItsSorceryFramework
 			if (schema.progressTracker.classChangeOpps.Contains(Props.classMapping))
 				return "ISF_UseClassItemFail".Translate(p.Named("USER"), Props.classMapping.classDef.label);
 
-			return false;
+			return base.CanBeUsedBy(p);
 		}
 	}
 }
