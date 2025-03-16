@@ -50,7 +50,7 @@ namespace ItsSorceryFramework
             foreach (var learningTrackerDef in learningTrackerDefs) // iterate through learning trackers
             {
                 LearningTracker l = schema.learningTrackers.FirstOrDefault(x => x.def == learningTrackerDef); //sanity nullcheck
-                if(l != null) l.locked = false; // make sure they are not null; then make sure it is unlocked
+                if(l != null) l.locked = false; // make sure it exists; then make sure it is unlocked
             }
             
             foreach (var nodeReq in mapping.requiredNodes) // for each node requirement within the mapping

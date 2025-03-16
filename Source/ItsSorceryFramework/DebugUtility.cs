@@ -1,5 +1,6 @@
 ﻿using LudeonTK;
 using RimWorld;
+using System;
 using System.Collections.Generic;
 using Verse;
 
@@ -121,6 +122,33 @@ namespace ItsSorceryFramework
                     Log.Message($"[It's Sorcery!] Prior level: {priorLevel}; Current level: {schema.progressTracker.CurrLevel}; " +
                         $"Level range: {schema.progressTracker.currClassDef.levelRange.TrueMin}-{schema.progressTracker.currClassDef.levelRange.TrueMax}");
                     //{schema.progressTracker.def.levelRange.TrueMin}-{schema.progressTracker.def.levelRange.TrueMax}
+                }));
+            }
+
+            Find.WindowStack.Add(new Dialog_DebugOptionListLister(options, null));
+        }
+
+        [DebugAction("It's Sorcery!", "Max Level ProgressTracker", false, false, false, false, 0, false,
+            actionType = DebugActionType.ToolMapForPawns, allowedGameStates = AllowedGameStates.PlayingOnMap, displayPriority = 999)]
+        public static void MaxLevelProgressTracker(Pawn pawn)
+        {
+            Comp_ItsSorcery comp = pawn.GetComp<Comp_ItsSorcery>();
+            if (comp?.schemaTracker?.sorcerySchemas is null)
+            {
+                Messages.Message($"[It's Sorcery!] {pawn.Name.ToStringShort} has no It's Sorcery! comp.", MessageTypeDefOf.RejectInput);
+                return;
+            }
+
+            List<DebugMenuOption> options = new List<DebugMenuOption>();
+
+            foreach (SorcerySchema schema in comp?.schemaTracker?.sorcerySchemas)
+            {
+                options.Add(new DebugMenuOption(schema.def.label, DebugMenuOptionMode.Tool, delegate ()
+                {
+                    int priorLevel = schema.progressTracker.CurrLevel;
+                    schema.progressTracker.ForceLevelUp(Math.Max(schema.progressTracker.currClassDef.levelRange.TrueMax - priorLevel, 1), true);
+                    Log.Message($"[It's Sorcery!] Prior level: {priorLevel}; Current level: {schema.progressTracker.CurrLevel}; " +
+                        $"Level range: {schema.progressTracker.currClassDef.levelRange.TrueMin}-{schema.progressTracker.currClassDef.levelRange.TrueMax}");
                 }));
             }
 

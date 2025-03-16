@@ -154,10 +154,13 @@ namespace ItsSorceryFramework
 
             // class desc
             Text.Font = GameFont.Small;
-            Rect descRect = new Rect(0, coordY, viewRect.width, 0f);
-            Widgets.LabelCacheHeight(ref descRect, currClassChangeOption.classDef.description, true, false);
-            coordY += descRect.height;
-
+            if (!currClassChangeOption.classDef.description.NullOrEmpty()) // null description => just don't show it
+            {
+                Rect descRect = new Rect(0, coordY, viewRect.width, 0f);
+                Widgets.LabelCacheHeight(ref descRect, currClassChangeOption.classDef.description, true, false);
+                coordY += descRect.height;
+            }
+            
             // draw reqs
             Rect prereqRect = new Rect(0, coordY, viewRect.width, 500f);
             coordY += DrawClassPrereqs(prereqRect, currClassChangeOption.classDef);
