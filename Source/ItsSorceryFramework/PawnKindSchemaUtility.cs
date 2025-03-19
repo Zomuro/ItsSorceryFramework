@@ -16,14 +16,28 @@ namespace ItsSorceryFramework
 
             if (allSets.schemaSets.NullOrEmpty()) return; // if nothing in schema set, ignore this method
 
-            foreach (var schemaSet in allSets.schemaSets) // else, for each schema set
+            try // attempt generating pawn
             {
-                SchemaNodeMap mapping = schemaSet.GetRandSchema(); // get random schema 
-                SorcerySchemaUtility.AddSorcerySchema(pawn, mapping.schema, out SorcerySchema schema); // add it
-                ResolveForcedLevel(mapping, ref schema); // if the mapping forces a minimum level, levels the pawn up to said stage
-                ResolveForcedPoints(mapping, ref schema); // adds points to match the forced point requirement or the current points, whichever is larger
-                ResolvePrereqs(mapping, ref schema); // complete prerequisites as possible
-                ResolveSchemaEnergy(ref schema); // finally, adjust the energytracker's current levels for spawn.
+                foreach (var schemaSet in allSets.schemaSets) // else, for each schema set
+                {
+                    // add schema at random
+                    SchemaNodeMap mapping = schemaSet.GetRandSchema(); // get random schema 
+                    SorcerySchemaUtility.AddSorcerySchema(pawn, mapping.schema, out SorcerySchema schema); // add it
+
+                    // complete class changes first (with its own level/point/prereqs)
+                    ResolveClassChange(mapping.classChanges, ref schema); // class changes
+
+                    // force level/point/preqs
+                    ResolveForcedLevel(mapping, ref schema); // if the mapping forces a minimum level, levels the pawn up to said stage
+                    ResolveForcedPoints(mapping, ref schema); // adds points to match the forced point requirement or the current points, whichever is larger
+                    ResolvePrereqs(mapping, ref schema); // complete prerequisites as possible
+                    ResolveSchemaEnergy(ref schema); // finally, adjust the energytracker's current levels for spawn.
+                }
+            }
+            catch // any issues cause the pawn to null out -> pawn doesn't get generated
+            {
+                Log.Error($"[It's Sorcery!] Failed to add SorcerySchema to pawnkind {request.KindDef.LabelCap}; .");
+                pawn = null;
             }
         }
 
@@ -80,8 +94,8 @@ namespace ItsSorceryFramework
                     // other prereq resolution //
                     // stats changes have many sources - thus, it is easier to assume that the pawn had met a requirement previously
                     // hediffs and skill level are more difficult to wave away
-                    ResolveForceHediff(nodeReq, ref schema); // if set, forces pawn to have hediffs before completing the node
-                    ResolveForceSkill(nodeReq, ref schema); // if set, forces pawn to have the proper skill level before completing the node
+                    ResolveForceHediffNode(nodeReq, ref schema); // if set, forces pawn to have hediffs before completing the node
+                    ResolveForceSkillNode(nodeReq, ref schema); // if set, forces pawn to have the proper skill level before completing the node
                     ResolveForceLevelNode(nodeReq, ref schema); // if set, forces pawn to be leveled up to a certain level
 
                     // complete and record node completion results //
@@ -101,6 +115,7 @@ namespace ItsSorceryFramework
                 }
                 else
                 {
+                    // debug info if nodes are completed or cannot be done due to missing prereqs
                     if (!Prefs.DevMode || !ItsSorceryUtility.settings.ShowItsSorceryDebug) continue;
                     if (schema.learningNodeRecord.completion[nodeReq.nodeDef]) Log.Message(schema.pawn.Name.ToStringShort + ": " + nodeReq.nodeDef.defName + " is already complete.");
                     else Log.Message(schema.pawn.Name.ToStringShort + ": " + nodeReq.nodeDef.defName + " could not be completed due to missing prerequisites.");
@@ -108,11 +123,20 @@ namespace ItsSorceryFramework
             }
         }
 
-        public static void ResolveForceHediff(SchemaNodeReq nodeReq, ref SorcerySchema schema)
+        public static void ResolveForceHediffNode(SchemaNodeReq nodeReq, ref SorcerySchema schema)
         {
             if (!nodeReq.forceHediff) return; // if the node req doesn't force hediff requirements, skip
+            ResolveForceHediff(nodeReq.nodeDef.prereqsHediff, ref schema);
+        }
 
-            foreach (var hediffReq in nodeReq.nodeDef.prereqsHediff) // otherwise, check and add if needed
+        public static void ResolveForceHediffClass(ProgressTrackerClassDef targetClassDef, ref SorcerySchema schema)
+        {
+            ResolveForceHediff(targetClassDef.prereqsHediff, ref schema);
+        }
+
+        public static void ResolveForceHediff(Dictionary<HediffDef, float> prereqsHediff, ref SorcerySchema schema)
+        {
+            foreach (var hediffReq in prereqsHediff) // otherwise, check and add if needed
             {
                 if (schema.pawn.health.hediffSet.GetFirstHediffOfDef(hediffReq.Key) is Hediff hediff && hediff != null)
                 {
@@ -122,12 +146,21 @@ namespace ItsSorceryFramework
             }
         }
 
-        public static void ResolveForceSkill(SchemaNodeReq nodeReq, ref SorcerySchema schema)
+        public static void ResolveForceSkillClass(ProgressTrackerClassDef targetClassDef, ref SorcerySchema schema)
+        {
+            ResolveForceSkill(targetClassDef.prereqsSkills, ref schema);
+        }
+
+        public static void ResolveForceSkillNode(SchemaNodeReq nodeReq, ref SorcerySchema schema)
         {
             if (!nodeReq.forceSkill) return; // if the node req doesn't force skill requirements, skip
+            ResolveForceSkill(nodeReq.nodeDef.prereqsSkills, ref schema);
+        }
 
+        public static void ResolveForceSkill(List<NodeSkillReqs> skillReqsList, ref SorcerySchema schema)
+        {
             SkillRecord currSkill;
-            foreach (var skillReq in nodeReq.nodeDef.prereqsSkills) // otherwise, adjust skill levels as needed
+            foreach (var skillReq in skillReqsList) // otherwise, adjust skill levels as needed
             {
                 foreach (var skillLevel in skillReq.skillReqs)
                 {
@@ -140,7 +173,7 @@ namespace ItsSorceryFramework
                             break;
 
                         case LearningNodeStatPrereqMode.NotEqual:
-                            if (currSkill.GetLevel() == skillLevel.ClampedLevel) currSkill.Level = Mathf.Clamp(skillLevel.ClampedLevel - 1, 0 , 20);
+                            if (currSkill.GetLevel() == skillLevel.ClampedLevel) currSkill.Level = Mathf.Clamp(skillLevel.ClampedLevel - 1, 0, 20);
                             break;
 
                         case LearningNodeStatPrereqMode.Greater:
@@ -166,12 +199,6 @@ namespace ItsSorceryFramework
             }
         }
 
-        public static void ResolveForceLevelNode(SchemaNodeReq nodeReq, ref SorcerySchema schema)
-        {
-            if (!nodeReq.forceLevel) return; // if the node req doesn't force level requirements, skip
-            while (!schema.progressTracker.Maxed && nodeReq.nodeDef.prereqLevel > schema.progressTracker.CurrLevel) schema.progressTracker.ForceLevelUp(1, true);
-        }
-
         public static void ResolveSchemaEnergy(ref SorcerySchema schema)
         {
             foreach(var e in schema.energyTrackers)
@@ -180,6 +207,65 @@ namespace ItsSorceryFramework
                 else e.currentEnergy = e.MaxEnergy; // for normal energy systems; energy is set to the normal maximum value
             }
         }
+
+        public static void ResolveForceLevelNode(SchemaNodeReq nodeReq, ref SorcerySchema schema)
+        {
+            if (!nodeReq.forceLevel) return; // if the node req doesn't force level requirements, skip
+            ResolveForceLevel(nodeReq.nodeDef.prereqLevel, ref schema);
+
+            //while (!schema.progressTracker.Maxed && nodeReq.nodeDef.prereqLevel > schema.progressTracker.CurrLevel) schema.progressTracker.ForceLevelUp(1, true);
+        }
+
+        public static void ResolveForceLevelClass(ProgressTrackerClassDef targetClassDef, ref SorcerySchema schema)
+        {
+            if (schema.progressTracker.currClassDef.levelRange.TrueMax < targetClassDef.prereqLevel) return; // if current class cannot reach target class prereq level, just skip it
+            ResolveForceLevel(targetClassDef.prereqLevel, ref schema);
+
+            //while (!schema.progressTracker.Maxed && targetClassDef.prereqLevel > schema.progressTracker.CurrLevel) schema.progressTracker.ForceLevelUp(1, true);
+        }
+
+        public static void ResolveForceLevel(int prereqLevel, ref SorcerySchema schema)
+        {
+            while (!schema.progressTracker.Maxed && prereqLevel > schema.progressTracker.CurrLevel) schema.progressTracker.ForceLevelUp(1, true);
+        }       
+
+        public static void ResolveClassChange(List<ProgressLinkedClassMap> classMappings, ref SorcerySchema schema)
+        {
+            if (classMappings.NullOrEmpty()) return; // nullcheck list => skip running code
+            
+            ProgressTracker progressTracker = schema.progressTracker;
+            ProgressDiffLog diffLog = progressTracker.progressDiffLog;
+            // iterate through the class change mappings
+            foreach(var classMapping in classMappings)
+            {
+                // validate that the current class is able to have the class mapping - if not, throw error and fail the pawngeneration
+                if (!progressTracker.currClassDef.linkedClasses.Contains(classMapping))
+                {
+                    Log.Error($"[It's Sorcery!] PawnGen class mapping error: unable to change from class {progressTracker.currClassDef.label} to {classMapping.classDef.label}.");
+                    throw new Exception($"[It's Sorcery!] SchemaSet misconfiguration.");
+                }
+
+                // level up till the class opportunity arises
+                while (!progressTracker.classChangeOpps.Contains(classMapping) && !progressTracker.Maxed) progressTracker.ForceLevelUp(1, true);
+
+                ProgressTrackerClassDef targetClassDef = classMapping.classDef;
+
+                // other prereq resolution //
+                // stats changes have many sources - thus, it is easier to assume that the pawn had met a requirement previously
+                // hediffs and skill level are more difficult to wave away
+                ResolveForceHediffClass(targetClassDef, ref schema); // if set, forces pawn to have hediffs before completing the node
+                ResolveForceSkillClass(targetClassDef, ref schema); // if set, forces pawn to have the proper skill level before completing the node
+                ResolveForceLevelClass(targetClassDef, ref schema); // if set, forces pawn to be leveled up to a certain level
+
+                diffLog.AdjustClass(progressTracker, targetClassDef, classMapping.levelReset, classMapping.benefitReset);
+                ProgressTrackerUtility.CompletionLearningUnlock(ref progressTracker, targetClassDef);
+                progressTracker.ResetLevelLabel();
+                foreach (var et in progressTracker.schema.energyTrackers) et.ClearStatCache();
+                progressTracker.CleanClassChangeOpps();
+            }
+        }
+
+        
 
     }
 }
