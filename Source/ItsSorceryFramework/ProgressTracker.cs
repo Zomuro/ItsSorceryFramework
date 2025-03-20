@@ -479,36 +479,6 @@ namespace ItsSorceryFramework
             cachedLevelLabel = null;
         }
 
-        public Dictionary<ProgressTrackerClassDef, HashSet<ProgressTrackerClassDef>> LinkedClassMapping
-        {
-            get
-            {
-                // if there's already a prereq mapping made, return it
-                if (!cachedLinkedMapping.NullOrEmpty()) return cachedLinkedMapping;
-
-                // otherwise we create it - a dictionary showing what classdefs each classdef is a prerequisite of
-                cachedLinkedMapping = new Dictionary<ProgressTrackerClassDef, HashSet<ProgressTrackerClassDef>>();
-                foreach (var classDef in def.classes)
-                {
-                    // no prereq classes = classdef at bottom of mapping
-                    if (classDef.LinkedClassDefs.NullOrEmpty()) continue;
-
-                    // iterate through class defs
-                    foreach (var linkedClassDef in classDef.LinkedClassDefs)
-                    {
-                        // dict doesn't have classdef key? init new classdef/hashset entry
-                        if (!cachedLinkedMapping.ContainsKey(linkedClassDef))
-                            cachedLinkedMapping[linkedClassDef] = new HashSet<ProgressTrackerClassDef>() { classDef };
-                        // otherwise add to hashset value
-                        else
-                            cachedLinkedMapping[linkedClassDef].Add(classDef);
-
-                    }
-                }
-                return cachedLinkedMapping;
-            }
-        }
-
         public virtual void DrawLeftGUI(Rect rect)
         {
             Rect labelRect = new Rect(0f, 0, rect.width, 50f);

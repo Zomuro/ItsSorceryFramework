@@ -17,11 +17,10 @@ namespace ItsSorceryFramework
 			if (SchemaProps.schemaDef == null) 
 				return "Need to add a sorcery schema def.";
 
-			if (SchemaProps.progressTrackerClassDef != null && 
-				!SchemaProps.schemaDef.progressTrackerDef.AllClasses.Contains(SchemaProps.progressTrackerClassDef)) 
-				return "The specified ProgressTrackerClassDef must be in the ProgressTracker's list of classes.";
+			if (SchemaProps.progressTrackerClassDef != null && SchemaProps.schemaDef.progressTrackerDef != SchemaProps.progressTrackerClassDef.progressTrackerDef) 
+				return "The specified ProgressTrackerClassDef must be linked to the schema's ProgressTrackerDef.";
 
-			string classLabel = SchemaProps.progressTrackerClassDef is null ? $" ({SchemaProps.schemaDef.progressTrackerDef.baseClass.label})" : $" ({SchemaProps.progressTrackerClassDef.label})";
+            string classLabel = SchemaProps.progressTrackerClassDef is null ? $" ({SchemaProps.schemaDef.progressTrackerDef.baseClass.label})" : $" ({SchemaProps.progressTrackerClassDef.label})";
 
 			return string.Format(Props.useLabel, SchemaProps.schemaDef.label) + classLabel;
 		}

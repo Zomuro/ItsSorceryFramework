@@ -324,7 +324,7 @@ namespace ItsSorceryFramework
             ModExtension_SchemaAddition schemaExt = __0.def.GetModExtension<ModExtension_SchemaAddition>();
 
             SorcerySchema added_schema;
-            SorcerySchemaUtility.AddSorcerySchema(Traverse.Create(__instance).Field("pawn").GetValue<Pawn>(), schemaExt.schema, out added_schema);
+            SorcerySchemaUtility.AddSorcerySchema(Traverse.Create(__instance).Field("pawn").GetValue<Pawn>(), schemaExt.schema, out added_schema, schemaExt.baseClassDef);
             PawnKindSchemaUtility.ResolveSchemaEnergy(ref added_schema);
         }
 
@@ -336,7 +336,7 @@ namespace ItsSorceryFramework
             ModExtension_SchemaAddition schemaExt = __0.GetModExtension<ModExtension_SchemaAddition>();
 
             SorcerySchema added_schema;
-            SorcerySchemaUtility.AddSorcerySchema(__instance.pawn, schemaExt.schema, out added_schema);
+            SorcerySchemaUtility.AddSorcerySchema(__instance.pawn, schemaExt.schema, out added_schema, schemaExt.baseClassDef);
             PawnKindSchemaUtility.ResolveSchemaEnergy(ref added_schema);
         }
 

@@ -17,25 +17,11 @@ namespace ItsSorceryFramework
 
         public HediffDef progressHediff;
 
-        //public IntRange levelRange = new IntRange(Int32.MinValue.ChangeType<int>(), Int32.MaxValue.ChangeType<int>());
-
         public float baseEXP = 100f;
 
         public float scaling = 1.1f;
 
-        //public float maxEXP = 1000f;
-
-        public List<ProgressTrackerClassDef> classes = new List<ProgressTrackerClassDef>();
-
         public ProgressTrackerClassDef baseClass; 
-
-        /*public List<ProgressLevelModifier> levelFactors = new List<ProgressLevelModifier>();
-
-        public List<ProgressLevelModifier> levelSpecifics = new List<ProgressLevelModifier>();
-
-        public List<ProgressEXPTagDef> expTags = new List<ProgressEXPTagDef>();
-
-        public List<ProgressLevelLabel> levelLabels = new List<ProgressLevelLabel>();*/
 
         [MustTranslate]
         public string progressLevelUpKey = "ISF_LevelUp";
@@ -45,26 +31,6 @@ namespace ItsSorceryFramework
 
         [MustTranslate]
         public string skillPointLabelKey = "ISF_SkillPointLabel";
-
-        //private HashSet<ProgressEXPWorker> cachedEXPWorkers = new HashSet<ProgressEXPWorker>();
-
-        /*public float maxLevel 
-        {
-            get 
-            {
-                return progressHediff?.maxSeverity ?? 0f;
-            }
-        }*/
-
-        public List<ProgressTrackerClassDef> AllClasses
-        {
-            get
-            {
-                List<ProgressTrackerClassDef> classList = classes;
-                classList.Add(baseClass);
-                return classList.Distinct().ToList();
-            }
-        }
 
         public override void ResolveReferences()
         {
@@ -84,11 +50,11 @@ namespace ItsSorceryFramework
                 error = true;
                 Log.Warning($"It's Sorcery! Error: {defName} should have a base class specified.");
             }
-            /*if (classes.Contains(baseClass))
+            if (baseClass != null && baseClass.progressTrackerDef != this && baseClass != ISF_DefOf.ISF_Generic_Class)
             {
                 error = true;
-                Log.Warning($"It's Sorcery! Error: {defName}'s base class {baseClass} should not be contained in the class list.");
-            }*/
+                Log.Warning($"It's Sorcery! Error: {defName}'s base class {baseClass.defName} should be linked to {defName}, unless it is the generic class {ISF_DefOf.ISF_Generic_Class.defName}.");
+            }
 
             if (error) Log.Error("The ProgressTrackerDef " + defName + " has errors.");
         }
@@ -112,16 +78,4 @@ namespace ItsSorceryFramework
             }
         }
     }
-
-    /*public class ProgressLevelLabel
-    {
-        public int level = 1;
-
-        public string label = "level";
-    }*/
-
-    
-
-
-
 }

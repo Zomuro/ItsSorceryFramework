@@ -2,6 +2,7 @@
 using RimWorld;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Verse;
 
 namespace ItsSorceryFramework
@@ -225,16 +226,18 @@ namespace ItsSorceryFramework
                 return;
             }
 
-            List<DebugMenuOption> options = new List<DebugMenuOption>();
-
+            List<DebugMenuOption> options = new List<DebugMenuOption>();         
             foreach (SorcerySchema schema in comp?.schemaTracker?.sorcerySchemas)
             {
                 options.Add(new DebugMenuOption(schema.def.label, DebugMenuOptionMode.Tool, delegate ()
                 {
                     // get class defs
-                    List<ProgressTrackerClassDef> classDefs = schema.progressTracker.def.classes;
-                    classDefs.Add(schema.progressTracker.def.baseClass);
-                    HashSet<ProgressTrackerClassDef> classDefsSet = new HashSet<ProgressTrackerClassDef>(classDefs);
+                    HashSet<ProgressTrackerClassDef> classDefsSet = DefDatabase<ProgressTrackerClassDef>.AllDefs.Where(x => x.progressTrackerDef == schema.progressTracker.def).ToHashSet();
+                    classDefsSet.Add(schema.progressTracker.def.baseClass);
+
+                    //List<ProgressTrackerClassDef> classDefs = schema.progressTracker.def.classes;
+                    //classDefs.Add(schema.progressTracker.def.baseClass);
+                    //HashSet<ProgressTrackerClassDef> classDefsSet = new HashSet<ProgressTrackerClassDef>(classDefs);
 
                     // select which class to see the total diff of
                     List<DebugMenuOption> classOptions = new List<DebugMenuOption>();

@@ -12,8 +12,6 @@ namespace ItsSorceryFramework
     {
         public List<ProgressDiffLedger> progressDiffLedgers = new List<ProgressDiffLedger>();
 
-        //public List<ProgressLinkedClassMap>
-
         public ProgressDiffLog()
         {
             progressDiffLedgers = new List<ProgressDiffLedger>();
@@ -400,7 +398,7 @@ namespace ItsSorceryFramework
         // get all ProgressTrackerClassDef classes that have ever been in the diff log
         public HashSet<ProgressTrackerClassDef> GetClassSet => progressDiffLedgers.Select(x => x.currClassDef).ToHashSet();
 
-        public ProgressDiffClassLedger TotalDiff(ProgressTrackerClassDef progressDiffClass)
+        public ProgressDiffClassLedger TotalDiff(ProgressTrackerClassDef progressDiffClassDef)
         {
             ProgressDiffClassLedger totalLedger = new ProgressDiffClassLedger();
 
@@ -411,7 +409,7 @@ namespace ItsSorceryFramework
                 if (l.classDiffLedgers.NullOrEmpty()) continue;
 
                 // in the case we specify the generic case (or null), we want everything
-                if (progressDiffClass is null || progressDiffClass == ISF_DefOf.ISF_Generic_Class)
+                if (progressDiffClassDef is null || progressDiffClassDef == ISF_DefOf.ISF_Generic_Class)
                 {
                     // for each diff ledger, add class diff ledgers to the summing dicts
                     foreach (var cl in l.classDiffLedgers.Values)
@@ -426,13 +424,13 @@ namespace ItsSorceryFramework
                 }
 
                 // otherwise, only get diffs for a specific class - the general/base class ("") is not included
-                if (l.classDiffLedgers.ContainsKey(progressDiffClass))
+                if (l.classDiffLedgers.ContainsKey(progressDiffClassDef))
                 {
-                    totalLedger.statOffsetsTotal.DiffDictSum<StatDef, float>(l.classDiffLedgers[progressDiffClass].statOffsetsTotal);
-                    totalLedger.statFactorsTotal.DiffDictSum<StatDef, float>(l.classDiffLedgers[progressDiffClass].statFactorsTotal);
-                    totalLedger.capModsTotal.DiffDictSum<PawnCapacityDef, float>(l.classDiffLedgers[progressDiffClass].capModsTotal);
-                    totalLedger.hediffModsTotal.DiffDictSum<HediffDef, float>(l.classDiffLedgers[progressDiffClass].hediffModsTotal);
-                    totalLedger.abilityTotal.DiffDictSum<AbilityDef, int>(l.classDiffLedgers[progressDiffClass].abilityTotal);
+                    totalLedger.statOffsetsTotal.DiffDictSum<StatDef, float>(l.classDiffLedgers[progressDiffClassDef].statOffsetsTotal);
+                    totalLedger.statFactorsTotal.DiffDictSum<StatDef, float>(l.classDiffLedgers[progressDiffClassDef].statFactorsTotal);
+                    totalLedger.capModsTotal.DiffDictSum<PawnCapacityDef, float>(l.classDiffLedgers[progressDiffClassDef].capModsTotal);
+                    totalLedger.hediffModsTotal.DiffDictSum<HediffDef, float>(l.classDiffLedgers[progressDiffClassDef].hediffModsTotal);
+                    totalLedger.abilityTotal.DiffDictSum<AbilityDef, int>(l.classDiffLedgers[progressDiffClassDef].abilityTotal);
                     continue;
                 }
             }
@@ -463,10 +461,7 @@ namespace ItsSorceryFramework
 
             // hediff portion
             foreach (var hediffPair in totalDiff.hediffModsTotal)
-            {
-                /*// this adjust severity based on output - but we need to get final value
-                HealthUtility.AdjustSeverity(progressTracker.pawn, hediffPair.Key, hediffPair.Value);*/
-                
+            {              
                 // properly applies hediffs in total diff
                 ApplyHediffSeverity(progressTracker.pawn, hediffPair.Key, hediffPair.Value);
             }

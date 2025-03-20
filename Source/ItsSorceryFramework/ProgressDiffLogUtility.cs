@@ -75,23 +75,16 @@ namespace ItsSorceryFramework
             return string.Join("\n", baseDict);
         }
 
-        // consider incorporating this into the adjust method itself
         public static Dictionary<StatDef, float> ListToDiffDict(List<StatModifier> statMods)
         {
             Dictionary<StatDef, float> returnDict = new Dictionary<StatDef, float>() { };
 
-            if (statMods.NullOrEmpty())
-            {
-                Log.Message("Stat mods found empty somehow.");
-                return returnDict;
-            }
+            if (statMods.NullOrEmpty()) return returnDict;
             foreach (var s in statMods)
             {
                 if (returnDict.ContainsKey(s.stat)) returnDict[s.stat] += s.value;
                 else returnDict[s.stat] = s.value;
             }
-
-            Log.Message(ProgressDiffLogUtility.DebugDictLog(returnDict));
 
             return returnDict;
         }
@@ -101,17 +94,12 @@ namespace ItsSorceryFramework
         {
             Dictionary<PawnCapacityDef, float> returnDict = new Dictionary<PawnCapacityDef, float>() { };
             
-            if (capMods.NullOrEmpty())
-            {
-                Log.Message("Cap mods found empty somehow.");
-                return returnDict;
-            }
+            if (capMods.NullOrEmpty()) return returnDict;
             foreach (var c in capMods)
             {
                 if (returnDict.ContainsKey(c.capacity)) returnDict[c.capacity] += c.offset;
                 else returnDict[c.capacity] = c.offset;
             }
-            Log.Message(ProgressDiffLogUtility.DebugDictLog(returnDict));
 
             return returnDict;
         }

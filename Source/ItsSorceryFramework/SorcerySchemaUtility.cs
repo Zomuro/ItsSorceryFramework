@@ -93,6 +93,19 @@ namespace ItsSorceryFramework
             schemaComp.schemaTracker.sorcerySchemas.Add(schema);
         }
 
+        public static void AddSorcerySchema(Pawn pawn, SorcerySchemaDef def, out SorcerySchema schema, ProgressTrackerClassDef classDef = null)
+        {
+            Comp_ItsSorcery schemaComp = GetSorceryComp(pawn);
+            if (schemaComp?.schemaTracker?.sorcerySchemas?.FirstOrDefault(x => x.def == def) is SorcerySchema found && found != null)
+            {
+                schema = found;
+                return;
+            }
+
+            schema = InitializeSorcerySchema(pawn, def, classDef);
+            schemaComp.schemaTracker.sorcerySchemas.Add(schema);
+        }
+
         public static void RemoveSorcerySchema(Pawn pawn, SorcerySchemaDef def)
         {
             Comp_ItsSorcery schemaComp = GetSorceryComp(pawn);

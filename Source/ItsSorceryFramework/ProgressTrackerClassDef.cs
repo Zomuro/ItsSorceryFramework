@@ -9,6 +9,8 @@ namespace ItsSorceryFramework
 {
     public class ProgressTrackerClassDef : Def
     {
+        public ProgressTrackerDef progressTrackerDef;
+        
         public IntRange levelRange = new IntRange(Int32.MinValue.ChangeType<int>(), Int32.MaxValue.ChangeType<int>());
 
         public List<ProgressLinkedClassMap> linkedClasses = new List<ProgressLinkedClassMap>();
@@ -145,6 +147,22 @@ namespace ItsSorceryFramework
                 if (cachedLinkedClasses.EnumerableNullOrEmpty()) cachedLinkedClasses = linkedClasses.Select(x => x.classDef).ToList();
                 return cachedLinkedClasses;
             }
+        }
+
+        public override void ResolveReferences()
+        {
+            base.ResolveReferences();
+
+            bool error = false;
+
+            // null progressTrackerDef that isn't this null class?
+            if (progressTrackerDef is null && this != ISF_DefOf.ISF_Generic_Class)
+            {
+                error = true;
+                Log.Warning($"It's Sorcery! Error: {defName} should have a base class specified.");
+            }
+
+            if (error) Log.Error("The ProgressTrackerClassDef " + defName + " has errors.");
         }
     }
 

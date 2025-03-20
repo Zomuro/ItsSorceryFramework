@@ -18,10 +18,10 @@ namespace ItsSorceryFramework
 				return "Need to add a sorcery schema def.";
 
 			if (ClassProps.classMapping is null)
-				return "Class mapping cannot be null";
+				return "Class mapping cannot be null.";
 
-			if (!ClassProps.schemaDef.progressTrackerDef.AllClasses.Contains(ClassProps.classMapping.classDef))
-				return "The specified ProgressTrackerClassDef must be in the ProgressTracker's list of classes.";
+			if (ClassProps.schemaDef.progressTrackerDef != ClassProps.classMapping.classDef.progressTrackerDef)
+				return "The specified ProgressTrackerClassDef must be linked to the schema's ProgressTrackerDef.";
 
 			string classFinalLabel = $"{ClassProps.schemaDef.label} ({ClassProps.classMapping.classDef.label})";
 

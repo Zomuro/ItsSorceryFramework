@@ -22,21 +22,22 @@ namespace ItsSorceryFramework
                 {
                     // add schema at random
                     SchemaNodeMap mapping = schemaSet.GetRandSchema(); // get random schema 
-                    SorcerySchemaUtility.AddSorcerySchema(pawn, mapping.schema, out SorcerySchema schema); // add it
+                    SorcerySchemaUtility.AddSorcerySchema(pawn, mapping.schema, out SorcerySchema schema, mapping.baseClassDef); // add schema w/ specified base class
 
                     // complete class changes first (with its own level/point/prereqs)
                     ResolveClassChange(mapping.classChanges, ref schema); // class changes
 
                     // force level/point/preqs
-                    ResolveForcedLevel(mapping, ref schema); // if the mapping forces a minimum level, levels the pawn up to said stage
+                    ResolveForcedLevel(mapping, ref schema); // if the mapping forces a minimum level, levels the pawn up to said stage if the final class permits
                     ResolveForcedPoints(mapping, ref schema); // adds points to match the forced point requirement or the current points, whichever is larger
                     ResolvePrereqs(mapping, ref schema); // complete prerequisites as possible
                     ResolveSchemaEnergy(ref schema); // finally, adjust the energytracker's current levels for spawn.
                 }
             }
-            catch // any issues cause the pawn to null out -> pawn doesn't get generated
+            catch (Exception e) // any issues cause the pawn to null out -> pawn doesn't get generated
             {
-                Log.Error($"[It's Sorcery!] Failed to add SorcerySchema to pawnkind {request.KindDef.LabelCap}; .");
+                Log.Message(e);
+                Log.Warning($"[It's Sorcery!] Failed to add SorcerySchema to pawnkind {request.KindDef.LabelCap}; ending PawnGen process.");
                 pawn = null;
             }
         }
