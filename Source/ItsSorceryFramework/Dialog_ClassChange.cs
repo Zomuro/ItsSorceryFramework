@@ -261,8 +261,7 @@ namespace ItsSorceryFramework
 
         private float DrawClassPrereqs(Rect rect, ProgressTrackerClassDef classDef)
         {
-            if (classDef.prereqsClassDefs.NullOrEmpty() && classDef.prereqsResearch.NullOrEmpty() && classDef.prereqLevel <= 0 && classDef.prereqsStats.NullOrEmpty() &&
-                classDef.prereqsSkills.NullOrEmpty() && classDef.prereqsHediff.NullOrEmpty()) return 0f;
+            if (classDef.prereqsClassDefs.NullOrEmpty() && classDef.prereqsNodes.NullOrEmpty() && classDef.prereqsResearchs.NullOrEmpty() && classDef.prereqLevel <= 0 && classDef.prereqsStats.NullOrEmpty() && classDef.prereqsSkills.NullOrEmpty() && classDef.prereqsHediff.NullOrEmpty()) return 0f;
             float xMin = rect.xMin;
             float yMin = rect.yMin;
 
@@ -278,7 +277,7 @@ namespace ItsSorceryFramework
                 rect.xMin += 6f;
                 foreach (ProgressTrackerClassDef prereqClass in classDef.prereqsClassDefs)
                 {
-                    SetPrereqStatusColor(classesDone.Contains(prereqClass));
+                    PrereqUtility.SetPrereqStatusColor(classesDone.Contains(prereqClass));
                     Widgets.LabelCacheHeight(ref rect, prereqClass.LabelCap, true, false);
                     rect.yMin += rect.height;
                 }
@@ -286,15 +285,30 @@ namespace ItsSorceryFramework
                 GUI.color = Color.white;
             }
 
-            if (!classDef.prereqsResearch.NullOrEmpty()) // show completed research
+            if (!classDef.prereqsNodes.NullOrEmpty())
+            {
+                Widgets.LabelCacheHeight(ref rect, "ISF_LearningNodePrereqs".Translate() + LearningRecord.PrereqsModeNotif(classDef.prereqNodeMode, classDef.prereqNodeModeMin, prereqsDone.Item1), true, false);
+                rect.yMin += rect.height;
+                rect.xMin += 6f;
+                foreach (LearningTreeNodeDef prereq in classDef.prereqsNodes)
+                {
+                    PrereqUtility.SetPrereqStatusColor(LearningRecord.completion[prereq]);
+                    Widgets.LabelCacheHeight(ref rect, prereq.LabelCap, true, false);
+                    rect.yMin += rect.height;
+                }
+                rect.xMin = xMin;
+                GUI.color = Color.white;
+            }
+
+            if (!classDef.prereqsResearchs.NullOrEmpty()) // show completed research
             {
                 Widgets.LabelCacheHeight(ref rect, "ISF_ClassChangeResearchPrereqs".Translate() + 
                     ":" + LearningRecord.PrereqsModeNotif(classDef.prereqResearchMode, classDef.prereqResearchModeMin, prereqsDone.Item2), true, false);
                 rect.yMin += rect.height;
                 rect.xMin += 6f;
-                foreach (ResearchProjectDef prereq in classDef.prereqsResearch)
+                foreach (ResearchProjectDef prereq in classDef.prereqsResearchs)
                 {
-                    SetPrereqStatusColor(prereq.IsFinished);
+                    PrereqUtility.SetPrereqStatusColor(prereq.IsFinished);
                     Widgets.LabelCacheHeight(ref rect, prereq.LabelCap, true, false);
                     rect.yMin += rect.height;
                 }
@@ -304,7 +318,7 @@ namespace ItsSorceryFramework
 
             if (classDef.prereqLevel > 0) // show completed level req
             {
-                SetPrereqStatusColor(diffLog.PrereqLevelFulfilled(progressTracker, classDef));
+                PrereqUtility.SetPrereqStatusColor(diffLog.PrereqLevelFulfilled(progressTracker, classDef));
                 Widgets.LabelCacheHeight(ref rect, "ISF_ClassChangeLevelReq".Translate(classDef.prereqLevel), true, false);
                 rect.yMin += rect.height;
                 GUI.color = Color.white;
@@ -320,8 +334,8 @@ namespace ItsSorceryFramework
                 {
                     foreach (var statMod in prereqsStatCase.statReqs)
                     {
-                        SetPrereqStatusColor(!LearningRecord.PrereqFailStatCase(statMod, prereqsStatCase.mode));
-                        Widgets.LabelCacheHeight(ref rect, statMod.stat.LabelCap + LearningRecord.PrereqsStatsModeNotif(prereqsStatCase.mode) +
+                        PrereqUtility.SetPrereqStatusColor(!PrereqUtility.PrereqFailStatCase(progressTracker.pawn, statMod, prereqsStatCase.mode));
+                        Widgets.LabelCacheHeight(ref rect, statMod.stat.LabelCap + PrereqUtility.PrereqsStatsModeNotif(prereqsStatCase.mode) +
                             statMod.stat.ValueToString(statMod.value, ToStringNumberSense.Absolute, !statMod.stat.formatString.NullOrEmpty()), true, false);
                         rect.yMin += rect.height;
                     }
@@ -339,8 +353,8 @@ namespace ItsSorceryFramework
                 {
                     foreach (var skillLevel in prereqsSkillCase.skillReqs)
                     {
-                        SetPrereqStatusColor(!LearningRecord.PrereqFailSkillCase(skillLevel.skillDef, skillLevel.ClampedLevel, prereqsSkillCase.mode));
-                        Widgets.LabelCacheHeight(ref rect, skillLevel.skillDef.LabelCap + LearningRecord.PrereqsStatsModeNotif(prereqsSkillCase.mode) +
+                        PrereqUtility.SetPrereqStatusColor(!PrereqUtility.PrereqFailSkillCase(progressTracker.pawn, skillLevel.skillDef, skillLevel.ClampedLevel, prereqsSkillCase.mode));
+                        Widgets.LabelCacheHeight(ref rect, skillLevel.skillDef.LabelCap + PrereqUtility.PrereqsStatsModeNotif(prereqsSkillCase.mode) +
                             skillLevel.ClampedLevel, true, false);
                         rect.yMin += rect.height;
                     }
@@ -359,7 +373,7 @@ namespace ItsSorceryFramework
                 foreach (var prereq in classDef.prereqsHediff)
                 {
                     hediff = progressTracker.pawn.health.hediffSet.GetFirstHediffOfDef(prereq.Key);
-                    SetPrereqStatusColor((hediff != null && hediff.Severity >= prereq.Value));
+                    PrereqUtility.SetPrereqStatusColor((hediff != null && hediff.Severity >= prereq.Value));
                     reqLabel = !prereq.Key.stages.NullOrEmpty() ?
                         prereq.Key.stages[prereq.Key.StageAtSeverity(prereq.Value)].label : prereq.Value.ToString("F0");
                     Widgets.LabelCacheHeight(ref rect, prereq.Key.LabelCap + " ({0})".Translate(reqLabel), true, false);
@@ -375,7 +389,7 @@ namespace ItsSorceryFramework
         public string TipStringExtra(LearningTreeNodeDef node)
         {
             StringBuilder stringBuilder = new StringBuilder();
-            foreach (StatDrawEntry statDrawEntry in node.specialDisplayMods())
+            foreach (StatDrawEntry statDrawEntry in node.SpecialDisplayMods())
             {
                 if (statDrawEntry.ShouldDisplay())
                 {
@@ -434,12 +448,12 @@ namespace ItsSorceryFramework
             if (!classDef.prereqsClassDefs.NullOrEmpty()) prereqCount = classDef.prereqsClassDefs.Where(x => classesDone.Contains(x)).Count();
 
             int prereqResearchCount = 0;
-            if (!classDef.prereqsResearch.NullOrEmpty()) prereqResearchCount = classDef.prereqsResearch.Where(x => x.IsFinished).Count();
+            if (!classDef.prereqsResearchs.NullOrEmpty()) prereqResearchCount = classDef.prereqsResearchs.Where(x => x.IsFinished).Count();
 
             return new Tuple<int, int>(prereqCount, prereqResearchCount);
         }
 
-        private void SetPrereqStatusColor(bool compCheck)
+        /*private void SetPrereqStatusColor(bool compCheck)
         {
             if (compCheck)
             {
@@ -447,7 +461,7 @@ namespace ItsSorceryFramework
                 return;
             }
             GUI.color = ColorLibrary.RedReadable;
-        }
+        }*/
 
         private void CompletionLearningUnlock(ProgressTrackerClassDef classDef)
         {

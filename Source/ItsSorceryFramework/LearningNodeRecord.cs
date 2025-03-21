@@ -2,20 +2,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Policy;
 using Verse;
+using static UnityEngine.Scripting.GarbageCollector;
+using Verse.Noise;
 
 namespace ItsSorceryFramework
 {
     public class LearningNodeRecord : IExposable
 	{
-        /// <summary>
-        /// Used to keep a record of node completion across a schema's trackers for a pawn.
-        /// Why this method? 
-        /// 1) Allows learningtrackers to package requirements in a easy to view format 
-        /// (i.e. putting in magic fundamentals in one tree, and fire magic in the other)
-        /// 2) Prevents duplicate nodes from interacting with each other- by design, all nodes are unique within a schema.
-        /// </summary>
-
         public Pawn pawn;
 
         public SorcerySchema schema;
@@ -29,7 +24,7 @@ namespace ItsSorceryFramework
             this.pawn = pawn;
         }
 
-        public LearningNodeRecord(Pawn pawn, SorcerySchema schema) // temp for now to test initalizing and saving
+        public LearningNodeRecord(Pawn pawn, SorcerySchema schema)
         {
             this.pawn = pawn;
             this.schema = schema;
@@ -94,76 +89,12 @@ namespace ItsSorceryFramework
 
         public bool PrereqFufilled(LearningTreeNodeDef node)
         {
-            switch (node.prereqMode)
-            {
-                case LearningNodePrereqMode.All:
-                    foreach (LearningTreeNodeDef prereq in node.prereqs)
-                    {
-                        if (!completion[prereq]) return false;
-                    }
-                    return true;
-
-                case LearningNodePrereqMode.Or:
-                    foreach (LearningTreeNodeDef prereq in node.prereqs)
-                    {
-                        if (completion[prereq]) return true;
-                    }
-                    return false;
-
-                case LearningNodePrereqMode.Min:
-                    if (node.prereqModeMin <= 0) return true;
-
-                    int count = 0;
-                    int check = Math.Min(node.prereqModeMin, node.prereqs.Count());
-                    foreach (LearningTreeNodeDef prereq in node.prereqs)
-                    {
-                        if (completion[prereq]) count++;
-                        if (count >= check) return true;
-                    }
-                    return false;
-
-                default:
-                    break;
-            }
-
-            return true;
+            return PrereqUtility.PrereqNodeFufilled(this, node.prereqs, node.prereqMode, node.prereqModeMin);
         }
 
         public bool PrereqResearchFufilled(LearningTreeNodeDef node)
         {
-            switch (node.prereqResearchMode)
-            {
-                case LearningNodePrereqMode.All:
-                    foreach (ResearchProjectDef prereq in node.prereqsResearch)
-                    {
-                        if (!prereq.IsFinished) return false;
-                    }
-                    return true;
-
-                case LearningNodePrereqMode.Or:
-                    foreach (ResearchProjectDef prereq in node.prereqsResearch)
-                    {
-                        if (prereq.IsFinished) return true;
-                    }
-                    return false;
-
-                case LearningNodePrereqMode.Min:
-                    if (node.prereqResearchModeMin <= 0) return true;
-
-                    int count = 0;
-                    int check = Math.Min(node.prereqResearchModeMin, node.prereqsResearch.Count());
-                    foreach (ResearchProjectDef prereq in node.prereqsResearch)
-                    {
-                        if (prereq.IsFinished) count++;
-                        if (count >= check) return true;
-                    }
-                    return false;
-
-                default:
-                    break;
-            }
-
-            return true;
+            return PrereqUtility.PrereqResearchFufilled(node.prereqsResearch, node.prereqResearchMode, node.prereqResearchModeMin);
         }
 
         public Tuple<int, int> PrereqsDone(LearningTreeNodeDef node)
@@ -179,158 +110,28 @@ namespace ItsSorceryFramework
 
         public string PrereqsModeNotif(LearningNodePrereqMode mode, int min = 0, int done = 0)
         {
-            if (mode == LearningNodePrereqMode.Min && min > 0)
-                return " (" + done + "/" + min + ")";
-            if (mode == LearningNodePrereqMode.Or)
-                return " (" + done + "/1)";
-            return "";
+            return PrereqUtility.PrereqsModeNotif(mode, min, done);
         }
 
         public bool PrereqStatFufilled(LearningTreeNodeDef node)
         {
-            if (node.prereqsStats.NullOrEmpty()) return true;
-            foreach (var statReqsCase in node.prereqsStats)
-            {
-                foreach (var statMod in statReqsCase.statReqs)
-                {
-                    if (PrereqFailStatCase(statMod, statReqsCase.mode)) return false;
-                }
-            }
-
-            return true;
-        }
-
-        public bool PrereqFailStatCase(StatModifier statMod, LearningNodeStatPrereqMode mode)
-        {
-            switch (mode)
-            {
-                case LearningNodeStatPrereqMode.Equal:
-                    if (pawn.GetStatValue(statMod.stat) != statMod.value) return true;
-                    break;
-
-                case LearningNodeStatPrereqMode.NotEqual:
-                    if (pawn.GetStatValue(statMod.stat) == statMod.value) return true;
-                    break;
-
-                case LearningNodeStatPrereqMode.Greater:
-                    if (pawn.GetStatValue(statMod.stat) <= statMod.value) return true;
-                    break;
-
-                case LearningNodeStatPrereqMode.GreaterEqual:
-                    if (pawn.GetStatValue(statMod.stat) < statMod.value) return true;
-                    break;
-
-                case LearningNodeStatPrereqMode.Lesser:
-                    if (pawn.GetStatValue(statMod.stat) >= statMod.value) return true;
-                    break;
-
-                case LearningNodeStatPrereqMode.LesserEqual:
-                    if (pawn.GetStatValue(statMod.stat) > statMod.value) return true;
-                    break;
-
-                default:
-                    break;
-            }
-
-            return false;
+            return PrereqUtility.PrereqStatFufilled(pawn, node.prereqsStats);
         }
 
         public bool PrereqSkillFufilled(LearningTreeNodeDef node)
         {
-            if (node.prereqsSkills.NullOrEmpty()) return true;
-            foreach (var skillReqsCase in node.prereqsSkills)
-            {
-                foreach (var skillLevel in skillReqsCase.skillReqs)
-                {
-                    if (PrereqFailSkillCase(skillLevel.skillDef, skillLevel.ClampedLevel, skillReqsCase.mode)) return false;
-                }
-            }
-
-            return true;
-        }
-
-        public bool PrereqFailSkillCase(SkillDef skillDef, int level, LearningNodeStatPrereqMode mode)
-        {
-            switch (mode)
-            {
-                case LearningNodeStatPrereqMode.Equal:
-                    if (pawn.skills.GetSkill(skillDef).GetLevel() != level) return true;
-                    break;
-
-                case LearningNodeStatPrereqMode.NotEqual:
-                    if (pawn.skills.GetSkill(skillDef).GetLevel() == level) return true;
-                    break;
-
-                case LearningNodeStatPrereqMode.Greater:
-                    if (pawn.skills.GetSkill(skillDef).GetLevel() <= level) return true;
-                    break;
-
-                case LearningNodeStatPrereqMode.GreaterEqual:
-                    if (pawn.skills.GetSkill(skillDef).GetLevel() < level) return true;
-                    break;
-
-                case LearningNodeStatPrereqMode.Lesser:
-                    if (pawn.skills.GetSkill(skillDef).GetLevel() >= level) return true;
-                    break;
-
-                case LearningNodeStatPrereqMode.LesserEqual:
-                    if (pawn.skills.GetSkill(skillDef).GetLevel() > level) return true;
-                    break;
-
-                default:
-                    break;
-            }
-
-            return false;
-        }
-
-        public string PrereqsStatsModeNotif(LearningNodeStatPrereqMode mode)
-        {
-            switch (mode)
-            {
-                case LearningNodeStatPrereqMode.Equal:
-                    return " = ";
-
-                case LearningNodeStatPrereqMode.NotEqual:
-                    return " != ";
-
-                case LearningNodeStatPrereqMode.Greater:
-                    return " > ";
-
-                case LearningNodeStatPrereqMode.GreaterEqual:
-                    return " >= ";
-
-                case LearningNodeStatPrereqMode.Lesser:
-                    return " < ";
-
-                case LearningNodeStatPrereqMode.LesserEqual:
-                    return " <= ";
-
-                default:
-                    break;
-            }
-            return "";
+            return PrereqUtility.PrereqSkillFufilled(pawn, node.prereqsSkills);
         }
 
         public bool PrereqHediffFufilled(LearningTreeNodeDef node)
         {
-            Hediff hediff;
-            foreach (var pair in node.prereqsHediff)
-            {
-                hediff = pawn.health.hediffSet.GetFirstHediffOfDef(pair.Key);
-                if (hediff == null) return false;
-                else if (hediff.Severity < pair.Value) return false;
-            }
-
-            return true;
+            return PrereqUtility.PrereqHediffFufilled(pawn, node.prereqsHediff);
         }
 
         public bool PrereqLevelFulfilled(LearningTreeNodeDef node)
         {
-            if (node.prereqLevel <= 0 || node.prereqLevel <= schema.progressTracker.CurrLevel) return true;
-            return false;
+            return PrereqUtility.PrereqLevelFufilled(schema.progressTracker, node.prereqLevel);
         }
-
 
         public bool ExclusiveNodeFufilled(LearningTreeNodeDef node)
         {

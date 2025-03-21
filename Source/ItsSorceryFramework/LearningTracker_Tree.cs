@@ -327,8 +327,8 @@ namespace ItsSorceryFramework
                 {
                     foreach(var statMod in prereqsStatCase.statReqs)
                     {
-                        SetPrereqStatusColor(!LearningRecord.PrereqFailStatCase(statMod, prereqsStatCase.mode), node);
-                        Widgets.LabelCacheHeight(ref rect, statMod.stat.LabelCap + LearningRecord.PrereqsStatsModeNotif(prereqsStatCase.mode) +
+                        SetPrereqStatusColor(!PrereqUtility.PrereqFailStatCase(pawn, statMod, prereqsStatCase.mode), node);
+                        Widgets.LabelCacheHeight(ref rect, statMod.stat.LabelCap + PrereqUtility.PrereqsStatsModeNotif(prereqsStatCase.mode) +
                             statMod.stat.ValueToString(statMod.value, ToStringNumberSense.Absolute, !statMod.stat.formatString.NullOrEmpty()), true, false);
                         rect.yMin += rect.height;
                     }
@@ -346,8 +346,8 @@ namespace ItsSorceryFramework
                 {
                     foreach (var skillLevel in prereqsSkillCase.skillReqs)
                     {
-                        SetPrereqStatusColor(!LearningRecord.PrereqFailSkillCase(skillLevel.skillDef, skillLevel.ClampedLevel, prereqsSkillCase.mode), node);
-                        Widgets.LabelCacheHeight(ref rect, skillLevel.skillDef.LabelCap + LearningRecord.PrereqsStatsModeNotif(prereqsSkillCase.mode) +
+                        SetPrereqStatusColor(!PrereqUtility.PrereqFailSkillCase(pawn, skillLevel.skillDef, skillLevel.ClampedLevel, prereqsSkillCase.mode), node);
+                        Widgets.LabelCacheHeight(ref rect, skillLevel.skillDef.LabelCap + PrereqUtility.PrereqsStatsModeNotif(prereqsSkillCase.mode) +
                             skillLevel.ClampedLevel, true, false);
                         rect.yMin += rect.height;
                     }
@@ -530,7 +530,7 @@ namespace ItsSorceryFramework
         public string TipStringExtra(LearningTreeNodeDef node)
         {
             StringBuilder stringBuilder = new StringBuilder();
-            foreach (StatDrawEntry statDrawEntry in node.specialDisplayMods()){
+            foreach (StatDrawEntry statDrawEntry in node.SpecialDisplayMods()){
                 if (statDrawEntry.ShouldDisplay())
                 {
                     stringBuilder.AppendInNewLine("  - " + statDrawEntry.LabelCap + ": " + statDrawEntry.ValueString);

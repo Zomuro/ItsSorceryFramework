@@ -29,6 +29,10 @@ namespace ItsSorceryFramework
 
         public int prereqClassModeMin = 1;
 
+        public LearningNodePrereqMode prereqNodeMode = LearningNodePrereqMode.All;
+
+        public int prereqNodeModeMin = 1;
+
         public LearningNodePrereqMode prereqResearchMode = LearningNodePrereqMode.All;
 
         public int prereqResearchModeMin = 1;
@@ -37,7 +41,9 @@ namespace ItsSorceryFramework
 
         public List<ProgressTrackerClassDef> prereqsClassDefs = new List<ProgressTrackerClassDef>();
 
-        public List<ResearchProjectDef> prereqsResearch = new List<ResearchProjectDef>();
+        public List<LearningTreeNodeDef> prereqsNodes = new List<LearningTreeNodeDef>();
+
+        public List<ResearchProjectDef> prereqsResearchs = new List<ResearchProjectDef>();
 
         public Dictionary<HediffDef, float> prereqsHediff = new Dictionary<HediffDef, float>();
 
