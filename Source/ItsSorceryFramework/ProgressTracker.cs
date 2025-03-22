@@ -25,6 +25,12 @@ namespace ItsSorceryFramework
 
         public Dictionary<PawnCapacityDef, float> capModsTotal = new Dictionary<PawnCapacityDef, float>();
 
+        public ProgressTrackerClassDef currClassDef;
+
+        public ProgressDiffLog progressDiffLog = new ProgressDiffLog();
+
+        public List<ProgressLinkedClassMap> classChangeOpps = new List<ProgressLinkedClassMap>();
+
         public float exp = 0f;
 
         public int usedPoints = 0;
@@ -33,6 +39,8 @@ namespace ItsSorceryFramework
 
         public int level = 1; // alternatively use CurrLevel, which wrap around this field
 
+        public System.Random rand = new System.Random();
+        
         private int cachedCurLevel = 0;
 
         private string cachedLevelLabel;
@@ -41,7 +49,7 @@ namespace ItsSorceryFramework
 
         private List<SorceryDef> cachedSorceryDefs = new List<SorceryDef>();
 
-        public System.Random rand = new System.Random();
+        private Dictionary<ProgressTrackerClassDef, HashSet<ProgressTrackerClassDef>> cachedLinkedMapping;
 
         // initalizer- created via activator via SorcerySchema
         public ProgressTracker(Pawn pawn)
@@ -54,9 +62,25 @@ namespace ItsSorceryFramework
             this.pawn = pawn;
             this.def = def;
             this.schema = schema;
+            this.currClassDef = def.baseClass;
+            Initialize();
         }
 
-        public virtual void Initialize() { }
+        public ProgressTracker(Pawn pawn, ProgressTrackerDef def, SorcerySchema schema, ProgressTrackerClassDef classDef)
+        {
+            this.pawn = pawn;
+            this.def = def;
+            this.schema = schema;
+            this.currClassDef = classDef is null? def.baseClass : classDef;
+            Initialize();
+        }
+
+        public virtual void Initialize() 
+        {
+            progressDiffLog = new ProgressDiffLog(this);
+            if (Prefs.DevMode && ItsSorceryUtility.settings.ShowItsSorceryDebug)
+                Log.Message($"[It's Sorcery!] {this.schema.def.label} Diff Log Initalized: {progressDiffLog.TotalDiff(null)}");
+        }
 
         public virtual void ExposeData()
         {
@@ -71,6 +95,10 @@ namespace ItsSorceryFramework
             Scribe_Collections.Look(ref statOffsetsTotal, "statOffsetsTotal", LookMode.Def, LookMode.Value);
             Scribe_Collections.Look(ref statFactorsTotal, "statFactorsTotal", LookMode.Def, LookMode.Value);
             Scribe_Collections.Look(ref capModsTotal, "capModsTotal", LookMode.Def, LookMode.Value);
+
+            Scribe_Defs.Look(ref currClassDef, "currClassDef");
+            Scribe_Deep.Look(ref progressDiffLog, "progressDiffLog");
+            Scribe_Collections.Look(ref classChangeOpps, "classChangeOpps", LookMode.Deep);
         }
 
 
@@ -80,6 +108,7 @@ namespace ItsSorceryFramework
             get { return hediff; }
             set { hediff = value; }
         }
+
 
         // use to define a clear hediff state (no bonuses from magic system)- UNUSED
         public virtual void ClearHediffStage(Hediff_Progress hediff)
@@ -107,24 +136,30 @@ namespace ItsSorceryFramework
             Hediff.cachedCurStage = RefreshCurStage();
         }
 
+        public virtual void CleanClassChangeOpps()
+        {
+            List<ProgressLinkedClassMap> classMapList = classChangeOpps.Where(x => !x.removePostClassChange).ToList();
+            classChangeOpps = classMapList;
+        }
+
         public virtual void ProgressTrackerTick() { }
 
         public virtual void AddExperience(float experience) { }
 
-        public virtual void ForceLevelUp() { }
+        public virtual void ForceLevelUp(int levels = 1, bool silent_msg = false) { }
 
         public virtual void NotifyLevelUp(float sev, ref List<Window> windows) { }
 
-        public virtual void ApplyOptions(ProgressLevelModifier modifier, ref List<Window> windows)
+        public virtual void ApplyOptions(ProgressLevelModifier modifier, ref List<Window> windows, ref ProgressDiffClassLedger classLedger)
         {
             int select = Math.Min(modifier.optionChoices, modifier.options.Count);
 
             if (modifier.options.NullOrEmpty() || select == 0) return; // empty options -> skip rest
             if (modifier.options.Count == 1) // only one option = autoselect that option
             {
-                AdjustModifiers(modifier.options[0]);
-                AdjustAbilities(modifier.options[0]);
-                AdjustHediffs(modifier.options[0]);
+                AdjustModifiers(modifier.options[0], ref classLedger);
+                AdjustAbilities(modifier.options[0], ref classLedger);
+                AdjustHediffs(modifier.options[0], ref classLedger);
                 points += modifier.options[0].pointGain;
                 return;
             }
@@ -132,9 +167,9 @@ namespace ItsSorceryFramework
             if (!pawn.Faction.IsPlayer) // if we try to apply options to a NPC, just choose a random option.
             {
                 ProgressLevelOption option = modifier.options.RandomElement();
-                AdjustModifiers(option);
-                AdjustAbilities(option);
-                AdjustHediffs(option);
+                AdjustModifiers(option, ref classLedger);
+                AdjustAbilities(option, ref classLedger);
+                AdjustHediffs(option, ref classLedger);
                 points += option.pointGain;
                 return;
             }
@@ -143,7 +178,7 @@ namespace ItsSorceryFramework
             List<DebugMenuOption> options;
             if (select < 0 || select > modifier.options.Count) options = LevelOptions(modifier).ToList();
             else options = LevelOptions(modifier).OrderBy(x => rand.Next()).Take(select).ToList();
-            windows.Add(new Dialog_ProgressLevelOptions(options, this, CurrLevel));
+            windows.Add(new Dialog_ProgressLevelOptions(options, this, CurrLevel, currClassDef));
         }
 
         public virtual IEnumerable<DebugMenuOption> LevelOptions(ProgressLevelModifier modifier)
@@ -172,26 +207,46 @@ namespace ItsSorceryFramework
             }
         }
 
-        public virtual void AdjustModifiers(ProgressLevelModifier modulo)
+        public virtual void ApplyClasses(ProgressLevelModifier modifier)
         {
+            if (modifier.specialClasses.NullOrEmpty()) return; // no classes that could be unlocked? skip
+
+            classChangeOpps.AddRange(modifier.specialClasses);
+            classChangeOpps = classChangeOpps.ToHashSet().ToList();
+        }
+
+        public virtual void AdjustModifiers(ProgressLevelModifier modulo, ref ProgressDiffClassLedger classLedger)
+        {
+            // adjust this to go through diff log
             AdjustTotalStatMods(statOffsetsTotal, modulo.statOffsets);
-            AdjustTotalStatMods(statFactorsTotal, modulo.statFactorOffsets, true);
+            AdjustTotalStatMods(statFactorsTotal, modulo.statFactorOffsets);
+            //AdjustTotalStatMods(statFactorsTotal, modulo.statFactorOffsets, true);
             AdjustTotalCapMods(capModsTotal, modulo.capMods);
+
+            progressDiffLog.LogModifiers(modulo, ref classLedger);
         }
 
-        public virtual void AdjustModifiers(ProgressLevelOption option)
+        public virtual void AdjustModifiers(ProgressLevelOption option, ref ProgressDiffClassLedger classLedger)
         {
+            // adjust this to go through diff log
             AdjustTotalStatMods(statOffsetsTotal, option.statOffsets);
-            AdjustTotalStatMods(statFactorsTotal, option.statFactorOffsets, true);
+            AdjustTotalStatMods(statFactorsTotal, option.statFactorOffsets);
+            //AdjustTotalStatMods(statFactorsTotal, option.statFactorOffsets, true);
             AdjustTotalCapMods(capModsTotal, option.capMods);
+
+            progressDiffLog.LogModifiers(option, ref classLedger);
         }
 
-        public virtual void AdjustModifiers(List<StatModifier> offsets = null, List<StatModifier> factorOffsets = null,
-            List<PawnCapacityModifier> capMods = null)
+        public virtual void AdjustModifiers(ref ProgressDiffClassLedger classLedger, List<StatModifier> offsets = null, 
+            List<StatModifier> factorOffsets = null, List<PawnCapacityModifier> capMods = null)
         {
+            // adjust this to go through diff log
             AdjustTotalStatMods(statOffsetsTotal, offsets);
+            //AdjustTotalStatMods(statFactorsTotal, factorOffsets);
             AdjustTotalStatMods(statFactorsTotal, factorOffsets, true);
             AdjustTotalCapMods(capModsTotal, capMods);
+
+            progressDiffLog.LogModifiers(ref classLedger, offsets, factorOffsets, capMods);
         }
 
         public virtual void AdjustTotalStatMods(Dictionary<StatDef, float> stats, List<StatModifier> statMods, bool factor = false)
@@ -227,9 +282,11 @@ namespace ItsSorceryFramework
             }
         }
 
-        public virtual IEnumerable<StatModifier> CreateStatModifiers(Dictionary<StatDef, float> stats)
+        public virtual IEnumerable<StatModifier> CreateStatModifiers(Dictionary<StatDef, float> stats, bool factor = false)
         {
-            foreach (var pair in stats) yield return new StatModifier() { stat = pair.Key, value = pair.Value };
+            float factorAdj = factor ? 1f : 0f;
+
+            foreach (var pair in stats) yield return new StatModifier() { stat = pair.Key, value = pair.Value + factorAdj };
 
             yield break;
         }
@@ -241,7 +298,7 @@ namespace ItsSorceryFramework
             yield break;
         }
 
-        public virtual void AdjustAbilities(ProgressLevelModifier modifier)
+        public virtual void AdjustAbilities(ProgressLevelModifier modifier, ref ProgressDiffClassLedger classLedger)
         {
             Pawn_AbilityTracker abilityTracker = this.pawn.abilities;
 
@@ -254,11 +311,13 @@ namespace ItsSorceryFramework
             {
                 abilityTracker.RemoveAbility(abilityDef);
             }
+
+            progressDiffLog.LogAbilities(modifier, ref classLedger);
         }
 
-        public virtual void AdjustAbilities(ProgressLevelOption option)
+        public virtual void AdjustAbilities(ProgressLevelOption option, ref ProgressDiffClassLedger classLedger)
         {
-            Pawn_AbilityTracker abilityTracker = pawn.abilities;
+            Pawn_AbilityTracker abilityTracker = this.pawn.abilities;
 
             foreach (AbilityDef abilityDef in option.abilityGain)
             {
@@ -269,15 +328,22 @@ namespace ItsSorceryFramework
             {
                 abilityTracker.RemoveAbility(abilityDef);
             }
+
+            progressDiffLog.LogAbilities(option, ref classLedger);
         }
 
-        public virtual void AdjustHediffs(ProgressLevelModifier modifier)
+        public virtual void AdjustHediffs(ProgressLevelModifier modifier, ref ProgressDiffClassLedger classLedger)
         {
+            Dictionary<HediffDef, float> returnDict = new Dictionary<HediffDef, float>() { };
+
             Hediff hediff;
             foreach (NodeHediffProps props in modifier.hediffAdd)
             {
                 hediff = HediffMaker.MakeHediff(props.hediffDef, pawn, null);
                 hediff.Severity = props.severity;
+
+                if (returnDict.ContainsKey(props.hediffDef)) returnDict[props.hediffDef] += props.severity;
+                else returnDict[props.hediffDef] = props.severity;
 
                 pawn.health.AddHediff(hediff, null, null, null);
             }
@@ -285,22 +351,36 @@ namespace ItsSorceryFramework
             foreach (NodeHediffProps props in modifier.hediffAdjust)
             {
                 HealthUtility.AdjustSeverity(pawn, props.hediffDef, props.severity);
+                if (returnDict.ContainsKey(props.hediffDef)) returnDict[props.hediffDef] += props.severity;
+                else returnDict[props.hediffDef] = props.severity;
             }
 
             foreach (HediffDef hediffDef in modifier.hediffRemove)
             {
                 hediff = pawn.health.hediffSet.GetFirstHediffOfDef(hediffDef);
-                if (hediff != null) pawn.health.RemoveHediff(hediff);
+                if (hediff != null)
+                {
+                    if (returnDict.ContainsKey(hediffDef)) returnDict[hediffDef] -= hediff.Severity;
+                    else returnDict[hediffDef] = -hediff.Severity;
+                    pawn.health.RemoveHediff(hediff);
+                }            
             }
+
+            classLedger.hediffModsTotal.DiffDictSum<HediffDef, float>(returnDict);
         }
 
-        public virtual void AdjustHediffs(ProgressLevelOption option)
+        public virtual void AdjustHediffs(ProgressLevelOption option, ref ProgressDiffClassLedger classLedger)
         {
+            Dictionary<HediffDef, float> returnDict = new Dictionary<HediffDef, float>() { };
+
             Hediff hediff;
             foreach (NodeHediffProps props in option.hediffAdd)
             {
                 hediff = HediffMaker.MakeHediff(props.hediffDef, pawn, null);
                 hediff.Severity = props.severity;
+
+                if (returnDict.ContainsKey(props.hediffDef)) returnDict[props.hediffDef] += props.severity;
+                else returnDict[props.hediffDef] = props.severity;
 
                 pawn.health.AddHediff(hediff, null, null, null);
             }
@@ -308,34 +388,44 @@ namespace ItsSorceryFramework
             foreach (NodeHediffProps props in option.hediffAdjust)
             {
                 HealthUtility.AdjustSeverity(pawn, props.hediffDef, props.severity);
+                if (returnDict.ContainsKey(props.hediffDef)) returnDict[props.hediffDef] += props.severity;
+                else returnDict[props.hediffDef] = props.severity;
             }
 
             foreach (HediffDef hediffDef in option.hediffRemove)
             {
                 hediff = pawn.health.hediffSet.GetFirstHediffOfDef(hediffDef);
-                if (hediff != null) pawn.health.RemoveHediff(hediff);
+                if (hediff != null)
+                {
+                    if (returnDict.ContainsKey(hediffDef)) returnDict[hediffDef] -= hediff.Severity;
+                    else returnDict[hediffDef] = -hediff.Severity;
+                    pawn.health.RemoveHediff(hediff);
+                }
             }
+
+            classLedger.hediffModsTotal.DiffDictSum<HediffDef, float>(returnDict);
         }
 
         public virtual HediffStage RefreshCurStage() => new HediffStage();
 
-        public virtual void NotifyTotalLevelUp(float orgSev, List<Window> windows = null)
+        public virtual void NotifyTotalLevelUp(float orgSev, List<Window> windows = null, bool silent_msg = false)
         {
+            if (silent_msg) return;
             Find.LetterStack.ReceiveLetter("Level up.",
                 "This pawn has leveled up.", LetterDefOf.NeutralEvent);
         }
 
-        public bool Maxed => (CurrLevel) >= def.levelRange.TrueMax; // hediff.def.maxSeverity;
+        public bool Maxed => (CurrLevel) >= currClassDef.levelRange.TrueMax; // def.levelRange.TrueMax; // hediff.def.maxSeverity;
 
         public int CurrLevel
         {
             get
             {
-                 return Mathf.Clamp(level, def.levelRange.TrueMin, def.levelRange.TrueMax); //(int)hediff.Severity;
+                 return Mathf.Clamp(level, currClassDef.levelRange.TrueMin, currClassDef.levelRange.TrueMax);  // Mathf.Clamp(level, def.levelRange.TrueMin, def.levelRange.TrueMax); //(int)hediff.Severity;
             }
             set
             {
-                level = Mathf.Clamp(value, def.levelRange.TrueMin, def.levelRange.TrueMax);
+                level = Mathf.Clamp(value, currClassDef.levelRange.TrueMin, currClassDef.levelRange.TrueMax); // Mathf.Clamp(value, def.levelRange.TrueMin, def.levelRange.TrueMax);
             }
         }
 
@@ -351,6 +441,7 @@ namespace ItsSorceryFramework
                 if(cachedCurLevel != CurrLevel || cachedLevelLabel.NullOrEmpty())
                 {
                     cachedLevelLabel = GetProgressLevelLabel(CurrLevel);
+                    cachedCurLevel = CurrLevel;
                 }
 
                 return cachedLevelLabel;
@@ -364,7 +455,7 @@ namespace ItsSorceryFramework
             {
                 if(cachedLevelLabels == null)
                 {
-                    cachedLevelLabels = def.levelLabels?.OrderByDescending(x => x.level).ToList();
+                    cachedLevelLabels = currClassDef.levelLabels?.OrderByDescending(x => x.level).ToList(); //def.levelLabels?.OrderByDescending(x => x.level).ToList();
                 }
                 return cachedLevelLabels;
             }
@@ -373,13 +464,19 @@ namespace ItsSorceryFramework
         // grab the level label at a specific level
         public string GetProgressLevelLabel(int level)
         {
-            if(def.levelLabels.NullOrEmpty()) return null;
+            if(currClassDef.levelLabels.NullOrEmpty()) return null; //def.levelLabels.NullOrEmpty()
 
-            foreach(var levelLabel in LevelLabelsDesc)
+            foreach (var levelLabel in LevelLabelsDesc)
             {
                 if (levelLabel.level <= level) return levelLabel.label;
             }
             return null;
+        }
+
+        public void ResetLevelLabel()
+        {
+            cachedLevelLabels = null;
+            cachedLevelLabel = null;
         }
 
         public virtual void DrawLeftGUI(Rect rect)
@@ -460,7 +557,7 @@ namespace ItsSorceryFramework
 
         public virtual string TipStringExtra(ProgressLevelModifier mods)
         {
-            IEnumerable<StatDrawEntry> entries = def.specialDisplayMods(mods);
+            IEnumerable<StatDrawEntry> entries = currClassDef.SpecialDisplayMods(mods);  //def.SpecialDisplayMods(mods);
             if (entries.EnumerableNullOrEmpty()) return "";
             StringBuilder stringBuilder = new StringBuilder();
             foreach (StatDrawEntry statDrawEntry in entries)
@@ -503,8 +600,10 @@ namespace ItsSorceryFramework
             //Text.Font = GameFont.Small;
             rect.x += 22f;
 
-            if (schema.progressTracker.def.Workers.EnumerableNullOrEmpty()) return rect.yMin - yMin;
-            foreach (ProgressEXPWorker worker in schema.progressTracker.def.Workers)
+            HashSet<ProgressEXPWorker> workers = schema.progressTracker.currClassDef.Workers;
+            // schema.progressTracker.def.Workers
+            if (workers.EnumerableNullOrEmpty()) return rect.yMin - yMin;
+            foreach (ProgressEXPWorker worker in workers)
             {
                 rect.yMin += worker.DrawWorker(rect);
             }
@@ -853,6 +952,39 @@ namespace ItsSorceryFramework
             return rect.yMin - yMin;
         }
 
+        public virtual bool SpecialClassesCheck(ProgressLevelModifier mod)
+        {
+            if (mod == null) return false;
+
+            if (mod.specialClasses.NullOrEmpty()) return false;
+
+            return true;
+        }
+
+        public virtual float DrawSpecialClasses(Rect rect, ProgressLevelModifier mod)
+        {
+            float yMin = rect.yMin;
+            float x = rect.x;
+
+            List<ProgressLinkedClassMap> specialClasses = mod.specialClasses;
+
+            if (!specialClasses.NullOrEmpty())
+            {
+                Widgets.LabelCacheHeight(ref rect, "ISF_LearningProgressLevelProspectsClassChoice".Translate(), true, false);
+                rect.yMin += rect.height;
+                rect.x += 6f;
+                foreach (var c in specialClasses)
+                {
+                    if (!currClassDef.linkedClasses.Contains(c)) continue;
+                    Widgets.LabelCacheHeight(ref rect, "  - " + c.classDef.label, true, false);
+                    rect.yMin += rect.height;
+                }
+                rect.x = x;
+            }
+
+            return rect.yMin - yMin;
+        }
+
         public virtual float DrawSorceries(Rect rect)
         {
             float yMin = rect.yMin;
@@ -867,7 +999,7 @@ namespace ItsSorceryFramework
             Text.Font = GameFont.Small;
             titleButtonRect.x = rect.x + rect.width / 3f;
             titleButtonRect.width = rect.width / 6f;
-            if (Widgets.ButtonText(titleButtonRect, "Selection")) Find.WindowStack.Add(new Dialog_SorcerySelection(AllSorceries));
+            if (pawn.Faction != null && pawn.Faction.IsPlayer && Widgets.ButtonText(titleButtonRect, "Selection")) Find.WindowStack.Add(new Dialog_SorcerySelection(AllSorceries));
 
             float scale = 50f;
             Color col = Color.white;

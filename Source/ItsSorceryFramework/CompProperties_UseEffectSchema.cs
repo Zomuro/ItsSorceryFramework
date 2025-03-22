@@ -11,5 +11,7 @@ namespace ItsSorceryFramework
 
 		// input sorcery schema for the use effect
 		public SorcerySchemaDef schemaDef;
+
+		public ProgressTrackerClassDef progressTrackerClassDef;
 	}
 }

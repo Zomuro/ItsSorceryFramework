@@ -37,10 +37,9 @@ namespace ItsSorceryFramework
         // initalizer- created via activator via SorcerySchema
         public ProgressTracker_Level(Pawn pawn) : base(pawn) { }
 
-        public ProgressTracker_Level(Pawn pawn, ProgressTrackerDef def, SorcerySchema schema) : base(pawn, def, schema)
-        {
-            Initialize();
-        }
+        public ProgressTracker_Level(Pawn pawn, ProgressTrackerDef def, SorcerySchema schema) : base(pawn, def, schema) { }
+
+        public ProgressTracker_Level(Pawn pawn, ProgressTrackerDef def, SorcerySchema schema, ProgressTrackerClassDef classDef) : base(pawn, def, schema, classDef) { }
 
         public override void Initialize()
         {
@@ -88,9 +87,10 @@ namespace ItsSorceryFramework
         public override void ProgressTrackerTick()
         {
             if(Find.TickManager.TicksGame % 60 == 0)
-            {               
-                if (def.Workers.EnumerableNullOrEmpty()) return;
-                foreach (var worker in def.Workers.Where(x => x.GetType() == typeof(ProgressEXPWorker_Passive) || 
+            {
+                // def.Workers
+                if (currClassDef.Workers.EnumerableNullOrEmpty()) return;
+                foreach (var worker in currClassDef.Workers.Where(x => x.GetType() == typeof(ProgressEXPWorker_Passive) || 
                     x.GetType() == typeof(ProgressEXPWorker_DuringJob)))
                 {
                     worker.TryExecute(this);
@@ -121,46 +121,68 @@ namespace ItsSorceryFramework
             if(CurrLevel > orgSev) NotifyTotalLevelUp(orgSev, optionWindows); // notify total level up and add windows
         }
 
-        public override void ForceLevelUp()
+        public override void ForceLevelUp(int levels, bool silent_msg = false)
         {
             if (Hediff == null || Maxed) return;
             float orgSev = CurrLevel;
-            CurrLevel += 1;
+            int level_inc = 0;
+
             List<Window> windows = new List<Window>();
-            NotifyLevelUp(CurrLevel, ref windows); // level up + get levels
-            NotifyTotalLevelUp(orgSev, windows); // notify level up + get windows
+            while (levels > level_inc)
+            {
+                if (Maxed) break;
+                CurrLevel += 1;
+                NotifyLevelUp(CurrLevel, ref windows); // level up + get 
+                level_inc++;
+            }
+
+            NotifyTotalLevelUp(orgSev, windows, silent_msg); // notify level up + get windows
         }
 
         public override void NotifyLevelUp(float sev, ref List<Window> windows)
         {
-            ProgressLevelModifier factor = def.getLevelFactor(sev);
+            // begin the new log here
+            ProgressDiffLedger progressDiffLedger = progressDiffLog.PrepNewLedger(this);
+            ProgressDiffClassLedger progressDiffClassLedger = new ProgressDiffClassLedger();
 
-            if (Prefs.DevMode && ItsSorceryUtility.settings.ShowItsSorceryDebug && !factor.options.NullOrEmpty()) 
-                Log.Message($"[It's Sorcery!] Level {CurrLevel} has {factor.options.Count} options to choose from; picking {factor.optionChoices}");
-
+            // for factors of the level
+            ProgressLevelModifier factor = currClassDef.GetLevelFactor(sev);  // def.GetLevelFactor(sev);
             if (factor != null)
             {
-                AdjustModifiers(factor);
-                AdjustAbilities(factor);
-                AdjustHediffs(factor);
+                // debug statement about levelmodifier's options
+                if (Prefs.DevMode && ItsSorceryUtility.settings.ShowItsSorceryDebug && !factor.options.NullOrEmpty())
+                    Log.Message($"[It's Sorcery!] Level {CurrLevel} has {factor.options.Count} factor options to choose from; picking {factor.optionChoices}");
+
+                // adjust modifiers
+                AdjustModifiers(factor, ref progressDiffClassLedger);
+                AdjustAbilities(factor, ref progressDiffClassLedger);
+                AdjustHediffs(factor, ref progressDiffClassLedger);
                 points += factor.pointGain;
-                ApplyOptions(factor, ref windows);
+                ApplyOptions(factor, ref windows, ref progressDiffClassLedger);
             }
 
-            ProgressLevelModifier special = def.getLevelSpecific(sev);
+            // for that specific level
+            ProgressLevelModifier special = currClassDef.GetLevelSpecific(sev);  // def.GetLevelSpecific(sev);
             if (special != null)
             {
-                AdjustModifiers(special);
-                AdjustAbilities(special);
-                AdjustHediffs(special);
+                // debug statement about levelmodifier's options
+                if (Prefs.DevMode && ItsSorceryUtility.settings.ShowItsSorceryDebug && !special.options.NullOrEmpty())
+                    Log.Message($"[It's Sorcery!] Level {CurrLevel} has {special.options.Count} special options to choose from; picking {special.optionChoices}");
+
+                // adjust modifiers
+                AdjustModifiers(special, ref progressDiffClassLedger);
+                AdjustAbilities(special, ref progressDiffClassLedger);
+                AdjustHediffs(special, ref progressDiffClassLedger);
                 ApplyUnlocks(special); // only for modifiers within special
+                ApplyClasses(special);
                 points += special.pointGain;
-                ApplyOptions(special, ref windows);
+                ApplyOptions(special, ref windows, ref progressDiffClassLedger);
             }
 
+            // debug validating that hediff and progresstracker modifiers are the same
             if (Prefs.DevMode && ItsSorceryUtility.settings.ShowItsSorceryDebug)
             {
-                Log.Message($"[It's Sorcery!] {schema.def.defName}.{def.defName}:" +
+                Log.Message($"[It's Sorcery!] {schema.def.label} Modifier Validation:" +
                         $"\nProgressTracker offets: {statOffsetsTotal.ToStringSafeEnumerable()}" +
                         $"\nProgressTracker factors: {statFactorsTotal.ToStringSafeEnumerable()}" +
                         $"\nProgressTracker cap mods: {capModsTotal.ToStringSafeEnumerable()}" +
@@ -169,6 +191,8 @@ namespace ItsSorceryFramework
                         $"\nHediff ProgressTracker cap mods: {Hediff.Schema.progressTracker.capModsTotal.ToStringSafeEnumerable()}");
             }
 
+            progressDiffLedger.classDiffLedgers[currClassDef] = progressDiffClassLedger;
+            progressDiffLog.AddLedger(progressDiffLedger);
             Hediff.cachedCurStage = RefreshCurStage();
         }
 
@@ -177,20 +201,29 @@ namespace ItsSorceryFramework
             HediffStage stage = new HediffStage()
             {
                 statOffsets = CreateStatModifiers(statOffsetsTotal).ToList(),
-                statFactors = CreateStatModifiers(statFactorsTotal).ToList(),
+                //statFactors = CreateStatModifiers(statFactorsTotal).ToList(), // assumes multiplier is baked in
+                statFactors = CreateStatModifiers(statFactorsTotal, true).ToList(), // will bake in the multiplier effect for statfactors
                 capMods = CreateCapModifiers(capModsTotal).ToList()
             };
-
+            
             return stage;
         }
 
-        public override void NotifyTotalLevelUp(float orgSev, List<Window> windows = null)
+        public override void NotifyTotalLevelUp(float orgSev, List<Window> windows = null, bool silent_msg = false)
         {
-            if (!windows.NullOrEmpty())
+            // if there are any option windows that show up, display them in reverse (lowest to highest lvl)
+            if (!windows.NullOrEmpty()) 
             {
                 foreach(var window in windows.Reverse<Window>()) Find.WindowStack.Add(window);
             }
 
+            // debug info
+            if (Prefs.DevMode && ItsSorceryUtility.settings.ShowItsSorceryDebug)
+                Log.Message($"[It's Sorcery!] {schema.def.label} Diff Log Total:\n{progressDiffLog.TotalDiff(null)}");
+
+            // not player faction? don't show level ups!
+            // silent msg? don't bother running the rest of the method then!
+            if (pawn.Faction is null || !pawn.Faction.IsPlayer || silent_msg) return; 
             Find.LetterStack.ReceiveLetter(def.progressLevelUpKey.Translate(pawn.Name.ToStringShort),
                 def.progressLevelUpDescKey.Translate(orgSev.ToString(), CurrLevel.ToString()), LetterDefOf.NeutralEvent);
         }
@@ -245,6 +278,14 @@ namespace ItsSorceryFramework
             }
 
             coordY += xpBar.height * 1.5f;
+
+            // CLASS CHANGE BUTTON
+            Text.Font = GameFont.Small;
+            Rect classChangeRect = new Rect(0f + viewRect.width * 3f / 10f, coordY, viewRect.width * 2f / 5f, 35f);
+            if (pawn.Faction != null && pawn.Faction.IsPlayer && 
+                Widgets.ButtonText(classChangeRect, "ISF_LearningProgressLevelProspectsClassChoice".Translate())) 
+                Find.WindowStack.Add(new Dialog_ClassChange(this));
+            coordY += classChangeRect.height * 1.5f;
 
             // DESCRIPTION //
             GenUI.ResetLabelAlign();
@@ -365,17 +406,17 @@ namespace ItsSorceryFramework
 
             if (projLevel > Hediff.def.maxSeverity) return rect.yMin - yMin;
             Text.Font = GameFont.Small;
-            for (int i = (int)projLevel; i < (int)projLevel + ItsSorceryUtility.settings.ProgressViewProspectsNum; i++)
+            for (int i = (int)projLevel; i <= Math.Min((int)projLevel + ItsSorceryUtility.settings.ProgressViewProspectsNum, currClassDef.levelRange.TrueMax); i++)
             {
                 if (i > Hediff.def.maxSeverity) break;
 
-                ProgressLevelModifier factor = def.getLevelFactor(i);
+                ProgressLevelModifier factor = currClassDef.GetLevelFactor(i); // def.GetLevelFactor(i);
                 tipString = TipStringExtra(factor);
-                ProgressLevelModifier special = def.getLevelSpecific(i);
+                ProgressLevelModifier special = currClassDef.GetLevelSpecific(i); // def.GetLevelSpecific(i);
                 tipString2 = TipStringExtra(special);
 
                 if (tipString.NullOrEmpty() && !OptionsCheck(factor) && !HyperlinkCheck(factor)  &&
-                    tipString2.NullOrEmpty() && !OptionsCheck(special) && !HyperlinkCheck(special) && !SpecialUnlocksCheck(special)) continue;
+                    tipString2.NullOrEmpty() && !OptionsCheck(special) && !HyperlinkCheck(special) && !SpecialUnlocksCheck(special) && !SpecialClassesCheck(special)) continue;
 
                 Text.Font = GameFont.Small;
                 if (CurLevelLabel.NullOrEmpty())
@@ -391,31 +432,34 @@ namespace ItsSorceryFramework
                     rect.yMin += rect.height;
 
                     // draw modifiers
-                    rect.yMin += this.DrawModifiers(rect, factor, tipString);
+                    rect.yMin += DrawModifiers(rect, factor, tipString);
 
                     // draw options
-                    rect.yMin += this.DrawOptions(rect, factor);
+                    rect.yMin += DrawOptions(rect, factor);
 
                     // draw hyperlinks
-                    rect.yMin += this.DrawHyperlinks(rect, factor);
+                    rect.yMin += DrawHyperlinks(rect, factor);
                 }
-                if (!tipString2.NullOrEmpty() || OptionsCheck(special) || HyperlinkCheck(special) || SpecialUnlocksCheck(special))
+                if (!tipString2.NullOrEmpty() || OptionsCheck(special) || HyperlinkCheck(special) || SpecialUnlocksCheck(special) || SpecialClassesCheck(special))
                 {
                     Text.Font = GameFont.Small;
                     Widgets.LabelCacheHeight(ref rect, "ISF_LearningProgressLevelProspectsSpecial".Translate().Colorize(ColoredText.SubtleGrayColor), true, false);
                     rect.yMin += rect.height;
 
                     // draw modifiers
-                    rect.yMin += this.DrawModifiers(rect, special, tipString2);
+                    rect.yMin += DrawModifiers(rect, special, tipString2);
 
                     // draw options
-                    rect.yMin += this.DrawOptions(rect, special);
+                    rect.yMin += DrawOptions(rect, special);
 
                     // draw hyperlinks
-                    rect.yMin += this.DrawHyperlinks(rect, special);
+                    rect.yMin += DrawHyperlinks(rect, special);
 
                     // draw special unlocks
-                    rect.yMin += this.DrawSpecialUnlocks(rect, special);
+                    rect.yMin += DrawSpecialUnlocks(rect, special);
+
+                    // draw special class choices
+                    rect.yMin += DrawSpecialClasses(rect, special);
                 }
 
             }

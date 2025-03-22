@@ -51,14 +51,19 @@ namespace ItsSorceryFramework
             }
         }
 
+        public static Comp_ItsSorcery GetSorceryComp(Pawn pawn)
+        {
+            return pawn.TryGetComp<Comp_ItsSorcery>();
+        }
+
         public static SorcerySchema InitializeSorcerySchema(Pawn pawn, SorcerySchemaDef def)
         {
             return new SorcerySchema(pawn, def);
         }
 
-        public static Comp_ItsSorcery GetSorceryComp(Pawn pawn)
+        public static SorcerySchema InitializeSorcerySchema(Pawn pawn, SorcerySchemaDef def, ProgressTrackerClassDef progressTrackerClassDef)
         {
-            return pawn.TryGetComp<Comp_ItsSorcery>();
+            return new SorcerySchema(pawn, def, progressTrackerClassDef);
         }
 
         public static void AddSorcerySchema(Pawn pawn, SorcerySchemaDef def)
@@ -66,6 +71,13 @@ namespace ItsSorceryFramework
             Comp_ItsSorcery schemaComp = GetSorceryComp(pawn);
             if (schemaComp.schemaTracker.sorcerySchemas.FirstOrDefault(x => x.def == def) != null) return;
             schemaComp.schemaTracker.sorcerySchemas.Add(InitializeSorcerySchema(pawn, def));
+        }
+
+        public static void AddSorcerySchema(Pawn pawn, SorcerySchemaDef def, ProgressTrackerClassDef progressTrackerClassDef = null)
+        {
+            Comp_ItsSorcery schemaComp = GetSorceryComp(pawn);
+            if (schemaComp.schemaTracker.sorcerySchemas.FirstOrDefault(x => x.def == def) != null) return;
+            schemaComp.schemaTracker.sorcerySchemas.Add(InitializeSorcerySchema(pawn, def, progressTrackerClassDef));
         }
 
         public static void AddSorcerySchema(Pawn pawn, SorcerySchemaDef def, out SorcerySchema schema)
@@ -78,6 +90,19 @@ namespace ItsSorceryFramework
             }
 
             schema = InitializeSorcerySchema(pawn, def);
+            schemaComp.schemaTracker.sorcerySchemas.Add(schema);
+        }
+
+        public static void AddSorcerySchema(Pawn pawn, SorcerySchemaDef def, out SorcerySchema schema, ProgressTrackerClassDef classDef = null)
+        {
+            Comp_ItsSorcery schemaComp = GetSorceryComp(pawn);
+            if (schemaComp?.schemaTracker?.sorcerySchemas?.FirstOrDefault(x => x.def == def) is SorcerySchema found && found != null)
+            {
+                schema = found;
+                return;
+            }
+
+            schema = InitializeSorcerySchema(pawn, def, classDef);
             schemaComp.schemaTracker.sorcerySchemas.Add(schema);
         }
 
@@ -134,7 +159,7 @@ namespace ItsSorceryFramework
         }
 
         public static EnergyTracker GetEnergyTracker(SorcerySchema schema, StatDef unitStat)
-        {
+        {           
             foreach(var et in schema.energyTrackers)
             {
                 if (et.def.energyUnitStatDef == unitStat) return et;
@@ -142,9 +167,78 @@ namespace ItsSorceryFramework
             return null;
         }
 
+        public static EnergyTracker GetEnergyTracker(SorcerySchema schema, EnergyTrackerDef energyTrackerDef)
+        {
+            return schema.energyTrackers.FirstOrDefault(x => x.def == energyTrackerDef);
+        }
+
+        public static EnergyTracker GetEnergyTracker(Pawn pawn, SorcerySchemaDef schemaDef, EnergyTrackerDef energyTrackerDef)
+        {
+            List<SorcerySchema> schemas = GetSorcerySchemaList(pawn);
+            if (schemas.NullOrEmpty()) return null;
+
+            SorcerySchema schema = schemas.FirstOrDefault(x => x.def == schemaDef);
+            if (schema is null) return null;
+
+            return schema.energyTrackers.FirstOrDefault(x => x.def == energyTrackerDef);
+        }
+
+        public static EnergyTracker GetEnergyTracker(Pawn_SorcerySchemaTracker schemaTracker, SorcerySchemaDef schemaDef, EnergyTrackerDef energyTrackerDef)
+        {
+            SorcerySchema schema = schemaTracker.sorcerySchemas.FirstOrDefault(x => x.def == schemaDef);
+            if (schema is null) return null;
+            return schema.energyTrackers.FirstOrDefault(x => x.def == energyTrackerDef);
+        }
+
         public static void RefreshProgressTracker(SorcerySchema schema)
         {
             schema.progressTracker.Hediff.cachedCurStage = schema.progressTracker.RefreshCurStage();
+        }
+
+        public static void AddQuickEnergyEntry(Pawn pawn, SorcerySchema schema, EnergyTracker energyTracker)
+        {
+            // null check pawn/comp
+            if (pawn == null) return;
+            Comp_ItsSorcery comp = GetSorceryComp(pawn);
+            if (comp is null) return;
+
+            // check if there's an entry already w/ the schema/energytracker combo - if so, skip
+            if (comp.schemaTracker.quickEnergyEntries.
+                FirstOrDefault(x => x.sorcerySchemaDef == schema.def && x.energyTrackerDef == energyTracker.def) != null)
+            {
+                // add quick msg/popup stating a prior entry should be removed
+                Messages.Message("ISF_QuickEnergyGizmoEntryExisting".Translate(energyTracker.EnergyLabel.CapitalizeFirst()), MessageTypeDefOf.RejectInput);
+                return;
+            }
+
+            // if adding another entry > 5, skip it.
+            if (comp.schemaTracker.quickEnergyEntries.Count + 1 > 5)
+            {
+                // add quick msg/popup stating a prior entry should be removed
+                Messages.Message("ISF_QuickEnergyGizmoEntryFull".Translate(pawn.Named("PAWN")), MessageTypeDefOf.RejectInput);
+                return;
+            }
+
+            // else add it
+            comp.schemaTracker.quickEnergyEntries.Add(new GizmoEntry_QuickEnergy(schema.def, energyTracker.def));
+            Messages.Message("ISF_QuickEnergyGizmoEntryAdded".Translate(comp.schemaTracker.quickEnergyEntries.Count, 5), MessageTypeDefOf.TaskCompletion);
+            comp.schemaTracker.UpdateGizmo();
+        }
+
+        public static void RemoveQuickEnergyEntry(Pawn pawn, SorcerySchema schema, EnergyTracker energyTracker)
+        {
+            if (pawn == null) return;
+            Comp_ItsSorcery comp = GetSorceryComp(pawn);
+            if (comp is null) return;
+
+            GizmoEntry_QuickEnergy entry = comp.schemaTracker.quickEnergyEntries.
+                FirstOrDefault(x => x.sorcerySchemaDef == schema.def && x.energyTrackerDef == energyTracker.def);
+            if (entry is null) return;
+            if (comp.schemaTracker.quickEnergyEntries.Remove(entry)) // successful removal => update gizmo
+            {
+                comp.schemaTracker.UpdateGizmo();
+                Messages.Message("ISF_QuickEnergyGizmoEntryRemoved".Translate(comp.schemaTracker.quickEnergyEntries.Count, 5), MessageTypeDefOf.TaskCompletion);
+            }
         }
 
     }

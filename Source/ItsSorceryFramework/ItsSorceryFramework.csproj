@@ -65,6 +65,21 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PrereqUtility.cs" />
+    <Compile Include="CompProperties_ClassChoiceItem.cs" />
+    <Compile Include="CompProperties_UseEffectClassChoice.cs" />
+    <Compile Include="CompClassChoiceItem.cs" />
+    <Compile Include="CompUseEffect_ClassChoice.cs" />
+    <Compile Include="Dialog_ClassChange.cs" />
+    <Compile Include="ISF_DefOf.cs" />
+    <Compile Include="ProgressDiffLogUtility.cs" />
+    <Compile Include="ProgressDiffLog.cs" />
+    <Compile Include="ProgressDiffClassLedger.cs" />
+    <Compile Include="ProgressDiffLedger.cs" />
+    <Compile Include="ProgressTrackerClassDef.cs" />
+    <Compile Include="ProgressTrackerUtility.cs" />
+    <Compile Include="Dialog_QuickEnergy.cs" />
+    <Compile Include="GizmoEntry_QuickEnergy.cs" />
     <Compile Include="DebugUtility.cs" />
     <Compile Include="CompProperties_LearningTreeItem.cs" />
     <Compile Include="CompLearningTreeItem.cs" />

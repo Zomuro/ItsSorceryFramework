@@ -62,15 +62,13 @@ namespace ItsSorceryFramework
 
         public List<SchemaNodeReq> requiredNodes;
 
+        public ProgressTrackerClassDef baseClassDef;
+        
+        public List<ProgressLinkedClassMap> classChanges;
+
         private List<LearningTreeNodeDef> cachedNodes;
 
-        public float WeightConstrained
-        {
-            get
-            {
-                return weight >= 0 ? weight : 1f;
-            }
-        }
+        public float WeightConstrained => weight > 0 ? weight : 1f;
 
         public List<LearningTreeNodeDef> NodeList
         {

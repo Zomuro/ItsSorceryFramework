@@ -102,7 +102,7 @@ namespace ItsSorceryFramework
 			}
 		}*/
 
-		public IEnumerable<StatDrawEntry> specialDisplayMods()
+		public IEnumerable<StatDrawEntry> SpecialDisplayMods()
 		{
 			if (!capMods.NullOrEmpty())
 			{

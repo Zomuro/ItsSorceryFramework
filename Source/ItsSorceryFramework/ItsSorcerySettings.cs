@@ -69,7 +69,7 @@ namespace ItsSorceryFramework
 
         private const int MinProspectLevels = 3;
 
-        private const int MaxProspectLevels = 20;
+        private const int MaxProspectLevels = 50;
 
         private enum Tab
         {
@@ -283,6 +283,7 @@ namespace ItsSorceryFramework
             settings.EnergyStatCacheTicks = MaxStatCacheTicks;
 
             settings.ProgressShowXPMotes = false;
+            settings.ProgressViewProspectsNum = MinProspectLevels;
 
             Messages.Message(new Message("ISF_Settings_GeneralPerfMessage".Translate(), MessageTypeDefOf.NeutralEvent));
         }
@@ -295,6 +296,7 @@ namespace ItsSorceryFramework
             settings.EnergyStatCacheTicks = MinStatCacheTicks;
 
             settings.ProgressShowXPMotes = true;
+            settings.ProgressViewProspectsNum = MaxProspectLevels;
 
             Messages.Message(new Message("ISF_Settings_GeneralHighMessage".Translate(), MessageTypeDefOf.NeutralEvent));
         }

@@ -91,7 +91,8 @@ namespace ItsSorceryFramework
 		{
 			if (thing.stackCount < 1) return;
 
-			foreach (var worker in schema.progressTracker.def.Workers)
+			// schema.progressTracker.def.Workers
+			foreach (var worker in schema.progressTracker.currClassDef.Workers)
 			{
 				if (worker.GetType() == typeof(ProgressEXPWorker_UseItem))
 				{

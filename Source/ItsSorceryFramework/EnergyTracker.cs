@@ -41,7 +41,7 @@ namespace ItsSorceryFramework
 
         public Texture2D cachedOverBarTex;
 
-        public int loadID = -1;
+        //public int loadID = -1;
 
         public Texture2D EmptyBarTex
         {
@@ -295,7 +295,7 @@ namespace ItsSorceryFramework
             }
         }
 
-        public virtual float DrawOnGUI(ref Rect rect)
+        public virtual float DrawOnGUI(ref Rect rect, bool addToGizmo = true)
         {
             // get original rect
             Rect orgRect = new Rect(rect);
@@ -319,7 +319,13 @@ namespace ItsSorceryFramework
 
             // draws power bar & highlight energy costs
             barBox.height = labelBox.height; // set barbox to labelbox height for consistency
-            DrawEnergyBarTip(barBox);
+            DrawEnergyBarTip(barBox, addToGizmo); // draw the tipbox when hovering over it
+
+            // include invisible buttons to add/remove to the quick energy gizmo
+            if (addToGizmo) AddQuickEnergyEntry(barBox);
+            else RemoveQuickEnergyEntry(barBox);
+
+            // adds/removes the energy bar / energy highlight graphic part
             if (ItsSorceryUtility.settings.SchemaShowEnergyBar)
             {
                 DrawEnergyBar(barBox);
@@ -342,7 +348,7 @@ namespace ItsSorceryFramework
             DrawEnergyBarThresholds(rect);
         }
 
-        public virtual void DrawEnergyBarTip(Rect rect)
+        public virtual void DrawEnergyBarTip(Rect rect, bool addToGizmo = true)
         {
             if (Mouse.IsOver(rect))
             {
@@ -358,8 +364,22 @@ namespace ItsSorceryFramework
                     if (AbsMaxEnergy > MaxEnergy) tipString += "\n" + "ISF_BarUnderTip".Translate(MaxEnergy.ToString("F0"), AbsMaxEnergy.ToString("F0"));
                     if (AbsMinEnergy < MinEnergy) tipString += "\n" + "ISF_BarOverTip".Translate(AbsMinEnergy.ToString("F0"), MinEnergy.ToString("F0"));
                 }
+
+                tipString += "\n\n";
+                if (addToGizmo) tipString += "ISF_BarAddQuickEnergy".Translate().Colorize(ColoredText.TipSectionTitleColor);
+                else tipString += "ISF_BarRemoveQuickEnergy".Translate().Colorize(ColoredText.TipSectionTitleColor);
                 TooltipHandler.TipRegion(rect, tipString);
             }
+        }
+
+        public virtual void AddQuickEnergyEntry(Rect rect)
+        {
+            if (Widgets.ButtonInvisible(rect)) SorcerySchemaUtility.AddQuickEnergyEntry(pawn, schema, this);
+        }
+
+        public virtual void RemoveQuickEnergyEntry(Rect rect)
+        {
+            if (Widgets.ButtonInvisible(rect)) SorcerySchemaUtility.RemoveQuickEnergyEntry(pawn, schema, this);
         }
 
         public virtual void DrawEnergyBarThresholds(Rect rect)

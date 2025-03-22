@@ -55,7 +55,8 @@ namespace ItsSorceryFramework
                 if (!et.TryAlterEnergy(sorceryDef.statBases.GetStatValueFromList(et.def.energyUnitStatDef, 0f) * et.EnergyCostFactor, sorceryDef)) return false;
             }
 
-            var worker = Schema.progressTracker.def.Workers.FirstOrDefault(x => x.GetType() == typeof(ProgressEXPWorker_CastEnergyCost));
+            // Schema.progressTracker.def.Workers
+            var worker = Schema.progressTracker.currClassDef.Workers.FirstOrDefault(x => x.GetType() == typeof(ProgressEXPWorker_CastEnergyCost));
             if (worker != null)
             {
                 foreach (var et in Schema.energyTrackers)
@@ -75,7 +76,8 @@ namespace ItsSorceryFramework
                 if (!et.TryAlterEnergy(sorceryDef.statBases.GetStatValueFromList(et.def.energyUnitStatDef, 0f) * et.EnergyCostFactor, sorceryDef)) return false;
             }
 
-            var worker = Schema.progressTracker.def.Workers.FirstOrDefault(x => x.GetType() == typeof(ProgressEXPWorker_CastEnergyCost));
+            // Schema.progressTracker.def.Workers
+            var worker = Schema.progressTracker.currClassDef.Workers.FirstOrDefault(x => x.GetType() == typeof(ProgressEXPWorker_CastEnergyCost));
             if (worker != null)
             {
                 foreach (var et in Schema.energyTrackers)

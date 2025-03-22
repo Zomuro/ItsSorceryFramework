@@ -17,8 +17,6 @@ namespace ItsSorceryFramework
 
         private Vector2 cachedViewSize;
 
-        private ScrollPositioner scrollPositioner = new ScrollPositioner();
-
         private float leftStartAreaHeight = 68f;
 
         private float leftViewDebugHeight;
@@ -128,17 +126,32 @@ namespace ItsSorceryFramework
                 ProgressTracker progress = schema.progressTracker;
                 Rect confirmButton = new Rect(0f, outRect.yMax + 10f + this.leftViewDebugHeight, rect.width, this.leftStartAreaHeight);
                 string reason = "";
-                if (!LearningRecord.completion[selectedNode] && LearningRecord.PrereqFufilled(selectedNode) && LearningRecord.PrereqResearchFufilled(selectedNode) &&
+                if(!pawn.Faction.IsPlayer || pawn.Faction is null)
+                {
+                    Text.Anchor = TextAnchor.MiddleCenter;
+                    Widgets.DrawHighlight(confirmButton);
+                    reason = "ISF_LearningNodeNotPlayer".Translate(pawn.Name.ToStringShort);
+                    Widgets.Label(confirmButton.ContractedBy(5f), reason);
+                    Text.Anchor = TextAnchor.UpperLeft;
+                }
+                else if (!LearningRecord.completion[selectedNode] && LearningRecord.PrereqFufilled(selectedNode) && LearningRecord.PrereqResearchFufilled(selectedNode) &&
                     LearningRecord.PrereqStatFufilled(selectedNode) && LearningRecord.PrereqHediffFufilled(selectedNode) && LearningRecord.ExclusiveNodeFufilled(selectedNode) &&
                     LearningRecord.PrereqLevelFulfilled(selectedNode) && selectedNode.pointReq + progress.usedPoints <= progress.points) 
                 {
                     if (Widgets.ButtonText(confirmButton, "ISF_SkillPointUse".Translate(selectedNode.pointReq, 
                         progress.def.skillPointLabelKey.Translate())))
                     {
+                        ProgressDiffLog diffLog = schema.progressTracker.progressDiffLog;
+                        ProgressDiffLedger progressDiffLedger = diffLog.PrepNewLedger(schema.progressTracker);
+                        ProgressDiffClassLedger progressDiffClassLedger = new ProgressDiffClassLedger();
+
                         LearningRecord.completion[selectedNode] = true;
-                        LearningRecord.CompletionAbilities(selectedNode);
-                        LearningRecord.CompletionHediffs(selectedNode);
-                        LearningRecord.CompletionModifiers(selectedNode);
+                        LearningRecord.CompletionAbilities(selectedNode, ref progressDiffClassLedger);
+                        LearningRecord.CompletionHediffs(selectedNode, ref progressDiffClassLedger);
+                        LearningRecord.CompletionModifiers(selectedNode, ref progressDiffClassLedger);
+                        progressDiffLedger.classDiffLedgers[ISF_DefOf.ISF_Generic_Class] = progressDiffClassLedger;
+                        diffLog.AddLedger(progressDiffLedger);
+
                         LearningRecord.CompletionLearningUnlock(selectedNode);
                         schema.progressTracker.usedPoints += selectedNode.pointReq;
 
@@ -189,11 +202,19 @@ namespace ItsSorceryFramework
                     Rect debugButton = new Rect(confirmButton.x, outRect.yMax, 120f, 30f);
                     if (Widgets.ButtonText(debugButton, "Debug: Finish now", true, true, true, null))
                     {
+                        ProgressDiffLog diffLog = schema.progressTracker.progressDiffLog;
+                        ProgressDiffLedger progressDiffLedger = diffLog.PrepNewLedger(schema.progressTracker);
+                        ProgressDiffClassLedger progressDiffClassLedger = new ProgressDiffClassLedger();
+
                         LearningRecord.completion[selectedNode] = true;
-                        LearningRecord.CompletionAbilities(selectedNode);
-                        LearningRecord.CompletionHediffs(selectedNode);
-                        LearningRecord.CompletionModifiers(selectedNode);
+                        LearningRecord.CompletionAbilities(selectedNode, ref progressDiffClassLedger);
+                        LearningRecord.CompletionHediffs(selectedNode, ref progressDiffClassLedger);
+                        LearningRecord.CompletionModifiers(selectedNode, ref progressDiffClassLedger);
+                        progressDiffLedger.classDiffLedgers[ISF_DefOf.ISF_Generic_Class] = progressDiffClassLedger;
+                        diffLog.AddLedger(progressDiffLedger);
+
                         LearningRecord.CompletionLearningUnlock(selectedNode);
+                        
                         foreach (var et in schema.energyTrackers) et.ClearStatCache();
                     }
                     Text.Font = GameFont.Small;
@@ -273,7 +294,7 @@ namespace ItsSorceryFramework
 
             if (!node.prereqsResearch.NullOrEmpty())
             {
-                Widgets.LabelCacheHeight(ref rect, "ISF_LearningNodeResearchPrereqs".Translate() + ":" + LearningRecord.PrereqsModeNotif(node.prereqResearchMode, node.prereqResearchModeMin, prereqsDone.Item2), true, false);
+                Widgets.LabelCacheHeight(ref rect, "ISF_LearningNodeResearchPrereqs".Translate() + LearningRecord.PrereqsModeNotif(node.prereqResearchMode, node.prereqResearchModeMin, prereqsDone.Item2), true, false);
                 rect.yMin += rect.height;
                 rect.xMin += 6f;
                 foreach (ResearchProjectDef prereq in node.prereqsResearch)
@@ -304,8 +325,8 @@ namespace ItsSorceryFramework
                 {
                     foreach(var statMod in prereqsStatCase.statReqs)
                     {
-                        SetPrereqStatusColor(!LearningRecord.PrereqFailStatCase(statMod, prereqsStatCase.mode), node);
-                        Widgets.LabelCacheHeight(ref rect, statMod.stat.LabelCap + LearningRecord.PrereqsStatsModeNotif(prereqsStatCase.mode) +
+                        SetPrereqStatusColor(!PrereqUtility.PrereqFailStatCase(pawn, statMod, prereqsStatCase.mode), node);
+                        Widgets.LabelCacheHeight(ref rect, statMod.stat.LabelCap + PrereqUtility.PrereqsStatsModeNotif(prereqsStatCase.mode) +
                             statMod.stat.ValueToString(statMod.value, ToStringNumberSense.Absolute, !statMod.stat.formatString.NullOrEmpty()), true, false);
                         rect.yMin += rect.height;
                     }
@@ -323,8 +344,8 @@ namespace ItsSorceryFramework
                 {
                     foreach (var skillLevel in prereqsSkillCase.skillReqs)
                     {
-                        SetPrereqStatusColor(!LearningRecord.PrereqFailSkillCase(skillLevel.skillDef, skillLevel.ClampedLevel, prereqsSkillCase.mode), node);
-                        Widgets.LabelCacheHeight(ref rect, skillLevel.skillDef.LabelCap + LearningRecord.PrereqsStatsModeNotif(prereqsSkillCase.mode) +
+                        SetPrereqStatusColor(!PrereqUtility.PrereqFailSkillCase(pawn, skillLevel.skillDef, skillLevel.ClampedLevel, prereqsSkillCase.mode), node);
+                        Widgets.LabelCacheHeight(ref rect, skillLevel.skillDef.LabelCap + PrereqUtility.PrereqsStatsModeNotif(prereqsSkillCase.mode) +
                             skillLevel.ClampedLevel, true, false);
                         rect.yMin += rect.height;
                     }
@@ -507,7 +528,7 @@ namespace ItsSorceryFramework
         public string TipStringExtra(LearningTreeNodeDef node)
         {
             StringBuilder stringBuilder = new StringBuilder();
-            foreach (StatDrawEntry statDrawEntry in node.specialDisplayMods()){
+            foreach (StatDrawEntry statDrawEntry in node.SpecialDisplayMods()){
                 if (statDrawEntry.ShouldDisplay())
                 {
                     stringBuilder.AppendInNewLine("  - " + statDrawEntry.LabelCap + ": " + statDrawEntry.ValueString);
