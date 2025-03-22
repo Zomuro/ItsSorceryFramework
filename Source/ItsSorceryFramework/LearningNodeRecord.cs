@@ -2,10 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Policy;
 using Verse;
-using static UnityEngine.Scripting.GarbageCollector;
-using Verse.Noise;
 
 namespace ItsSorceryFramework
 {
@@ -237,12 +234,6 @@ namespace ItsSorceryFramework
 
             classLedger.hediffModsTotal.DiffDictSum<HediffDef, float>(returnDict);
         }
-
-        /*public void CompletionModifiers(LearningTreeNodeDef node)
-        {
-            schema.progressTracker.AdjustModifiers(node.statOffsets, node.statFactors, node.capMods); // update list of statMods and capMods
-            schema.progressTracker.Hediff.cachedCurStage = schema.progressTracker.RefreshCurStage(); // rebuild hediffstage with adjusted stats & set hediff curstage to it
-        }*/
 
         public void CompletionModifiers(LearningTreeNodeDef node, ref ProgressDiffClassLedger classLedger)
         {

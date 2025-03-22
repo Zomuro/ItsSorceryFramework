@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 using Verse;
-using Verse.Sound;
 
 namespace ItsSorceryFramework
 {
@@ -302,8 +301,7 @@ namespace ItsSorceryFramework
 
             if (!classDef.prereqsResearchs.NullOrEmpty()) // show completed research
             {
-                Widgets.LabelCacheHeight(ref rect, "ISF_ClassChangeResearchPrereqs".Translate() + 
-                    ":" + LearningRecord.PrereqsModeNotif(classDef.prereqResearchMode, classDef.prereqResearchModeMin, prereqsDone.Item2), true, false);
+                Widgets.LabelCacheHeight(ref rect, "ISF_ClassChangeResearchPrereqs".Translate() + LearningRecord.PrereqsModeNotif(classDef.prereqResearchMode, classDef.prereqResearchModeMin, prereqsDone.Item2), true, false);
                 rect.yMin += rect.height;
                 rect.xMin += 6f;
                 foreach (ResearchProjectDef prereq in classDef.prereqsResearchs)
@@ -452,16 +450,6 @@ namespace ItsSorceryFramework
 
             return new Tuple<int, int>(prereqCount, prereqResearchCount);
         }
-
-        /*private void SetPrereqStatusColor(bool compCheck)
-        {
-            if (compCheck)
-            {
-                GUI.color = Color.green;
-                return;
-            }
-            GUI.color = ColorLibrary.RedReadable;
-        }*/
 
         private void CompletionLearningUnlock(ProgressTrackerClassDef classDef)
         {
