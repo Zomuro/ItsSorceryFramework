@@ -122,7 +122,6 @@ namespace ItsSorceryFramework
                     schema.progressTracker.ForceLevelUp(1, true);
                     Log.Message($"[It's Sorcery!] Prior level: {priorLevel}; Current level: {schema.progressTracker.CurrLevel}; " +
                         $"Level range: {schema.progressTracker.currClassDef.levelRange.TrueMin}-{schema.progressTracker.currClassDef.levelRange.TrueMax}");
-                    //{schema.progressTracker.def.levelRange.TrueMin}-{schema.progressTracker.def.levelRange.TrueMax}
                 }));
             }
 
@@ -234,10 +233,6 @@ namespace ItsSorceryFramework
                     // get class defs
                     HashSet<ProgressTrackerClassDef> classDefsSet = DefDatabase<ProgressTrackerClassDef>.AllDefs.Where(x => x.progressTrackerDef == schema.progressTracker.def).ToHashSet();
                     classDefsSet.Add(schema.progressTracker.def.baseClass);
-
-                    //List<ProgressTrackerClassDef> classDefs = schema.progressTracker.def.classes;
-                    //classDefs.Add(schema.progressTracker.def.baseClass);
-                    //HashSet<ProgressTrackerClassDef> classDefsSet = new HashSet<ProgressTrackerClassDef>(classDefs);
 
                     // select which class to see the total diff of
                     List<DebugMenuOption> classOptions = new List<DebugMenuOption>();
