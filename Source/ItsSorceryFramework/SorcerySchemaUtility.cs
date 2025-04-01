@@ -192,7 +192,8 @@ namespace ItsSorceryFramework
 
         public static void RefreshProgressTracker(SorcerySchema schema)
         {
-            schema.progressTracker.Hediff.cachedCurStage = schema.progressTracker.RefreshCurStage();
+            schema.progressTracker.ResetHediff();
+            //schema.progressTracker.Hediff.cachedCurStage = schema.progressTracker.RefreshCurStage();
         }
 
         public static void AddQuickEnergyEntry(Pawn pawn, SorcerySchema schema, EnergyTracker energyTracker)

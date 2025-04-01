@@ -143,7 +143,7 @@ namespace ItsSorceryFramework
 
 					progressDiffLedger.classDiffLedgers[setClassDef] = progressDiffClassLedger;
 					tracker.progressDiffLog.AddLedger(progressDiffLedger);
-					tracker.Hediff.cachedCurStage = tracker.RefreshCurStage();
+					tracker.ResetHediff(); // tracker.Hediff.cachedCurStage = tracker.RefreshCurStage();
 
 					if (Prefs.DevMode && ItsSorceryUtility.settings.ShowItsSorceryDebug)
 					{

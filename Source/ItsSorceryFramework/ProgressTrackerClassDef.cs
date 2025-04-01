@@ -79,7 +79,7 @@ namespace ItsSorceryFramework
             {
                 foreach (StatModifier statMod in levelMod.statOffsets)
                 {
-                    yield return new StatDrawEntry(StatCategoryDefOf.CapacityEffects,
+                    yield return new StatDrawEntry(statMod.stat.category,
                         statMod.stat.LabelCap, statMod.stat.Worker.ValueToString(statMod.value, false, ToStringNumberSense.Offset),
                         statMod.stat.description, 4070, null, null, false);
                 }
@@ -89,8 +89,8 @@ namespace ItsSorceryFramework
             {
                 foreach (StatModifier statMod in levelMod.statFactorOffsets)
                 {
-                    yield return new StatDrawEntry(StatCategoryDefOf.CapacityEffects,
-                        statMod.stat.LabelCap, statMod.stat.Worker.ValueToString(statMod.value + 1, false, ToStringNumberSense.Factor),
+                    yield return new StatDrawEntry(statMod.stat.category,
+                        statMod.stat.LabelCap, (statMod.value * 100f).ToString("+#;-#") + "%", //statMod.stat.Worker.ValueToString(statMod.value + 1, false, ToStringNumberSense.Offset), 
                         statMod.stat.description, 4070, null, null, false);
                 }
             }

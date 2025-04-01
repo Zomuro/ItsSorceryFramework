@@ -134,7 +134,10 @@ namespace ItsSorceryFramework
 
             // finally, (re)set the hediffstage of the hediff
             Hediff.cachedCurStage = RefreshCurStage();
+            if (pawn.Spawned) pawn.health.Notify_HediffChanged(Hediff);
         }
+
+        public virtual HediffStage RefreshCurStage() => new HediffStage();
 
         public virtual void CleanClassChangeOpps()
         {
@@ -405,8 +408,6 @@ namespace ItsSorceryFramework
 
             classLedger.hediffModsTotal.DiffDictSum<HediffDef, float>(returnDict);
         }
-
-        public virtual HediffStage RefreshCurStage() => new HediffStage();
 
         public virtual void NotifyTotalLevelUp(float orgSev, List<Window> windows = null, bool silent_msg = false)
         {

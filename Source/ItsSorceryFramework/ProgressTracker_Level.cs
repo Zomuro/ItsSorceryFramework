@@ -82,6 +82,19 @@ namespace ItsSorceryFramework
 
             // finally, (re)set the hediffstage of the hediff
             Hediff.cachedCurStage = RefreshCurStage();
+            if (pawn.Spawned) pawn.health.Notify_HediffChanged(Hediff);// clean any requisite dirty caches
+        }
+
+        public override HediffStage RefreshCurStage()
+        {
+            HediffStage stage = new HediffStage()
+            {
+                statOffsets = CreateStatModifiers(statOffsetsTotal).ToList(),
+                statFactors = CreateStatModifiers(statFactorsTotal, true).ToList(), // will bake in the multiplier effect for statfactors
+                capMods = CreateCapModifiers(capModsTotal).ToList()
+            };
+
+            return stage;
         }
 
         public override void ProgressTrackerTick()
@@ -193,20 +206,7 @@ namespace ItsSorceryFramework
 
             progressDiffLedger.classDiffLedgers[currClassDef] = progressDiffClassLedger;
             progressDiffLog.AddLedger(progressDiffLedger);
-            Hediff.cachedCurStage = RefreshCurStage();
-        }
-
-        public override HediffStage RefreshCurStage()
-        {
-            HediffStage stage = new HediffStage()
-            {
-                statOffsets = CreateStatModifiers(statOffsetsTotal).ToList(),
-                //statFactors = CreateStatModifiers(statFactorsTotal).ToList(), // assumes multiplier is baked in
-                statFactors = CreateStatModifiers(statFactorsTotal, true).ToList(), // will bake in the multiplier effect for statfactors
-                capMods = CreateCapModifiers(capModsTotal).ToList()
-            };
-            
-            return stage;
+            ResetHediff(); //Hediff.cachedCurStage = RefreshCurStage();
         }
 
         public override void NotifyTotalLevelUp(float orgSev, List<Window> windows = null, bool silent_msg = false)
