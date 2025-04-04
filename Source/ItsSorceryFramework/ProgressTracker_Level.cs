@@ -230,7 +230,7 @@ namespace ItsSorceryFramework
 
         public override float CurrProgress => exp / CurrentLevelEXPReq;
 
-        public override float CurrentLevelEXPReq => def.baseEXP * Mathf.Pow(def.scaling, CurrLevel - 1f);
+        public override float CurrentLevelEXPReq => Mathf.Max(EquationUtility.CalculateEquation(CurrLevel, def.baseEXP, def.scaling, def.powScalings), 1f);
 
         public override void DrawLeftGUI(Rect rect)
         {

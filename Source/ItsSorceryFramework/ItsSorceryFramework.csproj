@@ -65,6 +65,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EquationUtility.cs" />
     <Compile Include="PrereqUtility.cs" />
     <Compile Include="CompProperties_ClassChoiceItem.cs" />
     <Compile Include="CompProperties_UseEffectClassChoice.cs" />

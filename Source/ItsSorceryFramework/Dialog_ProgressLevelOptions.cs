@@ -127,8 +127,7 @@ namespace ItsSorceryFramework
 				// draw confirmation button
 				Rect confirmRect = new Rect(selectDetailRect.x + selectDetailRect.width/4f, selectDetailRect.y + selectDetailRect.height * 17f/20f, 
 					selectDetailRect.width / 2f, selectDetailRect.width / 10f);
-				
-				//Rect confirmButtonRect = new Rect(confirmRect.x + confirmRect.width /4, confirmRect.y + confirmRect.height / 4,  confirmRect.width / 2, confirmRect.height / 2);
+
 				if(Widgets.ButtonText(confirmRect, "ISF_ProgressLevelOptionsConfirm".Translate())) // if hit w/ a selected option, adjust the following
                 {
 					// begin the new log here
@@ -143,11 +142,11 @@ namespace ItsSorceryFramework
 
 					progressDiffLedger.classDiffLedgers[setClassDef] = progressDiffClassLedger;
 					tracker.progressDiffLog.AddLedger(progressDiffLedger);
-					tracker.ResetHediff(); // tracker.Hediff.cachedCurStage = tracker.RefreshCurStage();
+					tracker.ResetHediff();
 
 					if (Prefs.DevMode && ItsSorceryUtility.settings.ShowItsSorceryDebug)
 					{
-						Log.Message($"{tracker.schema.def.defName}.{tracker.def.defName}:" +
+						Log.Message($"[It's Sorcery!]: {tracker.schema.def.defName}.{tracker.def.defName};" +
 						$"\nProgressTracker offets: {tracker.statOffsetsTotal.ToStringSafeEnumerable()}" +
 						$"\nProgressTracker factors: {tracker.statFactorsTotal.ToStringSafeEnumerable()}" +
 						$"\nProgressTracker cap mods: {tracker.capModsTotal.ToStringSafeEnumerable()}" +
