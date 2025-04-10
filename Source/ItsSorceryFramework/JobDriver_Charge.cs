@@ -108,8 +108,9 @@ namespace ItsSorceryFramework
 				energyTracker.MaxEnergy - energyTracker.currentEnergy : energyTracker.AbsMaxEnergy - energyTracker.currentEnergy);
 			else directEnergyDiff = Mathf.Max(0f, energyTracker.schema.limitLocked ? 
 				energyTracker.currentEnergy - energyTracker.MinEnergy : energyTracker.currentEnergy - energyTracker.AbsMinEnergy);
-			
-			energyTracker.currentEnergy += energyTracker.InvMult * Mathf.Min(count * energyPerAmmo, directEnergyDiff);
+
+			energyTracker.AddEnergy(Mathf.Min(count * energyPerAmmo, directEnergyDiff));
+			//energyTracker.currentEnergy += energyTracker.InvMult * Mathf.Min(count * energyPerAmmo, directEnergyDiff);
 			ammo.SplitOff(count).Destroy(DestroyMode.Vanish);
 			EnergyTrackerContext.RemoveConsumeContext(pawn.GetUniqueLoadID());
 		}

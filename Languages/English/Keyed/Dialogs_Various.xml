@@ -86,10 +86,10 @@
 	<!-- EnergyTrackerComp -->
 	<ISF_EnergyTrackerCompNone>N/A</ISF_EnergyTrackerCompNone>
 	
-	<ISF_EnergyTrackerCompOnTickLabel>Every second, scaling with {STAT}:</ISF_EnergyTrackerCompOnTickLabel>
-	<ISF_EnergyTrackerCompOnTickNormal>Alter current {0} by {1}.</ISF_EnergyTrackerCompOnTickNormal>
-	<ISF_EnergyTrackerCompOnTickOvercharge>If in the overcharge zone, the {ENERGY} per second is {CHANGE}.</ISF_EnergyTrackerCompOnTickOvercharge>
-	<ISF_EnergyTrackerCompOnTickDeficit>If in the deficit zone, the {ENERGY} per second is {CHANGE}.</ISF_EnergyTrackerCompOnTickDeficit>
+	<ISF_EnergyTrackerCompOnTickLabel>Over time, scaling with {STAT}:</ISF_EnergyTrackerCompOnTickLabel>
+	<ISF_EnergyTrackerCompOnTickNormal>Alter {ENERGY} by {CHANGE} per second.</ISF_EnergyTrackerCompOnTickNormal>
+	<ISF_EnergyTrackerCompOnTickOvercharge>If in the overcharge zone, alter {ENERGY} by {CHANGE} per second.</ISF_EnergyTrackerCompOnTickOvercharge>
+	<ISF_EnergyTrackerCompOnTickDeficit>If in the deficit zone, alter {ENERGY} by {CHANGE} per second.</ISF_EnergyTrackerCompOnTickDeficit>
 	
 	<ISF_EnergyTrackerCompOnDamageLabel>On dealing damage, scaling with {STAT}: {DAMAGEDEFS}</ISF_EnergyTrackerCompOnDamageLabel>
 	<ISF_EnergyTrackerCompOnDamageDesc>Alter {ENERGY} = {FACTOR} of the damage dealt by this pawn.</ISF_EnergyTrackerCompOnDamageDesc>
@@ -103,6 +103,12 @@
 	<ISF_EnergyTrackerCompOnConsumeLabel>On consuming items, scaling with {STAT}:</ISF_EnergyTrackerCompOnConsumeLabel>
 	<ISF_EnergyTrackerCompOnConsumeDesc>Alter {ENERGY} based on the list below.</ISF_EnergyTrackerCompOnConsumeDesc>
 	<ISF_EnergyTrackerCompOnConsumeItem>  - {ITEM}: {CHANGE}</ISF_EnergyTrackerCompOnConsumeItem>
+	
+	<ISF_EnergyTrackerCompDuringJobLabel>Every second performing the {0} job set, scaling with {STAT}:</ISF_EnergyTrackerCompDuringJobLabel>
+	<ISF_EnergyTrackerCompDuringJobDesc>Alter {ENERGY} by {CHANGE} per second.</ISF_EnergyTrackerCompDuringJobDesc>
+	
+	<ISF_EnergyTrackerCompOnInteractionLabel>On finishing an interaction, scaling with {STAT}: {INTERACTDEFS}</ISF_EnergyTrackerCompOnInteractionLabel>
+	<ISF_EnergyTrackerCompOnInteractionDesc>Alter {ENERGY} by {CHANGE}.</ISF_EnergyTrackerCompOnInteractionDesc>
 	
 	<!-- Dialog_ProgressLevelOptions - options for ProgressTrackers -->
 	<ISF_ProgressLevelOptionsLabel>Options - {0} (lvl. {1})</ISF_ProgressLevelOptionsLabel>

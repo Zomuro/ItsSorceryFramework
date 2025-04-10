@@ -135,8 +135,8 @@ namespace ItsSorceryFramework
                     Text.Anchor = TextAnchor.UpperLeft;
                 }
                 else if (!LearningRecord.completion[selectedNode] && LearningRecord.PrereqFufilled(selectedNode) && LearningRecord.PrereqResearchFufilled(selectedNode) &&
-                    LearningRecord.PrereqStatFufilled(selectedNode) && LearningRecord.PrereqHediffFufilled(selectedNode) && LearningRecord.ExclusiveNodeFufilled(selectedNode) &&
-                    LearningRecord.PrereqLevelFulfilled(selectedNode) && selectedNode.pointReq + progress.usedPoints <= progress.points) 
+                    LearningRecord.PrereqStatFufilled(selectedNode) && LearningRecord.PrereqSkillFufilled(selectedNode) && LearningRecord.PrereqHediffFufilled(selectedNode) && 
+                    LearningRecord.ExclusiveNodeFufilled(selectedNode) && LearningRecord.PrereqLevelFulfilled(selectedNode) && selectedNode.pointReq + progress.usedPoints <= progress.points) 
                 {
                     if (Widgets.ButtonText(confirmButton, "ISF_SkillPointUse".Translate(selectedNode.pointReq, 
                         progress.def.skillPointLabelKey.Translate())))

@@ -182,9 +182,9 @@ namespace ItsSorceryFramework
 
         public virtual bool HasDeficitZone => !def.inverse ? MinEnergy > AbsMinEnergy : AbsMaxEnergy > MaxEnergy;
 
-        public virtual bool InDeficit => HasDeficitZone && !def.inverse ? currentEnergy < MinEnergy : currentEnergy > MaxEnergy;
-
         public virtual bool InOvercharge => HasOverchargeZone && !def.inverse ? currentEnergy > MaxEnergy : currentEnergy < MinEnergy;
+
+        public virtual bool InDeficit => HasDeficitZone && !def.inverse ? currentEnergy < MinEnergy : currentEnergy > MaxEnergy;
 
         public virtual string EnergyLabel => def.energyUnitStatDef.label;
 
@@ -251,6 +251,12 @@ namespace ItsSorceryFramework
             }
 
             return false;
+        }
+
+        public virtual void AddEnergy(float energyChange, bool normalBounds = false)
+        {
+            if (!normalBounds) currentEnergy = Mathf.Clamp(currentEnergy + InvMult * energyChange, AbsMinEnergy, AbsMaxEnergy);
+            else currentEnergy = Mathf.Clamp(currentEnergy + InvMult * energyChange, MinEnergy, MaxEnergy);
         }
 
         public virtual void EmptyEnergy()

@@ -65,6 +65,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EnergyTrackerCompProperties_JobBase.cs" />
+    <Compile Include="EnergyTrackerCompProperties_OnInteraction.cs" />
+    <Compile Include="EnergyTrackerComp_OnInteraction.cs" />
+    <Compile Include="EnergyTrackerComp_DuringJob.cs" />
+    <Compile Include="EnergyTrackerComp_JobBase.cs" />
     <Compile Include="EquationUtility.cs" />
     <Compile Include="PrereqUtility.cs" />
     <Compile Include="CompProperties_ClassChoiceItem.cs" />

@@ -27,6 +27,8 @@ namespace ItsSorceryFramework
 
         public virtual void CompPostKill(DamageInfo? damageInfo) { } // for effects activated when killing a pawn
 
+        public virtual void CompPostInteraction(InteractionDef intDef) { } // for effects activated when recieving damage
+
         public virtual IEnumerable<StatDrawEntry> CompSpecialDisplayStats(StatRequest req, StatCategoryDef catDef = null) // provides special display stats, which show how energy gets recovered
         {
             yield break;

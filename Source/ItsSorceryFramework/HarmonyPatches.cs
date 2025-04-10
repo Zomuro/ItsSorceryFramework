@@ -16,7 +16,7 @@ namespace ItsSorceryFramework
         {
             Harmony harmony = new Harmony("Zomuro.ItsSorcery.Framework");
 
-            // EnergyTracker Patches //
+            // EnergyTracker Specific Patches //
 
             // AddHumanlikeOrders_EnergyTracker_Consumable
             // if a pawn has a SorcerySchema with a Consumable class EnergyTracker, show the float menu
@@ -30,9 +30,9 @@ namespace ItsSorceryFramework
             harmony.Patch(AccessTools.Method(typeof(Widgets), "DefIcon"), null,
                 new HarmonyMethod(typeof(HarmonyPatches), nameof(DefIconAbilities)));
 
-            // ProgressEXPWorker Patches
+            // EnergyTracker and ProgressEXPWorker Patches
 
-            // TakeDamage_AddEXP
+            // TakeDamage_ISF_Postfix
             // for every magic system with the correct EXP tag, give xp depending on damage
             harmony.Patch(AccessTools.Method(typeof(Thing), "TakeDamage"), null,
                 new HarmonyMethod(typeof(HarmonyPatches), nameof(TakeDamage_ISF_Postfix)));
@@ -42,7 +42,7 @@ namespace ItsSorceryFramework
             harmony.Patch(AccessTools.Method(typeof(SkillRecord), "Learn"), null,
                 new HarmonyMethod(typeof(HarmonyPatches), nameof(Learn_AddEXP)));
 
-            // DoKillSideEffects_AddEXP
+            // DoKillSideEffects_ISF_Postfix
             // for every magic system with the correct EXP tag, give xp on kill
             harmony.Patch(AccessTools.Method(typeof(Pawn), "DoKillSideEffects"), null,
                 new HarmonyMethod(typeof(HarmonyPatches), nameof(DoKillSideEffects_ISF_Postfix)));
@@ -51,6 +51,11 @@ namespace ItsSorceryFramework
             // allow items to be used to level up experience systems
             harmony.Patch(AccessTools.Method(typeof(FloatMenuMakerMap), "AddHumanlikeOrders"), null,
                 new HarmonyMethod(typeof(HarmonyPatches), nameof(AddHumanlikeOrders_EXPUseItem)));
+
+            // TryInteractWith_ISF_Postfix
+            // after a successful (true) TryInteractWith, look through magic systems to add XP/energy 
+            harmony.Patch(AccessTools.Method(typeof(Pawn_InteractionsTracker), "TryInteractWith"), null,
+                new HarmonyMethod(typeof(HarmonyPatches), nameof(TryInteractWith_ISF_Postfix)));
 
             // PawnGen Patches //
 
@@ -307,7 +312,46 @@ namespace ItsSorceryFramework
 
             return;
         }
-           
+
+        // POSTFIX: if a pawn successfully interacts w/ another pawn, check interactiondef and see if we need to add XP or energy
+        public static void TryInteractWith_ISF_Postfix(ref bool __result, Pawn_InteractionsTracker __instance, Pawn __0, InteractionDef __1)
+        {
+            // if we find that interactiondef is null OR the original TryInteractWith result is false, skip rest
+            if (__1 == null || __result == false) return;
+
+            // check if we need to add XP or energy for pawns in the interaction
+            Helper_TryInteractWith_ISF_Postfix(Traverse.Create(__instance).Field("pawn").GetValue<Pawn>(), __1); // interaction initiator
+            Helper_TryInteractWith_ISF_Postfix(__0, __1); // interaction recipient
+        }
+
+        public static void Helper_TryInteractWith_ISF_Postfix(Pawn pawn, InteractionDef intDef)
+        {
+            if (!pawn.IsColonist) return;
+            CacheComp(pawn);
+            Comp_ItsSorcery comp = cachedSchemaComps[pawn];
+            if (comp is null) return;
+
+            foreach (var schema in comp.schemaTracker.sorcerySchemas)
+            {
+                // progressEXPworker component
+                /*HashSet<ProgressEXPWorker> workers = schema.progressTracker.currClassDef.Workers;
+                if (workers.EnumerableNullOrEmpty()) continue;
+                foreach (var worker in workers.Where(x => x.GetType() == typeof(ProgressEXPWorker_OnKill)))
+                {
+                    if (!worker.def.damageDefs.NullOrEmpty() && !worker.def.damageDefs.Contains(__0.Value.Def)) continue;
+                    worker.TryExecute(schema.progressTracker);
+                }*/
+
+                // energytracker component
+                if (schema.energyTrackers.NullOrEmpty()) continue;
+                foreach (var energyTracker in schema.energyTrackers)
+                {
+                    if (energyTracker.comps.NullOrEmpty()) continue;
+                    foreach (var energyComp in energyTracker.comps) energyComp.CompPostInteraction(intDef);
+                }
+            }
+        }
+
         // POSTFIX: using a specific mod extension, allow pawns to be generated with custom magic systems
         public static void GenerateNewPawnInternal_Schema(ref Pawn __result, ref PawnGenerationRequest __0)
         {
