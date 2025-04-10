@@ -3,6 +3,8 @@ using RimWorld;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Diagnostics;
+using System.Reflection;
 using UnityEngine;
 using Verse;
 using Verse.AI;
@@ -14,7 +16,10 @@ namespace ItsSorceryFramework
     {
         static HarmonyPatches()
         {
-            Harmony harmony = new Harmony("Zomuro.ItsSorcery.Framework");
+            // Setup stopwatch to time harmony patches
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+            Harmony harmony = new Harmony("Zomuro.ItsSorceryFramework");
 
             // EnergyTracker Specific Patches //
 
@@ -74,6 +79,15 @@ namespace ItsSorceryFramework
             harmony.Patch(AccessTools.Method(typeof(Pawn_GeneTracker), "AddGene", new[] { typeof(GeneDef), typeof(bool) }), null,
                 new HarmonyMethod(typeof(HarmonyPatches), nameof(AddGene_Schema)));
 
+            // end stopwatch and print harmony patching results
+            stopwatch.Stop();
+            Log.Message(
+                string.Format("[It's Sorcery!] Successfully completed {0} Harmony patches in {1} secs.",
+                    harmony.GetPatchedMethods().Select(new Func<MethodBase, Patches>(Harmony.GetPatchInfo)).SelectMany(
+                        (Patches p) => p.Prefixes.Concat(p.Postfixes).Concat(p.Transpilers)).Count((Patch p) => p.owner == harmony.Id),
+                    stopwatch.Elapsed.TotalSeconds
+                )
+            );
         }
 
         // POSTFIX: when right clicking items that can reload the schema, provide FloatMenu option to "reload" with them
