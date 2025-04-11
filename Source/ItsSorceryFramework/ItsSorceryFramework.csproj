@@ -82,6 +82,8 @@
     <Compile Include="ProgressDiffLog.cs" />
     <Compile Include="ProgressDiffClassLedger.cs" />
     <Compile Include="ProgressDiffLedger.cs" />
+    <Compile Include="ProgressEXPWorker_OnQuestFinish.cs" />
+    <Compile Include="ProgressEXPWorker_OnInteraction.cs" />
     <Compile Include="ProgressTrackerClassDef.cs" />
     <Compile Include="ProgressTrackerUtility.cs" />
     <Compile Include="Dialog_QuickEnergy.cs" />

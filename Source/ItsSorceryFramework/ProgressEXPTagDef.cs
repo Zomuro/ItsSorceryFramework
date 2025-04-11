@@ -21,7 +21,14 @@ namespace ItsSorceryFramework
 
 		public List<EXPConsumableItems> expItems = new List<EXPConsumableItems>();
 
-    }
+		public List<InteractionDef> interactionDefs = new List<InteractionDef>();
+
+		public QuestEndOutcome questOutcome = QuestEndOutcome.Success;
+
+		public List<QuestScriptDef> questDefs = new List<QuestScriptDef>();
+
+	}
+
 
 	public class EXPJobSet
 	{

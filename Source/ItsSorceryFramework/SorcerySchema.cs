@@ -115,10 +115,8 @@ namespace ItsSorceryFramework
                 foreach(var et in energyTrackers) et.EnergyTrackerTick();
             }
 
-            if(progressTracker != null)
-            {
-                progressTracker.ProgressTrackerTick();
-            }            
+            if (pawn.Faction == null || !pawn.Faction.IsPlayer) return; // if pawn faction isn't the players, skip - don't care about progression
+            if (progressTracker != null) progressTracker.ProgressTrackerTick();    
         }
 
         public virtual float DrawOnGUI(ref Rect rect)

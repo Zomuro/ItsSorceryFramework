@@ -52,5 +52,18 @@
 		<expItems/>
 	</ItsSorceryFramework.ProgressEXPTagDef>
 	
+	<ItsSorceryFramework.ProgressEXPTagDef Abstract = "True" ParentName = "EXPTagBase" Name = "EXPTag_OnInteraction">
+		<workerClass>ItsSorceryFramework.ProgressEXPWorker_OnInteraction</workerClass>
+		<fixedEXP>100</fixedEXP>
+		<interactionDefs/>
+	</ItsSorceryFramework.ProgressEXPTagDef>
+	
+	<ItsSorceryFramework.ProgressEXPTagDef Abstract = "True" ParentName = "EXPTagBase" Name = "EXPTag_OnQuestFinish">
+		<workerClass>ItsSorceryFramework.ProgressEXPWorker_OnQuestFinish</workerClass>
+		<fixedEXP>100</fixedEXP>
+		<questOutcome>Success</questOutcome>
+		<questDefs/>
+	</ItsSorceryFramework.ProgressEXPTagDef>
+	
 	
 </Defs>

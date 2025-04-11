@@ -62,6 +62,11 @@ namespace ItsSorceryFramework
             harmony.Patch(AccessTools.Method(typeof(Pawn_InteractionsTracker), "TryInteractWith"), null,
                 new HarmonyMethod(typeof(HarmonyPatches), nameof(TryInteractWith_ISF_Postfix)));
 
+            // EndQuest_ISF_Postfix
+            // on quest end, check workers of all colonists and see if we need to add XP
+            harmony.Patch(AccessTools.Method(typeof(Quest), "End"), null,
+                new HarmonyMethod(typeof(HarmonyPatches), nameof(EndQuest_ISF_Postfix)));
+
             // PawnGen Patches //
 
             // GenerateNewPawnInternal_Schema
@@ -303,7 +308,6 @@ namespace ItsSorceryFramework
                     float factor = item.expFactorStat != null ? __1.GetStatValue(item.expFactorStat) : 1f;
                     if (!__1.CanReach(EXPItem, PathEndMode.ClosestTouch, Danger.Deadly, false, false, TraverseMode.ByPawn))
                     {
-                        
                         text = "ISF_UseEXPItemNoPath".Translate() + item.gainEXPTransKey.Translate(item.thingDef.label, item.exp * factor, schema.def.LabelCap.ToString());
                         __2.Add(new FloatMenuOption(text, null, MenuOptionPriority.Default,
                             null, null, 0f, null, null, true, 0));
@@ -348,20 +352,56 @@ namespace ItsSorceryFramework
             foreach (var schema in comp.schemaTracker.sorcerySchemas)
             {
                 // progressEXPworker component
-                /*HashSet<ProgressEXPWorker> workers = schema.progressTracker.currClassDef.Workers;
-                if (workers.EnumerableNullOrEmpty()) continue;
-                foreach (var worker in workers.Where(x => x.GetType() == typeof(ProgressEXPWorker_OnKill)))
+                HashSet<ProgressEXPWorker> workers = schema.progressTracker.currClassDef.Workers;
+                if (!workers.EnumerableNullOrEmpty())
                 {
-                    if (!worker.def.damageDefs.NullOrEmpty() && !worker.def.damageDefs.Contains(__0.Value.Def)) continue;
-                    worker.TryExecute(schema.progressTracker);
-                }*/
-
+                    foreach (var worker in workers.Where(x => x.GetType() == typeof(ProgressEXPWorker_OnInteraction)))
+                    {
+                        if (!worker.def.interactionDefs.NullOrEmpty() && !worker.def.interactionDefs.Contains(intDef)) continue;
+                        worker.TryExecute(schema.progressTracker);
+                    }
+                }
+                
                 // energytracker component
-                if (schema.energyTrackers.NullOrEmpty()) continue;
-                foreach (var energyTracker in schema.energyTrackers)
+                if (!schema.energyTrackers.NullOrEmpty())
                 {
-                    if (energyTracker.comps.NullOrEmpty()) continue;
-                    foreach (var energyComp in energyTracker.comps) energyComp.CompPostInteraction(intDef);
+                    foreach (var energyTracker in schema.energyTrackers)
+                    {
+                        if (energyTracker.comps.NullOrEmpty()) continue;
+                        foreach (var energyComp in energyTracker.comps) energyComp.CompPostInteraction(intDef);
+                    }
+                }
+                
+            }
+        }
+
+        // POSTFIX: on quest end, check workers of all colonists and see if we need to add XP
+        public static void EndQuest_ISF_Postfix(Quest __instance, QuestEndOutcome __0)
+        {
+            // get all pawns that are player's faction
+            List<Pawn> pawnList = PawnsFinder.AllMapsCaravansAndTravelingTransportPods_Alive_OfPlayerFaction;
+
+            // get ending quest's def to find in defs
+            QuestScriptDef endingQuestDef = __instance.root;
+
+            // iterate over all colonists and level them up
+            foreach (var pawn in pawnList)
+            {
+                CacheComp(pawn);
+                Comp_ItsSorcery comp = cachedSchemaComps[pawn];
+                if (comp is null) continue;
+
+                foreach (var schema in comp.schemaTracker.sorcerySchemas)
+                {
+                    // progressEXPworker component
+                    HashSet<ProgressEXPWorker> workers = schema.progressTracker.currClassDef.Workers;
+                    if (workers.EnumerableNullOrEmpty()) continue;
+                    foreach (var worker in workers.Where(x => x.GetType() == typeof(ProgressEXPWorker_OnQuestFinish)))
+                    {
+                        if (__0 != worker.def.questOutcome) continue;
+                        if (!worker.def.questDefs.NullOrEmpty() && !worker.def.questDefs.Contains(endingQuestDef)) continue;
+                        worker.TryExecute(schema.progressTracker);
+                    }
                 }
             }
         }

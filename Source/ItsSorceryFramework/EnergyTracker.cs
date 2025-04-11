@@ -112,7 +112,7 @@ namespace ItsSorceryFramework
                 }
                 catch (Exception arg)
                 {
-                    Log.Error("Could not instantiate or initialize a EnergyTrackerComp: " + arg);
+                    Log.Error("[It's Sorcery!] Could not instantiate a EnergyTrackerComp: " + arg);
                     comps.Remove(energyTrackerComp);
                 }
             }

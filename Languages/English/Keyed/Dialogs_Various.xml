@@ -82,6 +82,10 @@
 	<ISF_LearningProgressEXPPassiveDesc>Gain {0} experience.</ISF_LearningProgressEXPPassiveDesc>
 	<ISF_LearningProgressEXPUseItem>On using items:</ISF_LearningProgressEXPUseItem>
 	<ISF_LearningProgressEXPUseItemDesc>Grant experience based on the following.</ISF_LearningProgressEXPUseItemDesc>
+	<ISF_LearningProgressEXPOnInteraction>On interaction: {0}</ISF_LearningProgressEXPOnInteraction>
+	<ISF_LearningProgressEXPOnInteractionDesc>Grant experience = {0}.</ISF_LearningProgressEXPOnInteractionDesc>
+	<ISF_LearningProgressEXPOnQuestFinish>On quest {0}: {1}</ISF_LearningProgressEXPOnQuestFinish>
+	<ISF_LearningProgressEXPOnQuestFinishDesc>Grant experience = {0}.</ISF_LearningProgressEXPOnQuestFinishDesc>
 	
 	<!-- EnergyTrackerComp -->
 	<ISF_EnergyTrackerCompNone>N/A</ISF_EnergyTrackerCompNone>
