@@ -9,9 +9,9 @@ namespace ItsSorceryFramework
     {
 		public Type workerClass = typeof(ProgressEXPWorker);
 
-        public float expFactor = 1f;
+		public StatDef scalingStatDef;
 
-        public float fixedEXP = 0f;
+		public float fixedEXP = 0f;
 
 		public List<EXPJobSet> jobSets = new List<EXPJobSet>();
 

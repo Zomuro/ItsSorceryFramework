@@ -65,6 +65,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PawnCacheUtility.cs" />
     <Compile Include="EnergyTrackerCompProperties_JobBase.cs" />
     <Compile Include="EnergyTrackerCompProperties_OnInteraction.cs" />
     <Compile Include="EnergyTrackerComp_OnInteraction.cs" />

@@ -136,9 +136,9 @@ namespace ItsSorceryFramework
                 {
                     foreach(ProgressEXPTagDef tag in expTags)
                     {
-                        ProgressEXPWorker EXPWorker = (ProgressEXPWorker)Activator.CreateInstance(tag.workerClass);
-                        EXPWorker.def = tag;
-                        cachedEXPWorkers.Add(EXPWorker);
+                        ProgressEXPWorker expWorker = (ProgressEXPWorker)Activator.CreateInstance(tag.workerClass);
+                        expWorker.def = tag;
+                        cachedEXPWorkers.Add(expWorker);
                     }
                 }
                 return cachedEXPWorkers;

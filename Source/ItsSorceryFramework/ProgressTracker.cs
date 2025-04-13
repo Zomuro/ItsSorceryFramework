@@ -49,8 +49,6 @@ namespace ItsSorceryFramework
 
         private List<SorceryDef> cachedSorceryDefs = new List<SorceryDef>();
 
-        private Dictionary<ProgressTrackerClassDef, HashSet<ProgressTrackerClassDef>> cachedLinkedMapping;
-
         // initalizer- created via activator via SorcerySchema
         public ProgressTracker(Pawn pawn)
         {
@@ -606,7 +604,7 @@ namespace ItsSorceryFramework
             if (workers.EnumerableNullOrEmpty()) return rect.yMin - yMin;
             foreach (ProgressEXPWorker worker in workers)
             {
-                rect.yMin += worker.DrawWorker(rect);
+                rect.yMin += worker.DrawWorker(pawn, rect);
             }
 
             return rect.yMin - yMin;

@@ -7,14 +7,18 @@ namespace ItsSorceryFramework
 {
     public class ProgressEXPWorker_UseItem: ProgressEXPWorker
     {
-        public override bool TryExecute(ProgressTracker progressTracker, float exp = 0)
+        public override bool TryExecute(ProgressTracker progressTracker, float inputAmt = 0)
         {
             if (progressTracker.Maxed) return false;
-            progressTracker.AddExperience(def.fixedEXP);
+
+            //float finalEXP = def.fixedEXP * ScalingStatValue(progressTracker.pawn);
+            progressTracker.AddExperience(inputAmt);
+            if (ItsSorceryUtility.settings.ProgressShowXPMotes)
+                FireEXPMote(progressTracker.pawn, inputAmt);
             return true;
         }
 
-        public override float DrawWorker(Rect rect)
+        public override float DrawWorker(Pawn pawn, Rect rect)
         {
             float yMin = rect.yMin;
             float x = rect.x;

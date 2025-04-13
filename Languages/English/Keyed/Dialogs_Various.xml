@@ -65,27 +65,26 @@
 	<ISF_LearningProgressSelectSorceryDesc>Toggle sorceries for visibility. Grayed-out sorceries are not visible.</ISF_LearningProgressSelectSorceryDesc>
 	
 	<!-- ProgressTrackerTags -->
-	<ISF_LearningProgressEXPCast>On cast:</ISF_LearningProgressEXPCast>
-	<ISF_LearningProgressEXPCastDesc>Gain experience = {0} the base energy cost.</ISF_LearningProgressEXPCastDesc>
-	<ISF_LearningProgressEXPJob>While performing job set(s): {0}</ISF_LearningProgressEXPJob>
+	<ISF_LearningProgressEXPCast>On cast, scaling with {STAT}:</ISF_LearningProgressEXPCast>
+	<ISF_LearningProgressEXPCastDesc>Gain experience = {0} of the absolute value of base energy cost.</ISF_LearningProgressEXPCastDesc>
+	<ISF_LearningProgressEXPJob>While performing job set(s), scaling with {STAT}: {JOBSETS}</ISF_LearningProgressEXPJob>
 	<ISF_LearningProgressEXPJobDesc>Gain {0} experience every second.</ISF_LearningProgressEXPJobDesc>
-	<ISF_LearningProgressEXPOnDamage>On dealing damage: {0}</ISF_LearningProgressEXPOnDamage>
-	<ISF_LearningProgressEXPOnDamageDesc>Grant experience = {0} the base damage dealt.</ISF_LearningProgressEXPOnDamageDesc>
-	<ISF_LearningProgressEXPOnDamaged>On receiving damage: {0}</ISF_LearningProgressEXPOnDamaged>
-	<ISF_LearningProgressEXPOnDamagedDesc>Grant experience = {0} the base damage received.</ISF_LearningProgressEXPOnDamagedDesc>
-	<ISF_LearningProgressEXPOnKill>On kill:</ISF_LearningProgressEXPOnKill>
-	<ISF_LearningProgressEXPOnKillDamage>On kill with damage: {0}</ISF_LearningProgressEXPOnKillDamage>
-	<ISF_LearningProgressEXPOnKillDesc>Grant {0} experience.</ISF_LearningProgressEXPOnKillDesc>
-	<ISF_LearningProgressEXPSkill>On gaining skill experience: {0}</ISF_LearningProgressEXPSkill>
-	<ISF_LearningProgressEXPSkillDesc>Grant experience = {0} the gained skill experience.</ISF_LearningProgressEXPSkillDesc>
-	<ISF_LearningProgressEXPPassive>Every second:</ISF_LearningProgressEXPPassive>
+	<ISF_LearningProgressEXPOnDamage>On dealing damage, scaling with {STAT}: {DAMAGEDEFS}</ISF_LearningProgressEXPOnDamage>
+	<ISF_LearningProgressEXPOnDamageDesc>Gain experience = {0} the base damage dealt.</ISF_LearningProgressEXPOnDamageDesc>
+	<ISF_LearningProgressEXPOnDamaged>On receiving damage, scaling with {STAT}: {DAMAGEDEFS}</ISF_LearningProgressEXPOnDamaged>
+	<ISF_LearningProgressEXPOnDamagedDesc>Gain experience = {0} the base damage received.</ISF_LearningProgressEXPOnDamagedDesc>
+	<ISF_LearningProgressEXPOnKill>On kill, scaling with {STAT}: {DAMAGEDEFS}</ISF_LearningProgressEXPOnKill>
+	<ISF_LearningProgressEXPOnKillDesc>Gain {0} experience.</ISF_LearningProgressEXPOnKillDesc>
+	<ISF_LearningProgressEXPSkill>On gaining skill experience, scaling with {STAT}: {SKILLDEFS}</ISF_LearningProgressEXPSkill>
+	<ISF_LearningProgressEXPSkillDesc>Gain experience = {0} the gained skill experience.</ISF_LearningProgressEXPSkillDesc>
+	<ISF_LearningProgressEXPPassive>Every second, scaling with {STAT}:</ISF_LearningProgressEXPPassive>
 	<ISF_LearningProgressEXPPassiveDesc>Gain {0} experience.</ISF_LearningProgressEXPPassiveDesc>
 	<ISF_LearningProgressEXPUseItem>On using items:</ISF_LearningProgressEXPUseItem>
-	<ISF_LearningProgressEXPUseItemDesc>Grant experience based on the following.</ISF_LearningProgressEXPUseItemDesc>
-	<ISF_LearningProgressEXPOnInteraction>On interaction: {0}</ISF_LearningProgressEXPOnInteraction>
-	<ISF_LearningProgressEXPOnInteractionDesc>Grant experience = {0}.</ISF_LearningProgressEXPOnInteractionDesc>
-	<ISF_LearningProgressEXPOnQuestFinish>On quest {0}: {1}</ISF_LearningProgressEXPOnQuestFinish>
-	<ISF_LearningProgressEXPOnQuestFinishDesc>Grant experience = {0}.</ISF_LearningProgressEXPOnQuestFinishDesc>
+	<ISF_LearningProgressEXPUseItemDesc>Gain experience based on the following.</ISF_LearningProgressEXPUseItemDesc>
+	<ISF_LearningProgressEXPOnInteraction>On interaction, scaling with {STAT}: {INTERACTIONDEFS}</ISF_LearningProgressEXPOnInteraction>
+	<ISF_LearningProgressEXPOnInteractionDesc>Gain {0} experience.</ISF_LearningProgressEXPOnInteractionDesc>
+	<ISF_LearningProgressEXPOnQuestFinish>On quest {OUTCOME}, scaling with {STAT}: {QUESTDEFS}</ISF_LearningProgressEXPOnQuestFinish>
+	<ISF_LearningProgressEXPOnQuestFinishDesc>Gain {0} experience.</ISF_LearningProgressEXPOnQuestFinishDesc>
 	
 	<!-- EnergyTrackerComp -->
 	<ISF_EnergyTrackerCompNone>N/A</ISF_EnergyTrackerCompNone>
