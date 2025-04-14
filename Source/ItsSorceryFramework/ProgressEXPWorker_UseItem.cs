@@ -49,14 +49,5 @@ namespace ItsSorceryFramework
 
             return rect.yMin - yMin;
         }
-
-        public IEnumerable<String> labelsFromEXPItems(IEnumerable<EXPConsumableItems> items)
-        {
-            foreach (var item in items)
-            {
-                yield return item.thingDef.label;
-            }
-            yield break;
-        }
     }
 }

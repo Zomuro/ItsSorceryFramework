@@ -91,8 +91,6 @@ namespace ItsSorceryFramework
             this.def = def;
             this.schema = schema;
             InitializeEnergy();
-
-            // maybe put initalize gizmo here idunno
         }
 
         public virtual void InitializeComps()
@@ -133,11 +131,18 @@ namespace ItsSorceryFramework
 
         public float InvMult => def.inverse ? -1f : 1f;
 
+        public StatDef MinEnergyStatDef => def.energyMinStatDef ?? StatDefOf_ItsSorcery.ISF_MinEnergy;
+
+        public StatDef MaxEnergyStatDef => def.energyMaxStatDef ?? StatDefOf_ItsSorcery.ISF_MaxEnergy;
+
+        public StatDef EnergyCostFactorStatDef => def.energyCostFactorStatDef ?? StatDefOf_ItsSorcery.ISF_EnergyCostFactor;
+
         public virtual float MinEnergy
         {
             get
             {
                 if (cachedEnergyMin == float.MinValue) cachedEnergyMin = Math.Min(pawn.GetStatValue(def.energyMinStatDef ?? StatDefOf_ItsSorcery.ISF_MinEnergy, true, -1), MaxEnergy);
+                //Math.Min(PawnCacheUtility.GetStatCacheVal(pawn, MinEnergyStatDef), MaxEnergy); //
                 return cachedEnergyMin;
             }
         }
@@ -146,7 +151,8 @@ namespace ItsSorceryFramework
         {
             get
             {
-                if(cachedEnergyMax == float.MinValue) cachedEnergyMax = pawn.GetStatValue(def.energyMaxStatDef ?? StatDefOf_ItsSorcery.ISF_MaxEnergy, true, -1);
+                if (cachedEnergyMax == float.MinValue) cachedEnergyMax = pawn.GetStatValue(def.energyMaxStatDef ?? StatDefOf_ItsSorcery.ISF_MaxEnergy, true, -1); 
+                // PawnCacheUtility.GetStatCacheVal(pawn, MaxEnergyStatDef);  //
                 return cachedEnergyMax;
             }
         }
@@ -155,7 +161,8 @@ namespace ItsSorceryFramework
         {
             get
             {
-                if(cachedEnergyAbsMin == float.MinValue) cachedEnergyAbsMin = def.energyAbsMinStatDef is null ? MinEnergy : Math.Min(pawn.GetStatValue(def.energyAbsMinStatDef, true, -1), MinEnergy);
+                if (cachedEnergyAbsMin == float.MinValue) cachedEnergyAbsMin = def.energyAbsMinStatDef is null ? MinEnergy : Math.Min(pawn.GetStatValue(def.energyAbsMinStatDef, true, -1), MinEnergy);
+                //def.energyAbsMinStatDef is null ? MinEnergy : Math.Min(PawnCacheUtility.GetStatCacheVal(pawn, def.energyAbsMinStatDef), MinEnergy);
                 return cachedEnergyAbsMin;
             }
         }
@@ -165,6 +172,7 @@ namespace ItsSorceryFramework
             get
             {
                 if (cachedEnergyAbsMax == float.MinValue) cachedEnergyAbsMax = def.energyAbsMaxStatDef is null ? MaxEnergy : Math.Max(pawn.GetStatValue(def.energyAbsMaxStatDef, true, -1), MaxEnergy);
+                //=> def.energyAbsMaxStatDef is null ? MaxEnergy : Math.Max(PawnCacheUtility.GetStatCacheVal(pawn, def.energyAbsMaxStatDef), MaxEnergy);
                 return cachedEnergyAbsMax;
             }
         }
@@ -174,6 +182,7 @@ namespace ItsSorceryFramework
             get
             {
                 if (cachedEnergyCostFactor == float.MinValue) cachedEnergyCostFactor = pawn.GetStatValue(def.energyCostFactorStatDef ?? StatDefOf_ItsSorcery.ISF_EnergyCostFactor, true, -1);
+                // => PawnCacheUtility.GetStatCacheVal(pawn, EnergyCostFactorStatDef);
                 return cachedEnergyCostFactor;
             }
         }
@@ -210,11 +219,18 @@ namespace ItsSorceryFramework
             cachedEnergyAbsMin = float.MinValue;
             cachedEnergyAbsMax = float.MinValue;
             cachedEnergyCostFactor = float.MinValue;
+
+            /*PawnStatCacheDict statCacheDict = PawnCacheUtility.GetStatCacheDict(pawn);
+            statCacheDict.ForceResetStatValue(def.energyMaxStatDef);
+            statCacheDict.ForceResetStatValue(def.energyMinStatDef);
+            if (def.energyAbsMinStatDef != null) statCacheDict.ForceResetStatValue(def.energyAbsMinStatDef);
+            if (def.energyAbsMinStatDef != null) statCacheDict.ForceResetStatValue(def.energyAbsMaxStatDef);
+            statCacheDict.ForceResetStatValue(def.energyCostFactorStatDef);*/
         }
 
         public virtual void EnergyTrackerTick()
         {
-            if(Find.TickManager.TicksGame >= nextRecacheTick) ClearStatCache();
+            if (Find.TickManager.TicksGame >= nextRecacheTick) ClearStatCache();
             if (!comps.NullOrEmpty()) foreach (var c in comps) c.CompPostTick();
         }
 

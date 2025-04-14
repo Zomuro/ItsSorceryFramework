@@ -157,7 +157,6 @@ namespace ItsSorceryFramework
                 Text.Anchor = TextAnchor.MiddleCenter;
                 Widgets.LabelCacheHeight(ref tempRect, "ISF_CurrentSkillPoints".Translate(progressTracker.def.skillPointLabelKey.Translate(),
                     progressTracker.points - progressTracker.usedPoints));
-                    //$"{progressTracker.def.skillPointLabelKey.Translate().CapitalizeFirst()}: {progressTracker.points - progressTracker.usedPoints}"
                 Text.Anchor = TextAnchor.UpperLeft;
                 coordY += tempRect.height;
             }
@@ -247,11 +246,11 @@ namespace ItsSorceryFramework
             return false;
         }
 
-        public void DrawOutline(Rect rect, Color outColor, int outThick = 1, Texture2D lineTex = null)
+        public void DrawOutline(Rect rect, Color outColor, int outThick = 1)
         {
             Color color = GUI.color;
             GUI.color = outColor;
-            Widgets.DrawBox(rect, outThick, lineTex);
+            Widgets.DrawBox(rect, outThick, null);
             GUI.color = color;
         }
 

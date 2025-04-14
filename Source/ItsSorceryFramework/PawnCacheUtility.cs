@@ -67,6 +67,20 @@ namespace ItsSorceryFramework
             if (pawnStatCache.Stale) pawnStatCache.Reset();
             return pawnStatCache.statVal;
         }
+
+        public void ForceResetStatValue(StatDef statDef)
+        {
+            PawnStatCache pawnStatCache;
+            if (!statCacheDict.TryGetValue(statDef, out pawnStatCache))
+            {
+                pawnStatCache = new PawnStatCache(pawn, statDef);
+                pawnStatCache.Reset();
+                statCacheDict[statDef] = pawnStatCache;
+                return;
+            }
+
+            pawnStatCache.Reset();
+        }
     }
 
     public abstract class PawnCache
