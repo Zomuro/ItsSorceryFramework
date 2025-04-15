@@ -142,30 +142,34 @@ namespace ItsSorceryFramework
             get
             {
                 if (cachedEnergyMin == float.MinValue) cachedEnergyMin = Math.Min(pawn.GetStatValue(def.energyMinStatDef ?? StatDefOf_ItsSorcery.ISF_MinEnergy, true, -1), MaxEnergy);
-                //Math.Min(PawnCacheUtility.GetStatCacheVal(pawn, MinEnergyStatDef), MaxEnergy); //
                 return cachedEnergyMin;
             }
         }
+
+        //public virtual float MinEnergy => Math.Min(PawnCacheUtility.GetStatCacheVal(pawn, MinEnergyStatDef), MaxEnergy);
+
 
         public virtual float MaxEnergy
         {
             get
             {
-                if (cachedEnergyMax == float.MinValue) cachedEnergyMax = pawn.GetStatValue(def.energyMaxStatDef ?? StatDefOf_ItsSorcery.ISF_MaxEnergy, true, -1); 
-                // PawnCacheUtility.GetStatCacheVal(pawn, MaxEnergyStatDef);  //
+                if (cachedEnergyMax == float.MinValue) cachedEnergyMax = pawn.GetStatValue(def.energyMaxStatDef ?? StatDefOf_ItsSorcery.ISF_MaxEnergy, true, -1);
                 return cachedEnergyMax;
             }
         }
+
+        //public virtual float MaxEnergy => PawnCacheUtility.GetStatCacheVal(pawn, MaxEnergyStatDef);
 
         public virtual float AbsMinEnergy
         {
             get
             {
                 if (cachedEnergyAbsMin == float.MinValue) cachedEnergyAbsMin = def.energyAbsMinStatDef is null ? MinEnergy : Math.Min(pawn.GetStatValue(def.energyAbsMinStatDef, true, -1), MinEnergy);
-                //def.energyAbsMinStatDef is null ? MinEnergy : Math.Min(PawnCacheUtility.GetStatCacheVal(pawn, def.energyAbsMinStatDef), MinEnergy);
                 return cachedEnergyAbsMin;
             }
         }
+
+        //public virtual float AbsMinEnergy => def.energyAbsMinStatDef is null ? MinEnergy : Math.Min(PawnCacheUtility.GetStatCacheVal(pawn, def.energyAbsMinStatDef), MinEnergy);
 
         public virtual float AbsMaxEnergy
         {
@@ -177,15 +181,19 @@ namespace ItsSorceryFramework
             }
         }
 
+        //public virtual float AbsMaxEnergy => def.energyAbsMaxStatDef is null ? MaxEnergy : Math.Max(PawnCacheUtility.GetStatCacheVal(pawn, def.energyAbsMaxStatDef), MaxEnergy);
+
         public virtual float EnergyCostFactor
         {
             get
             {
                 if (cachedEnergyCostFactor == float.MinValue) cachedEnergyCostFactor = pawn.GetStatValue(def.energyCostFactorStatDef ?? StatDefOf_ItsSorcery.ISF_EnergyCostFactor, true, -1);
-                // => PawnCacheUtility.GetStatCacheVal(pawn, EnergyCostFactorStatDef);
                 return cachedEnergyCostFactor;
             }
         }
+
+        //public virtual float EnergyCostFactor => PawnCacheUtility.GetStatCacheVal(pawn, EnergyCostFactorStatDef);
+
 
         public virtual bool HasOverchargeZone => !def.inverse ? AbsMaxEnergy > MaxEnergy : MinEnergy > AbsMinEnergy;
 
