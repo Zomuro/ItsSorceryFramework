@@ -325,7 +325,7 @@ namespace ItsSorceryFramework
                 diffLog.AdjustClass(progressTracker, targetClassDef, classMapping.levelReset, classMapping.benefitReset);
                 ProgressTrackerUtility.CompletionLearningUnlock(ref progressTracker, targetClassDef);
                 progressTracker.ResetLevelLabel();
-                foreach (var et in progressTracker.schema.energyTrackers) et.ClearStatCache();
+                foreach (var et in progressTracker.schema.energyTrackers) et.ForceClearEnergyStatCaches(); //.ClearStatCache();
                 progressTracker.CleanClassChangeOpps();
             }
         }

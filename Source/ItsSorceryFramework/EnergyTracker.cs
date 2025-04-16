@@ -194,7 +194,6 @@ namespace ItsSorceryFramework
 
         //public virtual float EnergyCostFactor => PawnCacheUtility.GetStatCacheVal(pawn, EnergyCostFactorStatDef);
 
-
         public virtual bool HasOverchargeZone => !def.inverse ? AbsMaxEnergy > MaxEnergy : MinEnergy > AbsMinEnergy;
 
         public virtual bool HasDeficitZone => !def.inverse ? MinEnergy > AbsMinEnergy : AbsMaxEnergy > MaxEnergy;
@@ -207,10 +206,16 @@ namespace ItsSorceryFramework
 
         public virtual string EnergyDesc => def.energyUnitStatDef.description;
 
-        public void ClearStatCache()
+        public virtual void ForceClearEnergyStatCaches()
         {
-            int baseTicks = ItsSorceryUtility.settings.EnergyStatCacheTicks;
-            nextRecacheTick = Find.TickManager.TicksGame + UnityEngine.Random.Range(baseTicks - 3, baseTicks + 3);
+            ClearStatCache();
+            foreach(var comp in comps) comp.CompClearStatCache();
+        }
+
+        public virtual void ClearStatCache()
+        {
+            //int baseTicks = ItsSorceryUtility.settings.EnergyStatCacheTicks;
+            nextRecacheTick = Find.TickManager.TicksGame + PawnCacheUtility.GetEnergyTickOffset();//UnityEngine.Random.Range(baseTicks - 3, baseTicks + 3);
 
             if (Prefs.DevMode && ItsSorceryUtility.settings.ShowItsSorceryDebug)
             {

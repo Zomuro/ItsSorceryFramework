@@ -10,6 +10,10 @@ namespace ItsSorceryFramework
 {
     public static class PawnCacheUtility
     {
+        // PawnCacheUtility is used for general caching of stat values on-demand.
+        // However, for performance critical applications (stuff that regularly ticks or updates during normal gameplay), avoid using this.
+        // It is better to cache the value itself in class so it doesn't need to spend time finding and retrieving the value here.
+
         public static Dictionary<Pawn, PawnStatCacheDict> statCacheDict = new Dictionary<Pawn, PawnStatCacheDict>();
 
         public static void ClearCacheDicts()
@@ -31,6 +35,20 @@ namespace ItsSorceryFramework
         }
 
         public static float GetStatCacheVal(Pawn pawn, StatDef statDef) => GetStatCacheDict(pawn).GetStatValue(statDef);
+
+        public static int GetGeneralTickOffset()
+        {
+            int minTickOffset = Math.Max(1, ItsSorceryUtility.settings.GeneralStatCacheTicks - 3);
+            int maxTickOffset = Math.Max(1, ItsSorceryUtility.settings.GeneralStatCacheTicks + 3);
+            return UnityEngine.Random.Range(minTickOffset, maxTickOffset);
+        }
+
+        public static int GetEnergyTickOffset()
+        {
+            int minTickOffset = Math.Max(1, ItsSorceryUtility.settings.EnergyStatCacheTicks - 3);
+            int maxTickOffset = Math.Max(1, ItsSorceryUtility.settings.EnergyStatCacheTicks + 3);
+            return UnityEngine.Random.Range(minTickOffset, maxTickOffset);
+        }
     }
 
     public abstract class PawnCacheDict

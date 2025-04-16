@@ -12,6 +12,8 @@ namespace ItsSorceryFramework
 
         public StatDef ScalingStatDef => Props.scalingStatDef is null ? StatDefOf_ItsSorcery.ISF_ScalingStat : Props.scalingStatDef;
 
+        public virtual float ScalingStatValue => PawnCacheUtility.GetStatCacheVal(parent.pawn, ScalingStatDef);
+
         public IEnumerable<String> DamageDefsLabels(IEnumerable<Def> defs)
         {
             foreach (var def in defs) yield return def.label;

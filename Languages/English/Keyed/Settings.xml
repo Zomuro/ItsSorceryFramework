@@ -11,8 +11,8 @@
 	<ISF_Settings_PresetDebug>Presets and Debug</ISF_Settings_PresetDebug>
 	
 	<!-- General -->
-	<ISF_Settings_GeneralStatCacheTicks>Avg stat cache period: {0} ticks</ISF_Settings_GeneralStatCacheTicks>
-	<ISF_Settings_GeneralStatCacheTicksDesc>Set how long stat values are cached within It's Sorcery's PawnCacheUtility on average.\n\nShorter periods are more performance intensive.</ISF_Settings_GeneralStatCacheTicksDesc>
+	<ISF_Settings_GeneralStatCacheTicks>Avg general stat cache time: {0} ticks</ISF_Settings_GeneralStatCacheTicks>
+	<ISF_Settings_GeneralStatCacheTicksDesc>Set how long general stat values are cached within It's Sorcery's PawnCacheUtility on average.\n\nShorter periods are more performance intensive.</ISF_Settings_GeneralStatCacheTicksDesc>
 	
 	<!-- SorcerySchema -->
 	<ISF_Settings_SchemaShowEnergyBars>Show energy bar(s)</ISF_Settings_SchemaShowEnergyBars>
@@ -21,8 +21,8 @@
 	<ISF_Settings_SchemaShowSkillPointsDesc>Toggle if the Schema ITab will show available skill points for each SorcerySchema.</ISF_Settings_SchemaShowSkillPointsDesc>
 	
 	<!-- EnergyTracker -->
-	<ISF_Settings_EnergyStatCacheTicks>Avg stat value cache period: {0} ticks</ISF_Settings_EnergyStatCacheTicks>
-	<ISF_Settings_EnergyStatCacheTicksDesc>Set how long stat values are cached within the EnergyTracker on average.\n\nShorter periods are more performance intensive.</ISF_Settings_EnergyStatCacheTicksDesc>
+	<ISF_Settings_EnergyStatCacheTicks>Avg energy stat cache time: {0} ticks</ISF_Settings_EnergyStatCacheTicks>
+	<ISF_Settings_EnergyStatCacheTicksDesc>Set how long energy stat values are cached within the EnergyTracker on average.\n\nShorter periods are more performance intensive.</ISF_Settings_EnergyStatCacheTicksDesc>
 	
 	<!-- ProgressTracker -->
 	<ISF_Settings_ProgressShowXPMotes>Show EXP motes</ISF_Settings_ProgressShowXPMotes>

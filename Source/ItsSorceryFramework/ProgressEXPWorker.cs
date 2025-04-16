@@ -9,8 +9,6 @@ namespace ItsSorceryFramework
     public class ProgressEXPWorker
     {
         public ProgressEXPTagDef def;        
-
-        public int lastStatCacheTick = -1;
         
         public StatDef ScalingStatDef => def.scalingStatDef is null ? StatDefOf_ItsSorcery.ISF_ScalingStat : def.scalingStatDef;
 

@@ -22,15 +22,6 @@ namespace ItsSorceryFramework
 
         public StatDef ScalingStatDef => Props.scalingStatDef is null ? StatDefOf_ItsSorcery.ISF_ScalingStat : Props.scalingStatDef;
 
-        public float ScalingStatVal
-        {
-            get
-            {
-                if (cachedScalingStatVal == float.MinValue) cachedScalingStatVal = parent.pawn.GetStatValue(ScalingStatDef);
-                return cachedScalingStatVal;
-            }
-        }
-
         public override void CompPostInteraction(InteractionDef interactionDef) 
         {
             if (interactionDef is null) return;

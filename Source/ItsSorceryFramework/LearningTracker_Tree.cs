@@ -155,7 +155,7 @@ namespace ItsSorceryFramework
                         LearningRecord.CompletionLearningUnlock(selectedNode);
                         schema.progressTracker.usedPoints += selectedNode.pointReq;
 
-                        foreach (var et in schema.energyTrackers) et.ClearStatCache();
+                        foreach (var et in schema.energyTrackers) et.ForceClearEnergyStatCaches(); // ClearStatCache();
                     }
                 }
                 else
@@ -214,8 +214,8 @@ namespace ItsSorceryFramework
                         diffLog.AddLedger(progressDiffLedger);
 
                         LearningRecord.CompletionLearningUnlock(selectedNode);
-                        
-                        foreach (var et in schema.energyTrackers) et.ClearStatCache();
+
+                        foreach (var et in schema.energyTrackers) et.ForceClearEnergyStatCaches(); // ClearStatCache();
                     }
                     Text.Font = GameFont.Small;
                     this.leftViewDebugHeight = debugButton.height;

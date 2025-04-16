@@ -33,17 +33,17 @@ namespace ItsSorceryFramework
             }
         }
 
-        public void ClearStatCache()
+        public override void CompClearStatCache()
         {
-            int baseTicks = ItsSorceryUtility.settings.EnergyStatCacheTicks;
-            nextRecacheTick = Find.TickManager.TicksGame + UnityEngine.Random.Range(baseTicks - 3, baseTicks + 3);
+            //int baseTicks = ItsSorceryUtility.settings.EnergyStatCacheTicks;
+            nextRecacheTick = Find.TickManager.TicksGame + PawnCacheUtility.GetEnergyTickOffset();//UnityEngine.Random.Range(baseTicks - 3, baseTicks + 3);
             cachedScalingStatVal = float.MinValue;
         }
 
         public override void CompPostTick()
         {
             // recache scaling stat
-            if (Find.TickManager.TicksGame >= nextRecacheTick) ClearStatCache();
+            if (Find.TickManager.TicksGame >= nextRecacheTick) CompClearStatCache();
 
             // nullcheck list of jobs to check - if false, ignore
             if (JobDefs.NullOrEmpty()) return;

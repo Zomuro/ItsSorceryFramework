@@ -11,6 +11,8 @@ namespace ItsSorceryFramework
 
         public EnergyTrackerCompProperties props;
 
+        public virtual void CompClearStatCache() { }
+
         public virtual void CompExposeData() { } // saving values to comp, if needed
 
         public virtual void CompPostTick() { } // for effects over time

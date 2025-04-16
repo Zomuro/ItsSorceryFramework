@@ -248,7 +248,7 @@ namespace ItsSorceryFramework
             CompletionLearningUnlock(currClassChangeOption.classDef);
             progressTracker.ResetLevelLabel();
 
-            foreach (var et in progressTracker.schema.energyTrackers) et.ClearStatCache();
+            foreach (var et in progressTracker.schema.energyTrackers) et.ForceClearEnergyStatCaches();// ClearStatCache();
 
             currClassChangeOption = null;
             progressTracker.CleanClassChangeOpps();

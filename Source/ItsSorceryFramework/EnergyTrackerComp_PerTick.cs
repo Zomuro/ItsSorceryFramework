@@ -25,16 +25,16 @@ namespace ItsSorceryFramework
             }
         }
 
-        public void ClearStatCache()
+        public override void CompClearStatCache()
         {
-            int baseTicks = ItsSorceryUtility.settings.EnergyStatCacheTicks;
-            nextRecacheTick = Find.TickManager.TicksGame + UnityEngine.Random.Range(baseTicks - 3, baseTicks + 3);
+            //int baseTicks = ItsSorceryUtility.settings.EnergyStatCacheTicks;
+            nextRecacheTick = Find.TickManager.TicksGame + PawnCacheUtility.GetEnergyTickOffset(); // UnityEngine.Random.Range(baseTicks - 3, baseTicks + 3);
             cachedRecoveryRate = float.MinValue;
         }
 
         public override void CompPostTick() 
         {
-            if (Find.TickManager.TicksGame >= nextRecacheTick) ClearStatCache();
+            if (Find.TickManager.TicksGame >= nextRecacheTick) CompClearStatCache();
 
             float energyChange = 1.TicksToSeconds() * RecoveryRate; // inverse system => -1; recovery rate 5
 

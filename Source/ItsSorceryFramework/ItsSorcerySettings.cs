@@ -1,4 +1,5 @@
-﻿using RimWorld;
+﻿using System;
+using RimWorld;
 using System.Collections.Generic;
 using UnityEngine;
 using Verse;
@@ -33,14 +34,14 @@ namespace ItsSorceryFramework
         public override void ExposeData()
         {
             // ITab
-            Scribe_Values.Look(ref GeneralStatCacheTicks, "GeneralStatCacheTicks", 60);
+            Scribe_Values.Look(ref GeneralStatCacheTicks, "GeneralStatCacheTicks", 300);
 
             // SorcerySchema
             Scribe_Values.Look(ref SchemaShowEnergyBar, "SchemaShowEnergyBar", true);
             Scribe_Values.Look(ref SchemaShowSkillPoints, "SchemaShowSkillPoints", false);
 
             // EnergyTracker
-            Scribe_Values.Look(ref EnergyStatCacheTicks, "EnergyStatCacheTicks", 60);
+            Scribe_Values.Look(ref EnergyStatCacheTicks, "EnergyStatCacheTicks", 300);
 
             // LearningTracker
 
@@ -67,9 +68,9 @@ namespace ItsSorceryFramework
 
         private float leftHalfViewHeight;
 
-        private const int MinStatCacheTicks = 20;
+        private const int MinStatCacheTicks = 60;
 
-        private const int MaxStatCacheTicks = 180;
+        private const int MaxStatCacheTicks = 600;
 
         private const int MinProspectLevels = 3;
 
@@ -160,6 +161,11 @@ namespace ItsSorceryFramework
             base.DoSettingsWindowContents(inRect);
         }
 
+        public int IncByFive(int num)
+        {
+            return (int) (Mathf.Round(num / 5f) * 5f);
+        }
+
         public void GeneralSettings(ref Listing_Standard listing)
         {
             Text.Font = GameFont.Medium;
@@ -169,7 +175,7 @@ namespace ItsSorceryFramework
             Text.Font = GameFont.Small;
             listing.Label("ISF_Settings_GeneralStatCacheTicks".Translate(settings.GeneralStatCacheTicks.ToString(), -1,
                 "ISF_Settings_GeneralStatCacheTicksDesc".Translate()));
-            settings.GeneralStatCacheTicks = (int)listing.Slider(settings.GeneralStatCacheTicks, MinStatCacheTicks, MaxStatCacheTicks);
+            settings.GeneralStatCacheTicks = (int)listing.Slider(IncByFive(settings.GeneralStatCacheTicks), MinStatCacheTicks, MaxStatCacheTicks);
 
             listing.Gap(8f);
             if (listing.ButtonText("ISF_Settings_Default".Translate())) SettingsGeneralDefault();
@@ -198,12 +204,9 @@ namespace ItsSorceryFramework
             listing.GapLine();
 
             Text.Font = GameFont.Small;
-            listing.Label("ISF_Settings_None".Translate());
-
-            Text.Font = GameFont.Small;
             listing.Label("ISF_Settings_EnergyStatCacheTicks".Translate(settings.EnergyStatCacheTicks.ToString(), -1,
                 "ISF_Settings_EnergyStatCacheTicksDesc".Translate()));
-            settings.EnergyStatCacheTicks = (int)listing.Slider(settings.EnergyStatCacheTicks, MinStatCacheTicks, MaxStatCacheTicks);
+            settings.EnergyStatCacheTicks = (int)listing.Slider(IncByFive(settings.EnergyStatCacheTicks), MinStatCacheTicks, MaxStatCacheTicks);
 
             listing.Gap(8f);
             if (listing.ButtonText("ISF_Settings_Default".Translate())) SettingsEnergyDefault();
@@ -267,7 +270,7 @@ namespace ItsSorceryFramework
 
         public void SettingsGeneralDefault(bool msg = true)
         {
-            settings.GeneralStatCacheTicks = 60;
+            settings.GeneralStatCacheTicks = 300;
 
             if (msg) Messages.Message(new Message("ISF_Settings_GeneralDefaultMessage".Translate(), MessageTypeDefOf.NeutralEvent));
         }
@@ -282,7 +285,7 @@ namespace ItsSorceryFramework
 
         public void SettingsEnergyDefault(bool msg = true)
         {
-            settings.EnergyStatCacheTicks = 60;
+            settings.EnergyStatCacheTicks = 300;
 
             if (msg) Messages.Message(new Message("ISF_Settings_EnergyDefaultMessage".Translate(), MessageTypeDefOf.NeutralEvent));
         }
