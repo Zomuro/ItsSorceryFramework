@@ -71,7 +71,7 @@ namespace ItsSorceryFramework
             foreach (var nodeDef in targetClassDef.prereqsNodes) // for each node requirement within the mapping
             {
                 if (!schema.learningNodeRecord.completion.ContainsKey(nodeDef)) continue; // null check
-                if (!schema.learningNodeRecord.ExclusiveNodeFufilled(nodeDef)) // if there is an exlusive node conflict
+                if (!schema.learningNodeRecord.ExclusiveNodeFulfilled(nodeDef)) // if there is an exlusive node conflict
                 {
                     Log.Message(schema.pawn.Name.ToStringShort + ": " + nodeDef.defName + " could not be completed due to an exclusive node in the pawnkind.");
                     continue;
@@ -138,7 +138,7 @@ namespace ItsSorceryFramework
             foreach (var nodeReq in mapping.requiredNodes) // for each node requirement within the mapping
             {
                 if (!schema.learningNodeRecord.completion.ContainsKey(nodeReq.nodeDef)) continue; // null check
-                if (!schema.learningNodeRecord.ExclusiveNodeFufilled(nodeReq.nodeDef)) // if there is an exlusive node conflict
+                if (!schema.learningNodeRecord.ExclusiveNodeFulfilled(nodeReq.nodeDef)) // if there is an exlusive node conflict
                 {
                     Log.Message(schema.pawn.Name.ToStringShort +": " + nodeReq.nodeDef.defName + " could not be completed due to an exclusive node in the pawnkind.");
                     continue;

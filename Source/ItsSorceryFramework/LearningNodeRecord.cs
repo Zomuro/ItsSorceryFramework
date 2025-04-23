@@ -105,32 +105,56 @@ namespace ItsSorceryFramework
             return new Tuple<int, int>(prereqCount, prereqResearchCount);
         }
 
-        public string PrereqsModeNotif(LearningNodePrereqMode mode, int min = 0, int done = 0)
+        /*public string PrereqsModeNotif(LearningNodePrereqMode mode, int min = 0, int done = 0)
         {
             return PrereqUtility.PrereqsModeNotif(mode, min, done);
+        }*/
+
+        public bool PrereqGenesFulfilled(LearningTreeNodeDef node)
+        {
+            return PrereqUtility.PrereqGenesFufilled(pawn.genes.GenesListForReading.Select(x => x.def).ToHashSet(), node.prereqsGenes,
+                node.prereqGeneMode, node.prereqGeneModeMin);
         }
 
-        public bool PrereqStatFufilled(LearningTreeNodeDef node)
+        public bool PrereqTraitsFulfilled(LearningTreeNodeDef node)
         {
-            return PrereqUtility.PrereqStatFufilled(pawn, node.prereqsStats);
+            return PrereqUtility.PrereqTraitsFufilled(pawn.story.traits.allTraits.Select(x => x.def).ToHashSet(), node.prereqsTraits,
+                node.prereqTraitMode, node.prereqTraitModeMin);
         }
 
-        public bool PrereqSkillFufilled(LearningTreeNodeDef node)
+        public bool PrereqXenotypeFulfilled(LearningTreeNodeDef node)
         {
-            return PrereqUtility.PrereqSkillFufilled(pawn, node.prereqsSkills);
-        }
-
-        public bool PrereqHediffFufilled(LearningTreeNodeDef node)
-        {
-            return PrereqUtility.PrereqHediffFufilled(pawn, node.prereqsHediff);
+            return PrereqUtility.PrereqXenotypeFufilled(pawn, node.prereqXenotype);
         }
 
         public bool PrereqLevelFulfilled(LearningTreeNodeDef node)
         {
-            return PrereqUtility.PrereqLevelFufilled(schema.progressTracker, node.prereqLevel);
+            //return PrereqUtility.PrereqLevelFufilled(schema.progressTracker, node.prereqLevel);
+
+            return PrereqUtility.PrereqLevelFufilled(schema.progressTracker, node.prereqLevel, node.prereqLevelMode);
         }
 
-        public bool ExclusiveNodeFufilled(LearningTreeNodeDef node)
+        public bool PrereqAgeFulfilled(LearningTreeNodeDef node)
+        {
+            return PrereqUtility.PrereqAgeFufilled(pawn, node.prereqAge, node.prereqAgeMode, node.prereqCheckBioAge);
+        }
+
+        public bool PrereqStatFulfilled(LearningTreeNodeDef node)
+        {
+            return PrereqUtility.PrereqStatFufilled(pawn, node.prereqsStats);
+        }
+
+        public bool PrereqSkillFulfilled(LearningTreeNodeDef node)
+        {
+            return PrereqUtility.PrereqSkillFufilled(pawn, node.prereqsSkills);
+        }
+
+        public bool PrereqHediffFulfilled(LearningTreeNodeDef node)
+        {
+            return PrereqUtility.PrereqHediffFufilled(pawn, node.prereqsHediff);
+        }
+
+        public bool ExclusiveNodeFulfilled(LearningTreeNodeDef node)
         {
             if (!ExclusiveNodes.ContainsKey(node)) return true;
 

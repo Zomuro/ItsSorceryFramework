@@ -36,13 +36,35 @@ namespace ItsSorceryFramework
 
         public int prereqResearchModeMin = 1;
 
+        public LearningNodePrereqMode prereqGeneMode = LearningNodePrereqMode.All;
+
+        public int prereqGeneModeMin = 1;
+
+        public LearningNodePrereqMode prereqTraitMode = LearningNodePrereqMode.All;
+
+        public int prereqTraitModeMin = 1;
+
+        public LearningNodeStatPrereqMode prereqLevelMode = LearningNodeStatPrereqMode.GreaterEqual;
+
         public int prereqLevel = 0;
+
+        public LearningNodeStatPrereqMode prereqAgeMode = LearningNodeStatPrereqMode.GreaterEqual;
+
+        public int prereqAge = 0;
+
+        public bool prereqCheckBioAge = false;
+
+        public XenotypeDef prereqXenotype = null;
 
         public List<ProgressTrackerClassDef> prereqsClassDefs = new List<ProgressTrackerClassDef>();
 
         public List<LearningTreeNodeDef> prereqsNodes = new List<LearningTreeNodeDef>();
 
         public List<ResearchProjectDef> prereqsResearchs = new List<ResearchProjectDef>();
+
+        public List<GeneDef> prereqsGenes = new List<GeneDef>();
+
+        public List<TraitDef> prereqsTraits = new List<TraitDef>();
 
         public Dictionary<HediffDef, float> prereqsHediff = new Dictionary<HediffDef, float>();
 

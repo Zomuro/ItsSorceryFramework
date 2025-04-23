@@ -120,9 +120,166 @@ namespace ItsSorceryFramework
             return true;
         }
 
-        public static bool PrereqLevelFufilled(ProgressTracker progressTracker, int prereqLevel)
+        public static bool PrereqXenotypeFufilled(Pawn pawn, XenotypeDef xenotypeDef)
+        {
+            // xenotypdef to check is null OR matching xenotype = true
+            if (xenotypeDef == null || pawn.genes.Xenotype == xenotypeDef) return true;
+            return false;
+        }
+
+        public static bool PrereqGenesFufilled(HashSet<GeneDef> pawnGenes, List<GeneDef> prereqsGenes, LearningNodePrereqMode mode, int modeMin)
+        {
+            switch (mode)
+            {
+                case LearningNodePrereqMode.All:
+                    foreach (GeneDef prereq in prereqsGenes)
+                    {
+                        if (!pawnGenes.Contains(prereq)) return false;
+                    }
+                    return true;
+
+                case LearningNodePrereqMode.Or:
+                    foreach (GeneDef prereq in prereqsGenes)
+                    {
+                        if (pawnGenes.Contains(prereq)) return true;
+                    }
+                    return false;
+
+                case LearningNodePrereqMode.Min:
+                    if (modeMin <= 0) return true;
+
+                    int count = 0;
+                    int check = Math.Min(modeMin, prereqsGenes.Count());
+                    foreach (GeneDef prereq in prereqsGenes)
+                    {
+                        if (pawnGenes.Contains(prereq)) count++;
+                        if (count >= check) return true;
+                    }
+                    return false;
+
+                default:
+                    break;
+            }
+
+            return true;
+        }
+
+        public static bool PrereqTraitsFufilled(HashSet<TraitDef> pawnTraits, List<TraitDef> traitDefs, LearningNodePrereqMode mode, int modeMin)
+        {           
+            switch (mode)
+            {
+                case LearningNodePrereqMode.All:
+                    foreach (var prereq in traitDefs)
+                    {
+                        if (!pawnTraits.Contains(prereq)) return false;
+                    }
+                    return true;
+
+                case LearningNodePrereqMode.Or:
+                    foreach (var prereq in traitDefs)
+                    {
+                        if (pawnTraits.Contains(prereq)) return true;
+                    }
+                    return false;
+
+                case LearningNodePrereqMode.Min:
+                    if (modeMin <= 0) return true;
+
+                    int count = 0;
+                    int check = Math.Min(modeMin, traitDefs.Count());
+                    foreach (var prereq in traitDefs)
+                    {
+                        if (pawnTraits.Contains(prereq)) count++;
+                        if (count >= check) return true;
+                    }
+                    return false;
+
+                default:
+                    break;
+            }
+
+            return true;
+        }
+
+        public static bool PrereqAgeFufilled(Pawn pawn, int prereqAge, LearningNodeStatPrereqMode mode = LearningNodeStatPrereqMode.GreaterEqual, bool bioAge = true)
+        {
+            if (prereqAge <= 0) return true; // null case
+            int finalAge = bioAge ? pawn.ageTracker.AgeBiologicalYears : pawn.ageTracker.AgeChronologicalYears;
+
+            switch (mode)
+            {
+                case LearningNodeStatPrereqMode.Equal:
+                    if (finalAge == prereqAge) return true;
+                    break;
+
+                case LearningNodeStatPrereqMode.NotEqual:
+                    if (finalAge != prereqAge) return true;
+                    break;
+
+                case LearningNodeStatPrereqMode.Greater:
+                    if (finalAge > prereqAge) return true;
+                    break;
+
+                case LearningNodeStatPrereqMode.GreaterEqual:
+                    if (finalAge >= prereqAge) return true;
+                    break;
+
+                case LearningNodeStatPrereqMode.Lesser:
+                    if (finalAge < prereqAge) return true;
+                    break;
+
+                case LearningNodeStatPrereqMode.LesserEqual:
+                    if (finalAge <= prereqAge) return true;
+                    break;
+
+                default:
+                    break;
+            }
+
+            return false;
+        }
+
+        /*public static bool PrereqLevelFufilled(ProgressTracker progressTracker, int prereqLevel)
         {
             if (prereqLevel <= 0 || prereqLevel <= progressTracker.CurrLevel) return true;
+            return false;
+        }*/
+
+        public static bool PrereqLevelFufilled(ProgressTracker progressTracker, int prereqLevel, LearningNodeStatPrereqMode mode = LearningNodeStatPrereqMode.GreaterEqual)
+        {
+            if (prereqLevel <= 0) return true; // null case
+            int currLevel = progressTracker.CurrLevel;
+
+            switch (mode)
+            {
+                case LearningNodeStatPrereqMode.Equal:
+                    if (currLevel == prereqLevel) return true;
+                    break;
+
+                case LearningNodeStatPrereqMode.NotEqual:
+                    if (currLevel != prereqLevel) return true;
+                    break;
+
+                case LearningNodeStatPrereqMode.Greater:
+                    if (currLevel > prereqLevel) return true;
+                    break;
+
+                case LearningNodeStatPrereqMode.GreaterEqual:
+                    if (currLevel >= prereqLevel) return true;
+                    break;
+
+                case LearningNodeStatPrereqMode.Lesser:
+                    if (currLevel < prereqLevel) return true;
+                    break;
+
+                case LearningNodeStatPrereqMode.LesserEqual:
+                    if (currLevel <= prereqLevel) return true;
+                    break;
+
+                default:
+                    break;
+            }
+
             return false;
         }
 
@@ -272,6 +429,23 @@ namespace ItsSorceryFramework
                     break;
             }
             return "";
+        }
+
+        public static int PrereqsDoneCount<T>(HashSet<T> compPrereqs, List<T> prereqList)
+        {
+            int prereqCount = 0;
+            if (!prereqList.NullOrEmpty()) prereqCount = prereqList.Where(x => compPrereqs.Contains(x)).Count();
+            return prereqCount;
+
+            /*HashSet<ProgressTrackerClassDef> classesDone = progressTracker.progressDiffLog.GetClassSet;
+
+            int prereqCount = 0;
+            if (!classDef.prereqsClassDefs.NullOrEmpty()) prereqCount = classDef.prereqsClassDefs.Where(x => classesDone.Contains(x)).Count();
+
+            int prereqResearchCount = 0;
+            if (!classDef.prereqsResearchs.NullOrEmpty()) prereqResearchCount = classDef.prereqsResearchs.Where(x => x.IsFinished).Count();
+
+            return new Tuple<int, int>(prereqCount, prereqResearchCount);*/
         }
 
         public static void SetPrereqStatusColor(bool compCheck)

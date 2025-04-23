@@ -135,8 +135,10 @@ namespace ItsSorceryFramework
                     Text.Anchor = TextAnchor.UpperLeft;
                 }
                 else if (!LearningRecord.completion[selectedNode] && LearningRecord.PrereqFufilled(selectedNode) && LearningRecord.PrereqResearchFufilled(selectedNode) &&
-                    LearningRecord.PrereqStatFufilled(selectedNode) && LearningRecord.PrereqSkillFufilled(selectedNode) && LearningRecord.PrereqHediffFufilled(selectedNode) && 
-                    LearningRecord.ExclusiveNodeFufilled(selectedNode) && LearningRecord.PrereqLevelFulfilled(selectedNode) && selectedNode.pointReq + progress.usedPoints <= progress.points) 
+                    LearningRecord.PrereqGenesFulfilled(selectedNode) && LearningRecord.PrereqTraitsFulfilled(selectedNode) && LearningRecord.PrereqXenotypeFulfilled(selectedNode) &&
+                    LearningRecord.PrereqAgeFulfilled(selectedNode) && LearningRecord.PrereqLevelFulfilled(selectedNode) &&
+                    LearningRecord.PrereqStatFulfilled(selectedNode) && LearningRecord.PrereqSkillFulfilled(selectedNode) && LearningRecord.PrereqHediffFulfilled(selectedNode) && 
+                    LearningRecord.ExclusiveNodeFulfilled(selectedNode) && selectedNode.pointReq + progress.usedPoints <= progress.points) 
                 {
                     if (Widgets.ButtonText(confirmButton, "ISF_SkillPointUse".Translate(selectedNode.pointReq, 
                         progress.def.skillPointLabelKey.Translate())))
@@ -162,25 +164,33 @@ namespace ItsSorceryFramework
                 {
                     Text.Anchor = TextAnchor.MiddleCenter;
                     if (LearningRecord.completion[selectedNode]) reason = "ISF_LearningNodeReasonCompleted".Translate();
-                    else if (!LearningRecord.ExclusiveNodeFufilled(selectedNode)) reason = "ISF_LearningNodeReasonExclusive".Translate();
+                    else if (!LearningRecord.ExclusiveNodeFulfilled(selectedNode)) reason = "ISF_LearningNodeReasonExclusive".Translate();
                     else
                     {
-                        reason = "ISF_LearningNodeLocked".Translate();
+                        reason = "ISF_GeneralDialogLocked".Translate();
 
                         if (selectedNode.pointReq + progress.usedPoints > progress.points) reason += "\n" +
                                 "ISF_LearningNodeLockedPoints".Translate(schema.progressTracker.def.skillPointLabelKey.Translate());
 
-                        if (!LearningRecord.PrereqFufilled(selectedNode)) reason += "\n" + "ISF_LearningNodeLockedNodes".Translate();
+                        if (!LearningRecord.PrereqFufilled(selectedNode)) reason += "\n" + "ISF_GeneralDialogLockedNodes".Translate();
 
-                        if (!LearningRecord.PrereqResearchFufilled(selectedNode)) reason += "\n" + "ISF_LearningNodeLockedResearch".Translate();
+                        if (!LearningRecord.PrereqResearchFufilled(selectedNode)) reason += "\n" + "ISF_GeneralDialogLockedResearch".Translate();
 
-                        if (!LearningRecord.PrereqLevelFulfilled(selectedNode)) reason += "\n" + "ISF_LearningNodeLockedLevel".Translate();
+                        if (!LearningRecord.PrereqGenesFulfilled(selectedNode)) reason += "\n" + "ISF_GeneralDialogLockedGenes".Translate();
 
-                        if (!LearningRecord.PrereqStatFufilled(selectedNode)) reason += "\n" + "ISF_LearningNodeLockedStat".Translate();
+                        if (!LearningRecord.PrereqTraitsFulfilled(selectedNode)) reason += "\n" + "ISF_GeneralDialogLockedTrait".Translate();
 
-                        if (!LearningRecord.PrereqSkillFufilled(selectedNode)) reason += "\n"+ "ISF_LearningNodeLockedSkill".Translate();
+                        if (!LearningRecord.PrereqXenotypeFulfilled(selectedNode)) reason += "\n" + "ISF_GeneralDialogLockedXenotype".Translate();          
 
-                        if (!LearningRecord.PrereqHediffFufilled(selectedNode)) reason += "\n" + "ISF_LearningNodeLockedHediff".Translate();
+                        if (!LearningRecord.PrereqLevelFulfilled(selectedNode)) reason += "\n" + "ISF_GeneralDialogLockedLevel".Translate();
+
+                        if (!LearningRecord.PrereqAgeFulfilled(selectedNode)) reason += "\n" + "ISF_GeneralDialogLockedAge".Translate();
+
+                        if (!LearningRecord.PrereqStatFulfilled(selectedNode)) reason += "\n" + "ISF_GeneralDialogLockedStat".Translate();
+
+                        if (!LearningRecord.PrereqSkillFulfilled(selectedNode)) reason += "\n"+ "ISF_GeneralDialogLockedSkill".Translate();
+
+                        if (!LearningRecord.PrereqHediffFulfilled(selectedNode)) reason += "\n" + "ISF_GeneralDialogLockedHediff".Translate();
                     }
 
                     this.leftStartAreaHeight = Mathf.Max(Text.CalcHeight(reason, confirmButton.width - 10f) + 10f, 68f);
@@ -249,16 +259,20 @@ namespace ItsSorceryFramework
 
         private float DrawNodePrereqs(LearningTreeNodeDef node, Rect rect)
         {
-            if (node.prereqs.NullOrEmpty() && node.prereqsResearch.NullOrEmpty() && node.prereqLevel <= 0 && node.prereqsStats.NullOrEmpty() && 
+            if (node.prereqs.NullOrEmpty() && node.prereqsResearch.NullOrEmpty() 
+                && node.prereqLevel <= 0 && node.prereqsStats.NullOrEmpty() && 
                 node.prereqsSkills.NullOrEmpty() && node.prereqsHediff.NullOrEmpty()) return 0f;
             float xMin = rect.xMin;
             float yMin = rect.yMin;
 
-            Tuple<int, int> prereqsDone = LearningRecord.PrereqsDone(node);
+            //Tuple<int, int> prereqsDone = LearningRecord.PrereqsDone(node);
+            int doneCount = 0;
 
             if (!node.prereqs.NullOrEmpty()) 
             {
-                Widgets.LabelCacheHeight(ref rect, "ISF_LearningNodePrereqs".Translate() + LearningRecord.PrereqsModeNotif(node.prereqMode, node.prereqModeMin, prereqsDone.Item1), true, false);
+                HashSet<LearningTreeNodeDef> nodesDone = LearningRecord.completion.Where(x => x.Value == true).Select(x => x.Key).ToHashSet();
+                doneCount = PrereqUtility.PrereqsDoneCount(nodesDone, node.prereqs); //prereqsDone.Item1
+                Widgets.LabelCacheHeight(ref rect, "ISF_GeneralDialogPrereqNode".Translate() + PrereqUtility.PrereqsModeNotif(node.prereqMode, node.prereqModeMin, doneCount), true, false);
                 rect.yMin += rect.height;
                 rect.xMin += 6f;
                 foreach (LearningTreeNodeDef prereq in node.prereqs)
@@ -294,7 +308,8 @@ namespace ItsSorceryFramework
 
             if (!node.prereqsResearch.NullOrEmpty())
             {
-                Widgets.LabelCacheHeight(ref rect, "ISF_LearningNodeResearchPrereqs".Translate() + LearningRecord.PrereqsModeNotif(node.prereqResearchMode, node.prereqResearchModeMin, prereqsDone.Item2), true, false);
+                doneCount = node.prereqsResearch.Where(x => x.PrerequisitesCompleted).Count(); //prereqsDone.Item2
+                Widgets.LabelCacheHeight(ref rect, "ISF_GeneralDialogPrereqResearch".Translate() + PrereqUtility.PrereqsModeNotif(node.prereqResearchMode, node.prereqResearchModeMin, doneCount), true, false);
                 rect.yMin += rect.height;
                 rect.xMin += 6f;
                 foreach (ResearchProjectDef prereq in node.prereqsResearch)
@@ -307,18 +322,84 @@ namespace ItsSorceryFramework
                 rect.xMin = xMin;
             }
 
-            if(node.prereqLevel > 0)
+            if (!node.prereqsGenes.NullOrEmpty()) // show completed genes
+            {
+                HashSet<GeneDef> genesDone = pawn.genes.GenesListForReading.Select(x => x.def).ToHashSet();
+                doneCount = PrereqUtility.PrereqsDoneCount(genesDone, node.prereqsGenes);
+                // prereqsDone.Item2
+                Widgets.LabelCacheHeight(ref rect, "ISF_GeneralDialogPrereqGene".Translate() + PrereqUtility.PrereqsModeNotif(node.prereqGeneMode, node.prereqGeneModeMin, doneCount), true, false);
+                rect.yMin += rect.height;
+                rect.xMin += 6f;
+                foreach (GeneDef prereq in node.prereqsGenes)
+                {
+                    PrereqUtility.SetPrereqStatusColor(genesDone.Contains(prereq));
+                    Widgets.LabelCacheHeight(ref rect, prereq.LabelCap, true, false);
+                    rect.yMin += rect.height;
+                }
+                GUI.color = Color.white;
+                rect.xMin = xMin;
+            }
+
+            if (!node.prereqsTraits.NullOrEmpty()) // show completed genes
+            {
+                HashSet<TraitDef> traitsDone = pawn.story.traits.allTraits.Select(x => x.def).ToHashSet();
+                doneCount = PrereqUtility.PrereqsDoneCount(traitsDone, node.prereqsTraits);
+                // prereqsDone.Item2
+                Widgets.LabelCacheHeight(ref rect, "ISF_GeneralDialogPrereqTrait".Translate() + PrereqUtility.PrereqsModeNotif(node.prereqTraitMode, node.prereqTraitModeMin, doneCount), true, false);
+                rect.yMin += rect.height;
+                rect.xMin += 6f;
+                foreach (TraitDef prereq in node.prereqsTraits)
+                {
+                    PrereqUtility.SetPrereqStatusColor(traitsDone.Contains(prereq));
+                    Widgets.LabelCacheHeight(ref rect, prereq.LabelCap, true, false);
+                    rect.yMin += rect.height;
+                }
+                GUI.color = Color.white;
+                rect.xMin = xMin;
+            }
+
+            if (node.prereqXenotype != null) // show completed xenotype req
+            {
+                PrereqUtility.SetPrereqStatusColor(LearningRecord.PrereqXenotypeFulfilled(node));
+                Widgets.LabelCacheHeight(ref rect, "ISF_GeneralDialogPrereqXenotype".Translate(node.prereqXenotype), true, false);
+                rect.yMin += rect.height;
+                GUI.color = Color.white;
+                rect.xMin = xMin;
+            }
+
+            if (node.prereqLevel > 0) // show completed level req
+            {
+                PrereqUtility.SetPrereqStatusColor(LearningRecord.PrereqLevelFulfilled(node));
+                string levelComp = "level" + PrereqUtility.PrereqsStatsModeNotif(node.prereqLevelMode) + node.prereqLevel.ToString();
+                Widgets.LabelCacheHeight(ref rect, "ISF_GeneralDialogPrereqLevel".Translate(levelComp), true, false);
+                rect.yMin += rect.height;
+                GUI.color = Color.white;
+                rect.xMin = xMin;
+            }
+                
+            if (node.prereqAge > 0) // show completed age req
+            {
+                PrereqUtility.SetPrereqStatusColor(LearningRecord.PrereqAgeFulfilled(node));
+                string ageCheck = node.prereqCheckBioAge ? "ISF_GeneralDialogPrereqAgeBio".Translate() : "ISF_GeneralDialogPrereqAgeChron".Translate();
+                string ageComp = ageCheck + PrereqUtility.PrereqsStatsModeNotif(node.prereqAgeMode) + node.prereqAge.ToString();
+                Widgets.LabelCacheHeight(ref rect, "ISF_GeneralDialogPrereqAge".Translate(ageComp), true, false);
+                rect.yMin += rect.height;
+                GUI.color = Color.white;
+                rect.xMin = xMin;
+            }
+
+            /*if (node.prereqLevel > 0)
             {
                 SetPrereqStatusColor(!LearningRecord.PrereqLevelFulfilled(node), node);
                 Widgets.LabelCacheHeight(ref rect, "ISF_LearningNodeLevelReq".Translate(node.prereqLevel), true, false);
                 rect.yMin += rect.height;
                 GUI.color = Color.white;
                 rect.xMin = xMin;
-            }
+            }*/
 
             if (!node.prereqsStats.NullOrEmpty())
             {
-                Widgets.LabelCacheHeight(ref rect, "ISF_LearningNodeStatReq".Translate(), true, false);
+                Widgets.LabelCacheHeight(ref rect, "ISF_GeneralDialogPrereqStat".Translate(), true, false);
                 rect.yMin += rect.height;
                 rect.xMin += 6f;
                 foreach (var prereqsStatCase in node.prereqsStats)
@@ -337,7 +418,7 @@ namespace ItsSorceryFramework
 
             if (!node.prereqsSkills.NullOrEmpty())
             {
-                Widgets.LabelCacheHeight(ref rect, "ISF_LearningNodeSkillReq".Translate(), true, false);
+                Widgets.LabelCacheHeight(ref rect, "ISF_GeneralDialogPrereqSkill".Translate(), true, false);
                 rect.yMin += rect.height;
                 rect.xMin += 6f;
                 foreach (var prereqsSkillCase in node.prereqsSkills)
@@ -356,7 +437,7 @@ namespace ItsSorceryFramework
 
             if (!node.prereqsHediff.NullOrEmpty())
             {
-                Widgets.LabelCacheHeight(ref rect, "ISF_LearningNodeHediffReq".Translate(), true, false);
+                Widgets.LabelCacheHeight(ref rect, "ISF_GeneralDialogPrereqHediff".Translate(), true, false);
                 rect.yMin += rect.height;
                 rect.xMin += 6f;
                 Hediff hediff;
@@ -744,7 +825,7 @@ namespace ItsSorceryFramework
 
             if (LearningRecord.completion[node]) baseCol = TexUI.FinishedResearchColor;
 
-            else if (!LearningRecord.ExclusiveNodeFufilled(node)) baseCol = ColorLibrary.BrickRed;
+            else if (!LearningRecord.ExclusiveNodeFulfilled(node)) baseCol = ColorLibrary.BrickRed;
 
             else if (LearningRecord.PrereqFufilled(node) && LearningRecord.PrereqResearchFufilled(node)) baseCol = TexUI.AvailResearchColor;
 
