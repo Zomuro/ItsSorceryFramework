@@ -221,7 +221,6 @@ namespace ItsSorceryFramework
             // adjust this to go through diff log
             AdjustTotalStatMods(statOffsetsTotal, modulo.statOffsets);
             AdjustTotalStatMods(statFactorsTotal, modulo.statFactorOffsets);
-            //AdjustTotalStatMods(statFactorsTotal, modulo.statFactorOffsets, true);
             AdjustTotalCapMods(capModsTotal, modulo.capMods);
 
             progressDiffLog.LogModifiers(modulo, ref classLedger);
@@ -232,7 +231,6 @@ namespace ItsSorceryFramework
             // adjust this to go through diff log
             AdjustTotalStatMods(statOffsetsTotal, option.statOffsets);
             AdjustTotalStatMods(statFactorsTotal, option.statFactorOffsets);
-            //AdjustTotalStatMods(statFactorsTotal, option.statFactorOffsets, true);
             AdjustTotalCapMods(capModsTotal, option.capMods);
 
             progressDiffLog.LogModifiers(option, ref classLedger);
@@ -243,7 +241,6 @@ namespace ItsSorceryFramework
         {
             // adjust this to go through diff log
             AdjustTotalStatMods(statOffsetsTotal, offsets);
-            //AdjustTotalStatMods(statFactorsTotal, factorOffsets);
             AdjustTotalStatMods(statFactorsTotal, factorOffsets, true);
             AdjustTotalCapMods(capModsTotal, capMods);
 
@@ -1051,9 +1048,5 @@ namespace ItsSorceryFramework
                 return cachedSorceryDefs;
             }
         }
-
-
-
-        
     }
 }

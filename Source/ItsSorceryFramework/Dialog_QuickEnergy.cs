@@ -6,7 +6,7 @@ using Verse;
 
 namespace ItsSorceryFramework
 {
-	[StaticConstructorOnStartup]
+    [StaticConstructorOnStartup]
 	public class Dialog_QuickEnergy : Window
 	{
 		public Pawn_SorcerySchemaTracker tracker;

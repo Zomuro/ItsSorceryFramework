@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using Verse;
 
 namespace ItsSorceryFramework
@@ -11,7 +9,6 @@ namespace ItsSorceryFramework
         {
             if (progressTracker.Maxed) return false;
 
-            //float finalEXP = def.fixedEXP * ScalingStatValue(progressTracker.pawn);
             progressTracker.AddExperience(inputAmt);
             if (ItsSorceryUtility.settings.ProgressShowXPMotes)
                 FireEXPMote(progressTracker.pawn, inputAmt);

@@ -164,21 +164,21 @@ namespace ItsSorceryFramework
             return true;
         }
 
-        public static bool PrereqTraitsFufilled(HashSet<TraitDef> pawnTraits, List<TraitDef> traitDefs, LearningNodePrereqMode mode, int modeMin)
+        public static bool PrereqTraitsFufilled(Pawn pawn, List<TraitRequirement> traitReqs, LearningNodePrereqMode mode, int modeMin)
         {           
             switch (mode)
             {
                 case LearningNodePrereqMode.All:
-                    foreach (var prereq in traitDefs)
+                    foreach (var prereq in traitReqs)
                     {
-                        if (!pawnTraits.Contains(prereq)) return false;
+                        if (!prereq.HasTrait(pawn)) return false;
                     }
                     return true;
 
                 case LearningNodePrereqMode.Or:
-                    foreach (var prereq in traitDefs)
+                    foreach (var prereq in traitReqs)
                     {
-                        if (pawnTraits.Contains(prereq)) return true;
+                        if (prereq.HasTrait(pawn)) return true;
                     }
                     return false;
 
@@ -186,10 +186,10 @@ namespace ItsSorceryFramework
                     if (modeMin <= 0) return true;
 
                     int count = 0;
-                    int check = Math.Min(modeMin, traitDefs.Count());
-                    foreach (var prereq in traitDefs)
+                    int check = Math.Min(modeMin, traitReqs.Count());
+                    foreach (var prereq in traitReqs)
                     {
-                        if (pawnTraits.Contains(prereq)) count++;
+                        if (prereq.HasTrait(pawn)) count++;
                         if (count >= check) return true;
                     }
                     return false;
@@ -199,6 +199,17 @@ namespace ItsSorceryFramework
             }
 
             return true;
+        }
+
+        public static TraitDegreeData GetTraitDegreeData(TraitDef traitDef, int? degree)
+        {
+            if (degree is null) return traitDef.degreeDatas[0];
+
+            for (int i = 0; i < traitDef.degreeDatas.Count; i++)
+            {
+                if (traitDef.degreeDatas[i].degree == degree) return traitDef.degreeDatas[i];
+            }
+            return traitDef.degreeDatas[0];
         }
 
         public static bool PrereqAgeFufilled(Pawn pawn, int prereqAge, LearningNodeStatPrereqMode mode = LearningNodeStatPrereqMode.GreaterEqual, bool bioAge = true)
@@ -238,12 +249,6 @@ namespace ItsSorceryFramework
 
             return false;
         }
-
-        /*public static bool PrereqLevelFufilled(ProgressTracker progressTracker, int prereqLevel)
-        {
-            if (prereqLevel <= 0 || prereqLevel <= progressTracker.CurrLevel) return true;
-            return false;
-        }*/
 
         public static bool PrereqLevelFufilled(ProgressTracker progressTracker, int prereqLevel, LearningNodeStatPrereqMode mode = LearningNodeStatPrereqMode.GreaterEqual)
         {
@@ -436,16 +441,6 @@ namespace ItsSorceryFramework
             int prereqCount = 0;
             if (!prereqList.NullOrEmpty()) prereqCount = prereqList.Where(x => compPrereqs.Contains(x)).Count();
             return prereqCount;
-
-            /*HashSet<ProgressTrackerClassDef> classesDone = progressTracker.progressDiffLog.GetClassSet;
-
-            int prereqCount = 0;
-            if (!classDef.prereqsClassDefs.NullOrEmpty()) prereqCount = classDef.prereqsClassDefs.Where(x => classesDone.Contains(x)).Count();
-
-            int prereqResearchCount = 0;
-            if (!classDef.prereqsResearchs.NullOrEmpty()) prereqResearchCount = classDef.prereqsResearchs.Where(x => x.IsFinished).Count();
-
-            return new Tuple<int, int>(prereqCount, prereqResearchCount);*/
         }
 
         public static void SetPrereqStatusColor(bool compCheck)

@@ -37,29 +37,29 @@ namespace ItsSorceryFramework
         public bool PrereqClassesFufilled(ProgressTrackerClassDef targetClassDef)
         {
             HashSet<ProgressTrackerClassDef> priorClassDefs = GetClassSet;
-            return PrereqUtility.PrereqClassesFufilled(priorClassDefs, targetClassDef.prereqsClassDefs, targetClassDef.prereqClassMode, targetClassDef.prereqClassModeMin);
+            return PrereqUtility.PrereqClassesFufilled(priorClassDefs, targetClassDef.prereqClasses, targetClassDef.prereqClassMode, targetClassDef.prereqClassModeMin);
         }
 
         public bool PrereqNodeFufilled(ProgressTrackerClassDef classDef, SorcerySchema schema)
         {
             LearningNodeRecord learningNodeRecord = schema.learningNodeRecord;
-            return PrereqUtility.PrereqNodeFufilled(learningNodeRecord, classDef.prereqsNodes, classDef.prereqNodeMode, classDef.prereqNodeModeMin);
+            return PrereqUtility.PrereqNodeFufilled(learningNodeRecord, classDef.prereqNodes, classDef.prereqNodeMode, classDef.prereqNodeModeMin);
         }
 
         public bool PrereqResearchFufilled(ProgressTrackerClassDef targetClassDef)
         {
-            return PrereqUtility.PrereqResearchFufilled(targetClassDef.prereqsResearchs, targetClassDef.prereqResearchMode, targetClassDef.prereqResearchModeMin);
+            return PrereqUtility.PrereqResearchFufilled(targetClassDef.prereqResearch, targetClassDef.prereqResearchMode, targetClassDef.prereqResearchModeMin);
         }
 
         public bool PrereqGenesFufilled(ProgressTracker progressTracker, ProgressTrackerClassDef targetClassDef)
         {
-            return PrereqUtility.PrereqGenesFufilled(progressTracker.pawn.genes.GenesListForReading.Select(x => x.def).ToHashSet(), targetClassDef.prereqsGenes, 
+            return PrereqUtility.PrereqGenesFufilled(progressTracker.pawn.genes.GenesListForReading.Select(x => x.def).ToHashSet(), targetClassDef.prereqGenes, 
                 targetClassDef.prereqGeneMode, targetClassDef.prereqGeneModeMin);
         }
 
         public bool PrereqTraitsFufilled(ProgressTracker progressTracker, ProgressTrackerClassDef targetClassDef)
         {
-            return PrereqUtility.PrereqTraitsFufilled(progressTracker.pawn.story.traits.allTraits.Select(x => x.def).ToHashSet(), targetClassDef.prereqsTraits,
+            return PrereqUtility.PrereqTraitsFufilled(progressTracker.pawn, targetClassDef.prereqTraits,
                 targetClassDef.prereqTraitMode, targetClassDef.prereqTraitModeMin);
         }
 
@@ -70,8 +70,6 @@ namespace ItsSorceryFramework
 
         public bool PrereqLevelFulfilled(ProgressTracker progressTracker, ProgressTrackerClassDef targetClassDef)
         {
-            //return PrereqUtility.PrereqLevelFufilled(progressTracker, targetClassDef.prereqLevel);
-
             return PrereqUtility.PrereqLevelFufilled(progressTracker, targetClassDef.prereqLevel, targetClassDef.prereqLevelMode);
         }
 
@@ -82,17 +80,17 @@ namespace ItsSorceryFramework
 
         public bool PrereqStatFufilled(ProgressTracker progressTracker, ProgressTrackerClassDef targetClassDef)
         {
-            return PrereqUtility.PrereqStatFufilled(progressTracker.pawn, targetClassDef.prereqsStats);
+            return PrereqUtility.PrereqStatFufilled(progressTracker.pawn, targetClassDef.prereqStats);
         }
 
         public bool PrereqSkillFufilled(ProgressTracker progressTracker, ProgressTrackerClassDef targetClassDef)
         {
-            return PrereqUtility.PrereqSkillFufilled(progressTracker.pawn, targetClassDef.prereqsSkills);
+            return PrereqUtility.PrereqSkillFufilled(progressTracker.pawn, targetClassDef.prereqSkills);
         }
 
         public bool PrereqHediffFufilled(ProgressTracker progressTracker, ProgressTrackerClassDef targetClassDef)
         {
-            return PrereqUtility.PrereqHediffFufilled(progressTracker.pawn, targetClassDef.prereqsHediff);
+            return PrereqUtility.PrereqHediffFufilled(progressTracker.pawn, targetClassDef.prereqHediffs);
         }
 
         public virtual bool ValidateClassChange(ProgressTracker progressTracker, ProgressTrackerClassDef targetClassDef, out string failString)
@@ -106,7 +104,6 @@ namespace ItsSorceryFramework
             if (!linkedClasses.Contains(targetClassDef))
             {
                 failString = "ISF_ClassChangeClassNotLinked".Translate(targetClassDef.label, progressTracker.currClassDef.label); 
-                //$"Target class ({targetClassDef.label}) is not linked to current class ({progressTracker.currClassDef.label}).";
                 return false;
             }
 
@@ -243,8 +240,6 @@ namespace ItsSorceryFramework
             ProgressDiffLedger lastLedger = progressDiffLedgers.LastOrDefault();
             if (lastLedger is null)
             {
-                /*return new ProgressDiffLedger(0, progressTracker.CurrLevel, progressTracker.currClass, new Dictionary<string, ProgressDiffClassLedger>() {
-                    { "", new ProgressDiffClassLedger()}});*/
                 return new ProgressDiffLedger(0, progressTracker.CurrLevel, ISF_DefOf.ISF_Generic_Class, new Dictionary<ProgressTrackerClassDef, ProgressDiffClassLedger>() {
                     { ISF_DefOf.ISF_Generic_Class, new ProgressDiffClassLedger()}});
             }

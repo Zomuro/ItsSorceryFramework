@@ -37,7 +37,7 @@ namespace ItsSorceryFramework
             if(window != null) (window as Dialog_QuickEnergy).UpdateEnergy();
         }
 
-        public bool ShowGizmo() => true; // always show gizmo
+        public bool ShowGizmo() => !sorcerySchemas.NullOrEmpty(); // only show gizmo if there are sorcerySchemas
 
         public Gizmo GetGizmo()
         {
@@ -75,10 +75,6 @@ namespace ItsSorceryFramework
                 pawn
             });
             Scribe_Collections.Look(ref quickEnergyEntries, "quickEnergyEntries", LookMode.Deep, new object[] { });
-
-            // save this concept for later - prevent a schema from being learned if another is there
-            // maybe even anti psycast option
-            //Scribe_Collections.Look(ref incompatibleSchemas, "incompatibleSchemas", LookMode.Deep, LookMode.Deep);
         }
     }
 

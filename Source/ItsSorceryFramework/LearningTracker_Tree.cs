@@ -259,23 +259,23 @@ namespace ItsSorceryFramework
 
         private float DrawNodePrereqs(LearningTreeNodeDef node, Rect rect)
         {
-            if (node.prereqs.NullOrEmpty() && node.prereqsResearch.NullOrEmpty() 
-                && node.prereqLevel <= 0 && node.prereqsStats.NullOrEmpty() && 
-                node.prereqsSkills.NullOrEmpty() && node.prereqsHediff.NullOrEmpty()) return 0f;
+            if (node.prereqNodes.NullOrEmpty() && node.prereqResearch.NullOrEmpty() 
+                && node.prereqLevel <= 0 && node.prereqStats.NullOrEmpty() && 
+                node.prereqSkills.NullOrEmpty() && node.prereqHediffs.NullOrEmpty()) return 0f;
             float xMin = rect.xMin;
             float yMin = rect.yMin;
 
             //Tuple<int, int> prereqsDone = LearningRecord.PrereqsDone(node);
             int doneCount = 0;
 
-            if (!node.prereqs.NullOrEmpty()) 
+            if (!node.prereqNodes.NullOrEmpty()) 
             {
                 HashSet<LearningTreeNodeDef> nodesDone = LearningRecord.completion.Where(x => x.Value == true).Select(x => x.Key).ToHashSet();
-                doneCount = PrereqUtility.PrereqsDoneCount(nodesDone, node.prereqs); //prereqsDone.Item1
-                Widgets.LabelCacheHeight(ref rect, "ISF_GeneralDialogPrereqNode".Translate() + PrereqUtility.PrereqsModeNotif(node.prereqMode, node.prereqModeMin, doneCount), true, false);
+                doneCount = PrereqUtility.PrereqsDoneCount(nodesDone, node.prereqNodes); //prereqsDone.Item1
+                Widgets.LabelCacheHeight(ref rect, "ISF_GeneralDialogPrereqNode".Translate() + PrereqUtility.PrereqsModeNotif(node.prereqNodeMode, node.prereqNodeModeMin, doneCount), true, false);
                 rect.yMin += rect.height;
                 rect.xMin += 6f;
-                foreach (LearningTreeNodeDef prereq in node.prereqs)
+                foreach (var prereq in node.prereqNodes)
                 {
                     SetPrereqStatusColor(LearningRecord.completion[prereq], node);
                     Widgets.LabelCacheHeight(ref rect, prereq.LabelCap, true, false);
@@ -306,13 +306,13 @@ namespace ItsSorceryFramework
                 GUI.color = Color.white;
             }
 
-            if (!node.prereqsResearch.NullOrEmpty())
+            if (!node.prereqResearch.NullOrEmpty())
             {
-                doneCount = node.prereqsResearch.Where(x => x.PrerequisitesCompleted).Count(); //prereqsDone.Item2
+                doneCount = node.prereqResearch.Where(x => x.PrerequisitesCompleted).Count(); //prereqsDone.Item2
                 Widgets.LabelCacheHeight(ref rect, "ISF_GeneralDialogPrereqResearch".Translate() + PrereqUtility.PrereqsModeNotif(node.prereqResearchMode, node.prereqResearchModeMin, doneCount), true, false);
                 rect.yMin += rect.height;
                 rect.xMin += 6f;
-                foreach (ResearchProjectDef prereq in node.prereqsResearch)
+                foreach (var prereq in node.prereqResearch)
                 {
                     SetPrereqStatusColor(prereq.IsFinished, node);
                     Widgets.LabelCacheHeight(ref rect, prereq.LabelCap, true, false);
@@ -322,15 +322,15 @@ namespace ItsSorceryFramework
                 rect.xMin = xMin;
             }
 
-            if (!node.prereqsGenes.NullOrEmpty()) // show completed genes
+            if (!node.prereqGenes.NullOrEmpty()) // show completed genes
             {
                 HashSet<GeneDef> genesDone = pawn.genes.GenesListForReading.Select(x => x.def).ToHashSet();
-                doneCount = PrereqUtility.PrereqsDoneCount(genesDone, node.prereqsGenes);
+                doneCount = PrereqUtility.PrereqsDoneCount(genesDone, node.prereqGenes);
                 // prereqsDone.Item2
                 Widgets.LabelCacheHeight(ref rect, "ISF_GeneralDialogPrereqGene".Translate() + PrereqUtility.PrereqsModeNotif(node.prereqGeneMode, node.prereqGeneModeMin, doneCount), true, false);
                 rect.yMin += rect.height;
                 rect.xMin += 6f;
-                foreach (GeneDef prereq in node.prereqsGenes)
+                foreach (var prereq in node.prereqGenes)
                 {
                     PrereqUtility.SetPrereqStatusColor(genesDone.Contains(prereq));
                     Widgets.LabelCacheHeight(ref rect, prereq.LabelCap, true, false);
@@ -340,18 +340,17 @@ namespace ItsSorceryFramework
                 rect.xMin = xMin;
             }
 
-            if (!node.prereqsTraits.NullOrEmpty()) // show completed genes
+            if (!node.prereqTraits.NullOrEmpty()) // show completed genes
             {
-                HashSet<TraitDef> traitsDone = pawn.story.traits.allTraits.Select(x => x.def).ToHashSet();
-                doneCount = PrereqUtility.PrereqsDoneCount(traitsDone, node.prereqsTraits);
+                doneCount = node.prereqTraits.Where(x => x.HasTrait(pawn)).Count();
                 // prereqsDone.Item2
                 Widgets.LabelCacheHeight(ref rect, "ISF_GeneralDialogPrereqTrait".Translate() + PrereqUtility.PrereqsModeNotif(node.prereqTraitMode, node.prereqTraitModeMin, doneCount), true, false);
                 rect.yMin += rect.height;
                 rect.xMin += 6f;
-                foreach (TraitDef prereq in node.prereqsTraits)
+                foreach (var prereq in node.prereqTraits)
                 {
-                    PrereqUtility.SetPrereqStatusColor(traitsDone.Contains(prereq));
-                    Widgets.LabelCacheHeight(ref rect, prereq.LabelCap, true, false);
+                    PrereqUtility.SetPrereqStatusColor(prereq.HasTrait(pawn));
+                    Widgets.LabelCacheHeight(ref rect, PrereqUtility.GetTraitDegreeData(prereq.def, prereq.degree).LabelCap, true, false);
                     rect.yMin += rect.height;
                 }
                 GUI.color = Color.white;
@@ -397,12 +396,12 @@ namespace ItsSorceryFramework
                 rect.xMin = xMin;
             }*/
 
-            if (!node.prereqsStats.NullOrEmpty())
+            if (!node.prereqStats.NullOrEmpty())
             {
                 Widgets.LabelCacheHeight(ref rect, "ISF_GeneralDialogPrereqStat".Translate(), true, false);
                 rect.yMin += rect.height;
                 rect.xMin += 6f;
-                foreach (var prereqsStatCase in node.prereqsStats)
+                foreach (var prereqsStatCase in node.prereqStats)
                 {
                     foreach(var statMod in prereqsStatCase.statReqs)
                     {
@@ -416,12 +415,12 @@ namespace ItsSorceryFramework
                 rect.xMin = xMin;
             }
 
-            if (!node.prereqsSkills.NullOrEmpty())
+            if (!node.prereqSkills.NullOrEmpty())
             {
                 Widgets.LabelCacheHeight(ref rect, "ISF_GeneralDialogPrereqSkill".Translate(), true, false);
                 rect.yMin += rect.height;
                 rect.xMin += 6f;
-                foreach (var prereqsSkillCase in node.prereqsSkills)
+                foreach (var prereqsSkillCase in node.prereqSkills)
                 {
                     foreach (var skillLevel in prereqsSkillCase.skillReqs)
                     {
@@ -435,14 +434,14 @@ namespace ItsSorceryFramework
                 rect.xMin = xMin;
             }
 
-            if (!node.prereqsHediff.NullOrEmpty())
+            if (!node.prereqHediffs.NullOrEmpty())
             {
                 Widgets.LabelCacheHeight(ref rect, "ISF_GeneralDialogPrereqHediff".Translate(), true, false);
                 rect.yMin += rect.height;
                 rect.xMin += 6f;
                 Hediff hediff;
                 String reqLabel;
-                foreach (var prereq in node.prereqsHediff)
+                foreach (var prereq in node.prereqHediffs)
                 {
                     hediff = pawn.health.hediffSet.GetFirstHediffOfDef(prereq.Key);
                     SetPrereqStatusColor((hediff != null && hediff.Severity >= prereq.Value), node);
@@ -738,7 +737,7 @@ namespace ItsSorceryFramework
                 if (!LearningRecord.PrereqFufilled(node) && node.condVisiblePrereq) continue;
 
                 nodeRect = GetNodeRect(node);
-                foreach (LearningTreeNodeDef prereq in node.prereqs)
+                foreach (LearningTreeNodeDef prereq in node.prereqNodes)
                 {
                     if (prereq.learningTrackerDef != node.learningTrackerDef) continue;
                     Tuple<Vector2, Vector2> points = LineEnds(prereq, node, nodeRect);
@@ -844,7 +843,7 @@ namespace ItsSorceryFramework
             {
                 if (selectedNode == node) return TexUI.HighlightBorderResearchColor;
 
-                else if (selectedNode.prereqs.NotNullAndContains(node))
+                else if (selectedNode.prereqNodes.NotNullAndContains(node))
                 {
                     if(!LearningRecord.completion[node]) return TexUI.DependencyOutlineResearchColor;
                     else return TexUI.HighlightLineResearchColor;

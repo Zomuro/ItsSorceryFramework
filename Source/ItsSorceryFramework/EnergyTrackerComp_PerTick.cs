@@ -27,8 +27,7 @@ namespace ItsSorceryFramework
 
         public override void CompClearStatCache()
         {
-            //int baseTicks = ItsSorceryUtility.settings.EnergyStatCacheTicks;
-            nextRecacheTick = Find.TickManager.TicksGame + PawnCacheUtility.GetEnergyTickOffset(); // UnityEngine.Random.Range(baseTicks - 3, baseTicks + 3);
+            nextRecacheTick = Find.TickManager.TicksGame + PawnCacheUtility.GetEnergyTickOffset();
             cachedRecoveryRate = float.MinValue;
         }
 

@@ -5,7 +5,7 @@ using Verse;
 
 namespace ItsSorceryFramework
 {
-    public class LearningTreeNodeDef : Def
+    public class LearningTreeNodeDef : ISF_PrereqDef //Def
 	{
 		public LearningTrackerDef learningTrackerDef;
 
@@ -23,48 +23,6 @@ namespace ItsSorceryFramework
 		public string iconPath;
 
 		private Texture2D uiIcon = null;*/
-
-		public LearningNodePrereqMode prereqMode = LearningNodePrereqMode.All;
-
-		public int prereqModeMin = 1;
-
-		public LearningNodePrereqMode prereqResearchMode = LearningNodePrereqMode.All;
-
-		public int prereqResearchModeMin = 1;
-
-		public LearningNodePrereqMode prereqGeneMode = LearningNodePrereqMode.All;
-
-		public int prereqGeneModeMin = 1;
-
-		public LearningNodePrereqMode prereqTraitMode = LearningNodePrereqMode.All;
-
-		public int prereqTraitModeMin = 1;
-
-		public LearningNodeStatPrereqMode prereqLevelMode = LearningNodeStatPrereqMode.GreaterEqual;
-
-		public int prereqLevel = 0;
-
-		public LearningNodeStatPrereqMode prereqAgeMode = LearningNodeStatPrereqMode.GreaterEqual;
-
-		public int prereqAge = 0;
-
-		public bool prereqCheckBioAge = false;
-
-		public XenotypeDef prereqXenotype = null;
-
-		public List<LearningTreeNodeDef> prereqs = new List<LearningTreeNodeDef>();
-
-		public List<ResearchProjectDef> prereqsResearch = new List<ResearchProjectDef>();
-
-		public List<GeneDef> prereqsGenes = new List<GeneDef>();
-
-		public List<TraitDef> prereqsTraits = new List<TraitDef>();
-
-		public Dictionary<HediffDef, float> prereqsHediff = new Dictionary<HediffDef, float>();
-
-		public List<NodeStatReqs> prereqsStats = new List<NodeStatReqs>();
-
-		public List<NodeSkillReqs> prereqsSkills = new List<NodeSkillReqs>();
 
 		public List<LearningTreeNodeDef> exclusiveNodes = new List<LearningTreeNodeDef>();
 
@@ -202,33 +160,5 @@ namespace ItsSorceryFramework
 		public float severity = 1;
     }
 
-	public class NodeStatReqs
-	{
-		public List<StatModifier> statReqs;
-
-		public LearningNodeStatPrereqMode mode = LearningNodeStatPrereqMode.Greater;
-	}
-
-	public class NodeSkillReqs
-	{
-		public List<SkillLevel> skillReqs;
-
-		public LearningNodeStatPrereqMode mode = LearningNodeStatPrereqMode.Greater;
-	}
-
-	public class SkillLevel
-    {
-		public SkillDef skillDef;
-
-		public int level = 1;
-
-		public int ClampedLevel
-        {
-            get
-            {
-				return Mathf.Clamp(level, 1, 20);
-			}
-        }
-		
-    }
+	
 }

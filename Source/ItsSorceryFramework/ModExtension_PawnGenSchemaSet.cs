@@ -84,12 +84,12 @@ namespace ItsSorceryFramework
             int tempIndex = -1;
             for (int i = NodeList.Count() - 1; i >= 0; i--)
             {
-                if (NodeList[i].prereqs.NullOrEmpty()) continue;
+                if (NodeList[i].prereqNodes.NullOrEmpty()) continue;
 
-                switch (NodeList[i].prereqMode)
+                switch (NodeList[i].prereqNodeMode)
                 {
                     case LearningNodePrereqMode.All: // all prereqs required? 
-                        foreach (var prereq in NodeList[i].prereqs)
+                        foreach (var prereq in NodeList[i].prereqNodes)
                         {
                             if (NodeList.FindIndex(x => x == prereq) <= -1) yield return NodeList[i].label + " is missing the " + prereq.label + " prereq in the SchemaNodeMap.";
                             if (NodeList.FindIndex(x => x == prereq) >= i) yield return NodeList[i].label + " must be placed after the " + prereq.label + " prereq in the SchemaNodeMap.";
@@ -99,7 +99,7 @@ namespace ItsSorceryFramework
                     case LearningNodePrereqMode.Or: // only one prereq required? 
                         bool missing = true;
 
-                        foreach (var prereq in NodeList[i].prereqs)
+                        foreach (var prereq in NodeList[i].prereqNodes)
                         {
                             tempIndex = NodeList.FindIndex(x => x == prereq);
                             if (tempIndex > -1 && tempIndex < i)
@@ -114,10 +114,10 @@ namespace ItsSorceryFramework
                         break;
 
                     case LearningNodePrereqMode.Min: // a min number required? 
-                        int reqCount = Mathf.Clamp(0, NodeList[i].prereqModeMin, NodeList[i].prereqs.Count());
+                        int reqCount = Mathf.Clamp(0, NodeList[i].prereqNodeModeMin, NodeList[i].prereqNodes.Count());
                         int count = 0;
                         
-                        foreach (var prereq in NodeList[i].prereqs)
+                        foreach (var prereq in NodeList[i].prereqNodes)
                         {
                             tempIndex = NodeList.FindIndex(x => x == prereq);
                             if (tempIndex >= i)

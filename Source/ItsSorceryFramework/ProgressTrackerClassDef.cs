@@ -6,7 +6,7 @@ using Verse;
 
 namespace ItsSorceryFramework
 {
-    public class ProgressTrackerClassDef : Def
+    public class ProgressTrackerClassDef : ISF_PrereqDef //Def
     {
         public ProgressTrackerDef progressTrackerDef;
         
@@ -22,55 +22,12 @@ namespace ItsSorceryFramework
 
         public List<ProgressLevelLabel> levelLabels = new List<ProgressLevelLabel>();
 
-
-        // class change validation fields
+        // class change validation fields - see ISF_PrereqDef for common prereq fields
         public LearningNodePrereqMode prereqClassMode = LearningNodePrereqMode.All;
 
         public int prereqClassModeMin = 1;
 
-        public LearningNodePrereqMode prereqNodeMode = LearningNodePrereqMode.All;
-
-        public int prereqNodeModeMin = 1;
-
-        public LearningNodePrereqMode prereqResearchMode = LearningNodePrereqMode.All;
-
-        public int prereqResearchModeMin = 1;
-
-        public LearningNodePrereqMode prereqGeneMode = LearningNodePrereqMode.All;
-
-        public int prereqGeneModeMin = 1;
-
-        public LearningNodePrereqMode prereqTraitMode = LearningNodePrereqMode.All;
-
-        public int prereqTraitModeMin = 1;
-
-        public LearningNodeStatPrereqMode prereqLevelMode = LearningNodeStatPrereqMode.GreaterEqual;
-
-        public int prereqLevel = 0;
-
-        public LearningNodeStatPrereqMode prereqAgeMode = LearningNodeStatPrereqMode.GreaterEqual;
-
-        public int prereqAge = 0;
-
-        public bool prereqCheckBioAge = false;
-
-        public XenotypeDef prereqXenotype = null;
-
-        public List<ProgressTrackerClassDef> prereqsClassDefs = new List<ProgressTrackerClassDef>();
-
-        public List<LearningTreeNodeDef> prereqsNodes = new List<LearningTreeNodeDef>();
-
-        public List<ResearchProjectDef> prereqsResearchs = new List<ResearchProjectDef>();
-
-        public List<GeneDef> prereqsGenes = new List<GeneDef>();
-
-        public List<TraitDef> prereqsTraits = new List<TraitDef>();
-
-        public Dictionary<HediffDef, float> prereqsHediff = new Dictionary<HediffDef, float>();
-
-        public List<NodeStatReqs> prereqsStats = new List<NodeStatReqs>();
-
-        public List<NodeSkillReqs> prereqsSkills = new List<NodeSkillReqs>();
+        public List<ProgressTrackerClassDef> prereqClasses = new List<ProgressTrackerClassDef>();
 
         public List<LearningTrackerDef> unlocks;
 

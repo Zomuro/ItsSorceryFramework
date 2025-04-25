@@ -49,7 +49,7 @@ namespace ItsSorceryFramework
                     int count = 0;
                     float energyDiff = 0;
                     int endcount = ammo.stackCount;
-                    float adjConsumeEnergy = consume.energy * ScalingStatValue; // Pawn.GetStatValue(ScalingStatDef);
+                    float adjConsumeEnergy = consume.energy * ScalingStatValue;
                     float gain = endcount * adjConsumeEnergy;
 
                     if (!parent.def.inverse)

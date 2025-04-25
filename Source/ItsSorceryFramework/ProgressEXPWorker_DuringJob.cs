@@ -20,8 +20,6 @@ namespace ItsSorceryFramework
                 {
                     float finalEXP = Math.Abs(def.fixedEXP * ScalingStatValue(progressTracker.pawn));
                     progressTracker.AddExperience(finalEXP);
-                    /*if (ItsSorceryUtility.settings.ProgressShowXPMotes)
-                        FireEXPMote(progressTracker.pawn, finalEXP);*/
                     return true;
                 }
             }

@@ -1,5 +1,4 @@
 ﻿using RimWorld;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Verse;
@@ -86,39 +85,23 @@ namespace ItsSorceryFramework
 
         public bool PrereqFufilled(LearningTreeNodeDef node)
         {
-            return PrereqUtility.PrereqNodeFufilled(this, node.prereqs, node.prereqMode, node.prereqModeMin);
+            return PrereqUtility.PrereqNodeFufilled(this, node.prereqNodes, node.prereqNodeMode, node.prereqNodeModeMin);
         }
 
         public bool PrereqResearchFufilled(LearningTreeNodeDef node)
         {
-            return PrereqUtility.PrereqResearchFufilled(node.prereqsResearch, node.prereqResearchMode, node.prereqResearchModeMin);
+            return PrereqUtility.PrereqResearchFufilled(node.prereqResearch, node.prereqResearchMode, node.prereqResearchModeMin);
         }
-
-        public Tuple<int, int> PrereqsDone(LearningTreeNodeDef node)
-        {
-            int prereqCount = 0;
-            if (!node.prereqs.NullOrEmpty()) prereqCount = node.prereqs.Where(x => completion[x]).Count();
-
-            int prereqResearchCount = 0;
-            if (!node.prereqsResearch.NullOrEmpty()) prereqResearchCount = node.prereqsResearch.Where(x => x.IsFinished).Count();
-
-            return new Tuple<int, int>(prereqCount, prereqResearchCount);
-        }
-
-        /*public string PrereqsModeNotif(LearningNodePrereqMode mode, int min = 0, int done = 0)
-        {
-            return PrereqUtility.PrereqsModeNotif(mode, min, done);
-        }*/
 
         public bool PrereqGenesFulfilled(LearningTreeNodeDef node)
         {
-            return PrereqUtility.PrereqGenesFufilled(pawn.genes.GenesListForReading.Select(x => x.def).ToHashSet(), node.prereqsGenes,
+            return PrereqUtility.PrereqGenesFufilled(pawn.genes.GenesListForReading.Select(x => x.def).ToHashSet(), node.prereqGenes,
                 node.prereqGeneMode, node.prereqGeneModeMin);
         }
 
         public bool PrereqTraitsFulfilled(LearningTreeNodeDef node)
         {
-            return PrereqUtility.PrereqTraitsFufilled(pawn.story.traits.allTraits.Select(x => x.def).ToHashSet(), node.prereqsTraits,
+            return PrereqUtility.PrereqTraitsFufilled(pawn, node.prereqTraits,
                 node.prereqTraitMode, node.prereqTraitModeMin);
         }
 
@@ -129,8 +112,6 @@ namespace ItsSorceryFramework
 
         public bool PrereqLevelFulfilled(LearningTreeNodeDef node)
         {
-            //return PrereqUtility.PrereqLevelFufilled(schema.progressTracker, node.prereqLevel);
-
             return PrereqUtility.PrereqLevelFufilled(schema.progressTracker, node.prereqLevel, node.prereqLevelMode);
         }
 
@@ -141,17 +122,17 @@ namespace ItsSorceryFramework
 
         public bool PrereqStatFulfilled(LearningTreeNodeDef node)
         {
-            return PrereqUtility.PrereqStatFufilled(pawn, node.prereqsStats);
+            return PrereqUtility.PrereqStatFufilled(pawn, node.prereqStats);
         }
 
         public bool PrereqSkillFulfilled(LearningTreeNodeDef node)
         {
-            return PrereqUtility.PrereqSkillFufilled(pawn, node.prereqsSkills);
+            return PrereqUtility.PrereqSkillFufilled(pawn, node.prereqSkills);
         }
 
         public bool PrereqHediffFulfilled(LearningTreeNodeDef node)
         {
-            return PrereqUtility.PrereqHediffFufilled(pawn, node.prereqsHediff);
+            return PrereqUtility.PrereqHediffFufilled(pawn, node.prereqHediffs);
         }
 
         public bool ExclusiveNodeFulfilled(LearningTreeNodeDef node)

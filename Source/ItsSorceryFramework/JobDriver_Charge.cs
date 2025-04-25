@@ -110,7 +110,6 @@ namespace ItsSorceryFramework
 				energyTracker.currentEnergy - energyTracker.MinEnergy : energyTracker.currentEnergy - energyTracker.AbsMinEnergy);
 
 			energyTracker.AddEnergy(Mathf.Min(count * energyPerAmmo, directEnergyDiff));
-			//energyTracker.currentEnergy += energyTracker.InvMult * Mathf.Min(count * energyPerAmmo, directEnergyDiff);
 			ammo.SplitOff(count).Destroy(DestroyMode.Vanish);
 			EnergyTrackerContext.RemoveConsumeContext(pawn.GetUniqueLoadID());
 		}

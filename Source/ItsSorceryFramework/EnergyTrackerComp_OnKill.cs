@@ -26,7 +26,7 @@ namespace ItsSorceryFramework
 
             if (Props.damageDefs.NullOrEmpty() || Props.damageDefs.Contains(damageInfo.Value.Def))
             {
-                float energyMaxChange = Props.baseEnergy * ScalingStatValue; // parent.pawn.GetStatValue(ScalingStatDef);
+                float energyMaxChange = Props.baseEnergy * ScalingStatValue;
                 parent.AddEnergy(energyMaxChange);
             }
         }
@@ -38,7 +38,7 @@ namespace ItsSorceryFramework
             // retrieve string values
             string energyLabel = parent.EnergyLabel;
             string damageDefs = Props.damageDefs.NullOrEmpty() ? "" : DamageDefsLabels(Props.damageDefs).ToStringSafeEnumerable();
-            float energyFactor = parent.InvMult * ScalingStatValue; // parent.pawn.GetStatValue(ScalingStatDef);
+            float energyFactor = parent.InvMult * ScalingStatValue;
             string energyFactorString = energyFactor.ToStringByStyle(ScalingStatDef.toStringStyle);
 
             // draw normal components (label and normal energy regen)

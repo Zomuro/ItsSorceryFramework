@@ -61,14 +61,14 @@ namespace ItsSorceryFramework
         {
             // unlock relevant nodes
             HashSet<LearningTrackerDef> learningTrackerDefs = new HashSet<LearningTrackerDef>();
-            foreach (var node in targetClassDef.prereqsNodes) learningTrackerDefs.Add(node.learningTrackerDef); // slim down to only learningtrackers covered by required nodes
+            foreach (var node in targetClassDef.prereqNodes) learningTrackerDefs.Add(node.learningTrackerDef); // slim down to only learningtrackers covered by required nodes
             foreach (var learningTrackerDef in learningTrackerDefs) // iterate through learning trackers
             {
                 LearningTracker l = schema.learningTrackers.FirstOrDefault(x => x.def == learningTrackerDef); //sanity nullcheck
                 if (l != null) l.locked = false; // make sure it exists; then make sure it is unlocked
             }
 
-            foreach (var nodeDef in targetClassDef.prereqsNodes) // for each node requirement within the mapping
+            foreach (var nodeDef in targetClassDef.prereqNodes) // for each node requirement within the mapping
             {
                 if (!schema.learningNodeRecord.completion.ContainsKey(nodeDef)) continue; // null check
                 if (!schema.learningNodeRecord.ExclusiveNodeFulfilled(nodeDef)) // if there is an exlusive node conflict
@@ -194,12 +194,12 @@ namespace ItsSorceryFramework
         public static void ResolveForceHediffNode(SchemaNodeReq nodeReq, ref SorcerySchema schema)
         {
             if (!nodeReq.forceHediff) return; // if the node req doesn't force hediff requirements, skip
-            ResolveForceHediff(nodeReq.nodeDef.prereqsHediff, ref schema);
+            ResolveForceHediff(nodeReq.nodeDef.prereqHediffs, ref schema);
         }
 
         public static void ResolveForceHediffClass(ProgressTrackerClassDef targetClassDef, ref SorcerySchema schema)
         {
-            ResolveForceHediff(targetClassDef.prereqsHediff, ref schema);
+            ResolveForceHediff(targetClassDef.prereqHediffs, ref schema);
         }
 
         public static void ResolveForceHediff(Dictionary<HediffDef, float> prereqsHediff, ref SorcerySchema schema)
@@ -216,13 +216,13 @@ namespace ItsSorceryFramework
 
         public static void ResolveForceSkillClass(ProgressTrackerClassDef targetClassDef, ref SorcerySchema schema)
         {
-            ResolveForceSkill(targetClassDef.prereqsSkills, ref schema);
+            ResolveForceSkill(targetClassDef.prereqSkills, ref schema);
         }
 
         public static void ResolveForceSkillNode(SchemaNodeReq nodeReq, ref SorcerySchema schema)
         {
             if (!nodeReq.forceSkill) return; // if the node req doesn't force skill requirements, skip
-            ResolveForceSkill(nodeReq.nodeDef.prereqsSkills, ref schema);
+            ResolveForceSkill(nodeReq.nodeDef.prereqSkills, ref schema);
         }
 
         public static void ResolveForceSkill(List<NodeSkillReqs> skillReqsList, ref SorcerySchema schema)

@@ -98,8 +98,6 @@ namespace ItsSorceryFramework
 					{
 						if (item.thingDef != thing.def) continue;
 						float factor = item.expFactorStat != null ? pawn.GetStatValue(item.expFactorStat) : 1f;
-						/*schema.progressTracker.AddExperience(item.exp * factor);
-						MoteMaker.ThrowText(pawn.Position.ToVector3(), pawn.Map, (item.exp * factor).ToStringByStyle(ToStringStyle.FloatMaxTwo, ToStringNumberSense.Offset) + " EXP");*/
 						worker.TryExecute(schema.progressTracker, item.exp * factor);
 
 						break;
