@@ -8,14 +8,20 @@ namespace ItsSorceryFramework
 {
     public class ProgressEXPWorker
     {
-        public virtual bool TryExecute(ProgressTracker progressTracker, float exp = 0)
-        {
+        public ProgressEXPTagDef def;        
+        
+        public StatDef ScalingStatDef => def.scalingStatDef is null ? StatDefOf_ItsSorcery.ISF_ScalingStat : def.scalingStatDef;
+
+        public virtual float ScalingStatValue(Pawn pawn) => PawnCacheUtility.GetStatCacheVal(pawn, ScalingStatDef);
+
+        public virtual bool TryExecute(ProgressTracker progressTracker, float inputAmt = 0)
+        {           
             if (progressTracker.Maxed) return false;
-            progressTracker.AddExperience(Math.Abs(exp));
+            progressTracker.AddExperience(Math.Abs(inputAmt));
             return true;
         }
 
-        public virtual float DrawWorker(Rect rect)
+        public virtual float DrawWorker(Pawn pawn, Rect rect)
         {
             return 0f;
         }
@@ -34,9 +40,5 @@ namespace ItsSorceryFramework
             MoteMaker.ThrowText(pawn.Position.ToVector3(), pawn.Map,
                 exp.ToStringByStyle(ToStringStyle.FloatMaxTwo, ToStringNumberSense.Offset) + " EXP");
         }
-
-        public ProgressEXPTagDef def;
-
-        //public SorcerySchema schema;
     }
 }

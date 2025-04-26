@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Verse;
@@ -15,9 +16,13 @@ namespace ItsSorceryFramework
 
         public HediffDef progressHediff;
 
+        public EquationType equationType = EquationType.Linear;
+
         public float baseEXP = 100f;
 
         public float scaling = 1.1f;
+
+        public Dictionary<int, float> powScalings = new Dictionary<int, float>();
 
         public ProgressTrackerClassDef baseClass; 
 

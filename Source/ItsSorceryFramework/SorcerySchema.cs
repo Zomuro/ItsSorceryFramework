@@ -115,10 +115,8 @@ namespace ItsSorceryFramework
                 foreach(var et in energyTrackers) et.EnergyTrackerTick();
             }
 
-            if(progressTracker != null)
-            {
-                progressTracker.ProgressTrackerTick();
-            }            
+            if (pawn.Faction == null || !pawn.Faction.IsPlayer) return; // if pawn faction isn't the players, skip - don't care about progression
+            if (progressTracker != null) progressTracker.ProgressTrackerTick();    
         }
 
         public virtual float DrawOnGUI(ref Rect rect)
@@ -159,7 +157,6 @@ namespace ItsSorceryFramework
                 Text.Anchor = TextAnchor.MiddleCenter;
                 Widgets.LabelCacheHeight(ref tempRect, "ISF_CurrentSkillPoints".Translate(progressTracker.def.skillPointLabelKey.Translate(),
                     progressTracker.points - progressTracker.usedPoints));
-                    //$"{progressTracker.def.skillPointLabelKey.Translate().CapitalizeFirst()}: {progressTracker.points - progressTracker.usedPoints}"
                 Text.Anchor = TextAnchor.UpperLeft;
                 coordY += tempRect.height;
             }
@@ -249,11 +246,11 @@ namespace ItsSorceryFramework
             return false;
         }
 
-        public void DrawOutline(Rect rect, Color outColor, int outThick = 1, Texture2D lineTex = null)
+        public void DrawOutline(Rect rect, Color outColor, int outThick = 1)
         {
             Color color = GUI.color;
             GUI.color = outColor;
-            Widgets.DrawBox(rect, outThick, lineTex);
+            Widgets.DrawBox(rect, outThick, null);
             GUI.color = color;
         }
 

@@ -6,7 +6,7 @@ using Verse;
 
 namespace ItsSorceryFramework
 {
-    public class ProgressTrackerClassDef : Def
+    public class ProgressTrackerClassDef : ISF_PrereqDef //Def
     {
         public ProgressTrackerDef progressTrackerDef;
         
@@ -22,33 +22,12 @@ namespace ItsSorceryFramework
 
         public List<ProgressLevelLabel> levelLabels = new List<ProgressLevelLabel>();
 
-
-        // class change validation fields
+        // class change validation fields - see ISF_PrereqDef for common prereq fields
         public LearningNodePrereqMode prereqClassMode = LearningNodePrereqMode.All;
 
         public int prereqClassModeMin = 1;
 
-        public LearningNodePrereqMode prereqNodeMode = LearningNodePrereqMode.All;
-
-        public int prereqNodeModeMin = 1;
-
-        public LearningNodePrereqMode prereqResearchMode = LearningNodePrereqMode.All;
-
-        public int prereqResearchModeMin = 1;
-
-        public int prereqLevel = 0;
-
-        public List<ProgressTrackerClassDef> prereqsClassDefs = new List<ProgressTrackerClassDef>();
-
-        public List<LearningTreeNodeDef> prereqsNodes = new List<LearningTreeNodeDef>();
-
-        public List<ResearchProjectDef> prereqsResearchs = new List<ResearchProjectDef>();
-
-        public Dictionary<HediffDef, float> prereqsHediff = new Dictionary<HediffDef, float>();
-
-        public List<NodeStatReqs> prereqsStats = new List<NodeStatReqs>();
-
-        public List<NodeSkillReqs> prereqsSkills = new List<NodeSkillReqs>();
+        public List<ProgressTrackerClassDef> prereqClasses = new List<ProgressTrackerClassDef>();
 
         public List<LearningTrackerDef> unlocks;
 
@@ -79,7 +58,7 @@ namespace ItsSorceryFramework
             {
                 foreach (StatModifier statMod in levelMod.statOffsets)
                 {
-                    yield return new StatDrawEntry(StatCategoryDefOf.CapacityEffects,
+                    yield return new StatDrawEntry(statMod.stat.category,
                         statMod.stat.LabelCap, statMod.stat.Worker.ValueToString(statMod.value, false, ToStringNumberSense.Offset),
                         statMod.stat.description, 4070, null, null, false);
                 }
@@ -89,8 +68,8 @@ namespace ItsSorceryFramework
             {
                 foreach (StatModifier statMod in levelMod.statFactorOffsets)
                 {
-                    yield return new StatDrawEntry(StatCategoryDefOf.CapacityEffects,
-                        statMod.stat.LabelCap, statMod.stat.Worker.ValueToString(statMod.value + 1, false, ToStringNumberSense.Factor),
+                    yield return new StatDrawEntry(statMod.stat.category,
+                        statMod.stat.LabelCap, (statMod.value * 100f).ToString("+#;-#") + "%", //statMod.stat.Worker.ValueToString(statMod.value + 1, false, ToStringNumberSense.Offset), 
                         statMod.stat.description, 4070, null, null, false);
                 }
             }
@@ -136,9 +115,9 @@ namespace ItsSorceryFramework
                 {
                     foreach(ProgressEXPTagDef tag in expTags)
                     {
-                        ProgressEXPWorker EXPWorker = (ProgressEXPWorker)Activator.CreateInstance(tag.workerClass);
-                        EXPWorker.def = tag;
-                        cachedEXPWorkers.Add(EXPWorker);
+                        ProgressEXPWorker expWorker = (ProgressEXPWorker)Activator.CreateInstance(tag.workerClass);
+                        expWorker.def = tag;
+                        cachedEXPWorkers.Add(expWorker);
                     }
                 }
                 return cachedEXPWorkers;

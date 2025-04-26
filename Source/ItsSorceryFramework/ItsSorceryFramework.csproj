@@ -65,6 +65,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ISF_PrereqDef.cs" />
+    <Compile Include="PawnCacheUtility.cs" />
+    <Compile Include="EnergyTrackerCompProperties_JobBase.cs" />
+    <Compile Include="EnergyTrackerCompProperties_OnInteraction.cs" />
+    <Compile Include="EnergyTrackerComp_OnInteraction.cs" />
+    <Compile Include="EnergyTrackerComp_DuringJob.cs" />
+    <Compile Include="EnergyTrackerComp_JobBase.cs" />
+    <Compile Include="EquationUtility.cs" />
     <Compile Include="PrereqUtility.cs" />
     <Compile Include="CompProperties_ClassChoiceItem.cs" />
     <Compile Include="CompProperties_UseEffectClassChoice.cs" />
@@ -76,6 +84,8 @@
     <Compile Include="ProgressDiffLog.cs" />
     <Compile Include="ProgressDiffClassLedger.cs" />
     <Compile Include="ProgressDiffLedger.cs" />
+    <Compile Include="ProgressEXPWorker_OnQuestFinish.cs" />
+    <Compile Include="ProgressEXPWorker_OnInteraction.cs" />
     <Compile Include="ProgressTrackerClassDef.cs" />
     <Compile Include="ProgressTrackerUtility.cs" />
     <Compile Include="Dialog_QuickEnergy.cs" />

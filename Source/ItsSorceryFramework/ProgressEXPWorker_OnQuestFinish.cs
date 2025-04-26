@@ -4,14 +4,13 @@ using Verse;
 
 namespace ItsSorceryFramework
 {
-    public class ProgressEXPWorker_OnDamaged : ProgressEXPWorker
+    public class ProgressEXPWorker_OnQuestFinish : ProgressEXPWorker
     {
         public override bool TryExecute(ProgressTracker progressTracker, float inputAmt = 0)
         {
             if (progressTracker.Maxed) return false;
-            if (inputAmt <= 0) return false;
 
-            float finalEXP = inputAmt * ScalingStatValue(progressTracker.pawn);
+            float finalEXP = def.fixedEXP * ScalingStatValue(progressTracker.pawn);
             progressTracker.AddExperience(finalEXP);
             if (ItsSorceryUtility.settings.ProgressShowXPMotes)
                 FireEXPMote(progressTracker.pawn, finalEXP);
@@ -21,17 +20,19 @@ namespace ItsSorceryFramework
         public override float DrawWorker(Pawn pawn, Rect rect)
         {
             float yMin = rect.yMin;
-            float x = rect.x;
-
-            String allDamage = !def.damageDefs.NullOrEmpty() ? LabelsFromDef(def.damageDefs).ToStringSafeEnumerable() : "";
+          
+            String allQuests = !def.questDefs.NullOrEmpty() ? LabelsFromDef(def.questDefs).ToStringSafeEnumerable() : "";
 
             Text.Font = GameFont.Small;
             Widgets.LabelCacheHeight(ref rect,
-                "ISF_LearningProgressEXPOnDamaged".Translate(ScalingStatDef.label.Named("STAT"), allDamage.Named("DAMAGEDEFS")).Colorize(ColoredText.TipSectionTitleColor),
+                "ISF_LearningProgressEXPOnQuestFinish".Translate(def.questOutcome.ToString().ToLower().Named("OUTCOME"), 
+                ScalingStatDef.label.Named("STAT"), allQuests.Named("QUESTDEFS")).Colorize(ColoredText.TipSectionTitleColor), 
                 true, false);
             rect.yMin += rect.height;
+
+            float finalEXP = def.fixedEXP * ScalingStatValue(pawn);
             Widgets.LabelCacheHeight(ref rect,
-                "ISF_LearningProgressEXPOnDamagedDesc".Translate(ScalingStatValue(pawn).ToStringByStyle(ToStringStyle.FloatMaxTwo, ToStringNumberSense.Factor)),
+                "ISF_LearningProgressEXPOnQuestFinishDesc".Translate(finalEXP.ToStringByStyle(ToStringStyle.FloatMaxTwo, ToStringNumberSense.Absolute)), 
                 true, false);
             rect.yMin += rect.height;
 

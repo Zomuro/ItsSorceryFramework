@@ -137,7 +137,7 @@ namespace ItsSorceryFramework
             }
 
             // define bounding and view rect of scroll window
-            float outRectHeight = rect.height - rightDebugHeightAdj - rightConfirmHeightAdj; // account for debug & confirm buttons
+            float outRectHeight = rect.height - RightDebugHeightAdj - RightConfirmHeightAdj; // account for debug & confirm buttons
             Rect outRect = new Rect(0,0, rect.width, outRectHeight); 
             Rect viewRect = new Rect(outRect.x, outRect.y, outRect.width - 20f, rightScrollViewHeight);
             Widgets.BeginScrollView(outRect, ref this.rightScrollPosition, viewRect, true);
@@ -177,7 +177,7 @@ namespace ItsSorceryFramework
 
             // get pawn for later + confirm button sizing
             Pawn pawn = progressTracker.pawn;
-            Rect confirmButton = new Rect(0, outRectHeight + rightDebugHeightAdj, outRect.width, rightConfirmHeight);
+            Rect confirmButton = new Rect(0, outRectHeight + RightDebugHeightAdj, outRect.width, rightConfirmHeight);
             Text.Anchor = TextAnchor.UpperLeft;
 
             // draw debug button if in debug mode
@@ -228,7 +228,7 @@ namespace ItsSorceryFramework
             }
             else
             {
-                string failReason = "ISF_ClassChangeLocked".Translate() + "\n" + reason;
+                string failReason = "ISF_GeneralDialogLocked".Translate() + "\n" + reason;
                 rightConfirmHeight = Mathf.Max(Text.CalcHeight(failReason, confirmButton.width - 10f) + 10f, 50f);
                 Widgets.DrawHighlight(confirmButton);
                 Widgets.Label(confirmButton.ContractedBy(5f), failReason);
@@ -248,48 +248,56 @@ namespace ItsSorceryFramework
             CompletionLearningUnlock(currClassChangeOption.classDef);
             progressTracker.ResetLevelLabel();
 
-            foreach (var et in progressTracker.schema.energyTrackers) et.ClearStatCache();
+            foreach (var et in progressTracker.schema.energyTrackers) et.ForceClearEnergyStatCaches();
 
             currClassChangeOption = null;
             progressTracker.CleanClassChangeOpps();
         }
 
-        private float rightConfirmHeightAdj => rightConfirmHeight + 10f;
+        private float RightConfirmHeightAdj => rightConfirmHeight + 10f;
 
-        private float rightDebugHeightAdj => rightDebugHeight == 0 ? rightDebugHeight : rightDebugHeight + 10f;
+        private float RightDebugHeightAdj => rightDebugHeight == 0 ? rightDebugHeight : rightDebugHeight + 10f;
 
         private float DrawClassPrereqs(Rect rect, ProgressTrackerClassDef classDef)
         {
-            if (classDef.prereqsClassDefs.NullOrEmpty() && classDef.prereqsNodes.NullOrEmpty() && classDef.prereqsResearchs.NullOrEmpty() && classDef.prereqLevel <= 0 && classDef.prereqsStats.NullOrEmpty() && classDef.prereqsSkills.NullOrEmpty() && classDef.prereqsHediff.NullOrEmpty()) return 0f;
+            if (classDef.prereqClasses.NullOrEmpty() && classDef.prereqNodes.NullOrEmpty() 
+                && classDef.prereqResearch.NullOrEmpty() && classDef.prereqGenes.NullOrEmpty() 
+                && classDef.prereqTraits.NullOrEmpty() && classDef.prereqXenotype is null 
+                && classDef.prereqLevel <= 0 && classDef.prereqAge <= 0
+                && classDef.prereqStats.NullOrEmpty() && classDef.prereqSkills.NullOrEmpty() 
+                && classDef.prereqHediffs.NullOrEmpty()) return 0f;
             float xMin = rect.xMin;
             float yMin = rect.yMin;
 
-            LearningNodeRecord LearningRecord = progressTracker.schema.learningNodeRecord; // reuse old methods here
-            Tuple<int, int> prereqsDone = PrereqsDone(classDef);
+            int doneCount = -1;
             ProgressDiffLog diffLog = progressTracker.progressDiffLog;
 
-            if (!classDef.prereqsClassDefs.NullOrEmpty()) // show completed prior classes
+            if (!classDef.prereqClasses.NullOrEmpty()) // show completed prior classes
             {
                 HashSet<ProgressTrackerClassDef> classesDone = progressTracker.progressDiffLog.GetClassSet;
-                Widgets.LabelCacheHeight(ref rect, "ISF_ClassChangePrereqs".Translate() + LearningRecord.PrereqsModeNotif(classDef.prereqClassMode, classDef.prereqClassModeMin, prereqsDone.Item1), true, false);
+                doneCount = PrereqUtility.PrereqsDoneCount(classesDone, classDef.prereqClasses);
+                Widgets.LabelCacheHeight(ref rect, "ISF_ClassChangePrereqs".Translate() + PrereqUtility.PrereqsModeNotif(classDef.prereqClassMode, classDef.prereqClassModeMin, doneCount), true, false);
                 rect.yMin += rect.height;
                 rect.xMin += 6f;
-                foreach (ProgressTrackerClassDef prereqClass in classDef.prereqsClassDefs)
+                foreach (var prereq in classDef.prereqClasses)
                 {
-                    PrereqUtility.SetPrereqStatusColor(classesDone.Contains(prereqClass));
-                    Widgets.LabelCacheHeight(ref rect, prereqClass.LabelCap, true, false);
+                    PrereqUtility.SetPrereqStatusColor(classesDone.Contains(prereq));
+                    Widgets.LabelCacheHeight(ref rect, prereq.LabelCap, true, false);
                     rect.yMin += rect.height;
                 }
                 rect.xMin = xMin;
                 GUI.color = Color.white;
             }
 
-            if (!classDef.prereqsNodes.NullOrEmpty())
+            if (!classDef.prereqNodes.NullOrEmpty())
             {
-                Widgets.LabelCacheHeight(ref rect, "ISF_LearningNodePrereqs".Translate() + LearningRecord.PrereqsModeNotif(classDef.prereqNodeMode, classDef.prereqNodeModeMin, prereqsDone.Item1), true, false);
+                LearningNodeRecord LearningRecord = progressTracker.schema.learningNodeRecord; // reuse old methods here
+                HashSet<LearningTreeNodeDef> nodesDone = LearningRecord.completion.Where(x => x.Value == true).Select(x => x.Key).ToHashSet();
+                doneCount = PrereqUtility.PrereqsDoneCount(nodesDone, classDef.prereqNodes);
+                Widgets.LabelCacheHeight(ref rect, "ISF_GeneralDialogPrereqNode".Translate() + PrereqUtility.PrereqsModeNotif(classDef.prereqNodeMode, classDef.prereqNodeModeMin, doneCount), true, false);
                 rect.yMin += rect.height;
                 rect.xMin += 6f;
-                foreach (LearningTreeNodeDef prereq in classDef.prereqsNodes)
+                foreach (var prereq in classDef.prereqNodes)
                 {
                     PrereqUtility.SetPrereqStatusColor(LearningRecord.completion[prereq]);
                     Widgets.LabelCacheHeight(ref rect, prereq.LabelCap, true, false);
@@ -299,12 +307,13 @@ namespace ItsSorceryFramework
                 GUI.color = Color.white;
             }
 
-            if (!classDef.prereqsResearchs.NullOrEmpty()) // show completed research
+            if (!classDef.prereqResearch.NullOrEmpty()) // show completed research
             {
-                Widgets.LabelCacheHeight(ref rect, "ISF_ClassChangeResearchPrereqs".Translate() + LearningRecord.PrereqsModeNotif(classDef.prereqResearchMode, classDef.prereqResearchModeMin, prereqsDone.Item2), true, false);
+                doneCount = classDef.prereqResearch.Where(x => x.PrerequisitesCompleted).Count();
+                Widgets.LabelCacheHeight(ref rect, "ISF_GeneralDialogPrereqResearch".Translate() + PrereqUtility.PrereqsModeNotif(classDef.prereqResearchMode, classDef.prereqResearchModeMin, doneCount), true, false);
                 rect.yMin += rect.height;
                 rect.xMin += 6f;
-                foreach (ResearchProjectDef prereq in classDef.prereqsResearchs)
+                foreach (var prereq in classDef.prereqResearch)
                 {
                     PrereqUtility.SetPrereqStatusColor(prereq.IsFinished);
                     Widgets.LabelCacheHeight(ref rect, prereq.LabelCap, true, false);
@@ -314,21 +323,75 @@ namespace ItsSorceryFramework
                 rect.xMin = xMin;
             }
 
-            if (classDef.prereqLevel > 0) // show completed level req
+            if (!classDef.prereqGenes.NullOrEmpty()) // show completed genes
             {
-                PrereqUtility.SetPrereqStatusColor(diffLog.PrereqLevelFulfilled(progressTracker, classDef));
-                Widgets.LabelCacheHeight(ref rect, "ISF_ClassChangeLevelReq".Translate(classDef.prereqLevel), true, false);
+                HashSet<GeneDef> genesDone = progressTracker.pawn.genes.GenesListForReading.Select(x => x.def).ToHashSet();
+                doneCount = PrereqUtility.PrereqsDoneCount(genesDone, classDef.prereqGenes);
+                Widgets.LabelCacheHeight(ref rect, "ISF_GeneralDialogPrereqGene".Translate() + PrereqUtility.PrereqsModeNotif(classDef.prereqGeneMode, classDef.prereqGeneModeMin, doneCount), true, false);
+                rect.yMin += rect.height;
+                rect.xMin += 6f;
+                foreach (var prereq in classDef.prereqGenes)
+                {
+                    PrereqUtility.SetPrereqStatusColor(genesDone.Contains(prereq));
+                    Widgets.LabelCacheHeight(ref rect, prereq.LabelCap, true, false);
+                    rect.yMin += rect.height;
+                }
+                GUI.color = Color.white;
+                rect.xMin = xMin;
+            }
+
+            if (!classDef.prereqTraits.NullOrEmpty()) // show completed genes
+            {               
+                doneCount = classDef.prereqTraits.Where(x => x.HasTrait(progressTracker.pawn)).Count();
+                Widgets.LabelCacheHeight(ref rect, "ISF_GeneralDialogPrereqTrait".Translate() + PrereqUtility.PrereqsModeNotif(classDef.prereqTraitMode, classDef.prereqTraitModeMin, doneCount), true, false);
+                rect.yMin += rect.height;
+                rect.xMin += 6f;
+                foreach (var prereq in classDef.prereqTraits)
+                {
+                    PrereqUtility.SetPrereqStatusColor(prereq.HasTrait(progressTracker.pawn));
+                    Widgets.LabelCacheHeight(ref rect, PrereqUtility.GetTraitDegreeData(prereq.def, prereq.degree).LabelCap, true, false);
+                    rect.yMin += rect.height;
+                }
+                GUI.color = Color.white;
+                rect.xMin = xMin;
+            }
+
+            if (classDef.prereqXenotype != null) // show completed xenotype req
+            {
+                PrereqUtility.SetPrereqStatusColor(diffLog.PrereqXenotypeFufilled(progressTracker, classDef));
+                Widgets.LabelCacheHeight(ref rect, "ISF_GeneralDialogPrereqXenotype".Translate(classDef.prereqXenotype), true, false);
                 rect.yMin += rect.height;
                 GUI.color = Color.white;
                 rect.xMin = xMin;
             }
 
-            if (!classDef.prereqsStats.NullOrEmpty()) // show completed stat req
+            if (classDef.prereqLevel > 0) // show completed level req
             {
-                Widgets.LabelCacheHeight(ref rect, "ISF_ClassChangeStatReq".Translate(), true, false);
+                PrereqUtility.SetPrereqStatusColor(diffLog.PrereqLevelFulfilled(progressTracker, classDef));
+                string levelComp = "level" + PrereqUtility.PrereqsStatsModeNotif(classDef.prereqLevelMode) + classDef.prereqLevel.ToString();
+                Widgets.LabelCacheHeight(ref rect, "ISF_GeneralDialogPrereqLevel".Translate(levelComp), true, false);
+                rect.yMin += rect.height;
+                GUI.color = Color.white;
+                rect.xMin = xMin;
+            }
+
+            if (classDef.prereqAge > 0) // show completed age req
+            {
+                PrereqUtility.SetPrereqStatusColor(diffLog.PrereqAgeFulfilled(progressTracker, classDef));
+                string ageCheck = classDef.prereqCheckBioAge ? "ISF_GeneralDialogPrereqAgeBio".Translate() : "ISF_GeneralDialogPrereqAgeChron".Translate();
+                string ageComp = ageCheck + PrereqUtility.PrereqsStatsModeNotif(classDef.prereqAgeMode) + classDef.prereqAge.ToString();
+                Widgets.LabelCacheHeight(ref rect, "ISF_GeneralDialogPrereqAge".Translate(ageComp), true, false);
+                rect.yMin += rect.height;
+                GUI.color = Color.white;
+                rect.xMin = xMin;
+            }
+
+            if (!classDef.prereqStats.NullOrEmpty()) // show completed stat req
+            {
+                Widgets.LabelCacheHeight(ref rect, "ISF_GeneralDialogPrereqStat".Translate(), true, false);
                 rect.yMin += rect.height;
                 rect.xMin += 6f;
-                foreach (var prereqsStatCase in classDef.prereqsStats)
+                foreach (var prereqsStatCase in classDef.prereqStats)
                 {
                     foreach (var statMod in prereqsStatCase.statReqs)
                     {
@@ -342,12 +405,12 @@ namespace ItsSorceryFramework
                 rect.xMin = xMin;
             }
 
-            if (!classDef.prereqsSkills.NullOrEmpty())
+            if (!classDef.prereqSkills.NullOrEmpty())
             {
-                Widgets.LabelCacheHeight(ref rect, "ISF_ClassChangeSkillReq".Translate(), true, false);
+                Widgets.LabelCacheHeight(ref rect, "ISF_GeneralDialogPrereqSkill".Translate(), true, false);
                 rect.yMin += rect.height;
                 rect.xMin += 6f;
-                foreach (var prereqsSkillCase in classDef.prereqsSkills)
+                foreach (var prereqsSkillCase in classDef.prereqSkills)
                 {
                     foreach (var skillLevel in prereqsSkillCase.skillReqs)
                     {
@@ -361,14 +424,14 @@ namespace ItsSorceryFramework
                 rect.xMin = xMin;
             }
 
-            if (!classDef.prereqsHediff.NullOrEmpty())
+            if (!classDef.prereqHediffs.NullOrEmpty())
             {
-                Widgets.LabelCacheHeight(ref rect, "ISF_ClassChangeHediffReq".Translate(), true, false);
+                Widgets.LabelCacheHeight(ref rect, "ISF_GeneralDialogPrereqHediff".Translate(), true, false);
                 rect.yMin += rect.height;
                 rect.xMin += 6f;
                 Hediff hediff;
                 String reqLabel;
-                foreach (var prereq in classDef.prereqsHediff)
+                foreach (var prereq in classDef.prereqHediffs)
                 {
                     hediff = progressTracker.pawn.health.hediffSet.GetFirstHediffOfDef(prereq.Key);
                     PrereqUtility.SetPrereqStatusColor((hediff != null && hediff.Severity >= prereq.Value));
@@ -436,19 +499,6 @@ namespace ItsSorceryFramework
                 GUI.DrawTexture(new Rect(Text.CalcSize(taggedString).x + 4f, rect.y, 20f, 20f), expansionDef.IconFromStatus);
             }
             return rect.yMax - yMin;
-        }
-
-        private Tuple<int, int> PrereqsDone(ProgressTrackerClassDef classDef)
-        {
-            HashSet<ProgressTrackerClassDef> classesDone = progressTracker.progressDiffLog.GetClassSet;
-
-            int prereqCount = 0;
-            if (!classDef.prereqsClassDefs.NullOrEmpty()) prereqCount = classDef.prereqsClassDefs.Where(x => classesDone.Contains(x)).Count();
-
-            int prereqResearchCount = 0;
-            if (!classDef.prereqsResearchs.NullOrEmpty()) prereqResearchCount = classDef.prereqsResearchs.Where(x => x.IsFinished).Count();
-
-            return new Tuple<int, int>(prereqCount, prereqResearchCount);
         }
 
         private void CompletionLearningUnlock(ProgressTrackerClassDef classDef)

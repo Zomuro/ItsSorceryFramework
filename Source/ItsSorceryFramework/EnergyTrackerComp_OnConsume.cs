@@ -15,6 +15,8 @@ namespace ItsSorceryFramework
 
         public StatDef ScalingStatDef => Props.scalingStatDef is null ? StatDefOf_ItsSorcery.ISF_ScalingStat : Props.scalingStatDef;
 
+        public virtual float ScalingStatValue => PawnCacheUtility.GetStatCacheVal(parent.pawn, ScalingStatDef);
+
         public bool AtLimit => parent.schema.limitLocked && (!parent.def.inverse ? parent.currentEnergy >= parent.MaxEnergy : parent.currentEnergy <= parent.MinEnergy);
         
         public override IEnumerable<FloatMenuOption> CompPostConsume(Vector3 vec3) // for effects when using a "consumption" item
@@ -47,7 +49,7 @@ namespace ItsSorceryFramework
                     int count = 0;
                     float energyDiff = 0;
                     int endcount = ammo.stackCount;
-                    float adjConsumeEnergy = consume.energy * Pawn.GetStatValue(ScalingStatDef);
+                    float adjConsumeEnergy = consume.energy * ScalingStatValue;
                     float gain = endcount * adjConsumeEnergy;
 
                     if (!parent.def.inverse)

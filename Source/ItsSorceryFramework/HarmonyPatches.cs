@@ -2,7 +2,9 @@
 using RimWorld;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
 using Verse;
 using Verse.AI;
@@ -14,9 +16,12 @@ namespace ItsSorceryFramework
     {
         static HarmonyPatches()
         {
-            Harmony harmony = new Harmony("Zomuro.ItsSorcery.Framework");
+            // Setup stopwatch to time harmony patches
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+            Harmony harmony = new Harmony("Zomuro.ItsSorceryFramework");
 
-            // EnergyTracker Patches //
+            // EnergyTracker Specific Patches //
 
             // AddHumanlikeOrders_EnergyTracker_Consumable
             // if a pawn has a SorcerySchema with a Consumable class EnergyTracker, show the float menu
@@ -30,9 +35,9 @@ namespace ItsSorceryFramework
             harmony.Patch(AccessTools.Method(typeof(Widgets), "DefIcon"), null,
                 new HarmonyMethod(typeof(HarmonyPatches), nameof(DefIconAbilities)));
 
-            // ProgressEXPWorker Patches
+            // EnergyTracker and ProgressEXPWorker Patches
 
-            // TakeDamage_AddEXP
+            // TakeDamage_ISF_Postfix
             // for every magic system with the correct EXP tag, give xp depending on damage
             harmony.Patch(AccessTools.Method(typeof(Thing), "TakeDamage"), null,
                 new HarmonyMethod(typeof(HarmonyPatches), nameof(TakeDamage_ISF_Postfix)));
@@ -42,7 +47,7 @@ namespace ItsSorceryFramework
             harmony.Patch(AccessTools.Method(typeof(SkillRecord), "Learn"), null,
                 new HarmonyMethod(typeof(HarmonyPatches), nameof(Learn_AddEXP)));
 
-            // DoKillSideEffects_AddEXP
+            // DoKillSideEffects_ISF_Postfix
             // for every magic system with the correct EXP tag, give xp on kill
             harmony.Patch(AccessTools.Method(typeof(Pawn), "DoKillSideEffects"), null,
                 new HarmonyMethod(typeof(HarmonyPatches), nameof(DoKillSideEffects_ISF_Postfix)));
@@ -51,6 +56,16 @@ namespace ItsSorceryFramework
             // allow items to be used to level up experience systems
             harmony.Patch(AccessTools.Method(typeof(FloatMenuMakerMap), "AddHumanlikeOrders"), null,
                 new HarmonyMethod(typeof(HarmonyPatches), nameof(AddHumanlikeOrders_EXPUseItem)));
+
+            // TryInteractWith_ISF_Postfix
+            // after a successful (true) TryInteractWith, look through magic systems to add XP/energy 
+            harmony.Patch(AccessTools.Method(typeof(Pawn_InteractionsTracker), "TryInteractWith"), null,
+                new HarmonyMethod(typeof(HarmonyPatches), nameof(TryInteractWith_ISF_Postfix)));
+
+            // EndQuest_ISF_Postfix
+            // on quest end, check workers of all colonists and see if we need to add XP
+            harmony.Patch(AccessTools.Method(typeof(Quest), "End"), null,
+                new HarmonyMethod(typeof(HarmonyPatches), nameof(EndQuest_ISF_Postfix)));
 
             // PawnGen Patches //
 
@@ -69,6 +84,15 @@ namespace ItsSorceryFramework
             harmony.Patch(AccessTools.Method(typeof(Pawn_GeneTracker), "AddGene", new[] { typeof(GeneDef), typeof(bool) }), null,
                 new HarmonyMethod(typeof(HarmonyPatches), nameof(AddGene_Schema)));
 
+            // end stopwatch and print harmony patching results
+            stopwatch.Stop();
+            Log.Message(
+                string.Format("[It's Sorcery!] Successfully completed {0} Harmony patches in {1} secs.",
+                    harmony.GetPatchedMethods().Select(new Func<MethodBase, Patches>(Harmony.GetPatchInfo)).SelectMany(
+                        (Patches p) => p.Prefixes.Concat(p.Postfixes).Concat(p.Transpilers)).Count((Patch p) => p.owner == harmony.Id),
+                    stopwatch.Elapsed.TotalSeconds
+                )
+            );
         }
 
         // POSTFIX: when right clicking items that can reload the schema, provide FloatMenu option to "reload" with them
@@ -284,7 +308,6 @@ namespace ItsSorceryFramework
                     float factor = item.expFactorStat != null ? __1.GetStatValue(item.expFactorStat) : 1f;
                     if (!__1.CanReach(EXPItem, PathEndMode.ClosestTouch, Danger.Deadly, false, false, TraverseMode.ByPawn))
                     {
-                        
                         text = "ISF_UseEXPItemNoPath".Translate() + item.gainEXPTransKey.Translate(item.thingDef.label, item.exp * factor, schema.def.LabelCap.ToString());
                         __2.Add(new FloatMenuOption(text, null, MenuOptionPriority.Default,
                             null, null, 0f, null, null, true, 0));
@@ -307,7 +330,82 @@ namespace ItsSorceryFramework
 
             return;
         }
-           
+
+        // POSTFIX: if a pawn successfully interacts w/ another pawn, check interactiondef and see if we need to add XP or energy
+        public static void TryInteractWith_ISF_Postfix(ref bool __result, Pawn_InteractionsTracker __instance, Pawn __0, InteractionDef __1)
+        {
+            // if we find that interactiondef is null OR the original TryInteractWith result is false, skip rest
+            if (__1 == null || __result == false) return;
+
+            // check if we need to add XP or energy for pawns in the interaction
+            Helper_TryInteractWith_ISF_Postfix(Traverse.Create(__instance).Field("pawn").GetValue<Pawn>(), __1); // interaction initiator
+            Helper_TryInteractWith_ISF_Postfix(__0, __1); // interaction recipient
+        }
+
+        public static void Helper_TryInteractWith_ISF_Postfix(Pawn pawn, InteractionDef intDef)
+        {
+            if (!pawn.IsColonist) return;
+            CacheComp(pawn);
+            Comp_ItsSorcery comp = cachedSchemaComps[pawn];
+            if (comp is null) return;
+
+            foreach (var schema in comp.schemaTracker.sorcerySchemas)
+            {
+                // progressEXPworker component
+                HashSet<ProgressEXPWorker> workers = schema.progressTracker.currClassDef.Workers;
+                if (!workers.EnumerableNullOrEmpty())
+                {
+                    foreach (var worker in workers.Where(x => x.GetType() == typeof(ProgressEXPWorker_OnInteraction)))
+                    {
+                        if (!worker.def.interactionDefs.NullOrEmpty() && !worker.def.interactionDefs.Contains(intDef)) continue;
+                        worker.TryExecute(schema.progressTracker);
+                    }
+                }
+                
+                // energytracker component
+                if (!schema.energyTrackers.NullOrEmpty())
+                {
+                    foreach (var energyTracker in schema.energyTrackers)
+                    {
+                        if (energyTracker.comps.NullOrEmpty()) continue;
+                        foreach (var energyComp in energyTracker.comps) energyComp.CompPostInteraction(intDef);
+                    }
+                }
+                
+            }
+        }
+
+        // POSTFIX: on quest end, check workers of all colonists and see if we need to add XP
+        public static void EndQuest_ISF_Postfix(Quest __instance, QuestEndOutcome __0)
+        {
+            // get all pawns that are player's faction
+            List<Pawn> pawnList = PawnsFinder.AllMapsCaravansAndTravelingTransportPods_Alive_OfPlayerFaction;
+
+            // get ending quest's def to find in defs
+            QuestScriptDef endingQuestDef = __instance.root;
+
+            // iterate over all colonists and level them up
+            foreach (var pawn in pawnList)
+            {
+                CacheComp(pawn);
+                Comp_ItsSorcery comp = cachedSchemaComps[pawn];
+                if (comp is null) continue;
+
+                foreach (var schema in comp.schemaTracker.sorcerySchemas)
+                {
+                    // progressEXPworker component
+                    HashSet<ProgressEXPWorker> workers = schema.progressTracker.currClassDef.Workers;
+                    if (workers.EnumerableNullOrEmpty()) continue;
+                    foreach (var worker in workers.Where(x => x.GetType() == typeof(ProgressEXPWorker_OnQuestFinish)))
+                    {
+                        if (__0 != worker.def.questOutcome) continue;
+                        if (!worker.def.questDefs.NullOrEmpty() && !worker.def.questDefs.Contains(endingQuestDef)) continue;
+                        worker.TryExecute(schema.progressTracker);
+                    }
+                }
+            }
+        }
+
         // POSTFIX: using a specific mod extension, allow pawns to be generated with custom magic systems
         public static void GenerateNewPawnInternal_Schema(ref Pawn __result, ref PawnGenerationRequest __0)
         {

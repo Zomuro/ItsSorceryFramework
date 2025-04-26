@@ -1,22 +1,41 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <LanguageData>
 	
+	<!-- General - used by multiple Dialogs-->
+	<ISF_GeneralDialogPrereqNode>Node prerequisites:</ISF_GeneralDialogPrereqNode>
+	<ISF_GeneralDialogPrereqResearch>Research prerequisites:</ISF_GeneralDialogPrereqResearch>
+	<ISF_GeneralDialogPrereqGene>Gene prerequisites:</ISF_GeneralDialogPrereqGene>
+	<ISF_GeneralDialogPrereqTrait>Trait prerequisites:</ISF_GeneralDialogPrereqTrait>
+	<ISF_GeneralDialogPrereqXenotype>Xenotype requirement: {0}</ISF_GeneralDialogPrereqXenotype>	
+	<ISF_GeneralDialogPrereqLevel>Level requirement: {0}</ISF_GeneralDialogPrereqLevel>
+	<ISF_GeneralDialogPrereqAge>Age requirement: {0}</ISF_GeneralDialogPrereqAge>
+	<ISF_GeneralDialogPrereqAgeBio>biological age</ISF_GeneralDialogPrereqAgeBio>
+	<ISF_GeneralDialogPrereqAgeChron>chronological age</ISF_GeneralDialogPrereqAgeChron>
+	<ISF_GeneralDialogPrereqStat>Stat requirements:</ISF_GeneralDialogPrereqStat>
+	<ISF_GeneralDialogPrereqSkill>Skill requirements:</ISF_GeneralDialogPrereqSkill>
+	<ISF_GeneralDialogPrereqHediff>Hediff requirements:</ISF_GeneralDialogPrereqHediff>
+	
+	<ISF_GeneralDialogLocked>Locked:</ISF_GeneralDialogLocked>
+	<ISF_GeneralDialogLockedNodes>Node requirements not completed.</ISF_GeneralDialogLockedNodes>
+	<ISF_GeneralDialogLockedResearch>Research requirements not completed.</ISF_GeneralDialogLockedResearch>
+	<ISF_GeneralDialogLockedGenes>Gene requirements not completed.</ISF_GeneralDialogLockedGenes>
+	<ISF_GeneralDialogLockedTrait>Trait requirements not completed.</ISF_GeneralDialogLockedTrait>
+	<ISF_GeneralDialogLockedXenotype>Xenotype requirement not fufilled.</ISF_GeneralDialogLockedXenotype>	
+	<ISF_GeneralDialogLockedLevel>Level requirement not fufilled.</ISF_GeneralDialogLockedLevel>
+	<ISF_GeneralDialogLockedAge>Age requirement not fufilled.</ISF_GeneralDialogLockedAge>
+	<ISF_GeneralDialogLockedStat>Stat requirements not fufilled.</ISF_GeneralDialogLockedStat>
+	<ISF_GeneralDialogLockedSkill>Skill requirements not fufilled.</ISF_GeneralDialogLockedSkill>
+	<ISF_GeneralDialogLockedHediff>Hediff requirements not fufilled.</ISF_GeneralDialogLockedHediff>
+
+	<ISF_GeneralDialogNotPlayer>{0} is not in your faction.</ISF_GeneralDialogNotPlayer>
+	
 	<!-- SorcerySchemaDef Info window - Energy Trackers -->
 	<ISF_EnergyTrackerUnit>Unit</ISF_EnergyTrackerUnit>
 	<ISF_EnergyTrackerInverse>Energy inversion</ISF_EnergyTrackerInverse>
 	<ISF_EnergyTrackerInverseDesc>Specifies the flow direction of the energy.\n\nNon-inverted systems typically consume the energy unit (e.g. 100 -> 50 mana) and regain it over time; inverted energy trackers add the unit (e.g. 0 -> 25 mana) and reduce it over time.</ISF_EnergyTrackerInverseDesc>
 	
 	<!-- SorcerySchemaDef Info window - Learning Trackers - Tree -->
-	<!-- <ISF_LearningTreeLocked>Locked</ISF_LearningTreeLocked> -->
-	<!-- <ISF_LearningTreeUnlockDesc>Unlock</ISF_LearningTreeUnlockDesc> -->
-	
 	<ISF_LearningNodeCost>{0} required: {1}</ISF_LearningNodeCost>
-	<ISF_LearningNodePrereqs>Node prerequisites:</ISF_LearningNodePrereqs>
-	<ISF_LearningNodeResearchPrereqs>Research prerequisites:</ISF_LearningNodeResearchPrereqs>
-	<ISF_LearningNodeLevelReq>Level requirement: {0}</ISF_LearningNodeLevelReq>
-	<ISF_LearningNodeStatReq>Stat requirements:</ISF_LearningNodeStatReq>
-	<ISF_LearningNodeSkillReq>Skill requirements:</ISF_LearningNodeSkillReq>
-	<ISF_LearningNodeHediffReq>Hediff requirements:</ISF_LearningNodeHediffReq>
 	<ISF_LearningNodeExclusive>Exclusive with:</ISF_LearningNodeExclusive>
 	<ISF_LearningNodeAbilityGain>Abilities gained:</ISF_LearningNodeAbilityGain>
 	<ISF_LearningNodeAbilityRemove>Abilities removed:</ISF_LearningNodeAbilityRemove>
@@ -28,14 +47,7 @@
 	
 	<ISF_LearningNodeReasonCompleted>Completed.</ISF_LearningNodeReasonCompleted>
 	<ISF_LearningNodeReasonExclusive>Conflicts with another node.</ISF_LearningNodeReasonExclusive>
-	<ISF_LearningNodeLocked>Locked:</ISF_LearningNodeLocked>
 	<ISF_LearningNodeLockedPoints>Not enough {0}.</ISF_LearningNodeLockedPoints>
-	<ISF_LearningNodeLockedNodes>Prior nodes not completed.</ISF_LearningNodeLockedNodes>
-	<ISF_LearningNodeLockedResearch>Research requirements not completed.</ISF_LearningNodeLockedResearch>
-	<ISF_LearningNodeLockedStat>Stat requirements not fufilled.</ISF_LearningNodeLockedStat>
-	<ISF_LearningNodeLockedSkill>Skill requirements not fufilled.</ISF_LearningNodeLockedSkill>
-	<ISF_LearningNodeLockedHediff>Hediff requirements not met.</ISF_LearningNodeLockedHediff>
-	<ISF_LearningNodeLockedLevel>Level requirements not met.</ISF_LearningNodeLockedLevel>
 	<ISF_LearningNodeNotPlayer>{0} is not in your faction.</ISF_LearningNodeNotPlayer>
 	
 	<!-- SorcerySchemaDef Info window - Learning Trackers - Progress -->
@@ -65,31 +77,34 @@
 	<ISF_LearningProgressSelectSorceryDesc>Toggle sorceries for visibility. Grayed-out sorceries are not visible.</ISF_LearningProgressSelectSorceryDesc>
 	
 	<!-- ProgressTrackerTags -->
-	<ISF_LearningProgressEXPCast>On cast:</ISF_LearningProgressEXPCast>
-	<ISF_LearningProgressEXPCastDesc>Gain experience = {0} the base energy cost.</ISF_LearningProgressEXPCastDesc>
-	<ISF_LearningProgressEXPJob>While performing job set(s): {0}</ISF_LearningProgressEXPJob>
+	<ISF_LearningProgressEXPCast>On cast, scaling with {STAT}:</ISF_LearningProgressEXPCast>
+	<ISF_LearningProgressEXPCastDesc>Gain experience = {0} of the absolute value of base energy cost.</ISF_LearningProgressEXPCastDesc>
+	<ISF_LearningProgressEXPJob>While performing job set(s), scaling with {STAT}: {JOBSETS}</ISF_LearningProgressEXPJob>
 	<ISF_LearningProgressEXPJobDesc>Gain {0} experience every second.</ISF_LearningProgressEXPJobDesc>
-	<ISF_LearningProgressEXPOnDamage>On dealing damage: {0}</ISF_LearningProgressEXPOnDamage>
-	<ISF_LearningProgressEXPOnDamageDesc>Grant experience = {0} the base damage dealt.</ISF_LearningProgressEXPOnDamageDesc>
-	<ISF_LearningProgressEXPOnDamaged>On receiving damage: {0}</ISF_LearningProgressEXPOnDamaged>
-	<ISF_LearningProgressEXPOnDamagedDesc>Grant experience = {0} the base damage received.</ISF_LearningProgressEXPOnDamagedDesc>
-	<ISF_LearningProgressEXPOnKill>On kill:</ISF_LearningProgressEXPOnKill>
-	<ISF_LearningProgressEXPOnKillDamage>On kill with damage: {0}</ISF_LearningProgressEXPOnKillDamage>
-	<ISF_LearningProgressEXPOnKillDesc>Grant {0} experience.</ISF_LearningProgressEXPOnKillDesc>
-	<ISF_LearningProgressEXPSkill>On gaining skill experience: {0}</ISF_LearningProgressEXPSkill>
-	<ISF_LearningProgressEXPSkillDesc>Grant experience = {0} the gained skill experience.</ISF_LearningProgressEXPSkillDesc>
-	<ISF_LearningProgressEXPPassive>Every second:</ISF_LearningProgressEXPPassive>
+	<ISF_LearningProgressEXPOnDamage>On dealing damage, scaling with {STAT}: {DAMAGEDEFS}</ISF_LearningProgressEXPOnDamage>
+	<ISF_LearningProgressEXPOnDamageDesc>Gain experience = {0} the base damage dealt.</ISF_LearningProgressEXPOnDamageDesc>
+	<ISF_LearningProgressEXPOnDamaged>On receiving damage, scaling with {STAT}: {DAMAGEDEFS}</ISF_LearningProgressEXPOnDamaged>
+	<ISF_LearningProgressEXPOnDamagedDesc>Gain experience = {0} the base damage received.</ISF_LearningProgressEXPOnDamagedDesc>
+	<ISF_LearningProgressEXPOnKill>On kill, scaling with {STAT}: {DAMAGEDEFS}</ISF_LearningProgressEXPOnKill>
+	<ISF_LearningProgressEXPOnKillDesc>Gain {0} experience.</ISF_LearningProgressEXPOnKillDesc>
+	<ISF_LearningProgressEXPSkill>On gaining skill experience, scaling with {STAT}: {SKILLDEFS}</ISF_LearningProgressEXPSkill>
+	<ISF_LearningProgressEXPSkillDesc>Gain experience = {0} the gained skill experience.</ISF_LearningProgressEXPSkillDesc>
+	<ISF_LearningProgressEXPPassive>Every second, scaling with {STAT}:</ISF_LearningProgressEXPPassive>
 	<ISF_LearningProgressEXPPassiveDesc>Gain {0} experience.</ISF_LearningProgressEXPPassiveDesc>
 	<ISF_LearningProgressEXPUseItem>On using items:</ISF_LearningProgressEXPUseItem>
-	<ISF_LearningProgressEXPUseItemDesc>Grant experience based on the following.</ISF_LearningProgressEXPUseItemDesc>
+	<ISF_LearningProgressEXPUseItemDesc>Gain experience based on the following.</ISF_LearningProgressEXPUseItemDesc>
+	<ISF_LearningProgressEXPOnInteraction>On interaction, scaling with {STAT}: {INTERACTIONDEFS}</ISF_LearningProgressEXPOnInteraction>
+	<ISF_LearningProgressEXPOnInteractionDesc>Gain {0} experience.</ISF_LearningProgressEXPOnInteractionDesc>
+	<ISF_LearningProgressEXPOnQuestFinish>On quest {OUTCOME}, scaling with {STAT}: {QUESTDEFS}</ISF_LearningProgressEXPOnQuestFinish>
+	<ISF_LearningProgressEXPOnQuestFinishDesc>Gain {0} experience.</ISF_LearningProgressEXPOnQuestFinishDesc>
 	
 	<!-- EnergyTrackerComp -->
 	<ISF_EnergyTrackerCompNone>N/A</ISF_EnergyTrackerCompNone>
 	
-	<ISF_EnergyTrackerCompOnTickLabel>Every second, scaling with {STAT}:</ISF_EnergyTrackerCompOnTickLabel>
-	<ISF_EnergyTrackerCompOnTickNormal>Alter current {0} by {1}.</ISF_EnergyTrackerCompOnTickNormal>
-	<ISF_EnergyTrackerCompOnTickOvercharge>If in the overcharge zone, the {ENERGY} per second is {CHANGE}.</ISF_EnergyTrackerCompOnTickOvercharge>
-	<ISF_EnergyTrackerCompOnTickDeficit>If in the deficit zone, the {ENERGY} per second is {CHANGE}.</ISF_EnergyTrackerCompOnTickDeficit>
+	<ISF_EnergyTrackerCompOnTickLabel>Over time, scaling with {STAT}:</ISF_EnergyTrackerCompOnTickLabel>
+	<ISF_EnergyTrackerCompOnTickNormal>Alter {ENERGY} by {CHANGE} per second.</ISF_EnergyTrackerCompOnTickNormal>
+	<ISF_EnergyTrackerCompOnTickOvercharge>If in the overcharge zone, alter {ENERGY} by {CHANGE} per second.</ISF_EnergyTrackerCompOnTickOvercharge>
+	<ISF_EnergyTrackerCompOnTickDeficit>If in the deficit zone, alter {ENERGY} by {CHANGE} per second.</ISF_EnergyTrackerCompOnTickDeficit>
 	
 	<ISF_EnergyTrackerCompOnDamageLabel>On dealing damage, scaling with {STAT}: {DAMAGEDEFS}</ISF_EnergyTrackerCompOnDamageLabel>
 	<ISF_EnergyTrackerCompOnDamageDesc>Alter {ENERGY} = {FACTOR} of the damage dealt by this pawn.</ISF_EnergyTrackerCompOnDamageDesc>
@@ -104,6 +119,12 @@
 	<ISF_EnergyTrackerCompOnConsumeDesc>Alter {ENERGY} based on the list below.</ISF_EnergyTrackerCompOnConsumeDesc>
 	<ISF_EnergyTrackerCompOnConsumeItem>  - {ITEM}: {CHANGE}</ISF_EnergyTrackerCompOnConsumeItem>
 	
+	<ISF_EnergyTrackerCompDuringJobLabel>Every second performing the {0} job set, scaling with {STAT}:</ISF_EnergyTrackerCompDuringJobLabel>
+	<ISF_EnergyTrackerCompDuringJobDesc>Alter {ENERGY} by {CHANGE} per second.</ISF_EnergyTrackerCompDuringJobDesc>
+	
+	<ISF_EnergyTrackerCompOnInteractionLabel>On finishing an interaction, scaling with {STAT}: {INTERACTDEFS}</ISF_EnergyTrackerCompOnInteractionLabel>
+	<ISF_EnergyTrackerCompOnInteractionDesc>Alter {ENERGY} by {CHANGE}.</ISF_EnergyTrackerCompOnInteractionDesc>
+	
 	<!-- Dialog_ProgressLevelOptions - options for ProgressTrackers -->
 	<ISF_ProgressLevelOptionsLabel>Options - {0} (lvl. {1})</ISF_ProgressLevelOptionsLabel>
 	<ISF_ProgressLevelOptionsNone>Select an option.</ISF_ProgressLevelOptionsNone>
@@ -115,13 +136,10 @@
 	<ISF_ClassChangeClassChoicesLabel>Class choices</ISF_ClassChangeClassChoicesLabel>
 	
 	<ISF_ClassChangePrereqs>Class prerequisites:</ISF_ClassChangePrereqs>
-	<ISF_ClassChangeResearchPrereqs>Research prerequisites:</ISF_ClassChangeResearchPrereqs>
-	<ISF_ClassChangeLevelReq>Level requirement: {0}</ISF_ClassChangeLevelReq>
-	<ISF_ClassChangeStatReq>Stat requirements:</ISF_ClassChangeStatReq>
-	<ISF_ClassChangeSkillReq>Skill requirements:</ISF_ClassChangeSkillReq>
-	<ISF_ClassChangeHediffReq>Hediff requirements:</ISF_ClassChangeHediffReq>
+	<ISF_ClassChangeLockedClass>Class requirements not completed.</ISF_ClassChangeLockedClass>
 	<ISF_ClassChangeUnlocks>Unlocks:</ISF_ClassChangeUnlocks>
 	<ISF_ClassChangeNotPlayer>{0} is not in your faction.</ISF_ClassChangeNotPlayer>
-	<ISF_ClassChangeLocked>Locked:</ISF_ClassChangeLocked>
+	<ISF_ClassChangeClassNotLinked>Target class ({0}) is not linked to current class ({1})</ISF_ClassChangeClassNotLinked>
+	
 	
 </LanguageData>

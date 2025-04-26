@@ -49,8 +49,6 @@ namespace ItsSorceryFramework
 
         private List<SorceryDef> cachedSorceryDefs = new List<SorceryDef>();
 
-        private Dictionary<ProgressTrackerClassDef, HashSet<ProgressTrackerClassDef>> cachedLinkedMapping;
-
         // initalizer- created via activator via SorcerySchema
         public ProgressTracker(Pawn pawn)
         {
@@ -134,7 +132,10 @@ namespace ItsSorceryFramework
 
             // finally, (re)set the hediffstage of the hediff
             Hediff.cachedCurStage = RefreshCurStage();
+            if (pawn.Spawned) pawn.health.Notify_HediffChanged(Hediff);
         }
+
+        public virtual HediffStage RefreshCurStage() => new HediffStage();
 
         public virtual void CleanClassChangeOpps()
         {
@@ -220,7 +221,6 @@ namespace ItsSorceryFramework
             // adjust this to go through diff log
             AdjustTotalStatMods(statOffsetsTotal, modulo.statOffsets);
             AdjustTotalStatMods(statFactorsTotal, modulo.statFactorOffsets);
-            //AdjustTotalStatMods(statFactorsTotal, modulo.statFactorOffsets, true);
             AdjustTotalCapMods(capModsTotal, modulo.capMods);
 
             progressDiffLog.LogModifiers(modulo, ref classLedger);
@@ -231,7 +231,6 @@ namespace ItsSorceryFramework
             // adjust this to go through diff log
             AdjustTotalStatMods(statOffsetsTotal, option.statOffsets);
             AdjustTotalStatMods(statFactorsTotal, option.statFactorOffsets);
-            //AdjustTotalStatMods(statFactorsTotal, option.statFactorOffsets, true);
             AdjustTotalCapMods(capModsTotal, option.capMods);
 
             progressDiffLog.LogModifiers(option, ref classLedger);
@@ -242,7 +241,6 @@ namespace ItsSorceryFramework
         {
             // adjust this to go through diff log
             AdjustTotalStatMods(statOffsetsTotal, offsets);
-            //AdjustTotalStatMods(statFactorsTotal, factorOffsets);
             AdjustTotalStatMods(statFactorsTotal, factorOffsets, true);
             AdjustTotalCapMods(capModsTotal, capMods);
 
@@ -405,8 +403,6 @@ namespace ItsSorceryFramework
 
             classLedger.hediffModsTotal.DiffDictSum<HediffDef, float>(returnDict);
         }
-
-        public virtual HediffStage RefreshCurStage() => new HediffStage();
 
         public virtual void NotifyTotalLevelUp(float orgSev, List<Window> windows = null, bool silent_msg = false)
         {
@@ -605,7 +601,7 @@ namespace ItsSorceryFramework
             if (workers.EnumerableNullOrEmpty()) return rect.yMin - yMin;
             foreach (ProgressEXPWorker worker in workers)
             {
-                rect.yMin += worker.DrawWorker(rect);
+                rect.yMin += worker.DrawWorker(pawn, rect);
             }
 
             return rect.yMin - yMin;
@@ -1052,9 +1048,5 @@ namespace ItsSorceryFramework
                 return cachedSorceryDefs;
             }
         }
-
-
-
-        
     }
 }

@@ -6,8 +6,6 @@ namespace ItsSorceryFramework
 {
     public class ProgressDiffClassLedger : IExposable
     {
-        //public string progressTrackerClass = "";
-
         public Dictionary<StatDef, float> statOffsetsTotal = new Dictionary<StatDef, float>();
 
         public Dictionary<StatDef, float> statFactorsTotal = new Dictionary<StatDef, float>();
@@ -20,7 +18,6 @@ namespace ItsSorceryFramework
 
         public ProgressDiffClassLedger()
         {
-            //progressTrackerClass = "";
             statOffsetsTotal = new Dictionary<StatDef, float>();
             statFactorsTotal = new Dictionary<StatDef, float>();
             capModsTotal = new Dictionary<PawnCapacityDef, float>();
@@ -28,21 +25,9 @@ namespace ItsSorceryFramework
             abilityTotal = new Dictionary<AbilityDef, int>();
         }
 
-        /*public ProgressDiffClassLedger(string progressTrackerClass)
-        {
-            //this.progressTrackerClass = progressTrackerClass;
-            statOffsetsTotal = new Dictionary<StatDef, float>();
-            statFactorsTotal = new Dictionary<StatDef, float>();
-            capModsTotal = new Dictionary<PawnCapacityDef, float>();
-            hediffModsTotal = new Dictionary<HediffDef, float>();
-            abilityTotal = new Dictionary<AbilityDef, int>();
-        }*/
-
-        // string progressTrackerClass
         public ProgressDiffClassLedger(Dictionary<StatDef, float> statOffsetsTotal, Dictionary<StatDef, float> statFactorsTotal,
             Dictionary<PawnCapacityDef, float> capModsTotal, Dictionary<HediffDef, float> hediffModsTotal, Dictionary<AbilityDef, int> abilityTotal)
         {
-            //this.progressTrackerClass = progressTrackerClass;
             this.statOffsetsTotal = statOffsetsTotal;
             this.statFactorsTotal = statFactorsTotal;
             this.capModsTotal = capModsTotal;
@@ -52,7 +37,6 @@ namespace ItsSorceryFramework
 
         public virtual void ExposeData()
         {
-            //Scribe_Values.Look(ref progressTrackerClass, "progressTrackerClass", "");
             Scribe_Collections.Look(ref statOffsetsTotal, "statOffsetsTotal", LookMode.Def, LookMode.Value);
             Scribe_Collections.Look(ref statFactorsTotal, "statFactorsTotal", LookMode.Def, LookMode.Value);
             Scribe_Collections.Look(ref capModsTotal, "capModsTotal", LookMode.Def, LookMode.Value);

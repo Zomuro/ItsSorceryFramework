@@ -12,6 +12,8 @@ namespace ItsSorceryFramework
 
         public StatDef ScalingStatDef => Props.scalingStatDef is null ? StatDefOf_ItsSorcery.ISF_ScalingStat : Props.scalingStatDef;
 
+        public virtual float ScalingStatValue => PawnCacheUtility.GetStatCacheVal(parent.pawn, ScalingStatDef);
+
         public IEnumerable<String> DamageDefsLabels(IEnumerable<Def> defs)
         {
             foreach (var def in defs) yield return def.label;
@@ -24,10 +26,8 @@ namespace ItsSorceryFramework
 
             if (Props.damageDefs.NullOrEmpty() || Props.damageDefs.Contains(damageInfo.Value.Def))
             {
-                //StatDef refStatDef = Props.scalingStatDef is null ? StatDefOf_ItsSorcery.Scaling_ItsSorcery : Props.scalingStatDef;
-                float energyMaxChange = parent.InvMult * Props.baseEnergy * parent.pawn.GetStatValue(ScalingStatDef);
-                parent.currentEnergy = Mathf.Clamp(parent.currentEnergy + energyMaxChange, parent.AbsMinEnergy, parent.AbsMaxEnergy);
-                // in the future, add effect activation here.
+                float energyMaxChange = Props.baseEnergy * ScalingStatValue;
+                parent.AddEnergy(energyMaxChange);
             }
         }
 
@@ -38,7 +38,7 @@ namespace ItsSorceryFramework
             // retrieve string values
             string energyLabel = parent.EnergyLabel;
             string damageDefs = Props.damageDefs.NullOrEmpty() ? "" : DamageDefsLabels(Props.damageDefs).ToStringSafeEnumerable();
-            float energyFactor = parent.InvMult * parent.pawn.GetStatValue(ScalingStatDef);
+            float energyFactor = parent.InvMult * ScalingStatValue;
             string energyFactorString = energyFactor.ToStringByStyle(ScalingStatDef.toStringStyle);
 
             // draw normal components (label and normal energy regen)

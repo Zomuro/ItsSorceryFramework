@@ -9,9 +9,9 @@ namespace ItsSorceryFramework
     {
 		public Type workerClass = typeof(ProgressEXPWorker);
 
-        public float expFactor = 1f;
+		public StatDef scalingStatDef;
 
-        public float fixedEXP = 0f;
+		public float fixedEXP = 0f;
 
 		public List<EXPJobSet> jobSets = new List<EXPJobSet>();
 
@@ -21,7 +21,14 @@ namespace ItsSorceryFramework
 
 		public List<EXPConsumableItems> expItems = new List<EXPConsumableItems>();
 
-    }
+		public List<InteractionDef> interactionDefs = new List<InteractionDef>();
+
+		public QuestEndOutcome questOutcome = QuestEndOutcome.Success;
+
+		public List<QuestScriptDef> questDefs = new List<QuestScriptDef>();
+
+	}
+
 
 	public class EXPJobSet
 	{

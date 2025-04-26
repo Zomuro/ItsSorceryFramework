@@ -25,22 +25,21 @@ namespace ItsSorceryFramework
             }
         }
 
-        public void ClearStatCache()
+        public override void CompClearStatCache()
         {
-            int baseTicks = ItsSorceryUtility.settings.EnergyStatCacheTicks;
-            nextRecacheTick = Find.TickManager.TicksGame + UnityEngine.Random.Range(baseTicks - 3, baseTicks + 3);
+            nextRecacheTick = Find.TickManager.TicksGame + PawnCacheUtility.GetEnergyTickOffset();
             cachedRecoveryRate = float.MinValue;
         }
 
         public override void CompPostTick() 
         {
-            if (Find.TickManager.TicksGame >= nextRecacheTick) ClearStatCache();
+            if (Find.TickManager.TicksGame >= nextRecacheTick) CompClearStatCache();
 
-            float energyChange = parent.InvMult * 1.TicksToSeconds() * RecoveryRate; // inverse system => -1; recovery rate 5
+            float energyChange = 1.TicksToSeconds() * RecoveryRate; // inverse system => -1; recovery rate 5
 
-            if (parent.InDeficit) parent.currentEnergy = Mathf.Clamp(parent.currentEnergy + energyChange * Props.deficitRecoveryFactor, parent.AbsMinEnergy, parent.AbsMaxEnergy);
-            else if (parent.InOvercharge) parent.currentEnergy = Mathf.Clamp(parent.currentEnergy + energyChange * Props.overchargeRecoveryFactor, parent.AbsMinEnergy, parent.AbsMaxEnergy);
-            else parent.currentEnergy = Mathf.Clamp(parent.currentEnergy + energyChange, parent.MinEnergy, parent.MaxEnergy);
+            if (parent.InDeficit) parent.AddEnergy(energyChange * Props.deficitRecoveryFactor);
+            else if (parent.InOvercharge) parent.AddEnergy(energyChange * Props.overchargeRecoveryFactor);
+            else parent.AddEnergy(energyChange, true);
         } 
 
         public override float CompDrawGUI(Rect rect)

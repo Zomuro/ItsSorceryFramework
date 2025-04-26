@@ -1,20 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using Verse;
 
 namespace ItsSorceryFramework
 {
     public class ProgressEXPWorker_UseItem: ProgressEXPWorker
     {
-        public override bool TryExecute(ProgressTracker progressTracker, float exp = 0)
+        public override bool TryExecute(ProgressTracker progressTracker, float inputAmt = 0)
         {
             if (progressTracker.Maxed) return false;
-            progressTracker.AddExperience(def.fixedEXP);
+
+            progressTracker.AddExperience(inputAmt);
+            if (ItsSorceryUtility.settings.ProgressShowXPMotes)
+                FireEXPMote(progressTracker.pawn, inputAmt);
             return true;
         }
 
-        public override float DrawWorker(Rect rect)
+        public override float DrawWorker(Pawn pawn, Rect rect)
         {
             float yMin = rect.yMin;
             float x = rect.x;
@@ -44,15 +45,6 @@ namespace ItsSorceryFramework
             }
 
             return rect.yMin - yMin;
-        }
-
-        public IEnumerable<String> labelsFromEXPItems(IEnumerable<EXPConsumableItems> items)
-        {
-            foreach (var item in items)
-            {
-                yield return item.thingDef.label;
-            }
-            yield break;
         }
     }
 }

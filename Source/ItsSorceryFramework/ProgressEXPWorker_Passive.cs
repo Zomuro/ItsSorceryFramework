@@ -6,25 +6,29 @@ namespace ItsSorceryFramework
 {
     public class ProgressEXPWorker_Passive : ProgressEXPWorker
     {
-        public override bool TryExecute(ProgressTracker progressTracker, float exp = 0)
+        public override bool TryExecute(ProgressTracker progressTracker, float inputAmt = 0)
         {
             if (progressTracker.Maxed) return false;
-            progressTracker.AddExperience(Math.Abs(def.fixedEXP));
+
+            float finalEXP = Math.Abs(def.fixedEXP * ScalingStatValue(progressTracker.pawn));
+            progressTracker.AddExperience(finalEXP);
             return true;
         }
 
-        public override float DrawWorker(Rect rect)
+        public override float DrawWorker(Pawn pawn, Rect rect)
         {
             float yMin = rect.yMin;
             float x = rect.x;
 
             Text.Font = GameFont.Small;
             Widgets.LabelCacheHeight(ref rect,
-                "ISF_LearningProgressEXPPassive".Translate().Colorize(ColoredText.TipSectionTitleColor), 
+                "ISF_LearningProgressEXPPassive".Translate(ScalingStatDef.label.Named("STAT")).Colorize(ColoredText.TipSectionTitleColor), 
                 true, false);
             rect.yMin += rect.height;
+
+            float finalEXP = Math.Abs(def.fixedEXP * ScalingStatValue(pawn));
             Widgets.LabelCacheHeight(ref rect,
-                "ISF_LearningProgressEXPPassiveDesc".Translate(def.fixedEXP.ToStringByStyle(ToStringStyle.FloatMaxTwo, ToStringNumberSense.Offset)),
+                "ISF_LearningProgressEXPPassiveDesc".Translate(finalEXP.ToStringByStyle(ToStringStyle.FloatMaxTwo, ToStringNumberSense.Offset)),
                 true, false);
             rect.yMin += rect.height;
 

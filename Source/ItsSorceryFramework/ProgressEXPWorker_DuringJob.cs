@@ -8,7 +8,7 @@ namespace ItsSorceryFramework
 {
     public class ProgressEXPWorker_DuringJob : ProgressEXPWorker
     {
-        public override bool TryExecute(ProgressTracker progressTracker, float exp = 0)
+        public override bool TryExecute(ProgressTracker progressTracker, float inputAmt = 0)
         {
             if (progressTracker.Maxed) return false;
             if (progressTracker.pawn.CurJobDef == null) return false;
@@ -18,16 +18,15 @@ namespace ItsSorceryFramework
             {
                 if (sets.jobDefs.Contains(progressTracker.pawn.CurJobDef))
                 {
-                    progressTracker.AddExperience(def.fixedEXP);
-                    if (ItsSorceryUtility.settings.ProgressShowXPMotes)
-                        FireEXPMote(progressTracker.pawn, def.fixedEXP);
+                    float finalEXP = Math.Abs(def.fixedEXP * ScalingStatValue(progressTracker.pawn));
+                    progressTracker.AddExperience(finalEXP);
                     return true;
                 }
             }
             return false;
         }
 
-        public override float DrawWorker(Rect rect)
+        public override float DrawWorker(Pawn pawn, Rect rect)
         {
             float yMin = rect.yMin;
             float x = rect.x;
@@ -37,10 +36,12 @@ namespace ItsSorceryFramework
 
             Text.Font = GameFont.Small;
             Widgets.LabelCacheHeight(ref rect, 
-                "ISF_LearningProgressEXPJob".Translate(allJobSets).Colorize(ColoredText.TipSectionTitleColor), true, false);
+                "ISF_LearningProgressEXPJob".Translate(ScalingStatDef.label.Named("STAT"), allJobSets.Named("JOBSETS")).Colorize(ColoredText.TipSectionTitleColor), true, false);
             rect.yMin += rect.height;
+
+            float finalEXP = Math.Abs(def.fixedEXP * ScalingStatValue(pawn));
             Widgets.LabelCacheHeight(ref rect, 
-                "ISF_LearningProgressEXPJobDesc".Translate(def.fixedEXP.ToStringByStyle(ToStringStyle.FloatMaxTwo, ToStringNumberSense.Absolute))
+                "ISF_LearningProgressEXPJobDesc".Translate(finalEXP.ToStringByStyle(ToStringStyle.FloatMaxTwo, ToStringNumberSense.Absolute))
                 , true, false);
             rect.yMin += rect.height;
 

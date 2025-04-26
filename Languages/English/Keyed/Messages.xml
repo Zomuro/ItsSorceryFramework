@@ -12,13 +12,14 @@
 	<ISF_QuickEnergyGizmoEntryExisting>{0} is already in the quick energy gizmo.</ISF_QuickEnergyGizmoEntryExisting>
 	<ISF_QuickEnergyGizmoEntryFull>{PAWN_labelShort}'s quick energy gizmo is full; click on entries to remove them.</ISF_QuickEnergyGizmoEntryFull>
 	
+	<ISF_Settings_GeneralDefaultMessage>General settings have been set to default values.</ISF_Settings_GeneralDefaultMessage>
 	<ISF_Settings_SchemaDefaultMessage>SorcerySchema settings have been set to default values.</ISF_Settings_SchemaDefaultMessage>
 	<ISF_Settings_EnergyDefaultMessage>EnergyTracker settings have been set to default values.</ISF_Settings_EnergyDefaultMessage>
 	<ISF_Settings_LearningDefaultMessage>LearningTracker settings have been set to default values.</ISF_Settings_LearningDefaultMessage>
 	<ISF_Settings_ProgressDefaultMessage>ProgressTracker settings have been set to default values.</ISF_Settings_ProgressDefaultMessage>
 	
-	<ISF_Settings_GeneralPerfMessage>It's Sorcery has been set to the Performance preset.</ISF_Settings_GeneralPerfMessage>
-	<ISF_Settings_GeneralDefaultMessage>It's Sorcery has been set to the Default preset.</ISF_Settings_GeneralDefaultMessage>
-	<ISF_Settings_GeneralHighMessage>It's Sorcery has been set to the High preset.</ISF_Settings_GeneralHighMessage>
+	<ISF_Settings_PresetPerfMessage>It's Sorcery has been set to the Performance preset.</ISF_Settings_PresetPerfMessage>
+	<ISF_Settings_PresetDefaultMessage>It's Sorcery has been set to the Default preset.</ISF_Settings_PresetDefaultMessage>
+	<ISF_Settings_PresetHighMessage>It's Sorcery has been set to the High preset.</ISF_Settings_PresetHighMessage>
 	
 </LanguageData>

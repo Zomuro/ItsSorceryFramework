@@ -8,24 +8,20 @@
 
 	<ItsSorceryFramework.ProgressEXPTagDef Abstract = "True" ParentName = "EXPTagBase" Name = "EXPTag_CastEnergyCost">
 		<workerClass>ItsSorceryFramework.ProgressEXPWorker_CastEnergyCost</workerClass>
-		<expFactor>1</expFactor>
 	</ItsSorceryFramework.ProgressEXPTagDef>
 	
 	<ItsSorceryFramework.ProgressEXPTagDef Abstract = "True" ParentName = "EXPTagBase" Name = "EXPTag_OnDamage">
 		<workerClass>ItsSorceryFramework.ProgressEXPWorker_OnDamage</workerClass>
-		<expFactor>1</expFactor>
 		<damageDefs/>
 	</ItsSorceryFramework.ProgressEXPTagDef>
 	
 	<ItsSorceryFramework.ProgressEXPTagDef Abstract = "True" ParentName = "EXPTagBase" Name = "EXPTag_OnDamaged">
 		<workerClass>ItsSorceryFramework.ProgressEXPWorker_OnDamaged</workerClass>
-		<expFactor>1</expFactor>
 		<damageDefs/>
 	</ItsSorceryFramework.ProgressEXPTagDef>
 	
 	<ItsSorceryFramework.ProgressEXPTagDef Abstract = "True" ParentName = "EXPTagBase" Name = "EXPTag_OnSkillEXP">
 		<workerClass>ItsSorceryFramework.ProgressEXPWorker_OnSkillEXP</workerClass>
-		<expFactor>0.1</expFactor>
 		<skillDefs/>
 	</ItsSorceryFramework.ProgressEXPTagDef>
 	
@@ -48,8 +44,20 @@
 	
 	<ItsSorceryFramework.ProgressEXPTagDef Abstract = "True" ParentName = "EXPTagBase" Name = "EXPTag_UseItem">
 		<workerClass>ItsSorceryFramework.ProgressEXPWorker_UseItem</workerClass>
-		<expFactor>1</expFactor>
 		<expItems/>
+	</ItsSorceryFramework.ProgressEXPTagDef>
+	
+	<ItsSorceryFramework.ProgressEXPTagDef Abstract = "True" ParentName = "EXPTagBase" Name = "EXPTag_OnInteraction">
+		<workerClass>ItsSorceryFramework.ProgressEXPWorker_OnInteraction</workerClass>
+		<fixedEXP>100</fixedEXP>
+		<interactionDefs/>
+	</ItsSorceryFramework.ProgressEXPTagDef>
+	
+	<ItsSorceryFramework.ProgressEXPTagDef Abstract = "True" ParentName = "EXPTagBase" Name = "EXPTag_OnQuestFinish">
+		<workerClass>ItsSorceryFramework.ProgressEXPWorker_OnQuestFinish</workerClass>
+		<fixedEXP>100</fixedEXP>
+		<questOutcome>Fail</questOutcome>
+		<questDefs/>
 	</ItsSorceryFramework.ProgressEXPTagDef>
 	
 	

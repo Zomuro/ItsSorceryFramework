@@ -24,10 +24,4 @@
 	<ISF_SkillPointLabel>skill point(s)</ISF_SkillPointLabel>
 	<ISF_SkillPointUse>{0} {1}</ISF_SkillPointUse>
 	
-	<!-- Hediff (ProgressTracker) -->
-	<!-- <ISF_LevelLabel>(level {0})</ISF_LevelLabel>  -->
-	<!-- <ISF_LevelLabelMax>(level {0}, MAX)</ISF_LevelLabelMax> -->
-	<!-- <ISF_LevelLabelCustom>({0})</ISF_LevelLabelCustom> -->
-	<!-- <ISF_LevelLabelCustomMax>({0}, MAX)</ISF_LevelLabelCustomMax> -->
-	
 </LanguageData>

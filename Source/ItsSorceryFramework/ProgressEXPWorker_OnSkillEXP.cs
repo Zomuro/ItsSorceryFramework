@@ -9,11 +9,13 @@ namespace ItsSorceryFramework
         public override bool TryExecute(ProgressTracker progressTracker, float exp = 0)
         {
             if (progressTracker.Maxed) return false;
-            progressTracker.AddExperience(exp * def.expFactor);
+
+            float finalEXP = def.fixedEXP * ScalingStatValue(progressTracker.pawn);
+            progressTracker.AddExperience(finalEXP);
             return true;
         }
 
-        public override float DrawWorker(Rect rect)
+        public override float DrawWorker(Pawn pawn, Rect rect)
         {
             float yMin = rect.yMin;
             float x = rect.x;
@@ -22,11 +24,13 @@ namespace ItsSorceryFramework
 
             Text.Font = GameFont.Small;
             Widgets.LabelCacheHeight(ref rect, 
-                "ISF_LearningProgressEXPSkill".Translate(skills).Colorize(ColoredText.TipSectionTitleColor), 
+                "ISF_LearningProgressEXPSkill".Translate(ScalingStatDef.label.Named("STAT"), skills.Named("SKILLDEFS")).Colorize(ColoredText.TipSectionTitleColor), 
                 true, false);
             rect.yMin += rect.height;
+
+            float finalEXP = def.fixedEXP * ScalingStatValue(pawn);
             Widgets.LabelCacheHeight(ref rect,
-                "ISF_LearningProgressEXPSkillDesc".Translate(def.expFactor.ToStringByStyle(ToStringStyle.FloatMaxTwo, ToStringNumberSense.Factor)),
+                "ISF_LearningProgressEXPSkillDesc".Translate(finalEXP.ToStringByStyle(ToStringStyle.FloatMaxTwo, ToStringNumberSense.Factor)),
                 true, false);
             rect.yMin += rect.height;
 

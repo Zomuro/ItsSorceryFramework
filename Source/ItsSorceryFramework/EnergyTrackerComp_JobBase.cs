@@ -1,24 +1,15 @@
 ﻿using RimWorld;
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Verse;
 
 namespace ItsSorceryFramework
 {
-    public class EnergyTrackerComp_DamageBase : EnergyTrackerComp
+    public class EnergyTrackerComp_JobBase : EnergyTrackerComp
     {
-        public EnergyTrackerCompProperties_DamageBase Props => (EnergyTrackerCompProperties_DamageBase)props;
+        public EnergyTrackerCompProperties_JobBase Props => (EnergyTrackerCompProperties_JobBase)props;
 
-        public StatDef ScalingStatDef => Props.scalingStatDef is null ? StatDefOf_ItsSorcery.ISF_ScalingStat : Props.scalingStatDef;
-
-        public virtual float ScalingStatValue => PawnCacheUtility.GetStatCacheVal(parent.pawn, ScalingStatDef);
-
-        public IEnumerable<String> DamageDefsLabels(IEnumerable<Def> defs)
-        {
-            foreach (var def in defs) yield return def.label;
-            yield break;
-        }
+        public StatDef ScalingStatDef => Props.scalingStatDef ?? StatDefOf_ItsSorcery.ISF_ScalingStat;
 
         public override void CompExposeData() { } // saving values to comp, if needed
 
