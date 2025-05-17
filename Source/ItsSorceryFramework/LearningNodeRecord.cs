@@ -242,7 +242,7 @@ namespace ItsSorceryFramework
 
         public void CompletionModifiers(LearningTreeNodeDef node, ref ProgressDiffClassLedger classLedger)
         {
-            schema.progressTracker.AdjustModifiers(ref classLedger, node.statOffsets, node.statFactors, node.capMods); // update list of statMods and capMods
+            schema.progressTracker.AdjustModifiers(ref classLedger, node.statOffsets, node.statFactorOffsets, node.capMods); // update list of statMods and capMods
             schema.progressTracker.ResetHediff(); // refresh hediff
         }
 
