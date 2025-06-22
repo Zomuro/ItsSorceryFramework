@@ -15,6 +15,19 @@
 	<ISF_GeneralDialogPrereqSkill>Skill requirements:</ISF_GeneralDialogPrereqSkill>
 	<ISF_GeneralDialogPrereqHediff>Hediff requirements:</ISF_GeneralDialogPrereqHediff>
 	
+	<ISF_GeneralDialogPrereqNodeProhibit>Prohibiting node prerequisites:</ISF_GeneralDialogPrereqNodeProhibit>
+	<ISF_GeneralDialogPrereqResearchProhibit>Prohibiting research prerequisites:</ISF_GeneralDialogPrereqResearchProhibit>
+	<ISF_GeneralDialogPrereqGeneProhibit>Prohibiting gene prerequisites:</ISF_GeneralDialogPrereqGeneProhibit>
+	<ISF_GeneralDialogPrereqTraitProhibit>Prohibiting trait prerequisites:</ISF_GeneralDialogPrereqTraitProhibit>
+	<ISF_GeneralDialogPrereqXenotypeProhibit>Prohibiting xenotype requirement: {0}</ISF_GeneralDialogPrereqXenotypeProhibit>	
+	<ISF_GeneralDialogPrereqLevelProhibit>Prohibiting level requirement: {0}</ISF_GeneralDialogPrereqLevelProhibit>
+	<ISF_GeneralDialogPrereqAgeProhibit>Prohibiting age requirement: {0}</ISF_GeneralDialogPrereqAgeProhibit>
+	<ISF_GeneralDialogPrereqAgeBioProhibit>biological age</ISF_GeneralDialogPrereqAgeBioProhibit>
+	<ISF_GeneralDialogPrereqAgeChronProhibit>chronological age</ISF_GeneralDialogPrereqAgeChronProhibit>
+	<ISF_GeneralDialogPrereqStatProhibit>Prohibiting stat requirements:</ISF_GeneralDialogPrereqStatProhibit>
+	<ISF_GeneralDialogPrereqSkillProhibit>Prohibiting skill requirements:</ISF_GeneralDialogPrereqSkillProhibit>
+	<ISF_GeneralDialogPrereqHediffProhibit>Prohibiting hediff requirements:</ISF_GeneralDialogPrereqHediffProhibit>
+	
 	<ISF_GeneralDialogLocked>Locked:</ISF_GeneralDialogLocked>
 	<ISF_GeneralDialogLockedNodes>Node requirements not completed.</ISF_GeneralDialogLockedNodes>
 	<ISF_GeneralDialogLockedResearch>Research requirements not completed.</ISF_GeneralDialogLockedResearch>
@@ -26,6 +39,17 @@
 	<ISF_GeneralDialogLockedStat>Stat requirements not fufilled.</ISF_GeneralDialogLockedStat>
 	<ISF_GeneralDialogLockedSkill>Skill requirements not fufilled.</ISF_GeneralDialogLockedSkill>
 	<ISF_GeneralDialogLockedHediff>Hediff requirements not fufilled.</ISF_GeneralDialogLockedHediff>
+	
+	<ISF_GeneralDialogLockedNodesProhibit>Prohibited node requirements completed.</ISF_GeneralDialogLockedNodesProhibit>
+	<ISF_GeneralDialogLockedResearchProhibit>Prohibited research requirements completed.</ISF_GeneralDialogLockedResearchProhibit>
+	<ISF_GeneralDialogLockedGenesProhibit>Prohibited gene requirements completed.</ISF_GeneralDialogLockedGenesProhibit>
+	<ISF_GeneralDialogLockedTraitProhibit>Prohibited trait requirements completed.</ISF_GeneralDialogLockedTraitProhibit>
+	<ISF_GeneralDialogLockedXenotypeProhibit>Prohibited xenotype requirement fufilled.</ISF_GeneralDialogLockedXenotypeProhibit>	
+	<ISF_GeneralDialogLockedLevelProhibit>Prohibited level requirement fufilled.</ISF_GeneralDialogLockedLevelProhibit>
+	<ISF_GeneralDialogLockedAgeProhibit>Prohibited age requirement fufilled.</ISF_GeneralDialogLockedAgeProhibit>
+	<ISF_GeneralDialogLockedStatProhibit>Prohibited stat requirements fufilled.</ISF_GeneralDialogLockedStatProhibit>
+	<ISF_GeneralDialogLockedSkillProhibit>Prohibited skill requirements fufilled.</ISF_GeneralDialogLockedSkillProhibit>
+	<ISF_GeneralDialogLockedHediffProhibit>Prohibited hediff requirements fufilled.</ISF_GeneralDialogLockedHediffProhibit>
 
 	<ISF_GeneralDialogNotPlayer>{0} is not in your faction.</ISF_GeneralDialogNotPlayer>
 	
