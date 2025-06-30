@@ -167,6 +167,74 @@ namespace ItsSorceryFramework
             }
 
             List<string> fails = new List<string>();
+            // PROHIBIT fail strings
+            if (PrereqClassesFufilledProhibit(targetClassDef))   
+            {
+                success = false;
+                fails.Add("ISF_ClassChangeLockedClassProhibit".Translate());
+            }
+
+            if (PrereqNodeFufilledProhibit(targetClassDef, progressTracker.schema))     
+            {
+                success = false;
+                fails.Add("ISF_GeneralDialogLockedNodesProhibit".Translate());
+            }
+
+            if (PrereqResearchFufilledProhibit(targetClassDef)) 
+            {
+                success = false;
+                fails.Add("ISF_GeneralDialogLockedResearchProhibit".Translate());
+            }
+
+            if (PrereqGenesFufilledProhibit(progressTracker, targetClassDef)) 
+            {
+                success = false;
+                fails.Add("ISF_GeneralDialogLockedGenesProhibit".Translate());
+            }
+
+            if (PrereqTraitsFufilledProhibit(progressTracker, targetClassDef)) 
+            {
+                success = false;
+                fails.Add("ISF_GeneralDialogLockedTraitProhibit".Translate());
+            }
+
+            if (PrereqXenotypeFufilledProhibit(progressTracker, targetClassDef)) 
+            {
+                success = false;
+                fails.Add("ISF_GeneralDialogLockedXenotypeProhibit".Translate());
+            }
+
+            if (PrereqLevelFulfilledProhibit(progressTracker, targetClassDef)) 
+            {
+                success = false;
+                fails.Add("ISF_GeneralDialogLockedLevelProhibit".Translate());
+            }
+
+            if (PrereqAgeFulfilledProhibit(progressTracker, targetClassDef)) 
+            {
+                success = false;
+                fails.Add("ISF_GeneralDialogLockedAgeProhibit".Translate());
+            }
+
+            if (PrereqStatFufilledProhibit(progressTracker, targetClassDef)) 
+            {
+                success = false;
+                fails.Add("ISF_GeneralDialogLockedStatProhibit".Translate());
+            }
+
+            if (PrereqSkillFufilledProhibit(progressTracker, targetClassDef)) 
+            {
+                success = false;
+                fails.Add("ISF_GeneralDialogLockedSkillProhibit".Translate());
+            }
+
+            if (PrereqHediffFufilledProhibit(progressTracker, targetClassDef))
+            {
+                success = false;
+                fails.Add("ISF_GeneralDialogLockedHediffProhibit".Translate());
+            }
+
+            // NORMAL fail strings
             if (!PrereqClassesFufilled(targetClassDef)) // if the pawn hasn't been through all the class defs, fail val     
             {
                 success = false;

@@ -135,6 +135,58 @@ namespace ItsSorceryFramework
             return PrereqUtility.PrereqHediffFufilled(pawn, node.prereqHediffs);
         }
 
+        public bool PrereqFufilledProhibit(LearningTreeNodeDef node)
+        {
+            return PrereqUtility.PrereqNodeFufilled(this, node.prereqNodesProhibit, node.prereqNodeModeProhibit, node.prereqNodeModeMinProhibit);
+        }
+
+        public bool PrereqResearchFufilledProhibit(LearningTreeNodeDef node)
+        {
+            return PrereqUtility.PrereqResearchFufilled(node.prereqResearchProhibit, node.prereqResearchModeProhibit, node.prereqResearchModeMinProhibit);
+        }
+
+        public bool PrereqGenesFulfilledProhibit(LearningTreeNodeDef node)
+        {
+            return PrereqUtility.PrereqGenesFufilled(pawn.genes.GenesListForReading.Select(x => x.def).ToHashSet(), node.prereqGenesProhibit,
+                node.prereqGeneModeProhibit, node.prereqGeneModeMinProhibit);
+        }
+
+        public bool PrereqTraitsFulfilledProhibit(LearningTreeNodeDef node)
+        {
+            return PrereqUtility.PrereqTraitsFufilled(pawn, node.prereqTraitsProhibit,
+                node.prereqTraitModeProhibit, node.prereqTraitModeMinProhibit);
+        }
+
+        public bool PrereqXenotypeFulfilledProhibit(LearningTreeNodeDef node)
+        {
+            return PrereqUtility.PrereqXenotypeFufilled(pawn, node.prereqXenotypeProhibit);
+        }
+
+        public bool PrereqLevelFulfilledProhibit(LearningTreeNodeDef node)
+        {
+            return PrereqUtility.PrereqLevelFufilled(schema.progressTracker, node.prereqLevelProhibit, node.prereqLevelModeProhibit);
+        }
+
+        public bool PrereqAgeFulfilledProhibit(LearningTreeNodeDef node)
+        {
+            return PrereqUtility.PrereqAgeFufilled(pawn, node.prereqAgeProhibit, node.prereqAgeModeProhibit, node.prereqCheckBioAgeProhibit);
+        }
+
+        public bool PrereqStatFulfilledProhibit(LearningTreeNodeDef node)
+        {
+            return PrereqUtility.PrereqStatFufilled(pawn, node.prereqStatsProhibit);
+        }
+
+        public bool PrereqSkillFulfilledProhibit(LearningTreeNodeDef node)
+        {
+            return PrereqUtility.PrereqSkillFufilled(pawn, node.prereqSkillsProhibit);
+        }
+
+        public bool PrereqHediffFulfilledProhibit(LearningTreeNodeDef node)
+        {
+            return PrereqUtility.PrereqHediffFufilled(pawn, node.prereqHediffsProhibit);
+        }
+
         public bool ExclusiveNodeFulfilled(LearningTreeNodeDef node)
         {
             if (!ExclusiveNodes.ContainsKey(node)) return true;
