@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	<!-- ProgressTrackerClassDef base -->
+	<ItsSorceryFramework.ProgressTrackerClassDef Abstract = "True" Name = "ProgressTrackerClassBase">
+		<levelRange/>
+		<levelFactors/>
+		<levelSpecifics/>
+		<levelLabels/>
+		<expTags/>
+	</ItsSorceryFramework.ProgressTrackerClassDef>	
+	
+	<!-- ProgressTrackerClassDef generic base class (assign anything that doesn't fit into a ProgressTrackerClassDef to this) -->
+	<ItsSorceryFramework.ProgressTrackerClassDef ParentName = "ProgressTrackerClassBase">
+		<defName>ISF_Generic_Class</defName>
+	</ItsSorceryFramework.ProgressTrackerClassDef>	
+	
+</Defs>

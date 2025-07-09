@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+	<ItsSorceryFramework.EnergyTrackerDef Abstract = "True" Name = "ISF_EnergyTrackerBase">
+		<energyTrackerClass>ItsSorceryFramework.EnergyTracker</energyTrackerClass>		
+		
+		<energyMaxStatDef>ISF_MaxEnergy</energyMaxStatDef>
+		<energyMinStatDef>ISF_MinEnergy</energyMinStatDef>
+		<energyCostFactorStatDef>ISF_EnergyCostFactor</energyCostFactorStatDef>
+	</ItsSorceryFramework.EnergyTrackerDef>
+
+</Defs>

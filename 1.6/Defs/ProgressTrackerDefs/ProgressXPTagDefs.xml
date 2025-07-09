@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<Defs>
+
+	<ItsSorceryFramework.ProgressEXPTagDef Abstract = "True" Name = "EXPTagBase">
+		<workerClass/>
+	</ItsSorceryFramework.ProgressEXPTagDef>
+
+	<ItsSorceryFramework.ProgressEXPTagDef Abstract = "True" ParentName = "EXPTagBase" Name = "EXPTag_CastEnergyCost">
+		<workerClass>ItsSorceryFramework.ProgressEXPWorker_CastEnergyCost</workerClass>
+	</ItsSorceryFramework.ProgressEXPTagDef>
+	
+	<ItsSorceryFramework.ProgressEXPTagDef Abstract = "True" ParentName = "EXPTagBase" Name = "EXPTag_OnDamage">
+		<workerClass>ItsSorceryFramework.ProgressEXPWorker_OnDamage</workerClass>
+		<damageDefs/>
+	</ItsSorceryFramework.ProgressEXPTagDef>
+	
+	<ItsSorceryFramework.ProgressEXPTagDef Abstract = "True" ParentName = "EXPTagBase" Name = "EXPTag_OnDamaged">
+		<workerClass>ItsSorceryFramework.ProgressEXPWorker_OnDamaged</workerClass>
+		<damageDefs/>
+	</ItsSorceryFramework.ProgressEXPTagDef>
+	
+	<ItsSorceryFramework.ProgressEXPTagDef Abstract = "True" ParentName = "EXPTagBase" Name = "EXPTag_OnSkillEXP">
+		<workerClass>ItsSorceryFramework.ProgressEXPWorker_OnSkillEXP</workerClass>
+		<skillDefs/>
+	</ItsSorceryFramework.ProgressEXPTagDef>
+	
+	<ItsSorceryFramework.ProgressEXPTagDef Abstract = "True" ParentName = "EXPTagBase" Name = "EXPTag_Passive">
+		<workerClass>ItsSorceryFramework.ProgressEXPWorker_Passive</workerClass>
+		<fixedEXP>1</fixedEXP>
+	</ItsSorceryFramework.ProgressEXPTagDef>
+	
+	<ItsSorceryFramework.ProgressEXPTagDef Abstract = "True" ParentName = "EXPTagBase" Name = "EXPTag_DuringJob">
+		<workerClass>ItsSorceryFramework.ProgressEXPWorker_DuringJob</workerClass>
+		<fixedEXP>5</fixedEXP>
+		<jobSets/>
+	</ItsSorceryFramework.ProgressEXPTagDef>
+	
+	<ItsSorceryFramework.ProgressEXPTagDef Abstract = "True" ParentName = "EXPTagBase" Name = "EXPTag_OnKill">
+		<workerClass>ItsSorceryFramework.ProgressEXPWorker_OnKill</workerClass>
+		<fixedEXP>100</fixedEXP>
+		<damageDefs/>
+	</ItsSorceryFramework.ProgressEXPTagDef>
+	
+	<ItsSorceryFramework.ProgressEXPTagDef Abstract = "True" ParentName = "EXPTagBase" Name = "EXPTag_UseItem">
+		<workerClass>ItsSorceryFramework.ProgressEXPWorker_UseItem</workerClass>
+		<expItems/>
+	</ItsSorceryFramework.ProgressEXPTagDef>
+	
+	<ItsSorceryFramework.ProgressEXPTagDef Abstract = "True" ParentName = "EXPTagBase" Name = "EXPTag_OnInteraction">
+		<workerClass>ItsSorceryFramework.ProgressEXPWorker_OnInteraction</workerClass>
+		<fixedEXP>100</fixedEXP>
+		<interactionDefs/>
+	</ItsSorceryFramework.ProgressEXPTagDef>
+	
+	<ItsSorceryFramework.ProgressEXPTagDef Abstract = "True" ParentName = "EXPTagBase" Name = "EXPTag_OnQuestFinish">
+		<workerClass>ItsSorceryFramework.ProgressEXPWorker_OnQuestFinish</workerClass>
+		<fixedEXP>100</fixedEXP>
+		<questOutcome>Fail</questOutcome>
+		<questDefs/>
+	</ItsSorceryFramework.ProgressEXPTagDef>
+	
+	
+</Defs>
