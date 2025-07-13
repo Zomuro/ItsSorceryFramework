@@ -95,60 +95,71 @@ namespace ItsSorceryFramework
 
         public bool PrereqClassesFufilledProhibit(ProgressTrackerClassDef targetClassDef)
         {
+            if (targetClassDef.prereqClassesProhibit.NullOrEmpty()) return false;
             HashSet<ProgressTrackerClassDef> priorClassDefs = GetClassSet;
             return PrereqUtility.PrereqClassesFufilled(priorClassDefs, targetClassDef.prereqClassesProhibit, targetClassDef.prereqClassModeProhibit, targetClassDef.prereqClassModeMinProhibit);
         }
 
-        public bool PrereqNodeFufilledProhibit(ProgressTrackerClassDef classDef, SorcerySchema schema)
+        public bool PrereqNodeFufilledProhibit(ProgressTrackerClassDef targetClassDef, SorcerySchema schema)
         {
+            if (targetClassDef.prereqNodesProhibit.NullOrEmpty()) return false;
             LearningNodeRecord learningNodeRecord = schema.learningNodeRecord;
-            return PrereqUtility.PrereqNodeFufilled(learningNodeRecord, classDef.prereqNodesProhibit, classDef.prereqNodeModeProhibit, classDef.prereqNodeModeMinProhibit);
+            return PrereqUtility.PrereqNodeFufilled(learningNodeRecord, targetClassDef.prereqNodesProhibit, targetClassDef.prereqNodeModeProhibit, targetClassDef.prereqNodeModeMinProhibit);
         }
 
         public bool PrereqResearchFufilledProhibit(ProgressTrackerClassDef targetClassDef)
         {
+            if (targetClassDef.prereqResearchProhibit.NullOrEmpty()) return false;
             return PrereqUtility.PrereqResearchFufilled(targetClassDef.prereqResearchProhibit, targetClassDef.prereqResearchModeProhibit, targetClassDef.prereqResearchModeMinProhibit);
         }
 
         public bool PrereqGenesFufilledProhibit(ProgressTracker progressTracker, ProgressTrackerClassDef targetClassDef)
         {
+            if (targetClassDef.prereqGenesProhibit.NullOrEmpty()) return false;
             return PrereqUtility.PrereqGenesFufilled(progressTracker.pawn.genes.GenesListForReading.Select(x => x.def).ToHashSet(), targetClassDef.prereqGenesProhibit,
                 targetClassDef.prereqGeneModeProhibit, targetClassDef.prereqGeneModeMinProhibit);
         }
 
         public bool PrereqTraitsFufilledProhibit(ProgressTracker progressTracker, ProgressTrackerClassDef targetClassDef)
         {
+            if (targetClassDef.prereqTraitsProhibit.NullOrEmpty()) return false;
             return PrereqUtility.PrereqTraitsFufilled(progressTracker.pawn, targetClassDef.prereqTraitsProhibit,
                 targetClassDef.prereqTraitModeProhibit, targetClassDef.prereqTraitModeMinProhibit);
         }
 
         public bool PrereqXenotypeFufilledProhibit(ProgressTracker progressTracker, ProgressTrackerClassDef targetClassDef)
         {
+            if (targetClassDef.prereqXenotypeProhibit is null) return false;
             return PrereqUtility.PrereqXenotypeFufilled(progressTracker.pawn, targetClassDef.prereqXenotypeProhibit);
         }
 
         public bool PrereqLevelFulfilledProhibit(ProgressTracker progressTracker, ProgressTrackerClassDef targetClassDef)
         {
+            if (targetClassDef.prereqLevelProhibit <= 0) return false;
             return PrereqUtility.PrereqLevelFufilled(progressTracker, targetClassDef.prereqLevelProhibit, targetClassDef.prereqLevelModeProhibit);
         }
 
         public bool PrereqAgeFulfilledProhibit(ProgressTracker progressTracker, ProgressTrackerClassDef targetClassDef)
         {
+            if (targetClassDef.prereqAgeProhibit <= 0) return false;
             return PrereqUtility.PrereqAgeFufilled(progressTracker.pawn, targetClassDef.prereqAgeProhibit, targetClassDef.prereqAgeModeProhibit, targetClassDef.prereqCheckBioAgeProhibit);
         }
 
         public bool PrereqStatFufilledProhibit(ProgressTracker progressTracker, ProgressTrackerClassDef targetClassDef)
         {
+            if (targetClassDef.prereqStatsProhibit.NullOrEmpty()) return false;
             return PrereqUtility.PrereqStatFufilled(progressTracker.pawn, targetClassDef.prereqStatsProhibit);
         }
 
         public bool PrereqSkillFufilledProhibit(ProgressTracker progressTracker, ProgressTrackerClassDef targetClassDef)
         {
+            if (targetClassDef.prereqSkillsProhibit.NullOrEmpty()) return false;
             return PrereqUtility.PrereqSkillFufilled(progressTracker.pawn, targetClassDef.prereqSkillsProhibit);
         }
 
         public bool PrereqHediffFufilledProhibit(ProgressTracker progressTracker, ProgressTrackerClassDef targetClassDef)
         {
+            if (targetClassDef.prereqHediffsProhibit.NullOrEmpty()) return false;
             return PrereqUtility.PrereqHediffFufilled(progressTracker.pawn, targetClassDef.prereqHediffsProhibit);
         }
 

@@ -137,53 +137,63 @@ namespace ItsSorceryFramework
 
         public bool PrereqFufilledProhibit(LearningTreeNodeDef node)
         {
+            if (node.prereqNodesProhibit.NullOrEmpty()) return false;
             return PrereqUtility.PrereqNodeFufilled(this, node.prereqNodesProhibit, node.prereqNodeModeProhibit, node.prereqNodeModeMinProhibit);
         }
 
         public bool PrereqResearchFufilledProhibit(LearningTreeNodeDef node)
         {
+            if (node.prereqResearchProhibit.NullOrEmpty()) return false;
             return PrereqUtility.PrereqResearchFufilled(node.prereqResearchProhibit, node.prereqResearchModeProhibit, node.prereqResearchModeMinProhibit);
         }
 
         public bool PrereqGenesFulfilledProhibit(LearningTreeNodeDef node)
         {
+            if (node.prereqGenesProhibit.NullOrEmpty()) return false;
             return PrereqUtility.PrereqGenesFufilled(pawn.genes.GenesListForReading.Select(x => x.def).ToHashSet(), node.prereqGenesProhibit,
                 node.prereqGeneModeProhibit, node.prereqGeneModeMinProhibit);
         }
 
         public bool PrereqTraitsFulfilledProhibit(LearningTreeNodeDef node)
         {
+            if (node.prereqTraitsProhibit.NullOrEmpty()) return false;
             return PrereqUtility.PrereqTraitsFufilled(pawn, node.prereqTraitsProhibit,
                 node.prereqTraitModeProhibit, node.prereqTraitModeMinProhibit);
         }
 
         public bool PrereqXenotypeFulfilledProhibit(LearningTreeNodeDef node)
         {
+            if (node.prereqXenotypeProhibit is null) return false;
             return PrereqUtility.PrereqXenotypeFufilled(pawn, node.prereqXenotypeProhibit);
         }
 
         public bool PrereqLevelFulfilledProhibit(LearningTreeNodeDef node)
         {
+            if (node.prereqLevelProhibit <= 0) return false;
             return PrereqUtility.PrereqLevelFufilled(schema.progressTracker, node.prereqLevelProhibit, node.prereqLevelModeProhibit);
         }
 
         public bool PrereqAgeFulfilledProhibit(LearningTreeNodeDef node)
         {
+            if (node.prereqAgeProhibit <= 0) return false;
             return PrereqUtility.PrereqAgeFufilled(pawn, node.prereqAgeProhibit, node.prereqAgeModeProhibit, node.prereqCheckBioAgeProhibit);
         }
 
         public bool PrereqStatFulfilledProhibit(LearningTreeNodeDef node)
         {
+            if (node.prereqStatsProhibit.NullOrEmpty()) return false;
             return PrereqUtility.PrereqStatFufilled(pawn, node.prereqStatsProhibit);
         }
 
         public bool PrereqSkillFulfilledProhibit(LearningTreeNodeDef node)
         {
+            if (node.prereqSkillsProhibit.NullOrEmpty()) return false;
             return PrereqUtility.PrereqSkillFufilled(pawn, node.prereqSkillsProhibit);
         }
 
         public bool PrereqHediffFulfilledProhibit(LearningTreeNodeDef node)
         {
+            if (node.prereqHediffsProhibit.NullOrEmpty()) return false;
             return PrereqUtility.PrereqHediffFufilled(pawn, node.prereqHediffsProhibit);
         }
 
