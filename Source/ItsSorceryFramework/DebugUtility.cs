@@ -15,7 +15,7 @@ namespace ItsSorceryFramework
 		}
 
         // Adds choice of schema to target pawn
-        [DebugAction("It's Sorcery!", "Add SorcerySchema", false, false, false, false, 0, false, 
+        [DebugAction("It's Sorcery!", "Add SorcerySchema", false, false, false, false, false, 0, false, 
             actionType = DebugActionType.ToolMapForPawns, allowedGameStates = AllowedGameStates.PlayingOnMap, displayPriority = 1000)]
         public static void AddSorcerySchema(Pawn pawn)
         {
@@ -40,7 +40,7 @@ namespace ItsSorceryFramework
         }
 
         // Removes a schema from target pawn
-        [DebugAction("It's Sorcery!", "Remove SorcerySchema", false, false, false, false, 0, false,
+        [DebugAction("It's Sorcery!", "Remove SorcerySchema", false, false, false, false, false, 0, false,
             actionType = DebugActionType.ToolMapForPawns, allowedGameStates = AllowedGameStates.PlayingOnMap, displayPriority = 999)]
         public static void RemoveSorcerySchema(Pawn pawn)
         {
@@ -66,7 +66,7 @@ namespace ItsSorceryFramework
         }
 
         // Removes all schemas from target pawn
-        [DebugAction("It's Sorcery!", "Remove all SorcerySchema", false, false, false, false, 0, false,
+        [DebugAction("It's Sorcery!", "Remove all SorcerySchema", false, false, false, false, false, 0, false,
             actionType = DebugActionType.ToolMapForPawns, allowedGameStates = AllowedGameStates.PlayingOnMap, displayPriority = 999)]
         public static void RemoveAllSorcerySchema(Pawn pawn)
         {
@@ -84,7 +84,7 @@ namespace ItsSorceryFramework
         }
 
         // Completely refresh ProgressTrackers
-        [DebugAction("It's Sorcery!", "Refresh all ProgressTrackers", false, false, false, false, 0, false,
+        [DebugAction("It's Sorcery!", "Refresh all ProgressTrackers", false, false, false, false, false, 0, false,
             actionType = DebugActionType.ToolMapForPawns, allowedGameStates = AllowedGameStates.PlayingOnMap, displayPriority = 999)]
         public static void RefreshProgressTrackers(Pawn pawn)
         {
@@ -101,7 +101,7 @@ namespace ItsSorceryFramework
             }
         }
 
-        [DebugAction("It's Sorcery!", "Level Up ProgressTracker", false, false, false, false, 0, false,
+        [DebugAction("It's Sorcery!", "Level Up ProgressTracker", false, false, false, false, false, 0, false,
             actionType = DebugActionType.ToolMapForPawns, allowedGameStates = AllowedGameStates.PlayingOnMap, displayPriority = 999)]
         public static void LevelUpProgressTracker(Pawn pawn)
         {
@@ -128,7 +128,7 @@ namespace ItsSorceryFramework
             Find.WindowStack.Add(new Dialog_DebugOptionListLister(options, null));
         }
 
-        [DebugAction("It's Sorcery!", "Max Level ProgressTracker", false, false, false, false, 0, false,
+        [DebugAction("It's Sorcery!", "Max Level ProgressTracker", false, false, false, false, false, 0, false,
             actionType = DebugActionType.ToolMapForPawns, allowedGameStates = AllowedGameStates.PlayingOnMap, displayPriority = 999)]
         public static void MaxLevelProgressTracker(Pawn pawn)
         {
@@ -155,7 +155,7 @@ namespace ItsSorceryFramework
             Find.WindowStack.Add(new Dialog_DebugOptionListLister(options, null));
         }
 
-        [DebugAction("It's Sorcery!", "Get ProgressDiffLog Ledgers", false, false, false, false, 0, false,
+        [DebugAction("It's Sorcery!", "Get ProgressDiffLog Ledgers", false, false, false, false, false, 0, false,
             actionType = DebugActionType.ToolMapForPawns, allowedGameStates = AllowedGameStates.PlayingOnMap, displayPriority = 999)]
         public static void PrintProgressDiffLogLedgers(Pawn pawn)
         {
@@ -189,7 +189,7 @@ namespace ItsSorceryFramework
             Find.WindowStack.Add(new Dialog_DebugOptionListLister(options, null));
         }
 
-        [DebugAction("It's Sorcery!", "Get Overall ProgressDiffLog TotalDiff", false, false, false, false, 0, false,
+        [DebugAction("It's Sorcery!", "Get Overall ProgressDiffLog TotalDiff", false, false, false, false, false, 0, false,
             actionType = DebugActionType.ToolMapForPawns, allowedGameStates = AllowedGameStates.PlayingOnMap, displayPriority = 999)]
         public static void PrintProgressDiffLogTotalDiff(Pawn pawn)
         {
@@ -214,7 +214,7 @@ namespace ItsSorceryFramework
             Find.WindowStack.Add(new Dialog_DebugOptionListLister(options, null));
         }
 
-        [DebugAction("It's Sorcery!", "Get Class ProgressDiffLog TotalDiff", false, false, false, false, 0, false,
+        [DebugAction("It's Sorcery!", "Get Class ProgressDiffLog TotalDiff", false, false, false, false, false, 0, false,
             actionType = DebugActionType.ToolMapForPawns, allowedGameStates = AllowedGameStates.PlayingOnMap, displayPriority = 999)]
         public static void PrintProgressClassDiffLogTotalDiff(Pawn pawn)
         {
