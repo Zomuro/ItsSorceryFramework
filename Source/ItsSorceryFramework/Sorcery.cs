@@ -38,11 +38,11 @@ namespace ItsSorceryFramework
             }
         }
 
-        public override bool CanCast
+        public override AcceptanceReport CanCast
         {
             get
             {
-                if (!base.CanCast) return false;
+                if (!base.CanCast) return base.CanCast;
                 foreach (var et in Schema.energyTrackers) if (et.WouldReachLimitEnergy(def.statBases.GetStatValueFromList(et.def.energyUnitStatDef, 0) * et.EnergyCostFactor, sorceryDef)) return false;
                 return true;
             }

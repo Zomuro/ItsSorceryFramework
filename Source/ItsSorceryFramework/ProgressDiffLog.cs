@@ -93,6 +93,76 @@ namespace ItsSorceryFramework
             return PrereqUtility.PrereqHediffFufilled(progressTracker.pawn, targetClassDef.prereqHediffs);
         }
 
+        public bool PrereqClassesFufilledProhibit(ProgressTrackerClassDef targetClassDef)
+        {
+            if (targetClassDef.prereqClassesProhibit.NullOrEmpty()) return false;
+            HashSet<ProgressTrackerClassDef> priorClassDefs = GetClassSet;
+            return PrereqUtility.PrereqClassesFufilled(priorClassDefs, targetClassDef.prereqClassesProhibit, targetClassDef.prereqClassModeProhibit, targetClassDef.prereqClassModeMinProhibit);
+        }
+
+        public bool PrereqNodeFufilledProhibit(ProgressTrackerClassDef targetClassDef, SorcerySchema schema)
+        {
+            if (targetClassDef.prereqNodesProhibit.NullOrEmpty()) return false;
+            LearningNodeRecord learningNodeRecord = schema.learningNodeRecord;
+            return PrereqUtility.PrereqNodeFufilled(learningNodeRecord, targetClassDef.prereqNodesProhibit, targetClassDef.prereqNodeModeProhibit, targetClassDef.prereqNodeModeMinProhibit);
+        }
+
+        public bool PrereqResearchFufilledProhibit(ProgressTrackerClassDef targetClassDef)
+        {
+            if (targetClassDef.prereqResearchProhibit.NullOrEmpty()) return false;
+            return PrereqUtility.PrereqResearchFufilled(targetClassDef.prereqResearchProhibit, targetClassDef.prereqResearchModeProhibit, targetClassDef.prereqResearchModeMinProhibit);
+        }
+
+        public bool PrereqGenesFufilledProhibit(ProgressTracker progressTracker, ProgressTrackerClassDef targetClassDef)
+        {
+            if (targetClassDef.prereqGenesProhibit.NullOrEmpty()) return false;
+            return PrereqUtility.PrereqGenesFufilled(progressTracker.pawn.genes.GenesListForReading.Select(x => x.def).ToHashSet(), targetClassDef.prereqGenesProhibit,
+                targetClassDef.prereqGeneModeProhibit, targetClassDef.prereqGeneModeMinProhibit);
+        }
+
+        public bool PrereqTraitsFufilledProhibit(ProgressTracker progressTracker, ProgressTrackerClassDef targetClassDef)
+        {
+            if (targetClassDef.prereqTraitsProhibit.NullOrEmpty()) return false;
+            return PrereqUtility.PrereqTraitsFufilled(progressTracker.pawn, targetClassDef.prereqTraitsProhibit,
+                targetClassDef.prereqTraitModeProhibit, targetClassDef.prereqTraitModeMinProhibit);
+        }
+
+        public bool PrereqXenotypeFufilledProhibit(ProgressTracker progressTracker, ProgressTrackerClassDef targetClassDef)
+        {
+            if (targetClassDef.prereqXenotypeProhibit is null) return false;
+            return PrereqUtility.PrereqXenotypeFufilled(progressTracker.pawn, targetClassDef.prereqXenotypeProhibit);
+        }
+
+        public bool PrereqLevelFulfilledProhibit(ProgressTracker progressTracker, ProgressTrackerClassDef targetClassDef)
+        {
+            if (targetClassDef.prereqLevelProhibit <= 0) return false;
+            return PrereqUtility.PrereqLevelFufilled(progressTracker, targetClassDef.prereqLevelProhibit, targetClassDef.prereqLevelModeProhibit);
+        }
+
+        public bool PrereqAgeFulfilledProhibit(ProgressTracker progressTracker, ProgressTrackerClassDef targetClassDef)
+        {
+            if (targetClassDef.prereqAgeProhibit <= 0) return false;
+            return PrereqUtility.PrereqAgeFufilled(progressTracker.pawn, targetClassDef.prereqAgeProhibit, targetClassDef.prereqAgeModeProhibit, targetClassDef.prereqCheckBioAgeProhibit);
+        }
+
+        public bool PrereqStatFufilledProhibit(ProgressTracker progressTracker, ProgressTrackerClassDef targetClassDef)
+        {
+            if (targetClassDef.prereqStatsProhibit.NullOrEmpty()) return false;
+            return PrereqUtility.PrereqStatFufilled(progressTracker.pawn, targetClassDef.prereqStatsProhibit);
+        }
+
+        public bool PrereqSkillFufilledProhibit(ProgressTracker progressTracker, ProgressTrackerClassDef targetClassDef)
+        {
+            if (targetClassDef.prereqSkillsProhibit.NullOrEmpty()) return false;
+            return PrereqUtility.PrereqSkillFufilled(progressTracker.pawn, targetClassDef.prereqSkillsProhibit);
+        }
+
+        public bool PrereqHediffFufilledProhibit(ProgressTracker progressTracker, ProgressTrackerClassDef targetClassDef)
+        {
+            if (targetClassDef.prereqHediffsProhibit.NullOrEmpty()) return false;
+            return PrereqUtility.PrereqHediffFufilled(progressTracker.pawn, targetClassDef.prereqHediffsProhibit);
+        }
+
         public virtual bool ValidateClassChange(ProgressTracker progressTracker, ProgressTrackerClassDef targetClassDef, out string failString)
         {
             // failstring and fail bool
@@ -108,6 +178,74 @@ namespace ItsSorceryFramework
             }
 
             List<string> fails = new List<string>();
+            // PROHIBIT fail strings
+            if (PrereqClassesFufilledProhibit(targetClassDef))   
+            {
+                success = false;
+                fails.Add("ISF_ClassChangeLockedClassProhibit".Translate());
+            }
+
+            if (PrereqNodeFufilledProhibit(targetClassDef, progressTracker.schema))     
+            {
+                success = false;
+                fails.Add("ISF_GeneralDialogLockedNodesProhibit".Translate());
+            }
+
+            if (PrereqResearchFufilledProhibit(targetClassDef)) 
+            {
+                success = false;
+                fails.Add("ISF_GeneralDialogLockedResearchProhibit".Translate());
+            }
+
+            if (PrereqGenesFufilledProhibit(progressTracker, targetClassDef)) 
+            {
+                success = false;
+                fails.Add("ISF_GeneralDialogLockedGenesProhibit".Translate());
+            }
+
+            if (PrereqTraitsFufilledProhibit(progressTracker, targetClassDef)) 
+            {
+                success = false;
+                fails.Add("ISF_GeneralDialogLockedTraitProhibit".Translate());
+            }
+
+            if (PrereqXenotypeFufilledProhibit(progressTracker, targetClassDef)) 
+            {
+                success = false;
+                fails.Add("ISF_GeneralDialogLockedXenotypeProhibit".Translate());
+            }
+
+            if (PrereqLevelFulfilledProhibit(progressTracker, targetClassDef)) 
+            {
+                success = false;
+                fails.Add("ISF_GeneralDialogLockedLevelProhibit".Translate());
+            }
+
+            if (PrereqAgeFulfilledProhibit(progressTracker, targetClassDef)) 
+            {
+                success = false;
+                fails.Add("ISF_GeneralDialogLockedAgeProhibit".Translate());
+            }
+
+            if (PrereqStatFufilledProhibit(progressTracker, targetClassDef)) 
+            {
+                success = false;
+                fails.Add("ISF_GeneralDialogLockedStatProhibit".Translate());
+            }
+
+            if (PrereqSkillFufilledProhibit(progressTracker, targetClassDef)) 
+            {
+                success = false;
+                fails.Add("ISF_GeneralDialogLockedSkillProhibit".Translate());
+            }
+
+            if (PrereqHediffFufilledProhibit(progressTracker, targetClassDef))
+            {
+                success = false;
+                fails.Add("ISF_GeneralDialogLockedHediffProhibit".Translate());
+            }
+
+            // NORMAL fail strings
             if (!PrereqClassesFufilled(targetClassDef)) // if the pawn hasn't been through all the class defs, fail val     
             {
                 success = false;

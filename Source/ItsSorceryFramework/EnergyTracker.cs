@@ -456,12 +456,8 @@ namespace ItsSorceryFramework
 
         public virtual void HightlightEnergyCost(Rect rect)
         {
-            // return if tabwindow is null
-            MainTabWindow_Inspect mainTabWindow_Inspect = (MainTabWindow_Inspect)MainButtonDefOf.Inspect.TabWindow;
-            if (mainTabWindow_Inspect == null) return;
-
             // return if hovered gizmo is null
-            Command_Sorcery command_Sorcery = ((mainTabWindow_Inspect != null) ? mainTabWindow_Inspect.LastMouseoverGizmo : null) as Command_Sorcery;
+            Command_Sorcery command_Sorcery = MapGizmoUtility.LastMouseOverGizmo as Command_Sorcery;
             if (command_Sorcery == null) return;
 
             // return if it isn't a sorceryDef or isn't the same energytracker

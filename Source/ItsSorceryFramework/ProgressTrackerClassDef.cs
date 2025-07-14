@@ -29,6 +29,12 @@ namespace ItsSorceryFramework
 
         public List<ProgressTrackerClassDef> prereqClasses = new List<ProgressTrackerClassDef>();
 
+        public LearningNodePrereqMode prereqClassModeProhibit = LearningNodePrereqMode.All;
+
+        public int prereqClassModeMinProhibit = 1;
+
+        public List<ProgressTrackerClassDef> prereqClassesProhibit = new List<ProgressTrackerClassDef>();
+
         public List<LearningTrackerDef> unlocks;
 
         // cacheing fields

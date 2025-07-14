@@ -241,13 +241,13 @@ namespace ItsSorceryFramework
         {
             // adjust this to go through diff log
             AdjustTotalStatMods(statOffsetsTotal, offsets);
-            AdjustTotalStatMods(statFactorsTotal, factorOffsets, true);
+            AdjustTotalStatMods(statFactorsTotal, factorOffsets);
             AdjustTotalCapMods(capModsTotal, capMods);
 
             progressDiffLog.LogModifiers(ref classLedger, offsets, factorOffsets, capMods);
         }
 
-        public virtual void AdjustTotalStatMods(Dictionary<StatDef, float> stats, List<StatModifier> statMods, bool factor = false)
+        public virtual void AdjustTotalStatMods(Dictionary<StatDef, float> stats, List<StatModifier> statMods)
         {
             if (statMods.NullOrEmpty()) return;
 
@@ -259,8 +259,10 @@ namespace ItsSorceryFramework
                     continue;
                 }
 
-                if (!factor) stats[statMod.stat] = statMod.value;
-                else stats[statMod.stat] = statMod.value + 1f;
+                stats[statMod.stat] = statMod.value;
+
+                //if (!factor) stats[statMod.stat] = statMod.value;
+                //else stats[statMod.stat] = statMod.value + 1f;
             }
         }
 

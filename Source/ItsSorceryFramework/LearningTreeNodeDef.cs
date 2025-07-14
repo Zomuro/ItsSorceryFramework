@@ -38,7 +38,7 @@ namespace ItsSorceryFramework
 
 		public List<StatModifier> statOffsets;
 
-		public List<StatModifier> statFactors;
+		public List<StatModifier> statFactorOffsets;
 
 		public List<PawnCapacityModifier> capMods;
 
@@ -108,12 +108,12 @@ namespace ItsSorceryFramework
 				}
 			}
 
-			if (!statFactors.NullOrEmpty())
+			if (!statFactorOffsets.NullOrEmpty())
 			{
-				foreach (StatModifier statMod in statFactors)
+				foreach (StatModifier statMod in statFactorOffsets)
 				{
 					yield return new StatDrawEntry(StatCategoryDefOf.CapacityEffects,
-						statMod.stat.LabelCap, statMod.stat.Worker.ValueToString(statMod.value, false, ToStringNumberSense.Factor),
+						statMod.stat.LabelCap, (statMod.value * 100f).ToString("+#;-#") + "%", //statMod.stat.Worker.ValueToString(statMod.value, false, ToStringNumberSense.Factor),
 						statMod.stat.description, 4070, null, null, false);
 				}
 			}

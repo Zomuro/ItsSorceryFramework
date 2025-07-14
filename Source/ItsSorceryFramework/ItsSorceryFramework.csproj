@@ -17,7 +17,7 @@
     <DebugSymbols>false</DebugSymbols>
     <DebugType>none</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\1.5\Assemblies\</OutputPath>
+    <OutputPath>..\..\1.6\Assemblies\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -65,6 +65,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FloatMenuOptionProvider_ProgressEXPWorkerUseItem.cs" />
+    <Compile Include="FloatMenuOptionProvider_EnergyTrackerCompOnConsume.cs" />
     <Compile Include="ISF_PrereqDef.cs" />
     <Compile Include="PawnCacheUtility.cs" />
     <Compile Include="EnergyTrackerCompProperties_JobBase.cs" />

@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+	<JobDef>
+		<defName>ISF_ChargeSchema</defName>
+		<driverClass>ItsSorceryFramework.JobDriver_Charge</driverClass>
+		<reportString>charging schema with TargetB.</reportString>
+		<suspendable>false</suspendable>
+		<allowOpportunisticPrefix>true</allowOpportunisticPrefix>
+	</JobDef>
+	
+	<JobDef>
+		<defName>ISF_GainEXPSchema</defName>
+		<driverClass>ItsSorceryFramework.JobDriver_GainEXP</driverClass>
+		<reportString>gaining experience for schema with TargetB.</reportString>
+		<suspendable>false</suspendable>
+		<allowOpportunisticPrefix>true</allowOpportunisticPrefix>
+	</JobDef>
+  
+</Defs>

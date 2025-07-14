@@ -7,7 +7,6 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using Verse;
-using Verse.AI;
 
 namespace ItsSorceryFramework
 {
@@ -20,13 +19,6 @@ namespace ItsSorceryFramework
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
             Harmony harmony = new Harmony("Zomuro.ItsSorceryFramework");
-
-            // EnergyTracker Specific Patches //
-
-            // AddHumanlikeOrders_EnergyTracker_Consumable
-            // if a pawn has a SorcerySchema with a Consumable class EnergyTracker, show the float menu
-            harmony.Patch(AccessTools.Method(typeof(FloatMenuMakerMap), "AddHumanlikeOrders"), null,
-                new HarmonyMethod(typeof(HarmonyPatches), nameof(AddHumanlikeOrders_EnergyTrackerComp_OnConsume)));
 
             // Ability Patches //
 
@@ -51,11 +43,6 @@ namespace ItsSorceryFramework
             // for every magic system with the correct EXP tag, give xp on kill
             harmony.Patch(AccessTools.Method(typeof(Pawn), "DoKillSideEffects"), null,
                 new HarmonyMethod(typeof(HarmonyPatches), nameof(DoKillSideEffects_ISF_Postfix)));
-
-            // AddHumanlikeOrders_EXPUseItem
-            // allow items to be used to level up experience systems
-            harmony.Patch(AccessTools.Method(typeof(FloatMenuMakerMap), "AddHumanlikeOrders"), null,
-                new HarmonyMethod(typeof(HarmonyPatches), nameof(AddHumanlikeOrders_EXPUseItem)));
 
             // TryInteractWith_ISF_Postfix
             // after a successful (true) TryInteractWith, look through magic systems to add XP/energy 
@@ -93,29 +80,6 @@ namespace ItsSorceryFramework
                     stopwatch.Elapsed.TotalSeconds
                 )
             );
-        }
-
-        // POSTFIX: when right clicking items that can reload the schema, provide FloatMenu option to "reload" with them
-        public static void AddHumanlikeOrders_EnergyTrackerComp_OnConsume(Vector3 __0, Pawn __1, List<FloatMenuOption> __2)
-        {
-            List<SorcerySchema> schemas = SorcerySchemaUtility.GetSorcerySchemaList(__1);
-            if (schemas.NullOrEmpty()) return;
-
-            foreach (SorcerySchema schema in schemas) EnergyTracker_AddOrders(schema, __0, __2);
-            return;
-        }
-
-        // HELPER METHOD
-        public static void EnergyTracker_AddOrders(SorcerySchema schema, Vector3 vec, List<FloatMenuOption> options)
-        {
-            if (schema.energyTrackers.NullOrEmpty()) return; // no energytrackers in the schema => don't bother
-            foreach (var energyTracker in schema.energyTrackers)
-            {
-                if (!energyTracker.comps.NullOrEmpty()) // if the energytracker has no comps, skip check
-                {
-                    foreach (var c in energyTracker.comps) options.AddRange(c.CompPostConsume(vec)); // else run the comppostconsume method
-                }
-            }
         }
 
         // POSTFIX: enables the skill tree to show ability icon
@@ -282,55 +246,6 @@ namespace ItsSorceryFramework
             }
         }
 
-        // POSTFIX: when right clicking items that can give xp to schemas, provide FloatMenu option to use them
-        public static void AddHumanlikeOrders_EXPUseItem(Vector3 __0, Pawn __1, List<FloatMenuOption> __2)
-        {
-            /*Comp_ItsSorcery comp = __1.TryGetComp<Comp_ItsSorcery>();
-            if (comp is null) return;*/
-
-            // check for sorcery schemas - if they don't exist, skip this
-            List<SorcerySchema> schemas = SorcerySchemaUtility.GetSorcerySchemaList(__1);
-            if (schemas.NullOrEmpty()) return;
-
-            String text;
-            foreach (SorcerySchema schema in schemas)
-            {
-                // schema.progressTracker.def.Workers
-                if (schema.progressTracker.currClassDef.Workers.EnumerableNullOrEmpty()) continue;
-
-                ProgressEXPWorker_UseItem itemWorker = schema.progressTracker.currClassDef.Workers.FirstOrDefault(x => x.GetType() == typeof(ProgressEXPWorker_UseItem)) as ProgressEXPWorker_UseItem;
-                if (itemWorker == null || itemWorker.def.expItems.NullOrEmpty()) continue;
-                foreach(var item in itemWorker.def.expItems)
-                {
-                    Thing EXPItem = __0.ToIntVec3().GetFirstThing(__1.Map, item.thingDef);
-                    if (EXPItem == null) continue;
-
-                    float factor = item.expFactorStat != null ? __1.GetStatValue(item.expFactorStat) : 1f;
-                    if (!__1.CanReach(EXPItem, PathEndMode.ClosestTouch, Danger.Deadly, false, false, TraverseMode.ByPawn))
-                    {
-                        text = "ISF_UseEXPItemNoPath".Translate() + item.gainEXPTransKey.Translate(item.thingDef.label, item.exp * factor, schema.def.LabelCap.ToString());
-                        __2.Add(new FloatMenuOption(text, null, MenuOptionPriority.Default,
-                            null, null, 0f, null, null, true, 0));
-                    }
-
-                    else
-                    {
-                        text = item.gainEXPTransKey.Translate(item.thingDef.label, item.exp * factor, schema.def.LabelCap.ToString());
-
-                        Action chargeSchema = delegate ()
-                        {
-                            __1.jobs.TryTakeOrderedJob(JobGiver_GainEXP.MakeChargeEXPJob(__1, schema, EXPItem, 1),
-                                new JobTag?(JobTag.Misc), false);
-                        };
-                        __2.Add(FloatMenuUtility.DecoratePrioritizedTask(new FloatMenuOption(text, chargeSchema,
-                            MenuOptionPriority.Default, null, null, 0f, null, null, true, 0), __1, EXPItem, "ReservedBy", null));
-                    }
-                }
-            }
-
-            return;
-        }
-
         // POSTFIX: if a pawn successfully interacts w/ another pawn, check interactiondef and see if we need to add XP or energy
         public static void TryInteractWith_ISF_Postfix(ref bool __result, Pawn_InteractionsTracker __instance, Pawn __0, InteractionDef __1)
         {
@@ -379,7 +294,7 @@ namespace ItsSorceryFramework
         public static void EndQuest_ISF_Postfix(Quest __instance, QuestEndOutcome __0)
         {
             // get all pawns that are player's faction
-            List<Pawn> pawnList = PawnsFinder.AllMapsCaravansAndTravelingTransportPods_Alive_OfPlayerFaction;
+            List<Pawn> pawnList = PawnsFinder.AllMapsCaravansAndTravellingTransporters_Alive_Colonists;
 
             // get ending quest's def to find in defs
             QuestScriptDef endingQuestDef = __instance.root;

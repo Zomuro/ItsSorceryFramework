@@ -7,7 +7,7 @@ namespace ItsSorceryFramework
 {
     public abstract class ISF_PrereqDef : Def
     {
-        // common prereq fields used in node and progress tracker class defs
+        // GENERAL - common prereq fields used in node and progress tracker class defs
 
         public LearningNodePrereqMode prereqNodeMode = LearningNodePrereqMode.All;
 
@@ -55,6 +55,56 @@ namespace ItsSorceryFramework
         public List<NodeStatReqs> prereqStats = new List<NodeStatReqs>();
 
         public List<NodeSkillReqs> prereqSkills = new List<NodeSkillReqs>();
+
+
+        // PROHIBIT - prereq fields to prevent node/class completion if fufilled, overriding normal completion
+
+        public LearningNodePrereqMode prereqNodeModeProhibit = LearningNodePrereqMode.All;
+
+        public int prereqNodeModeMinProhibit = 1;
+
+        public LearningNodePrereqMode prereqResearchModeProhibit = LearningNodePrereqMode.All;
+
+        public int prereqResearchModeMinProhibit = 1;
+
+        [MayRequireBiotech]
+        public LearningNodePrereqMode prereqGeneModeProhibit = LearningNodePrereqMode.All;
+
+        [MayRequireBiotech]
+        public int prereqGeneModeMinProhibit = 1;
+
+        public LearningNodePrereqMode prereqTraitModeProhibit = LearningNodePrereqMode.All;
+
+        public int prereqTraitModeMinProhibit = 1;
+
+        public LearningNodeStatPrereqMode prereqLevelModeProhibit = LearningNodeStatPrereqMode.GreaterEqual;
+
+        public int prereqLevelProhibit = 0;
+
+        public LearningNodeStatPrereqMode prereqAgeModeProhibit = LearningNodeStatPrereqMode.GreaterEqual;
+
+        public int prereqAgeProhibit = 0;
+
+        public bool prereqCheckBioAgeProhibit = false;
+
+        [MayRequireBiotech]
+        public XenotypeDef prereqXenotypeProhibit = null;
+
+        public List<LearningTreeNodeDef> prereqNodesProhibit = new List<LearningTreeNodeDef>();
+
+        public List<ResearchProjectDef> prereqResearchProhibit = new List<ResearchProjectDef>();
+
+        [MayRequireBiotech]
+        public List<GeneDef> prereqGenesProhibit = new List<GeneDef>();
+
+        [XmlInheritanceAllowDuplicateNodes]
+        public List<TraitRequirement> prereqTraitsProhibit = new List<TraitRequirement>();
+
+        public Dictionary<HediffDef, float> prereqHediffsProhibit = new Dictionary<HediffDef, float>();
+
+        public List<NodeStatReqs> prereqStatsProhibit = new List<NodeStatReqs>();
+
+        public List<NodeSkillReqs> prereqSkillsProhibit = new List<NodeSkillReqs>();
     }
 
     public class NodeStatReqs

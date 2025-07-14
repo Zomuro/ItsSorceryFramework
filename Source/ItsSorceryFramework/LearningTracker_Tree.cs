@@ -57,7 +57,6 @@ namespace ItsSorceryFramework
             get
             {
                 if (cachedViewSize == null || cachedViewSize == Vector2.zero) cachedViewSize = FindViewSize();
-
                 return cachedViewSize;
             }
         }
@@ -134,10 +133,17 @@ namespace ItsSorceryFramework
                     Widgets.Label(confirmButton.ContractedBy(5f), reason);
                     Text.Anchor = TextAnchor.UpperLeft;
                 }
-                else if (!LearningRecord.completion[selectedNode] && LearningRecord.PrereqFufilled(selectedNode) && LearningRecord.PrereqResearchFufilled(selectedNode) &&
-                    LearningRecord.PrereqGenesFulfilled(selectedNode) && LearningRecord.PrereqTraitsFulfilled(selectedNode) && LearningRecord.PrereqXenotypeFulfilled(selectedNode) &&
-                    LearningRecord.PrereqAgeFulfilled(selectedNode) && LearningRecord.PrereqLevelFulfilled(selectedNode) &&
-                    LearningRecord.PrereqStatFulfilled(selectedNode) && LearningRecord.PrereqSkillFulfilled(selectedNode) && LearningRecord.PrereqHediffFulfilled(selectedNode) && 
+                else if (!LearningRecord.completion[selectedNode] &&
+                    !LearningRecord.PrereqFufilledProhibit(selectedNode) && !LearningRecord.PrereqResearchFufilledProhibit(selectedNode) &&
+                    !LearningRecord.PrereqGenesFulfilledProhibit(selectedNode) && !LearningRecord.PrereqTraitsFulfilledProhibit(selectedNode) &&
+                    !LearningRecord.PrereqXenotypeFulfilledProhibit(selectedNode) && !LearningRecord.PrereqAgeFulfilledProhibit(selectedNode) &&
+                    !LearningRecord.PrereqLevelFulfilledProhibit(selectedNode) && !LearningRecord.PrereqStatFulfilledProhibit(selectedNode) &&
+                    !LearningRecord.PrereqSkillFulfilledProhibit(selectedNode) && !LearningRecord.PrereqHediffFulfilledProhibit(selectedNode) &&
+                    LearningRecord.PrereqFufilled(selectedNode) && LearningRecord.PrereqResearchFufilled(selectedNode) &&
+                    LearningRecord.PrereqGenesFulfilled(selectedNode) && LearningRecord.PrereqTraitsFulfilled(selectedNode) && 
+                    LearningRecord.PrereqXenotypeFulfilled(selectedNode) && LearningRecord.PrereqAgeFulfilled(selectedNode) &&
+                    LearningRecord.PrereqLevelFulfilled(selectedNode) && LearningRecord.PrereqStatFulfilled(selectedNode) &&
+                    LearningRecord.PrereqSkillFulfilled(selectedNode) && LearningRecord.PrereqHediffFulfilled(selectedNode) && 
                     LearningRecord.ExclusiveNodeFulfilled(selectedNode) && selectedNode.pointReq + progress.usedPoints <= progress.points) 
                 {
                     if (Widgets.ButtonText(confirmButton, "ISF_SkillPointUse".Translate(selectedNode.pointReq, 
@@ -172,24 +178,26 @@ namespace ItsSorceryFramework
                         if (selectedNode.pointReq + progress.usedPoints > progress.points) reason += "\n" +
                                 "ISF_LearningNodeLockedPoints".Translate(schema.progressTracker.def.skillPointLabelKey.Translate());
 
+                        if (LearningRecord.PrereqFufilledProhibit(selectedNode)) reason += "\n" + "ISF_GeneralDialogLockedNodesProhibit".Translate();
+                        if (LearningRecord.PrereqResearchFufilledProhibit(selectedNode)) reason += "\n" + "ISF_GeneralDialogLockedResearchProhibit".Translate();
+                        if (LearningRecord.PrereqGenesFulfilledProhibit(selectedNode)) reason += "\n" + "ISF_GeneralDialogLockedGenesProhibit".Translate();
+                        if (LearningRecord.PrereqTraitsFulfilledProhibit(selectedNode)) reason += "\n" + "ISF_GeneralDialogLockedTraitProhibit".Translate();
+                        if (LearningRecord.PrereqXenotypeFulfilledProhibit(selectedNode)) reason += "\n" + "ISF_GeneralDialogLockedXenotypeProhibit".Translate();
+                        if (LearningRecord.PrereqLevelFulfilledProhibit(selectedNode)) reason += "\n" + "ISF_GeneralDialogLockedLevelProhibit".Translate();
+                        if (LearningRecord.PrereqAgeFulfilledProhibit(selectedNode)) reason += "\n" + "ISF_GeneralDialogLockedAgeProhibit".Translate();
+                        if (LearningRecord.PrereqStatFulfilledProhibit(selectedNode)) reason += "\n" + "ISF_GeneralDialogLockedStatProhibit".Translate();
+                        if (LearningRecord.PrereqSkillFulfilledProhibit(selectedNode)) reason += "\n" + "ISF_GeneralDialogLockedSkillProhibit".Translate();
+                        if (LearningRecord.PrereqHediffFulfilledProhibit(selectedNode)) reason += "\n" + "ISF_GeneralDialogLockedHediffProhibit".Translate();
+
                         if (!LearningRecord.PrereqFufilled(selectedNode)) reason += "\n" + "ISF_GeneralDialogLockedNodes".Translate();
-
                         if (!LearningRecord.PrereqResearchFufilled(selectedNode)) reason += "\n" + "ISF_GeneralDialogLockedResearch".Translate();
-
                         if (!LearningRecord.PrereqGenesFulfilled(selectedNode)) reason += "\n" + "ISF_GeneralDialogLockedGenes".Translate();
-
                         if (!LearningRecord.PrereqTraitsFulfilled(selectedNode)) reason += "\n" + "ISF_GeneralDialogLockedTrait".Translate();
-
                         if (!LearningRecord.PrereqXenotypeFulfilled(selectedNode)) reason += "\n" + "ISF_GeneralDialogLockedXenotype".Translate();          
-
                         if (!LearningRecord.PrereqLevelFulfilled(selectedNode)) reason += "\n" + "ISF_GeneralDialogLockedLevel".Translate();
-
                         if (!LearningRecord.PrereqAgeFulfilled(selectedNode)) reason += "\n" + "ISF_GeneralDialogLockedAge".Translate();
-
                         if (!LearningRecord.PrereqStatFulfilled(selectedNode)) reason += "\n" + "ISF_GeneralDialogLockedStat".Translate();
-
                         if (!LearningRecord.PrereqSkillFulfilled(selectedNode)) reason += "\n"+ "ISF_GeneralDialogLockedSkill".Translate();
-
                         if (!LearningRecord.PrereqHediffFulfilled(selectedNode)) reason += "\n" + "ISF_GeneralDialogLockedHediff".Translate();
                     }
 
@@ -230,19 +238,6 @@ namespace ItsSorceryFramework
                     Text.Font = GameFont.Small;
                     this.leftViewDebugHeight = debugButton.height;
                 }
-                /* modify this for items like techprints required for skill system later
-                if (Prefs.DevMode && !this.selectedProject.TechprintRequirementMet)
-                {
-                    Text.Font = GameFont.Tiny;
-                    Rect rect14 = new Rect(rect11.x + 120f, outRect.yMax, 120f, 30f);
-                    if (Widgets.ButtonText(rect14, "Debug: Apply techprint", true, true, true, null))
-                    {
-                        Find.ResearchManager.ApplyTechprint(this.selectedProject, null);
-                        SoundDefOf.TechprintApplied.PlayOneShotOnCamera(null);
-                    }
-                    Text.Font = GameFont.Small;
-                    this.leftViewDebugHeight = rect14.height;
-                }*/
             }
             Widgets.EndGroup();
 
@@ -259,15 +254,201 @@ namespace ItsSorceryFramework
 
         private float DrawNodePrereqs(LearningTreeNodeDef node, Rect rect)
         {
-            if (node.prereqNodes.NullOrEmpty() && node.prereqResearch.NullOrEmpty() 
-                && node.prereqLevel <= 0 && node.prereqStats.NullOrEmpty() && 
-                node.prereqSkills.NullOrEmpty() && node.prereqHediffs.NullOrEmpty()) return 0f;
+            if (node.prereqNodesProhibit.NullOrEmpty() && 
+                node.prereqResearchProhibit.NullOrEmpty() && node.prereqGenesProhibit.NullOrEmpty() && 
+                node.prereqTraitsProhibit.NullOrEmpty() && node.prereqXenotypeProhibit is null && 
+                node.prereqLevelProhibit <= 0 && node.prereqAgeProhibit <= 0 && 
+                node.prereqStatsProhibit.NullOrEmpty() && node.prereqSkillsProhibit.NullOrEmpty() && 
+                node.prereqHediffsProhibit.NullOrEmpty() &&
+                node.prereqNodes.NullOrEmpty() && 
+                node.prereqResearch.NullOrEmpty() && node.prereqGenes.NullOrEmpty() &&
+                node.prereqTraits.NullOrEmpty() && node.prereqXenotype is null &&
+                node.prereqLevel <= 0 && node.prereqAge <= 0 &&
+                node.prereqStats.NullOrEmpty() && node.prereqSkills.NullOrEmpty() &&
+                node.prereqHediffs.NullOrEmpty()) return 0f;
             float xMin = rect.xMin;
             float yMin = rect.yMin;
-
-            //Tuple<int, int> prereqsDone = LearningRecord.PrereqsDone(node);
             int doneCount = 0;
 
+            // PROHIBIT prereqs
+            if (!node.prereqNodesProhibit.NullOrEmpty())
+            {
+                HashSet<LearningTreeNodeDef> nodesDone = LearningRecord.completion.Where(x => x.Value == true).Select(x => x.Key).ToHashSet();
+                doneCount = PrereqUtility.PrereqsDoneCount(nodesDone, node.prereqNodesProhibit); //prereqsDone.Item1
+                Widgets.LabelCacheHeight(ref rect, "ISF_GeneralDialogPrereqNodeProhibit".Translate() + PrereqUtility.PrereqsModeNotif(node.prereqNodeModeProhibit, node.prereqNodeModeMinProhibit, doneCount), true, false);
+                rect.yMin += rect.height;
+                rect.xMin += 6f;
+                foreach (var prereq in node.prereqNodesProhibit)
+                {
+                    SetPrereqStatusColor(!LearningRecord.completion[prereq], node);
+                    Widgets.LabelCacheHeight(ref rect, prereq.LabelCap, true, false);
+                    if (Widgets.ButtonInvisible(rect, true))
+                    {
+                        SoundDefOf.Click.PlayOneShotOnCamera(null);
+                        if (node.learningTrackerDef != prereq.learningTrackerDef)
+                        {
+                            if (Find.WindowStack.currentlyDrawnWindow as Dialog_LearningTabs is Dialog_LearningTabs learningTabs &&
+                                learningTabs != null && base.schema.def.learningTrackerDefs.Contains(prereq.learningTrackerDef))
+                            {
+                                learningTabs.curTracker = schema.learningTrackers.FirstOrDefault(x => x.def == prereq.learningTrackerDef);
+                                if (learningTabs.curTracker as LearningTracker_Tree is LearningTracker_Tree treeTracker && treeTracker != null)
+                                {
+                                    treeTracker.selectedNode = prereq;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            selectedNode = prereq;
+                        }
+
+                    }
+                    rect.yMin += rect.height;
+                }
+                rect.xMin = xMin;
+                GUI.color = Color.white;
+            }
+
+            if (!node.prereqResearchProhibit.NullOrEmpty())
+            {
+                doneCount = node.prereqResearchProhibit.Where(x => x.PrerequisitesCompleted).Count(); //prereqsDone.Item2
+                Widgets.LabelCacheHeight(ref rect, "ISF_GeneralDialogPrereqResearchProhibit".Translate() + PrereqUtility.PrereqsModeNotif(node.prereqResearchModeProhibit, node.prereqResearchModeMinProhibit, doneCount), true, false);
+                rect.yMin += rect.height;
+                rect.xMin += 6f;
+                foreach (var prereq in node.prereqResearchProhibit)
+                {
+                    SetPrereqStatusColor(!prereq.IsFinished, node);
+                    Widgets.LabelCacheHeight(ref rect, prereq.LabelCap, true, false);
+                    rect.yMin += rect.height;
+                }
+                GUI.color = Color.white;
+                rect.xMin = xMin;
+            }
+
+            if (!node.prereqGenesProhibit.NullOrEmpty()) // show completed genes
+            {
+                HashSet<GeneDef> genesDone = pawn.genes.GenesListForReading.Select(x => x.def).ToHashSet();
+                doneCount = PrereqUtility.PrereqsDoneCount(genesDone, node.prereqGenesProhibit);
+                // prereqsDone.Item2
+                Widgets.LabelCacheHeight(ref rect, "ISF_GeneralDialogPrereqGeneProhibit".Translate() + PrereqUtility.PrereqsModeNotif(node.prereqGeneModeProhibit, node.prereqGeneModeMinProhibit, doneCount), true, false);
+                rect.yMin += rect.height;
+                rect.xMin += 6f;
+                foreach (var prereq in node.prereqGenesProhibit)
+                {
+                    PrereqUtility.SetPrereqStatusColor(!genesDone.Contains(prereq));
+                    Widgets.LabelCacheHeight(ref rect, prereq.LabelCap, true, false);
+                    rect.yMin += rect.height;
+                }
+                GUI.color = Color.white;
+                rect.xMin = xMin;
+            }
+
+            if (!node.prereqTraitsProhibit.NullOrEmpty()) // show completed genes
+            {
+                doneCount = node.prereqTraitsProhibit.Where(x => x.HasTrait(pawn)).Count();
+                // prereqsDone.Item2
+                Widgets.LabelCacheHeight(ref rect, "ISF_GeneralDialogPrereqTraitProhibit".Translate() + PrereqUtility.PrereqsModeNotif(node.prereqTraitModeProhibit, node.prereqTraitModeMinProhibit, doneCount), true, false);
+                rect.yMin += rect.height;
+                rect.xMin += 6f;
+                foreach (var prereq in node.prereqTraitsProhibit)
+                {
+                    PrereqUtility.SetPrereqStatusColor(!prereq.HasTrait(pawn));
+                    Widgets.LabelCacheHeight(ref rect, PrereqUtility.GetTraitDegreeData(prereq.def, prereq.degree).LabelCap, true, false);
+                    rect.yMin += rect.height;
+                }
+                GUI.color = Color.white;
+                rect.xMin = xMin;
+            }
+
+            if (node.prereqXenotypeProhibit != null) // show completed xenotype req
+            {
+                PrereqUtility.SetPrereqStatusColor(!LearningRecord.PrereqXenotypeFulfilled(node));
+                Widgets.LabelCacheHeight(ref rect, "ISF_GeneralDialogPrereqXenotypeProhibit".Translate(node.prereqXenotypeProhibit), true, false);
+                rect.yMin += rect.height;
+                GUI.color = Color.white;
+                rect.xMin = xMin;
+            }
+
+            if (node.prereqLevelProhibit > 0) // show completed level req
+            {
+                PrereqUtility.SetPrereqStatusColor(!LearningRecord.PrereqLevelFulfilled(node));
+                string levelComp = "level" + PrereqUtility.PrereqsStatsModeNotif(node.prereqLevelModeProhibit) + node.prereqLevelProhibit.ToString();
+                Widgets.LabelCacheHeight(ref rect, "ISF_GeneralDialogPrereqLevelProhibit".Translate(levelComp), true, false);
+                rect.yMin += rect.height;
+                GUI.color = Color.white;
+                rect.xMin = xMin;
+            }
+
+            if (node.prereqAgeProhibit > 0) // show completed age req
+            {
+                PrereqUtility.SetPrereqStatusColor(!LearningRecord.PrereqAgeFulfilled(node));
+                string ageCheck = node.prereqCheckBioAge ? "ISF_GeneralDialogPrereqAgeBioProhibit".Translate() : "ISF_GeneralDialogPrereqAgeChronProhibit".Translate();
+                string ageComp = ageCheck + PrereqUtility.PrereqsStatsModeNotif(node.prereqAgeModeProhibit) + node.prereqAgeProhibit.ToString();
+                Widgets.LabelCacheHeight(ref rect, "ISF_GeneralDialogPrereqAgeProhibit".Translate(ageComp), true, false);
+                rect.yMin += rect.height;
+                GUI.color = Color.white;
+                rect.xMin = xMin;
+            }
+
+            if (!node.prereqStatsProhibit.NullOrEmpty())
+            {
+                Widgets.LabelCacheHeight(ref rect, "ISF_GeneralDialogPrereqStatProhibit".Translate(), true, false);
+                rect.yMin += rect.height;
+                rect.xMin += 6f;
+                foreach (var prereqsStatCase in node.prereqStatsProhibit)
+                {
+                    foreach (var statMod in prereqsStatCase.statReqs)
+                    {
+                        SetPrereqStatusColor(PrereqUtility.PrereqFailStatCase(pawn, statMod, prereqsStatCase.mode), node);
+                        Widgets.LabelCacheHeight(ref rect, statMod.stat.LabelCap + PrereqUtility.PrereqsStatsModeNotif(prereqsStatCase.mode) +
+                            statMod.stat.ValueToString(statMod.value, ToStringNumberSense.Absolute, !statMod.stat.formatString.NullOrEmpty()), true, false);
+                        rect.yMin += rect.height;
+                    }
+                }
+                GUI.color = Color.white;
+                rect.xMin = xMin;
+            }
+
+            if (!node.prereqSkillsProhibit.NullOrEmpty())
+            {
+                Widgets.LabelCacheHeight(ref rect, "ISF_GeneralDialogPrereqSkillProhibit".Translate(), true, false);
+                rect.yMin += rect.height;
+                rect.xMin += 6f;
+                foreach (var prereqsSkillCase in node.prereqSkillsProhibit)
+                {
+                    foreach (var skillLevel in prereqsSkillCase.skillReqs)
+                    {
+                        SetPrereqStatusColor(PrereqUtility.PrereqFailSkillCase(pawn, skillLevel.skillDef, skillLevel.ClampedLevel, prereqsSkillCase.mode), node);
+                        Widgets.LabelCacheHeight(ref rect, skillLevel.skillDef.LabelCap + PrereqUtility.PrereqsStatsModeNotif(prereqsSkillCase.mode) +
+                            skillLevel.ClampedLevel, true, false);
+                        rect.yMin += rect.height;
+                    }
+                }
+                GUI.color = Color.white;
+                rect.xMin = xMin;
+            }
+
+            if (!node.prereqHediffsProhibit.NullOrEmpty())
+            {
+                Widgets.LabelCacheHeight(ref rect, "ISF_GeneralDialogPrereqHediffProhibit".Translate(), true, false);
+                rect.yMin += rect.height;
+                rect.xMin += 6f;
+                Hediff hediff;
+                String reqLabel;
+                foreach (var prereq in node.prereqHediffsProhibit)
+                {
+                    hediff = pawn.health.hediffSet.GetFirstHediffOfDef(prereq.Key);
+                    SetPrereqStatusColor(!(hediff != null && hediff.Severity >= prereq.Value), node);
+                    reqLabel = !prereq.Key.stages.NullOrEmpty() ?
+                        prereq.Key.stages[prereq.Key.StageAtSeverity(prereq.Value)].label : prereq.Value.ToString("F0");
+                    Widgets.LabelCacheHeight(ref rect, prereq.Key.LabelCap + " ({0})".Translate(reqLabel), true, false);
+                    rect.yMin += rect.height;
+                }
+                GUI.color = Color.white;
+                rect.xMin = xMin;
+            }
+
+            // NORMAL prereqs
             if (!node.prereqNodes.NullOrEmpty()) 
             {
                 HashSet<LearningTreeNodeDef> nodesDone = LearningRecord.completion.Where(x => x.Value == true).Select(x => x.Key).ToHashSet();
@@ -386,15 +567,6 @@ namespace ItsSorceryFramework
                 GUI.color = Color.white;
                 rect.xMin = xMin;
             }
-
-            /*if (node.prereqLevel > 0)
-            {
-                SetPrereqStatusColor(!LearningRecord.PrereqLevelFulfilled(node), node);
-                Widgets.LabelCacheHeight(ref rect, "ISF_LearningNodeLevelReq".Translate(node.prereqLevel), true, false);
-                rect.yMin += rect.height;
-                GUI.color = Color.white;
-                rect.xMin = xMin;
-            }*/
 
             if (!node.prereqStats.NullOrEmpty())
             {
