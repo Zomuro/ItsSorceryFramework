@@ -23,7 +23,7 @@ namespace ItsSorceryFramework
         public IEnumerable<string> ConfigErrors()
         {
             bool error = false;
-            foreach (var mapping in schemaMappings)
+            /*foreach (var mapping in schemaMappings)
             {
                 if(mapping.forceLevel && mapping.level > mapping.schema.progressTrackerDef.progressHediff.maxSeverity)
                 {
@@ -32,7 +32,7 @@ namespace ItsSorceryFramework
 
                 if (mapping.requiredNodes.NullOrEmpty()) continue;
                 foreach (var configError in mapping.ConfigErrors()) yield return configError;
-            }
+            }*/
 
             if (error) Log.Error("A SchemaSet has an error: see the warnings above.");
 
@@ -53,6 +53,8 @@ namespace ItsSorceryFramework
         public bool forceLevel = false; // instead of leveling pawn as needed, level to the set level
 
         public int level = 1;
+
+        //public IntRange levelRange = IntRange.Zero;
 
         public bool forcePoints = false; // instead of getting the necessary skill points as needed, level to the set level
 
