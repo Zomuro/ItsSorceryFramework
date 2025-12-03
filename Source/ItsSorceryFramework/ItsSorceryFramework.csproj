@@ -65,6 +65,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="SchemaNodeMapDef.cs" />
+    <Compile Include="SchemaSetDef.cs" />
     <Compile Include="FloatMenuOptionProvider_ProgressEXPWorkerUseItem.cs" />
     <Compile Include="FloatMenuOptionProvider_EnergyTrackerCompOnConsume.cs" />
     <Compile Include="ISF_PrereqDef.cs" />

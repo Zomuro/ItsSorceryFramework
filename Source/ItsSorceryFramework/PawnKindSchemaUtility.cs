@@ -21,7 +21,7 @@ namespace ItsSorceryFramework
                 foreach (var schemaSet in allSets.schemaSets) // else, for each schema set
                 {
                     // add schema at random
-                    SchemaNodeMap mapping = schemaSet.GetRandSchema(); // get random schema 
+                    SchemaNodeMapDef mapping = schemaSet.GetRandSchema(); // get random schema 
                     SorcerySchemaUtility.AddSorcerySchema(pawn, mapping.schema, out SorcerySchema schema, mapping.baseClassDef); // add schema w/ specified base class
 
                     // complete class changes first (with its own level/point/prereqs)
@@ -42,7 +42,7 @@ namespace ItsSorceryFramework
             }
         }
 
-        public static void ResolveForcedLevel(SchemaNodeMap mapping, ref SorcerySchema schema)
+        public static void ResolveForcedLevel(SchemaNodeMapDef mapping, ref SorcerySchema schema)
         {
             if (!mapping.forceLevel) return; // if a forced level is not implemented, just skip
 
@@ -51,7 +51,7 @@ namespace ItsSorceryFramework
             while (!schema.progressTracker.Maxed && schema.progressTracker.CurrLevel < mapping.level) schema.progressTracker.ForceLevelUp(1, true);
         }
 
-        public static void ResolveForcedPoints(SchemaNodeMap mapping, ref SorcerySchema schema)
+        public static void ResolveForcedPoints(SchemaNodeMapDef mapping, ref SorcerySchema schema)
         {
             // if the mapping forces points at a minimum level, sets point either at that level or at the points at the current level, whichever is higher
             if (mapping.forcePoints) schema.progressTracker.points = Math.Max(schema.progressTracker.points, mapping.points); 
@@ -124,7 +124,7 @@ namespace ItsSorceryFramework
             }
         }
 
-        public static void ResolvePrereqsNode(SchemaNodeMap mapping, ref SorcerySchema schema)
+        public static void ResolvePrereqsNode(SchemaNodeMapDef mapping, ref SorcerySchema schema)
         {
             // unlock relevant nodes
             HashSet<LearningTrackerDef> learningTrackerDefs = new HashSet<LearningTrackerDef>();
