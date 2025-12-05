@@ -386,17 +386,56 @@ namespace ItsSorceryFramework
             return false;
         }
 
-        public static bool PrereqHediffFufilled(Pawn pawn, Dictionary<HediffDef, float> prereqsHediff)
+        public static bool PrereqHediffFufilled(Pawn pawn, List<NodeHediffReqs> prereqsHediff)
         {
-            Hediff hediff;
-            foreach (var pair in prereqsHediff)
+            foreach(var nodeHediffReq in prereqsHediff)
             {
-                hediff = pawn.health.hediffSet.GetFirstHediffOfDef(pair.Key);
-                if (hediff == null) return false;
-                else if (hediff.Severity < pair.Value) return false;
+                foreach (var pair in nodeHediffReq.hediffReqs)
+                {
+                    if (PrereqFailHediffCase(pawn, pair.Key, pair.Value, nodeHediffReq.mode)) return false;
+                }
+            }
+            return true;
+        }
+
+        public static bool PrereqFailHediffCase(Pawn pawn, HediffDef hediffDef, float severity, LearningNodeStatPrereqMode mode)
+        {
+            Hediff hediff = pawn.health.hediffSet.GetFirstHediffOfDef(hediffDef);
+
+            switch (mode)
+            {
+                case LearningNodeStatPrereqMode.Equal:
+                    if (hediff == null || hediff.Severity != severity) return true;
+                    break;
+
+                case LearningNodeStatPrereqMode.NotEqual:
+                    if (hediff == null) return false;
+                    if (hediff.Severity == severity) return true;
+                    break;
+
+                case LearningNodeStatPrereqMode.Greater:
+                    if (hediff == null || hediff.Severity <= severity) return true;
+                    break;
+
+                case LearningNodeStatPrereqMode.GreaterEqual:
+                    if (hediff == null || hediff.Severity < severity) return true;
+                    break;
+
+                case LearningNodeStatPrereqMode.Lesser:
+                    if (hediff == null) return false;
+                    if (hediff.Severity >= severity) return true;
+                    break;
+
+                case LearningNodeStatPrereqMode.LesserEqual:
+                    if (hediff == null) return false;
+                    if (hediff.Severity > severity) return true;
+                    break;
+
+                default:
+                    break;
             }
 
-            return true;
+            return false;
         }
 
         public static string PrereqsModeNotif(LearningNodePrereqMode mode, int min = 0, int done = 0)

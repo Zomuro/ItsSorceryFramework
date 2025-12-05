@@ -202,16 +202,49 @@ namespace ItsSorceryFramework
             ResolveForceHediff(targetClassDef.prereqHediffs, ref schema);
         }
 
-        public static void ResolveForceHediff(Dictionary<HediffDef, float> prereqsHediff, ref SorcerySchema schema)
+        public static void ResolveForceHediff(List<NodeHediffReqs> prereqsHediff, ref SorcerySchema schema)
         {
-            foreach (var hediffReq in prereqsHediff) // otherwise, check and add if needed
+            foreach(var nodeHediffReq in prereqsHediff)
             {
-                if (schema.pawn.health.hediffSet.GetFirstHediffOfDef(hediffReq.Key) is Hediff hediff && hediff != null)
+                foreach(var prereq in nodeHediffReq.hediffReqs)
                 {
-                    hediff.Severity = hediffReq.Value;
+                    float adjHediffSeverity = ResolveForceHediffAdjustValueByMode(prereq.Key, prereq.Value, nodeHediffReq.mode);
+                    if (schema.pawn.health.hediffSet.GetFirstHediffOfDef(prereq.Key) is Hediff hediff && hediff != null)
+                    {
+                        hediff.Severity = adjHediffSeverity;
+                    }
+                    else HealthUtility.AdjustSeverity(schema.pawn, prereq.Key, adjHediffSeverity);
                 }
-                else HealthUtility.AdjustSeverity(schema.pawn, hediffReq.Key, hediffReq.Value);
             }
+        }
+
+        public static float ResolveForceHediffAdjustValueByMode(HediffDef hediffDef, float value, LearningNodeStatPrereqMode mode)
+        {
+            switch (mode)
+            {
+                case LearningNodeStatPrereqMode.Equal:
+                    return value;
+
+                case LearningNodeStatPrereqMode.NotEqual:
+                    return Mathf.Clamp(value + 0.01f, hediffDef.minSeverity, hediffDef.maxSeverity);
+
+                case LearningNodeStatPrereqMode.Greater:
+                    return Mathf.Clamp(value + 0.01f, hediffDef.minSeverity, hediffDef.maxSeverity);
+
+                case LearningNodeStatPrereqMode.GreaterEqual:
+                    return value;
+
+                case LearningNodeStatPrereqMode.Lesser:
+                    return Mathf.Clamp(value - 0.01f, hediffDef.minSeverity, hediffDef.maxSeverity);
+
+                case LearningNodeStatPrereqMode.LesserEqual:
+                    return value;
+
+                default:
+                    break;
+            }
+
+            return value;
         }
 
         public static void ResolveForceSkillClass(ProgressTrackerClassDef targetClassDef, ref SorcerySchema schema)

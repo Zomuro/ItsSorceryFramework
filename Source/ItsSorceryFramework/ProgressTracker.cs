@@ -133,6 +133,7 @@ namespace ItsSorceryFramework
             // finally, (re)set the hediffstage of the hediff
             Hediff.cachedCurStage = RefreshCurStage();
             if (pawn.Spawned) pawn.health.Notify_HediffChanged(Hediff);
+            StatsReportUtility.Reset(); // force stat report refresh
         }
 
         public virtual HediffStage RefreshCurStage() => new HediffStage();

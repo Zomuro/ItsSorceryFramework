@@ -50,7 +50,7 @@ namespace ItsSorceryFramework
         [XmlInheritanceAllowDuplicateNodes]
         public List<TraitRequirement> prereqTraits = new List<TraitRequirement>();
 
-        public Dictionary<HediffDef, float> prereqHediffs = new Dictionary<HediffDef, float>();
+        public List<NodeHediffReqs> prereqHediffs = new List<NodeHediffReqs>();
 
         public List<NodeStatReqs> prereqStats = new List<NodeStatReqs>();
 
@@ -100,11 +100,18 @@ namespace ItsSorceryFramework
         [XmlInheritanceAllowDuplicateNodes]
         public List<TraitRequirement> prereqTraitsProhibit = new List<TraitRequirement>();
 
-        public Dictionary<HediffDef, float> prereqHediffsProhibit = new Dictionary<HediffDef, float>();
+        public List<NodeHediffReqs> prereqHediffsProhibit = new List<NodeHediffReqs>();
 
         public List<NodeStatReqs> prereqStatsProhibit = new List<NodeStatReqs>();
 
         public List<NodeSkillReqs> prereqSkillsProhibit = new List<NodeSkillReqs>();
+    }
+
+    public class NodeHediffReqs
+    {
+        public Dictionary<HediffDef, float> hediffReqs;
+
+        public LearningNodeStatPrereqMode mode = LearningNodeStatPrereqMode.Greater;
     }
 
     public class NodeStatReqs

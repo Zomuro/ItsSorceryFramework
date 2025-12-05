@@ -438,17 +438,27 @@ namespace ItsSorceryFramework
                 Widgets.LabelCacheHeight(ref rect, "ISF_GeneralDialogPrereqHediffProhibit".Translate(), true, false);
                 rect.yMin += rect.height;
                 rect.xMin += 6f;
+
                 Hediff hediff;
-                String reqLabel;
-                foreach (var prereq in classDef.prereqHediffsProhibit)
+                string hediffCurSeverity;
+                string reqLabel;
+                string reqSeverity;
+                foreach (var nodeHediffReq in classDef.prereqHediffsProhibit)
                 {
-                    hediff = progressTracker.pawn.health.hediffSet.GetFirstHediffOfDef(prereq.Key);
-                    PrereqUtility.SetPrereqStatusColor(!(hediff != null && hediff.Severity >= prereq.Value));
-                    reqLabel = !prereq.Key.stages.NullOrEmpty() ?
-                        prereq.Key.stages[prereq.Key.StageAtSeverity(prereq.Value)].label : prereq.Value.ToString("F0");
-                    Widgets.LabelCacheHeight(ref rect, prereq.Key.LabelCap + " ({0})".Translate(reqLabel), true, false);
-                    rect.yMin += rect.height;
+                    foreach (var prereq in nodeHediffReq.hediffReqs)
+                    {
+                        PrereqUtility.SetPrereqStatusColor(PrereqUtility.PrereqFailHediffCase(progressTracker.pawn, prereq.Key, prereq.Value, nodeHediffReq.mode));
+                        reqSeverity = prereq.Value.ToString("F2");
+                        reqLabel = !prereq.Key.stages.NullOrEmpty() ?
+                            $"{prereq.Key.stages[prereq.Key.StageAtSeverity(prereq.Value)].label} ({reqSeverity})" : prereq.Value.ToString("F2");
+                        hediff = progressTracker.pawn.health.hediffSet.GetFirstHediffOfDef(prereq.Key);
+                        hediffCurSeverity = hediff != null ? hediff.Severity.ToString("F2") : "N/A";
+                        Widgets.LabelCacheHeight(ref rect,
+                            $"{prereq.Key.LabelCap} ({hediffCurSeverity}) {PrereqUtility.PrereqsStatsModeNotif(nodeHediffReq.mode)} {reqLabel}", true, false);
+                        rect.yMin += rect.height;
+                    }
                 }
+
                 GUI.color = Color.white;
                 rect.xMin = xMin;
             }
@@ -613,16 +623,25 @@ namespace ItsSorceryFramework
                 rect.yMin += rect.height;
                 rect.xMin += 6f;
                 Hediff hediff;
-                String reqLabel;
-                foreach (var prereq in classDef.prereqHediffs)
+                string hediffCurSeverity;
+                string reqLabel;
+                string reqSeverity;
+                foreach (var nodeHediffReq in classDef.prereqHediffs)
                 {
-                    hediff = progressTracker.pawn.health.hediffSet.GetFirstHediffOfDef(prereq.Key);
-                    PrereqUtility.SetPrereqStatusColor((hediff != null && hediff.Severity >= prereq.Value));
-                    reqLabel = !prereq.Key.stages.NullOrEmpty() ?
-                        prereq.Key.stages[prereq.Key.StageAtSeverity(prereq.Value)].label : prereq.Value.ToString("F0");
-                    Widgets.LabelCacheHeight(ref rect, prereq.Key.LabelCap + " ({0})".Translate(reqLabel), true, false);
-                    rect.yMin += rect.height;
+                    foreach(var prereq in nodeHediffReq.hediffReqs)
+                    {
+                        PrereqUtility.SetPrereqStatusColor(!PrereqUtility.PrereqFailHediffCase(progressTracker.pawn, prereq.Key, prereq.Value, nodeHediffReq.mode));
+                        reqSeverity = prereq.Value.ToString("F2");
+                        reqLabel = !prereq.Key.stages.NullOrEmpty() ? 
+                            $"{prereq.Key.stages[prereq.Key.StageAtSeverity(prereq.Value)].label} ({reqSeverity})" : prereq.Value.ToString("F2");
+                        hediff = progressTracker.pawn.health.hediffSet.GetFirstHediffOfDef(prereq.Key);
+                        hediffCurSeverity = hediff != null ? hediff.Severity.ToString("F2") : "N/A";
+                        Widgets.LabelCacheHeight(ref rect, 
+                            $"{prereq.Key.LabelCap} ({hediffCurSeverity}) {PrereqUtility.PrereqsStatsModeNotif(nodeHediffReq.mode)} {reqLabel}", true, false);
+                        rect.yMin += rect.height;
+                    }
                 }
+
                 GUI.color = Color.white;
                 rect.xMin = xMin;
             }
