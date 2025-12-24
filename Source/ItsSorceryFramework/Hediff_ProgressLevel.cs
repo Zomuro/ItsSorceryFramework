@@ -27,13 +27,7 @@ namespace ItsSorceryFramework
 			}
 		}
 
-		public virtual int Level
-        {
-            get
-            {
-				return (int)Severity;
-			}
-        }
+		public virtual int Level => (int)Severity;
 
 		public override void Tick()
 		{
@@ -45,20 +39,12 @@ namespace ItsSorceryFramework
 			base.PostAdd(dinfo);
 		}
 
-		public override bool ShouldRemove
-		{
-			get
-			{
-				return Severity <= 0;
-			}
-		}
+		public override bool ShouldRemove => Severity <= 0;
 
 		public override void ExposeData()
 		{
 			base.ExposeData();
 			
 		}
-
-		public string temp = " (level {0} | {1})";
 	}
 }

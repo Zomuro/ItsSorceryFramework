@@ -141,7 +141,9 @@ namespace ItsSorceryFramework
             // determine tick to recache & set stat value
             recacheTick = Find.TickManager.TicksGame + tickOffset;
             float priorStatVal = statVal;
+            
             statVal = pawn.GetStatValue(statDef);
+            statDef.Worker.ClearCacheForThing(pawn); // forcibly clears cache used, even for immutable stats.
 
             if (Prefs.DevMode && ItsSorceryUtility.settings.ShowItsSorceryDebug) Log.Message($"[It's Sorcery!] PawnCacheUtility: {pawn.Name} {statDef.label} ({priorStatVal} => {statVal}) cached till game tick {recacheTick} for {tickOffset} ticks.");
         }

@@ -111,15 +111,7 @@ namespace ItsSorceryFramework
         // use to define a clear hediff state (no bonuses from magic system)- UNUSED
         public virtual void ClearHediffStage(Hediff_Progress hediff)
         {
-            if (hediff.CurStage != null) hediff.def.stages.Clear();
-
-            HediffStage newStage = new HediffStage()
-            {
-                statOffsets = new List<StatModifier>(),
-                statFactors = new List<StatModifier>(),
-                capMods = new List<PawnCapacityModifier>()
-            };
-            hediff.cachedCurStage = newStage;
+            hediff.ClearCurStage();
         }
 
         public virtual void ResetHediff()
@@ -131,12 +123,13 @@ namespace ItsSorceryFramework
             Hediff = tempHediff; // link the progresstracker to the hediff on the progress tracker's side
 
             // finally, (re)set the hediffstage of the hediff
-            Hediff.cachedCurStage = RefreshCurStage();
+            //Hediff.cachedCurStage = GetCurStage();
+
+            Hediff.RefreshCurStage();
             if (pawn.Spawned) pawn.health.Notify_HediffChanged(Hediff);
-            StatsReportUtility.Reset(); // force stat report refresh
         }
 
-        public virtual HediffStage RefreshCurStage() => new HediffStage();
+        public virtual HediffStage GetCurStage() => new HediffStage();
 
         public virtual void CleanClassChangeOpps()
         {

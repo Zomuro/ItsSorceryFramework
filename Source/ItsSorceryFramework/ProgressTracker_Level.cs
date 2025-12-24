@@ -81,12 +81,12 @@ namespace ItsSorceryFramework
             }
 
             // finally, (re)set the hediffstage of the hediff
-            Hediff.cachedCurStage = RefreshCurStage();
+            //Hediff.cachedCurStage = GetCurStage();
+            Hediff.RefreshCurStage();
             if (pawn.Spawned) pawn.health.Notify_HediffChanged(Hediff);// clean any requisite dirty caches
-            StatsReportUtility.Reset(); // force stat report refresh
         }
 
-        public override HediffStage RefreshCurStage()
+        public override HediffStage GetCurStage()
         {
             HediffStage stage = new HediffStage()
             {

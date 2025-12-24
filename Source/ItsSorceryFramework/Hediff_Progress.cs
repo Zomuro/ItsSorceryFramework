@@ -5,11 +5,9 @@ namespace ItsSorceryFramework
 {
     public class Hediff_Progress : HediffWithComps
 	{
-		//public ProgressTracker progressTracker;
-
 		public SorcerySchema schema;
 
-		public HediffStage cachedCurStage;
+		private HediffStage cachedCurStage;
 
 		public override string Label => def.label;
 
@@ -47,10 +45,38 @@ namespace ItsSorceryFramework
 		{
 			get
 			{
-				if (cachedCurStage == null) cachedCurStage = Schema?.progressTracker?.RefreshCurStage() ?? new HediffStage();
-				return cachedCurStage;
+                if (cachedCurStage == null) RefreshCurStage();
+                return cachedCurStage;
 			}
 		}
+
+        public virtual void ClearCurStage()
+        {
+            cachedCurStage = new HediffStage();
+        }
+
+        public virtual void DirtyCachedCurStage() => cachedCurStage = null;
+
+        public virtual void RefreshCurStage()
+        {
+            cachedCurStage = Schema?.progressTracker?.GetCurStage();
+            DirtyCurStageStatCache();
+        }
+
+        public virtual void DirtyCurStageStatCache() // forcibly clears stat value caches for stat modifiers in curstage, even immutable stats
+        {
+            if (cachedCurStage is null) return;
+
+            if (!cachedCurStage.statOffsets.NullOrEmpty())
+            {
+                foreach (var statMod in cachedCurStage.statOffsets) statMod.stat.Worker.ClearCacheForThing(pawn);
+            }
+
+            if (!cachedCurStage.statFactors.NullOrEmpty())
+            {
+                foreach (var statMod in cachedCurStage.statFactors) statMod.stat.Worker.ClearCacheForThing(pawn);
+            }
+        }
 
 		public override void Tick() => base.Tick();
 
@@ -72,7 +98,7 @@ namespace ItsSorceryFramework
 						$"\nProgressTracker factors: {Schema?.progressTracker.statFactorsTotal.ToStringSafeEnumerable()}" +
 						$"\nProgressTracker cap mods: {Schema?.progressTracker.capModsTotal.ToStringSafeEnumerable()}");
 				}
-                cachedCurStage = Schema?.progressTracker?.RefreshCurStage() ?? new HediffStage();
+                cachedCurStage = Schema?.progressTracker?.GetCurStage() ?? new HediffStage();
             }
         }
 	}
