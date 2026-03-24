@@ -19,10 +19,10 @@ namespace ItsSorceryFramework
 
 		public bool condVisiblePrereq = false;
 
-		/*[NoTranslate]
+		[NoTranslate]
 		public string iconPath;
 
-		private Texture2D uiIcon = null;*/
+		private Texture2D uiIcon = null;
 
 		public List<LearningTreeNodeDef> exclusiveNodes = new List<LearningTreeNodeDef>();
 
@@ -44,43 +44,33 @@ namespace ItsSorceryFramework
 
 		public List<LearningTrackerDef> unlocks;
 
-		private string cachedTip;
+        public bool repeatable = false;
 
-		public float ViewX
+        public int repeatLimit = 0;
+
+		public int repeatPrereqComp = 0; // RENAME TO BETTER THING
+
+        private string cachedTip;
+
+		public int RepeatPrereqCompClamped => Mathf.Clamp(repeatPrereqComp, 0, repeatLimit); // clamped value for prereq validation
+
+        public float ViewX => coordX;
+
+		public float ViewY => coordY;
+
+
+        public Texture2D Icon
 		{
 			get
 			{
-				return this.coordX;
-			}
-		}
-
-		public float ViewY
-		{
-			get
-			{
-				return this.coordY;
-			}
-		}
-
-		// commented out for now- revisit another time to add icons to the tree
-		/*public Texture2D Icon
-		{
-			get
-			{
-				if (this.uiIcon == null)
+				if (uiIcon == null)
 				{
-					if (!iconPath.NullOrEmpty())
-					{
-						this.uiIcon = ContentFinder<Texture2D>.Get(iconPath, true);
-					}
-					else
-					{
-						this.uiIcon = BaseContent.BadTex;
-					}
+					if (!iconPath.NullOrEmpty()) uiIcon = ContentFinder<Texture2D>.Get(iconPath, true);
+					else uiIcon = BaseContent.BadTex;
 				}
-				return this.uiIcon;
+				return uiIcon;
 			}
-		}*/
+		}
 
 		public IEnumerable<StatDrawEntry> SpecialDisplayMods()
 		{

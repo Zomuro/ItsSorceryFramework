@@ -301,14 +301,15 @@ namespace ItsSorceryFramework
             if (!classDef.prereqNodesProhibit.NullOrEmpty())
             {
                 LearningNodeRecord LearningRecord = progressTracker.schema.learningNodeRecord; // reuse old methods here
-                HashSet<LearningTreeNodeDef> nodesDone = LearningRecord.completion.Where(x => x.Value == true).Select(x => x.Key).ToHashSet();
+                //HashSet<LearningTreeNodeDef> nodesDone = LearningRecord.completion.Where(x => x.Value == true).Select(x => x.Key).ToHashSet();
+                HashSet<LearningTreeNodeDef> nodesDone = LearningRecord.completion.Where(x => LearningRecord.ValidateNodeCanFufillPrereq(x.Key) == true).Select(x => x.Key).ToHashSet();
                 doneCount = PrereqUtility.PrereqsDoneCount(nodesDone, classDef.prereqNodesProhibit);
                 Widgets.LabelCacheHeight(ref rect, "ISF_GeneralDialogPrereqNodeProhibit".Translate() + PrereqUtility.PrereqsModeNotif(classDef.prereqNodeModeProhibit, classDef.prereqNodeModeMinProhibit, doneCount), true, false);
                 rect.yMin += rect.height;
                 rect.xMin += 6f;
                 foreach (var prereq in classDef.prereqNodesProhibit)
                 {
-                    PrereqUtility.SetPrereqStatusColor(!LearningRecord.completion[prereq]);
+                    PrereqUtility.SetPrereqStatusColor(!LearningRecord.ValidateNodeCanFufillPrereq(prereq)); //!LearningRecord.completion[prereq]
                     Widgets.LabelCacheHeight(ref rect, prereq.LabelCap, true, false);
                     rect.yMin += rect.height;
                 }
@@ -485,14 +486,15 @@ namespace ItsSorceryFramework
             if (!classDef.prereqNodes.NullOrEmpty())
             {
                 LearningNodeRecord LearningRecord = progressTracker.schema.learningNodeRecord; // reuse old methods here
-                HashSet<LearningTreeNodeDef> nodesDone = LearningRecord.completion.Where(x => x.Value == true).Select(x => x.Key).ToHashSet();
+                //HashSet<LearningTreeNodeDef> nodesDone = LearningRecord.completion.Where(x => x.Value == true).Select(x => x.Key).ToHashSet();
+                HashSet<LearningTreeNodeDef> nodesDone = LearningRecord.completion.Where(x => LearningRecord.ValidateNodeCanFufillPrereq(x.Key) == true).Select(x => x.Key).ToHashSet();
                 doneCount = PrereqUtility.PrereqsDoneCount(nodesDone, classDef.prereqNodes);
                 Widgets.LabelCacheHeight(ref rect, "ISF_GeneralDialogPrereqNode".Translate() + PrereqUtility.PrereqsModeNotif(classDef.prereqNodeMode, classDef.prereqNodeModeMin, doneCount), true, false);
                 rect.yMin += rect.height;
                 rect.xMin += 6f;
                 foreach (var prereq in classDef.prereqNodes)
                 {
-                    PrereqUtility.SetPrereqStatusColor(LearningRecord.completion[prereq]);
+                    PrereqUtility.SetPrereqStatusColor(LearningRecord.ValidateNodeCanFufillPrereq(prereq)); //LearningRecord.completion[prereq]
                     Widgets.LabelCacheHeight(ref rect, prereq.LabelCap, true, false);
                     rect.yMin += rect.height;
                 }

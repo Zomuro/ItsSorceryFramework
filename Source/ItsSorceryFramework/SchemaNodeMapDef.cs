@@ -115,6 +115,8 @@ namespace ItsSorceryFramework
     {
         public LearningTreeNodeDef nodeDef;
 
+        public int repeat = 0;
+
         public bool forceHediff = false;
 
         public bool forceSkill = false;

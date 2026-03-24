@@ -89,7 +89,8 @@ namespace ItsSorceryFramework
                 Text.Font = GameFont.Medium;
                 GenUI.SetLabelAlign(TextAnchor.MiddleLeft);
                 Rect labelRect = new Rect(0f, coordY, viewRect.width, 50f);
-                Widgets.LabelCacheHeight(ref labelRect, selectedNode.LabelCap, true, false);
+                string nodeLabelCap = LearningRecord.CompletionNodeLabel(selectedNode);
+                Widgets.LabelCacheHeight(ref labelRect, nodeLabelCap, true, false);
                 GenUI.ResetLabelAlign();
                 Text.Font = GameFont.Small;
                 coordY += labelRect.height;
@@ -133,18 +134,8 @@ namespace ItsSorceryFramework
                     Widgets.Label(confirmButton.ContractedBy(5f), reason);
                     Text.Anchor = TextAnchor.UpperLeft;
                 }
-                else if (!LearningRecord.completion[selectedNode] &&
-                    !LearningRecord.PrereqFufilledProhibit(selectedNode) && !LearningRecord.PrereqResearchFufilledProhibit(selectedNode) &&
-                    !LearningRecord.PrereqGenesFulfilledProhibit(selectedNode) && !LearningRecord.PrereqTraitsFulfilledProhibit(selectedNode) &&
-                    !LearningRecord.PrereqXenotypeFulfilledProhibit(selectedNode) && !LearningRecord.PrereqAgeFulfilledProhibit(selectedNode) &&
-                    !LearningRecord.PrereqLevelFulfilledProhibit(selectedNode) && !LearningRecord.PrereqStatFulfilledProhibit(selectedNode) &&
-                    !LearningRecord.PrereqSkillFulfilledProhibit(selectedNode) && !LearningRecord.PrereqHediffFulfilledProhibit(selectedNode) &&
-                    LearningRecord.PrereqFufilled(selectedNode) && LearningRecord.PrereqResearchFufilled(selectedNode) &&
-                    LearningRecord.PrereqGenesFulfilled(selectedNode) && LearningRecord.PrereqTraitsFulfilled(selectedNode) && 
-                    LearningRecord.PrereqXenotypeFulfilled(selectedNode) && LearningRecord.PrereqAgeFulfilled(selectedNode) &&
-                    LearningRecord.PrereqLevelFulfilled(selectedNode) && LearningRecord.PrereqStatFulfilled(selectedNode) &&
-                    LearningRecord.PrereqSkillFulfilled(selectedNode) && LearningRecord.PrereqHediffFulfilled(selectedNode) && 
-                    LearningRecord.ExclusiveNodeFulfilled(selectedNode) && selectedNode.pointReq + progress.usedPoints <= progress.points) 
+                else if (LearningRecord.ValidateCompletable(selectedNode) &&
+                    LearningRecord.ValidateCompletionPrereqs(selectedNode) && selectedNode.pointReq + progress.usedPoints <= progress.points) 
                 {
                     if (Widgets.ButtonText(confirmButton, "ISF_SkillPointUse".Translate(selectedNode.pointReq, 
                         progress.def.skillPointLabelKey.Translate())))
@@ -153,7 +144,8 @@ namespace ItsSorceryFramework
                         ProgressDiffLedger progressDiffLedger = diffLog.PrepNewLedger(schema.progressTracker);
                         ProgressDiffClassLedger progressDiffClassLedger = new ProgressDiffClassLedger();
 
-                        LearningRecord.completion[selectedNode] = true;
+                        //LearningRecord.completion[selectedNode] = true;
+                        LearningRecord.CompletionRecordUpdate(selectedNode);
                         LearningRecord.CompletionAbilities(selectedNode, ref progressDiffClassLedger);
                         LearningRecord.CompletionHediffs(selectedNode, ref progressDiffClassLedger);
                         LearningRecord.CompletionModifiers(selectedNode, ref progressDiffClassLedger);
@@ -169,7 +161,7 @@ namespace ItsSorceryFramework
                 else
                 {
                     Text.Anchor = TextAnchor.MiddleCenter;
-                    if (LearningRecord.completion[selectedNode]) reason = "ISF_LearningNodeReasonCompleted".Translate();
+                    if (!LearningRecord.ValidateCompletable(selectedNode)) reason = "ISF_LearningNodeReasonCompleted".Translate();
                     else if (!LearningRecord.ExclusiveNodeFulfilled(selectedNode)) reason = "ISF_LearningNodeReasonExclusive".Translate();
                     else
                     {
@@ -214,7 +206,7 @@ namespace ItsSorceryFramework
                 
                 Text.Anchor = TextAnchor.UpperLeft;
                 this.leftViewDebugHeight = 0f;
-                if (Prefs.DevMode && !LearningRecord.completion[selectedNode])
+                if (Prefs.DevMode && LearningRecord.ValidateCompletable(selectedNode))
                 {
                     Text.Font = GameFont.Tiny;
                     Rect debugButton = new Rect(confirmButton.x, outRect.yMax, 120f, 30f);
@@ -224,7 +216,8 @@ namespace ItsSorceryFramework
                         ProgressDiffLedger progressDiffLedger = diffLog.PrepNewLedger(schema.progressTracker);
                         ProgressDiffClassLedger progressDiffClassLedger = new ProgressDiffClassLedger();
 
-                        LearningRecord.completion[selectedNode] = true;
+                        //LearningRecord.completion[selectedNode] = true;
+                        LearningRecord.CompletionRecordUpdate(selectedNode);
                         LearningRecord.CompletionAbilities(selectedNode, ref progressDiffClassLedger);
                         LearningRecord.CompletionHediffs(selectedNode, ref progressDiffClassLedger);
                         LearningRecord.CompletionModifiers(selectedNode, ref progressDiffClassLedger);
@@ -233,7 +226,7 @@ namespace ItsSorceryFramework
 
                         LearningRecord.CompletionLearningUnlock(selectedNode);
 
-                        foreach (var et in schema.energyTrackers) et.ForceClearEnergyStatCaches(); // ClearStatCache();
+                        foreach (var et in schema.energyTrackers) et.ForceClearEnergyStatCaches();
                     }
                     Text.Font = GameFont.Small;
                     this.leftViewDebugHeight = debugButton.height;
@@ -273,14 +266,16 @@ namespace ItsSorceryFramework
             // PROHIBIT prereqs
             if (!node.prereqNodesProhibit.NullOrEmpty())
             {
-                HashSet<LearningTreeNodeDef> nodesDone = LearningRecord.completion.Where(x => x.Value == true).Select(x => x.Key).ToHashSet();
+                //HashSet<LearningTreeNodeDef> nodesDone = LearningRecord.completion.Where(x => x.Value == true).Select(x => x.Key).ToHashSet();
+                HashSet<LearningTreeNodeDef> nodesDone = LearningRecord.completion.Where(x => LearningRecord.ValidateNodeCanFufillPrereq(x.Key) == true).Select(x => x.Key).ToHashSet();
                 doneCount = PrereqUtility.PrereqsDoneCount(nodesDone, node.prereqNodesProhibit); //prereqsDone.Item1
                 Widgets.LabelCacheHeight(ref rect, "ISF_GeneralDialogPrereqNodeProhibit".Translate() + PrereqUtility.PrereqsModeNotif(node.prereqNodeModeProhibit, node.prereqNodeModeMinProhibit, doneCount), true, false);
                 rect.yMin += rect.height;
                 rect.xMin += 6f;
                 foreach (var prereq in node.prereqNodesProhibit)
                 {
-                    SetPrereqStatusColor(!LearningRecord.completion[prereq], node);
+                    //SetPrereqStatusColor(!LearningRecord.completion[prereq], node);
+                    SetPrereqStatusColor(!LearningRecord.ValidateNodeCanFufillPrereq(prereq));
                     Widgets.LabelCacheHeight(ref rect, prereq.LabelCap, true, false);
                     if (Widgets.ButtonInvisible(rect, true))
                     {
@@ -317,7 +312,7 @@ namespace ItsSorceryFramework
                 rect.xMin += 6f;
                 foreach (var prereq in node.prereqResearchProhibit)
                 {
-                    SetPrereqStatusColor(!prereq.IsFinished, node);
+                    SetPrereqStatusColor(!prereq.IsFinished);
                     Widgets.LabelCacheHeight(ref rect, prereq.LabelCap, true, false);
                     rect.yMin += rect.height;
                 }
@@ -399,7 +394,7 @@ namespace ItsSorceryFramework
                 {
                     foreach (var statMod in prereqsStatCase.statReqs)
                     {
-                        SetPrereqStatusColor(PrereqUtility.PrereqFailStatCase(pawn, statMod, prereqsStatCase.mode), node);
+                        SetPrereqStatusColor(PrereqUtility.PrereqFailStatCase(pawn, statMod, prereqsStatCase.mode));
                         Widgets.LabelCacheHeight(ref rect, statMod.stat.LabelCap + PrereqUtility.PrereqsStatsModeNotif(prereqsStatCase.mode) +
                             statMod.stat.ValueToString(statMod.value, ToStringNumberSense.Absolute, !statMod.stat.formatString.NullOrEmpty()), true, false);
                         rect.yMin += rect.height;
@@ -418,7 +413,7 @@ namespace ItsSorceryFramework
                 {
                     foreach (var skillLevel in prereqsSkillCase.skillReqs)
                     {
-                        SetPrereqStatusColor(PrereqUtility.PrereqFailSkillCase(pawn, skillLevel.skillDef, skillLevel.ClampedLevel, prereqsSkillCase.mode), node);
+                        SetPrereqStatusColor(PrereqUtility.PrereqFailSkillCase(pawn, skillLevel.skillDef, skillLevel.ClampedLevel, prereqsSkillCase.mode));
                         Widgets.LabelCacheHeight(ref rect, skillLevel.skillDef.LabelCap + PrereqUtility.PrereqsStatsModeNotif(prereqsSkillCase.mode) +
                             skillLevel.ClampedLevel, true, false);
                         rect.yMin += rect.height;
@@ -460,14 +455,16 @@ namespace ItsSorceryFramework
             // NORMAL prereqs
             if (!node.prereqNodes.NullOrEmpty()) 
             {
-                HashSet<LearningTreeNodeDef> nodesDone = LearningRecord.completion.Where(x => x.Value == true).Select(x => x.Key).ToHashSet();
+                //HashSet<LearningTreeNodeDef> nodesDone = LearningRecord.completion.Where(x => x.Value == true).Select(x => x.Key).ToHashSet();
+                HashSet<LearningTreeNodeDef> nodesDone = LearningRecord.completion.Where(x => LearningRecord.ValidateNodeCanFufillPrereq(x.Key) == true).Select(x => x.Key).ToHashSet();
                 doneCount = PrereqUtility.PrereqsDoneCount(nodesDone, node.prereqNodes); //prereqsDone.Item1
                 Widgets.LabelCacheHeight(ref rect, "ISF_GeneralDialogPrereqNode".Translate() + PrereqUtility.PrereqsModeNotif(node.prereqNodeMode, node.prereqNodeModeMin, doneCount), true, false);
                 rect.yMin += rect.height;
                 rect.xMin += 6f;
                 foreach (var prereq in node.prereqNodes)
                 {
-                    SetPrereqStatusColor(LearningRecord.completion[prereq], node);
+                    //SetPrereqStatusColor(LearningRecord.completion[prereq], node);
+                    SetPrereqStatusColor(LearningRecord.ValidateNodeCanFufillPrereq(prereq));
                     Widgets.LabelCacheHeight(ref rect, prereq.LabelCap, true, false);
                     if (Widgets.ButtonInvisible(rect, true))
                     {
@@ -504,7 +501,7 @@ namespace ItsSorceryFramework
                 rect.xMin += 6f;
                 foreach (var prereq in node.prereqResearch)
                 {
-                    SetPrereqStatusColor(prereq.IsFinished, node);
+                    SetPrereqStatusColor(prereq.IsFinished);
                     Widgets.LabelCacheHeight(ref rect, prereq.LabelCap, true, false);
                     rect.yMin += rect.height;
                 }
@@ -586,7 +583,7 @@ namespace ItsSorceryFramework
                 {
                     foreach(var statMod in prereqsStatCase.statReqs)
                     {
-                        SetPrereqStatusColor(!PrereqUtility.PrereqFailStatCase(pawn, statMod, prereqsStatCase.mode), node);
+                        SetPrereqStatusColor(!PrereqUtility.PrereqFailStatCase(pawn, statMod, prereqsStatCase.mode));
                         Widgets.LabelCacheHeight(ref rect, statMod.stat.LabelCap + PrereqUtility.PrereqsStatsModeNotif(prereqsStatCase.mode) +
                             statMod.stat.ValueToString(statMod.value, ToStringNumberSense.Absolute, !statMod.stat.formatString.NullOrEmpty()), true, false);
                         rect.yMin += rect.height;
@@ -605,7 +602,7 @@ namespace ItsSorceryFramework
                 {
                     foreach (var skillLevel in prereqsSkillCase.skillReqs)
                     {
-                        SetPrereqStatusColor(!PrereqUtility.PrereqFailSkillCase(pawn, skillLevel.skillDef, skillLevel.ClampedLevel, prereqsSkillCase.mode), node);
+                        SetPrereqStatusColor(!PrereqUtility.PrereqFailSkillCase(pawn, skillLevel.skillDef, skillLevel.ClampedLevel, prereqsSkillCase.mode));
                         Widgets.LabelCacheHeight(ref rect, skillLevel.skillDef.LabelCap + PrereqUtility.PrereqsStatsModeNotif(prereqsSkillCase.mode) +
                             skillLevel.ClampedLevel, true, false);
                         rect.yMin += rect.height;
@@ -865,12 +862,23 @@ namespace ItsSorceryFramework
             return rect.yMax - yMin;
         }
 
-        private void SetPrereqStatusColor(bool compCheck, LearningTreeNodeDef node)
+        [Obsolete]
+        private void SetPrereqStatusColor(bool compCheck, LearningTreeNodeDef node) // depreciated method
         {
             if (LearningRecord.completion[node])
             {
                 return;
             }
+            if (compCheck)
+            {
+                GUI.color = Color.green;
+                return;
+            }
+            GUI.color = ColorLibrary.RedReadable;
+        }
+
+        private void SetPrereqStatusColor(bool compCheck)
+        {
             if (compCheck)
             {
                 GUI.color = Color.green;
@@ -952,7 +960,8 @@ namespace ItsSorceryFramework
                 }
 
                 Text.Anchor = TextAnchor.UpperCenter;
-                Widgets.LabelCacheHeight(ref nodeRect, node.LabelCap, true, false);
+                string nodeLabelCap = LearningRecord.CompletionNodeLabel(node);
+                Widgets.LabelCacheHeight(ref nodeRect, nodeLabelCap, true, false);
                 Text.Anchor = TextAnchor.UpperLeft;
 
                 if (Mouse.IsOver(nodeRect))
@@ -1010,9 +1019,7 @@ namespace ItsSorceryFramework
         {
             Color baseCol = default(Color);
 
-            //Color baseCol2 = TexUI.AvailResearchColor;
-
-            if (LearningRecord.completion[node]) baseCol = TexUI.FinishedResearchColor;
+            if (!LearningRecord.ValidateCompletable(node)) baseCol = TexUI.FinishedResearchColor;
 
             else if (!LearningRecord.ExclusiveNodeFulfilled(node)) baseCol = ColorLibrary.BrickRed;
 
@@ -1035,10 +1042,10 @@ namespace ItsSorceryFramework
 
                 else if (selectedNode.prereqNodes.NotNullAndContains(node))
                 {
-                    if(!LearningRecord.completion[node]) return TexUI.DependencyOutlineResearchColor;
+                    // check if node fufills prereq
+                    if(!LearningRecord.ValidateNodeCanFufillPrereq(node)) return TexUI.DependencyOutlineResearchColor;
                     else return TexUI.HighlightLineResearchColor;
                 }
-
             }
 
             return TexUI.DefaultBorderResearchColor;
@@ -1049,16 +1056,14 @@ namespace ItsSorceryFramework
             //Color col = default(Color);
             if (selectedNode == node)
             {
-                if (LearningRecord.completion[prereq])
+                if (LearningRecord.ValidateNodeCanFufillPrereq(prereq)) // if (LearningRecord.completion[prereq])
                 {
                     return new Tuple<Color, float>(TexUI.HighlightLineResearchColor, 3f);
                 }
 
-                else 
-                {
-                    return new Tuple<Color, float>(TexUI.DependencyOutlineResearchColor, 3f);
-                } 
+                else return new Tuple<Color, float>(TexUI.DependencyOutlineResearchColor, 3f);
             }   
+
             return new Tuple<Color, float>(TexUI.DefaultLineResearchColor, 2f);
         }
         

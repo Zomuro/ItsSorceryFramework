@@ -16,18 +16,9 @@ namespace ItsSorceryFramework
         {
             base.ConfigErrors();
 
+            // unused at the moment
+
             bool error = false;
-            /*foreach (var mapping in schemaMappings)
-            {
-                if(mapping.forceLevel && mapping.level > mapping.schema.progressTrackerDef.progressHediff.maxSeverity)
-                {
-                    yield return "Cannot force level greater than the maximum level of the magic system.";
-                }
-
-                if (mapping.requiredNodes.NullOrEmpty()) continue;
-                foreach (var configError in mapping.ConfigErrors()) yield return configError;
-            }*/
-
             if (error) Log.Error("A SchemaSet has an error: see the warnings above.");
 
             yield break;

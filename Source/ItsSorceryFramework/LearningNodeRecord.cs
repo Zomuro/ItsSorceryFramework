@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Verse;
+using UnityEngine;
 
 namespace ItsSorceryFramework
 {
@@ -15,6 +16,8 @@ namespace ItsSorceryFramework
 
         public Dictionary<LearningTreeNodeDef, bool> completion = new Dictionary<LearningTreeNodeDef, bool>();
 
+        public Dictionary<LearningTreeNodeDef, int> completionRepeated = new Dictionary<LearningTreeNodeDef, int>();
+
         public LearningNodeRecord(Pawn pawn)
         {
             this.pawn = pawn;
@@ -24,26 +27,47 @@ namespace ItsSorceryFramework
         {
             this.pawn = pawn;
             this.schema = schema;
-            InitializeCompletion();
+            InitializeCompletion(); // initialize completion dict when we first initialize this object
         }
 
 
         public virtual void ExposeData()
         {
-            Scribe_Collections.Look(ref completion, "completion", LookMode.Def, LookMode.Value);
+            Scribe_Collections.Look(ref completion, "completion", LookMode.Def, LookMode.Value); // general completion dict
+            Scribe_Collections.Look(ref completionRepeated, "completionRepeated", LookMode.Def, LookMode.Value); // repeated completion dict
             Scribe_References.Look(ref pawn, "pawn");
             Scribe_References.Look(ref schema, "schema");
+
+            if (Scribe.mode == LoadSaveMode.ResolvingCrossRefs) // on loading, update completion/completionRepeated dicts with new nodes
+            {
+                InitializeCompletion();
+            }
         }
 
 
         public void InitializeCompletion()
         {
-            List<LearningTreeNodeDef> nodes = new List<LearningTreeNodeDef>(from def in DefDatabase<LearningTreeNodeDef>.AllDefsListForReading
-                                                           where schema.def.learningTrackerDefs.Contains(def.learningTrackerDef)
-                                                           select def);
+            // consider simplifying system to only one dict w/ int
 
-            // if completion doesn't contain the node, include it and set node to false
-            foreach (LearningTreeNodeDef node in nodes) completion[node] = false;
+            // get hashlist of all nodes
+            HashSet<LearningTreeNodeDef> nodesHashList = new List<LearningTreeNodeDef>(from def in DefDatabase<LearningTreeNodeDef>.AllDefsListForReading
+                                                                            where schema.def.learningTrackerDefs.Contains(def.learningTrackerDef)
+                                                                            select def).ToHashSet();
+
+            HashSet<LearningTreeNodeDef> completionHashList = completion.Keys.ToHashSet();
+
+            HashSet<LearningTreeNodeDef> nodesRepeatedHashList = nodesHashList.Where(x => x.repeatable == true).ToHashSet();
+            HashSet<LearningTreeNodeDef> completionRepeatedHashList = completionRepeated.Keys.ToHashSet();
+
+            IEnumerable<LearningTreeNodeDef> completionAdd = nodesHashList.Except(completionHashList);
+            IEnumerable<LearningTreeNodeDef> completionRemove = completionHashList.Except(nodesHashList);
+            IEnumerable<LearningTreeNodeDef> completionRepeatAdd = nodesHashList.Except(completionRepeatedHashList);
+            IEnumerable<LearningTreeNodeDef> completionRepeatRemove = completionRepeatedHashList.Except(nodesHashList);
+
+            foreach (var n in completionAdd) completion[n] = false;
+            foreach (var n in completionRemove) completion.Remove(n);
+            foreach (var n in completionRepeatAdd) completionRepeated[n] = completion[n] ? 1 : 0;
+            foreach (var n in completionRepeatRemove) completionRepeated.Remove(n);
 
             InitializeMetrics();
         }
@@ -51,7 +75,9 @@ namespace ItsSorceryFramework
         public virtual void InitializeMetrics()
         {
             if (Prefs.DevMode && ItsSorceryUtility.settings.ShowItsSorceryDebug)
-                Log.Message($"{schema.def.LabelCap} Stats; Learning node count: {AllNodes.Count}; Completion list count {completion.Count}");
+                Log.Message($"{schema.def.LabelCap} Stats; Learning node count: {AllNodes.Count}; " +
+                    $"Completion list count {completion.Count}; " +
+                    $"Repeatable completion list count {completionRepeated.Count}");
         }
 
         public List<LearningTreeNodeDef> AllNodes => completion.Keys.ToList();
@@ -81,6 +107,17 @@ namespace ItsSorceryFramework
 
                 return cacheExclusive;
             }
+        }
+
+        public string CompletionNodeLabel(LearningTreeNodeDef node)
+        {
+            if (!node.repeatable) return node.LabelCap; // if not repeatable just the label
+
+            string labelPostFix = ""; // otherwise
+            if (node.repeatLimit <= 0) labelPostFix = $" ({completionRepeated[node] + 1})";
+            else labelPostFix = $" ({Mathf.Min(completionRepeated[node] + 1, node.repeatLimit)}/{node.repeatLimit})";
+
+            return node.LabelCap + labelPostFix;
         }
 
         public bool PrereqFufilled(LearningTreeNodeDef node)
@@ -209,7 +246,6 @@ namespace ItsSorceryFramework
             return true;
         }
 
-        
         public void CompletionAbilities(LearningTreeNodeDef node)
         {
             Pawn_AbilityTracker abilityTracker = pawn.abilities;
@@ -318,5 +354,43 @@ namespace ItsSorceryFramework
             }
         }
 
+        public bool ValidateCompletionPrereqs(LearningTreeNodeDef node)
+        {
+            if (!PrereqFufilledProhibit(node) && !PrereqResearchFufilledProhibit(node) &&
+                !PrereqGenesFulfilledProhibit(node) && !PrereqTraitsFulfilledProhibit(node) &&
+                !PrereqXenotypeFulfilledProhibit(node) && !PrereqAgeFulfilledProhibit(node) &&
+                !PrereqLevelFulfilledProhibit(node) && !PrereqStatFulfilledProhibit(node) &&
+                !PrereqSkillFulfilledProhibit(node) && !PrereqHediffFulfilledProhibit(node) &&
+                PrereqFufilled(node) && PrereqResearchFufilled(node) &&
+                PrereqGenesFulfilled(node) && PrereqTraitsFulfilled(node) &&
+                PrereqXenotypeFulfilled(node) && PrereqAgeFulfilled(node) &&
+                PrereqLevelFulfilled(node) && PrereqStatFulfilled(node) &&
+                PrereqSkillFulfilled(node) && PrereqHediffFulfilled(node) &&
+                ExclusiveNodeFulfilled(node)) return true;
+
+            return false;
+        }
+
+        public bool ValidateCompletable(LearningTreeNodeDef node) // determine if a learningtreenodedef is completeable
+        {
+            if (!completion[node]) return true;
+            if (node.repeatable && (node.repeatLimit <= 0 || completionRepeated[node] < node.repeatLimit)) return true;
+
+            return false;
+        }
+
+        public bool ValidateNodeCanFufillPrereq(LearningTreeNodeDef node) // figure out if a node qualifies as a prereq
+        {
+            if (!completion[node]) return false; // if completion is false it's not good for prereq
+            if (node.repeatable && completionRepeated[node] < node.RepeatPrereqCompClamped) return false; // if it hasn't been completed x amount of times then false
+
+            return true;
+        }
+
+        public void CompletionRecordUpdate(LearningTreeNodeDef node)
+        {
+            completion[node] = true;
+            if (node.repeatable) completionRepeated[node] += 1;
+        }
     }
 }

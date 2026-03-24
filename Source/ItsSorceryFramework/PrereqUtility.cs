@@ -53,14 +53,14 @@ namespace ItsSorceryFramework
                 case LearningNodePrereqMode.All:
                     foreach (LearningTreeNodeDef prereq in prereqsNodes)
                     {
-                        if (!learningNodeRecord.completion[prereq]) return false;
+                        if (!learningNodeRecord.ValidateNodeCanFufillPrereq(prereq)) return false; //!learningNodeRecord.completion[prereq]
                     }
                     return true;
 
                 case LearningNodePrereqMode.Or:
                     foreach (LearningTreeNodeDef prereq in prereqsNodes)
                     {
-                        if (learningNodeRecord.completion[prereq]) return true;
+                        if (learningNodeRecord.ValidateNodeCanFufillPrereq(prereq)) return true; // learningNodeRecord.completion[prereq]
                     }
                     return false;
 
@@ -71,7 +71,7 @@ namespace ItsSorceryFramework
                     int check = Math.Min(modeMin, prereqsNodes.Count());
                     foreach (LearningTreeNodeDef prereq in prereqsNodes)
                     {
-                        if (learningNodeRecord.completion[prereq]) count++;
+                        if (learningNodeRecord.ValidateNodeCanFufillPrereq(prereq)) count++; // learningNodeRecord.completion[prereq]
                         if (count >= check) return true;
                     }
                     return false;
