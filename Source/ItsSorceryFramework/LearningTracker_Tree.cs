@@ -1,6 +1,7 @@
 ﻿using RimWorld;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using UnityEngine;
@@ -31,14 +32,14 @@ namespace ItsSorceryFramework
 
         public LearningTracker_Tree(Pawn pawn, LearningTrackerDef def, SorcerySchema schema) : base(pawn, def, schema) { }
 
-        public List<LearningTreeNodeDef> AllRelativeNodes
+        public List<LearningTreeNodeDef> AllRelativeNodes // determines the nodes to DISPLAY
         {
             get
             {
                 if (cachedAllNodes == null)
                 {
                     cachedAllNodes = new List<LearningTreeNodeDef>(from def in LearningRecord.AllNodes
-                                                                   where def.learningTrackerDef == this.def
+                                                                   where def.learningTrackerDef == this.def && !def.hidden
                                                                    select def);                    
                 }
 
@@ -78,18 +79,18 @@ namespace ItsSorceryFramework
             float outRectHeight = rect.height - (10f + leftStartAreaHeight) - 45f;
 
             Widgets.BeginGroup(rect);
-            if (this.selectedNode != null)
+            if (selectedNode != null)
             {
                 Rect outRect = new Rect(0f, 0f, rect.width, outRectHeight - leftViewDebugHeight);
                 Rect viewRect = new Rect(0f, 0f, outRect.width - 20f, leftScrollViewHeight);
-                Widgets.BeginScrollView(outRect, ref this.leftScrollPosition, viewRect, true);
+                Widgets.BeginScrollView(outRect, ref leftScrollPosition, viewRect, true);
                 
                 float coordY = 0f;
 
                 Text.Font = GameFont.Medium;
                 GenUI.SetLabelAlign(TextAnchor.MiddleLeft);
                 Rect labelRect = new Rect(0f, coordY, viewRect.width, 50f);
-                string nodeLabelCap = LearningRecord.CompletionNodeLabel(selectedNode);
+                string nodeLabelCap = LearningRecord.CompletionNodeTreeLabel(selectedNode);
                 Widgets.LabelCacheHeight(ref labelRect, nodeLabelCap, true, false);
                 GenUI.ResetLabelAlign();
                 Text.Font = GameFont.Small;
@@ -99,23 +100,28 @@ namespace ItsSorceryFramework
                 Widgets.LabelCacheHeight(ref descRect, selectedNode.description, true, false);
                 coordY += descRect.height;
 
+                // two key node types - selectedNode (base node def) &
+                // selectedNodeRepeatAdj (changes and uses node defs in repeatNode Factors for repeatable completion)
+                // use to capture correct prereq and modifier info for repeatable nodes
+                LearningTreeNodeDef selectedNodeRepeatAdj = LearningRecord.GetRepeatNodeDef(selectedNode); 
+
                 Rect pointRect = new Rect(0f, coordY, viewRect.width, 500f);
-                coordY += DrawPointReq(selectedNode, pointRect);
+                coordY += DrawPointReq(selectedNodeRepeatAdj, pointRect);
 
                 Rect prereqRect = new Rect(0f, coordY, viewRect.width, 500f);
-                coordY += DrawNodePrereqs(selectedNode, prereqRect);
+                coordY += DrawNodePrereqs(selectedNodeRepeatAdj, prereqRect);
 
                 Rect exclusiveRect = new Rect(0f, coordY, viewRect.width, 500f);
-                coordY += DrawExclusive(selectedNode, exclusiveRect);
+                coordY += DrawExclusive(selectedNodeRepeatAdj, exclusiveRect);
 
                 Rect hyperlinkRect = new Rect(0f, coordY, viewRect.width, 500f);
-                coordY += DrawHyperlinks(hyperlinkRect, selectedNode);
+                coordY += DrawHyperlinks(hyperlinkRect, selectedNodeRepeatAdj);
 
                 Rect statModRect = new Rect(0f, coordY, viewRect.width, 500f);
-                coordY += DrawStatMods(statModRect, selectedNode);
+                coordY += DrawStatMods(statModRect, selectedNodeRepeatAdj);
 
                 Rect unlockRect = new Rect(0f, coordY, viewRect.width, 500f);
-                coordY += DrawUnlockedLearningTrackers(unlockRect, selectedNode);
+                coordY += DrawUnlockedLearningTrackers(unlockRect, selectedNodeRepeatAdj);
 
                 Rect contentRect = new Rect(0f, coordY, viewRect.width, 500f);
                 coordY += DrawContentSource(contentRect, selectedNode);
@@ -135,9 +141,9 @@ namespace ItsSorceryFramework
                     Text.Anchor = TextAnchor.UpperLeft;
                 }
                 else if (LearningRecord.ValidateCompletable(selectedNode) &&
-                    LearningRecord.ValidateCompletionPrereqs(selectedNode) && selectedNode.pointReq + progress.usedPoints <= progress.points) 
+                    LearningRecord.ValidateCompletionPrereqs(selectedNode) && selectedNodeRepeatAdj.pointReq + progress.usedPoints <= progress.points) 
                 {
-                    if (Widgets.ButtonText(confirmButton, "ISF_SkillPointUse".Translate(selectedNode.pointReq, 
+                    if (Widgets.ButtonText(confirmButton, "ISF_SkillPointUse".Translate(selectedNodeRepeatAdj.pointReq, 
                         progress.def.skillPointLabelKey.Translate())))
                     {
                         ProgressDiffLog diffLog = schema.progressTracker.progressDiffLog;
@@ -146,14 +152,14 @@ namespace ItsSorceryFramework
 
                         //LearningRecord.completion[selectedNode] = true;
                         LearningRecord.CompletionRecordUpdate(selectedNode);
-                        LearningRecord.CompletionAbilities(selectedNode, ref progressDiffClassLedger);
-                        LearningRecord.CompletionHediffs(selectedNode, ref progressDiffClassLedger);
-                        LearningRecord.CompletionModifiers(selectedNode, ref progressDiffClassLedger);
+                        LearningRecord.CompletionAbilities(selectedNodeRepeatAdj, ref progressDiffClassLedger);
+                        LearningRecord.CompletionHediffs(selectedNodeRepeatAdj, ref progressDiffClassLedger);
+                        LearningRecord.CompletionModifiers(selectedNodeRepeatAdj, ref progressDiffClassLedger);
                         progressDiffLedger.classDiffLedgers[ISF_DefOf.ISF_Generic_Class] = progressDiffClassLedger;
                         diffLog.AddLedger(progressDiffLedger);
 
-                        LearningRecord.CompletionLearningUnlock(selectedNode);
-                        schema.progressTracker.usedPoints += selectedNode.pointReq;
+                        LearningRecord.CompletionLearningUnlock(selectedNodeRepeatAdj);
+                        schema.progressTracker.usedPoints += selectedNodeRepeatAdj.pointReq;
 
                         foreach (var et in schema.energyTrackers) et.ForceClearEnergyStatCaches(); // ClearStatCache();
                     }
@@ -167,30 +173,30 @@ namespace ItsSorceryFramework
                     {
                         reason = "ISF_GeneralDialogLocked".Translate();
 
-                        if (selectedNode.pointReq + progress.usedPoints > progress.points) reason += "\n" +
+                        if (selectedNodeRepeatAdj.pointReq + progress.usedPoints > progress.points) reason += "\n" +
                                 "ISF_LearningNodeLockedPoints".Translate(schema.progressTracker.def.skillPointLabelKey.Translate());
 
-                        if (LearningRecord.PrereqFufilledProhibit(selectedNode)) reason += "\n" + "ISF_GeneralDialogLockedNodesProhibit".Translate();
-                        if (LearningRecord.PrereqResearchFufilledProhibit(selectedNode)) reason += "\n" + "ISF_GeneralDialogLockedResearchProhibit".Translate();
-                        if (LearningRecord.PrereqGenesFulfilledProhibit(selectedNode)) reason += "\n" + "ISF_GeneralDialogLockedGenesProhibit".Translate();
-                        if (LearningRecord.PrereqTraitsFulfilledProhibit(selectedNode)) reason += "\n" + "ISF_GeneralDialogLockedTraitProhibit".Translate();
-                        if (LearningRecord.PrereqXenotypeFulfilledProhibit(selectedNode)) reason += "\n" + "ISF_GeneralDialogLockedXenotypeProhibit".Translate();
-                        if (LearningRecord.PrereqLevelFulfilledProhibit(selectedNode)) reason += "\n" + "ISF_GeneralDialogLockedLevelProhibit".Translate();
-                        if (LearningRecord.PrereqAgeFulfilledProhibit(selectedNode)) reason += "\n" + "ISF_GeneralDialogLockedAgeProhibit".Translate();
-                        if (LearningRecord.PrereqStatFulfilledProhibit(selectedNode)) reason += "\n" + "ISF_GeneralDialogLockedStatProhibit".Translate();
-                        if (LearningRecord.PrereqSkillFulfilledProhibit(selectedNode)) reason += "\n" + "ISF_GeneralDialogLockedSkillProhibit".Translate();
-                        if (LearningRecord.PrereqHediffFulfilledProhibit(selectedNode)) reason += "\n" + "ISF_GeneralDialogLockedHediffProhibit".Translate();
+                        if (LearningRecord.PrereqFufilledProhibit(selectedNodeRepeatAdj)) reason += "\n" + "ISF_GeneralDialogLockedNodesProhibit".Translate();
+                        if (LearningRecord.PrereqResearchFufilledProhibit(selectedNodeRepeatAdj)) reason += "\n" + "ISF_GeneralDialogLockedResearchProhibit".Translate();
+                        if (LearningRecord.PrereqGenesFulfilledProhibit(selectedNodeRepeatAdj)) reason += "\n" + "ISF_GeneralDialogLockedGenesProhibit".Translate();
+                        if (LearningRecord.PrereqTraitsFulfilledProhibit(selectedNodeRepeatAdj)) reason += "\n" + "ISF_GeneralDialogLockedTraitProhibit".Translate();
+                        if (LearningRecord.PrereqXenotypeFulfilledProhibit(selectedNodeRepeatAdj)) reason += "\n" + "ISF_GeneralDialogLockedXenotypeProhibit".Translate();
+                        if (LearningRecord.PrereqLevelFulfilledProhibit(selectedNodeRepeatAdj)) reason += "\n" + "ISF_GeneralDialogLockedLevelProhibit".Translate();
+                        if (LearningRecord.PrereqAgeFulfilledProhibit(selectedNodeRepeatAdj)) reason += "\n" + "ISF_GeneralDialogLockedAgeProhibit".Translate();
+                        if (LearningRecord.PrereqStatFulfilledProhibit(selectedNodeRepeatAdj)) reason += "\n" + "ISF_GeneralDialogLockedStatProhibit".Translate();
+                        if (LearningRecord.PrereqSkillFulfilledProhibit(selectedNodeRepeatAdj)) reason += "\n" + "ISF_GeneralDialogLockedSkillProhibit".Translate();
+                        if (LearningRecord.PrereqHediffFulfilledProhibit(selectedNodeRepeatAdj)) reason += "\n" + "ISF_GeneralDialogLockedHediffProhibit".Translate();
 
-                        if (!LearningRecord.PrereqFufilled(selectedNode)) reason += "\n" + "ISF_GeneralDialogLockedNodes".Translate();
-                        if (!LearningRecord.PrereqResearchFufilled(selectedNode)) reason += "\n" + "ISF_GeneralDialogLockedResearch".Translate();
-                        if (!LearningRecord.PrereqGenesFulfilled(selectedNode)) reason += "\n" + "ISF_GeneralDialogLockedGenes".Translate();
-                        if (!LearningRecord.PrereqTraitsFulfilled(selectedNode)) reason += "\n" + "ISF_GeneralDialogLockedTrait".Translate();
-                        if (!LearningRecord.PrereqXenotypeFulfilled(selectedNode)) reason += "\n" + "ISF_GeneralDialogLockedXenotype".Translate();          
-                        if (!LearningRecord.PrereqLevelFulfilled(selectedNode)) reason += "\n" + "ISF_GeneralDialogLockedLevel".Translate();
-                        if (!LearningRecord.PrereqAgeFulfilled(selectedNode)) reason += "\n" + "ISF_GeneralDialogLockedAge".Translate();
-                        if (!LearningRecord.PrereqStatFulfilled(selectedNode)) reason += "\n" + "ISF_GeneralDialogLockedStat".Translate();
-                        if (!LearningRecord.PrereqSkillFulfilled(selectedNode)) reason += "\n"+ "ISF_GeneralDialogLockedSkill".Translate();
-                        if (!LearningRecord.PrereqHediffFulfilled(selectedNode)) reason += "\n" + "ISF_GeneralDialogLockedHediff".Translate();
+                        if (!LearningRecord.PrereqFufilled(selectedNodeRepeatAdj)) reason += "\n" + "ISF_GeneralDialogLockedNodes".Translate();
+                        if (!LearningRecord.PrereqResearchFufilled(selectedNodeRepeatAdj)) reason += "\n" + "ISF_GeneralDialogLockedResearch".Translate();
+                        if (!LearningRecord.PrereqGenesFulfilled(selectedNodeRepeatAdj)) reason += "\n" + "ISF_GeneralDialogLockedGenes".Translate();
+                        if (!LearningRecord.PrereqTraitsFulfilled(selectedNodeRepeatAdj)) reason += "\n" + "ISF_GeneralDialogLockedTrait".Translate();
+                        if (!LearningRecord.PrereqXenotypeFulfilled(selectedNodeRepeatAdj)) reason += "\n" + "ISF_GeneralDialogLockedXenotype".Translate();          
+                        if (!LearningRecord.PrereqLevelFulfilled(selectedNodeRepeatAdj)) reason += "\n" + "ISF_GeneralDialogLockedLevel".Translate();
+                        if (!LearningRecord.PrereqAgeFulfilled(selectedNodeRepeatAdj)) reason += "\n" + "ISF_GeneralDialogLockedAge".Translate();
+                        if (!LearningRecord.PrereqStatFulfilled(selectedNodeRepeatAdj)) reason += "\n" + "ISF_GeneralDialogLockedStat".Translate();
+                        if (!LearningRecord.PrereqSkillFulfilled(selectedNodeRepeatAdj)) reason += "\n"+ "ISF_GeneralDialogLockedSkill".Translate();
+                        if (!LearningRecord.PrereqHediffFulfilled(selectedNodeRepeatAdj)) reason += "\n" + "ISF_GeneralDialogLockedHediff".Translate();
                     }
 
                     this.leftStartAreaHeight = Mathf.Max(Text.CalcHeight(reason, confirmButton.width - 10f) + 10f, 68f);
@@ -216,15 +222,14 @@ namespace ItsSorceryFramework
                         ProgressDiffLedger progressDiffLedger = diffLog.PrepNewLedger(schema.progressTracker);
                         ProgressDiffClassLedger progressDiffClassLedger = new ProgressDiffClassLedger();
 
-                        //LearningRecord.completion[selectedNode] = true;
                         LearningRecord.CompletionRecordUpdate(selectedNode);
-                        LearningRecord.CompletionAbilities(selectedNode, ref progressDiffClassLedger);
-                        LearningRecord.CompletionHediffs(selectedNode, ref progressDiffClassLedger);
-                        LearningRecord.CompletionModifiers(selectedNode, ref progressDiffClassLedger);
+                        LearningRecord.CompletionAbilities(selectedNodeRepeatAdj, ref progressDiffClassLedger);
+                        LearningRecord.CompletionHediffs(selectedNodeRepeatAdj, ref progressDiffClassLedger);
+                        LearningRecord.CompletionModifiers(selectedNodeRepeatAdj, ref progressDiffClassLedger);
                         progressDiffLedger.classDiffLedgers[ISF_DefOf.ISF_Generic_Class] = progressDiffClassLedger;
                         diffLog.AddLedger(progressDiffLedger);
 
-                        LearningRecord.CompletionLearningUnlock(selectedNode);
+                        LearningRecord.CompletionLearningUnlock(selectedNodeRepeatAdj);
 
                         foreach (var et in schema.energyTrackers) et.ForceClearEnergyStatCaches();
                     }
@@ -266,7 +271,6 @@ namespace ItsSorceryFramework
             // PROHIBIT prereqs
             if (!node.prereqNodesProhibit.NullOrEmpty())
             {
-                //HashSet<LearningTreeNodeDef> nodesDone = LearningRecord.completion.Where(x => x.Value == true).Select(x => x.Key).ToHashSet();
                 HashSet<LearningTreeNodeDef> nodesDone = LearningRecord.completion.Where(x => LearningRecord.ValidateNodeCanFufillPrereq(x.Key) == true).Select(x => x.Key).ToHashSet();
                 doneCount = PrereqUtility.PrereqsDoneCount(nodesDone, node.prereqNodesProhibit); //prereqsDone.Item1
                 Widgets.LabelCacheHeight(ref rect, "ISF_GeneralDialogPrereqNodeProhibit".Translate() + PrereqUtility.PrereqsModeNotif(node.prereqNodeModeProhibit, node.prereqNodeModeMinProhibit, doneCount), true, false);
@@ -276,7 +280,7 @@ namespace ItsSorceryFramework
                 {
                     //SetPrereqStatusColor(!LearningRecord.completion[prereq], node);
                     SetPrereqStatusColor(!LearningRecord.ValidateNodeCanFufillPrereq(prereq));
-                    Widgets.LabelCacheHeight(ref rect, prereq.LabelCap, true, false);
+                    Widgets.LabelCacheHeight(ref rect, LearningRecord.CompletionNodePrereqLabel(prereq), true, false); //prereq.LabelCap
                     if (Widgets.ButtonInvisible(rect, true))
                     {
                         SoundDefOf.Click.PlayOneShotOnCamera(null);
@@ -465,7 +469,7 @@ namespace ItsSorceryFramework
                 {
                     //SetPrereqStatusColor(LearningRecord.completion[prereq], node);
                     SetPrereqStatusColor(LearningRecord.ValidateNodeCanFufillPrereq(prereq));
-                    Widgets.LabelCacheHeight(ref rect, prereq.LabelCap, true, false);
+                    Widgets.LabelCacheHeight(ref rect, LearningRecord.CompletionNodePrereqLabel(prereq), true, false); // prereq.LabelCap
                     if (Widgets.ButtonInvisible(rect, true))
                     {
                         SoundDefOf.Click.PlayOneShotOnCamera(null);
@@ -960,7 +964,7 @@ namespace ItsSorceryFramework
                 }
 
                 Text.Anchor = TextAnchor.UpperCenter;
-                string nodeLabelCap = LearningRecord.CompletionNodeLabel(node);
+                string nodeLabelCap = LearningRecord.CompletionNodeTreeLabel(node);
                 Widgets.LabelCacheHeight(ref nodeRect, nodeLabelCap, true, false);
                 Text.Anchor = TextAnchor.UpperLeft;
 
@@ -1042,7 +1046,7 @@ namespace ItsSorceryFramework
 
                 else if (selectedNode.prereqNodes.NotNullAndContains(node))
                 {
-                    // check if node fufills prereq
+                    // check if node fufills prereq - 
                     if(!LearningRecord.ValidateNodeCanFufillPrereq(node)) return TexUI.DependencyOutlineResearchColor;
                     else return TexUI.HighlightLineResearchColor;
                 }

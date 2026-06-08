@@ -6,7 +6,7 @@ using Verse;
 
 namespace ItsSorceryFramework
 {
-    public class ProgressTrackerClassDef : ISF_PrereqDef //Def
+    public class ProgressTrackerClassDef : ISF_PrereqDef
     {
         public ProgressTrackerDef progressTrackerDef;
         

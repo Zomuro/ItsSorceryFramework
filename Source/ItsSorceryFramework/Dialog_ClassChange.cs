@@ -301,7 +301,6 @@ namespace ItsSorceryFramework
             if (!classDef.prereqNodesProhibit.NullOrEmpty())
             {
                 LearningNodeRecord LearningRecord = progressTracker.schema.learningNodeRecord; // reuse old methods here
-                //HashSet<LearningTreeNodeDef> nodesDone = LearningRecord.completion.Where(x => x.Value == true).Select(x => x.Key).ToHashSet();
                 HashSet<LearningTreeNodeDef> nodesDone = LearningRecord.completion.Where(x => LearningRecord.ValidateNodeCanFufillPrereq(x.Key) == true).Select(x => x.Key).ToHashSet();
                 doneCount = PrereqUtility.PrereqsDoneCount(nodesDone, classDef.prereqNodesProhibit);
                 Widgets.LabelCacheHeight(ref rect, "ISF_GeneralDialogPrereqNodeProhibit".Translate() + PrereqUtility.PrereqsModeNotif(classDef.prereqNodeModeProhibit, classDef.prereqNodeModeMinProhibit, doneCount), true, false);
@@ -310,7 +309,7 @@ namespace ItsSorceryFramework
                 foreach (var prereq in classDef.prereqNodesProhibit)
                 {
                     PrereqUtility.SetPrereqStatusColor(!LearningRecord.ValidateNodeCanFufillPrereq(prereq)); //!LearningRecord.completion[prereq]
-                    Widgets.LabelCacheHeight(ref rect, prereq.LabelCap, true, false);
+                    Widgets.LabelCacheHeight(ref rect, LearningRecord.CompletionNodePrereqLabel(prereq), true, false); //LabelCap
                     rect.yMin += rect.height;
                 }
                 rect.xMin = xMin;
@@ -486,7 +485,6 @@ namespace ItsSorceryFramework
             if (!classDef.prereqNodes.NullOrEmpty())
             {
                 LearningNodeRecord LearningRecord = progressTracker.schema.learningNodeRecord; // reuse old methods here
-                //HashSet<LearningTreeNodeDef> nodesDone = LearningRecord.completion.Where(x => x.Value == true).Select(x => x.Key).ToHashSet();
                 HashSet<LearningTreeNodeDef> nodesDone = LearningRecord.completion.Where(x => LearningRecord.ValidateNodeCanFufillPrereq(x.Key) == true).Select(x => x.Key).ToHashSet();
                 doneCount = PrereqUtility.PrereqsDoneCount(nodesDone, classDef.prereqNodes);
                 Widgets.LabelCacheHeight(ref rect, "ISF_GeneralDialogPrereqNode".Translate() + PrereqUtility.PrereqsModeNotif(classDef.prereqNodeMode, classDef.prereqNodeModeMin, doneCount), true, false);
@@ -495,7 +493,7 @@ namespace ItsSorceryFramework
                 foreach (var prereq in classDef.prereqNodes)
                 {
                     PrereqUtility.SetPrereqStatusColor(LearningRecord.ValidateNodeCanFufillPrereq(prereq)); //LearningRecord.completion[prereq]
-                    Widgets.LabelCacheHeight(ref rect, prereq.LabelCap, true, false);
+                    Widgets.LabelCacheHeight(ref rect, LearningRecord.CompletionNodePrereqLabel(prereq), true, false); // prereq.LabelCap
                     rect.yMin += rect.height;
                 }
                 rect.xMin = xMin;

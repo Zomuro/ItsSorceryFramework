@@ -1,5 +1,6 @@
 ﻿using RimWorld;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Verse;
 
@@ -18,6 +19,8 @@ namespace ItsSorceryFramework
 		public int pointReq = 1;
 
 		public bool condVisiblePrereq = false;
+
+		public bool hidden = false;
 
 		[NoTranslate]
 		public string iconPath;
@@ -48,11 +51,13 @@ namespace ItsSorceryFramework
 
         public int repeatLimit = 0;
 
-		public int repeatPrereqComp = 0; // RENAME TO BETTER THING
+		public int repeatCompPrereq = 0;
+
+		public List<LearningTreeNodeDef> repeatNodeFactors = new List<LearningTreeNodeDef>();
 
         private string cachedTip;
 
-		public int RepeatPrereqCompClamped => Mathf.Clamp(repeatPrereqComp, 0, repeatLimit); // clamped value for prereq validation
+		public int RepeatCompPrereqClamped => repeatLimit <= 0 ? repeatCompPrereq : Mathf.Clamp(repeatCompPrereq, 0, repeatLimit); // clamped value for prereq validation
 
         public float ViewX => coordX;
 
@@ -141,7 +146,21 @@ namespace ItsSorceryFramework
 			if(error) Log.Error("The LearningTrackerDef " + defName + " has errors.");
 
 		}
-	}
+
+        public LearningTreeNodeDef GetRepeatNodeDef(int repeats)
+        {
+            if (repeatable && !repeatNodeFactors.NullOrEmpty() && repeats > 0)
+            {
+                foreach (LearningTreeNodeDef factor in repeatNodeFactors.OrderByDescending(x => x.level))
+                {
+                    // if the level devided by the modulo leaves a remainder of 0
+                    if (repeats % factor.level == 0) return factor;
+                }
+            }
+
+            return this;
+        }
+    }
 
 	public class NodeHediffProps
     {
@@ -149,6 +168,8 @@ namespace ItsSorceryFramework
 
 		public float severity = 1;
     }
+
+
 
 	
 }

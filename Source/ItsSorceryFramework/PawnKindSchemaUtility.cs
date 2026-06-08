@@ -191,6 +191,46 @@ namespace ItsSorceryFramework
             }
         }
 
+        public static void ResolvePrereqsNodeHelper(LearningTreeNodeDef nodeDef, ref SorcerySchema schema)
+        {
+            LearningTreeNodeDef selectedNodeRepeatAdj = schema.learningNodeRecord.GetRepeatNodeDef(nodeDef);
+
+            schema.learningNodeRecord.completion[nodeDef] = true; // handle node completion first
+            schema.progressTracker.usedPoints += nodeDef.pointReq; // increase the number of required points
+
+            // level and point adjustment for consistency //
+            // level up magic till used points are exceeded by total points OR pawn is at maximum level
+            while (!schema.progressTracker.Maxed && schema.progressTracker.points < schema.progressTracker.usedPoints)
+                schema.progressTracker.ForceLevelUp(1, true); // force level up one at a time, don't show msgs
+
+            // if the system happens to be maxed out, instead try to make up the point difference directly
+            if (schema.progressTracker.Maxed)
+                schema.progressTracker.points += Math.Max(0, schema.progressTracker.usedPoints - schema.progressTracker.points);
+
+            // other prereq resolution //
+            // stats changes have many sources - thus, it is easier to assume that the pawn had met a requirement previously
+            // hediffs and skill level are more difficult to wave away
+            ResolveForceHediff(nodeDef.prereqHediffs, ref schema); // if set, forces pawn to have hediffs before completing the node
+            ResolveForceSkill(nodeDef.prereqSkills, ref schema); // if set, forces pawn to have the proper skill level before completing the node
+            ResolveForceLevel(nodeDef.level, ref schema); // if set, forces pawn to be leveled up to a certain level
+
+            // complete and record node completion results //
+            // prep record in diff log
+            ProgressDiffLog diffLog = schema.progressTracker.progressDiffLog;
+            ProgressDiffLedger progressDiffLedger = diffLog.PrepNewLedger(schema.progressTracker);
+            ProgressDiffClassLedger progressDiffClassLedger = new ProgressDiffClassLedger();
+
+            // complete node and record results
+            schema.learningNodeRecord.CompletionAbilities(nodeDef, ref progressDiffClassLedger); // adjust abilities
+            schema.learningNodeRecord.CompletionHediffs(nodeDef, ref progressDiffClassLedger); // adjust hediffs
+            schema.learningNodeRecord.CompletionModifiers(nodeDef, ref progressDiffClassLedger); // adjust stat modifiers
+
+            // add record to diff log
+            progressDiffLedger.classDiffLedgers[ISF_DefOf.ISF_Generic_Class] = progressDiffClassLedger;
+            diffLog.AddLedger(progressDiffLedger);
+
+        }
+
         public static void ResolveForceHediffNode(SchemaNodeReq nodeReq, ref SorcerySchema schema)
         {
             if (!nodeReq.forceHediff) return; // if the node req doesn't force hediff requirements, skip

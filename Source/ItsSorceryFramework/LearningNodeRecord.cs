@@ -109,8 +109,9 @@ namespace ItsSorceryFramework
             }
         }
 
-        public string CompletionNodeLabel(LearningTreeNodeDef node)
+        public string CompletionNodeTreeLabel(LearningTreeNodeDef node)
         {
+            // creates correct node labels on the learningtracker_tree
             if (!node.repeatable) return node.LabelCap; // if not repeatable just the label
 
             string labelPostFix = ""; // otherwise
@@ -118,6 +119,23 @@ namespace ItsSorceryFramework
             else labelPostFix = $" ({Mathf.Min(completionRepeated[node] + 1, node.repeatLimit)}/{node.repeatLimit})";
 
             return node.LabelCap + labelPostFix;
+        }
+
+        public string CompletionNodePrereqLabel(LearningTreeNodeDef node)
+        {
+            // gets correct node labels at the node's own defined level of completion
+            if (!node.repeatable) return node.LabelCap; // if not repeatable just the label
+
+            string labelPostFix = ""; // otherwise
+            if (node.repeatLimit <= 0) labelPostFix = $" ({node.repeatCompPrereq})";
+            else labelPostFix = $" ({node.RepeatCompPrereqClamped}/{node.repeatLimit})";
+
+            return node.LabelCap + labelPostFix;
+        }
+
+        public LearningTreeNodeDef GetRepeatNodeDef(LearningTreeNodeDef node)
+        {
+            return node.GetRepeatNodeDef(completionRepeated[node]);
         }
 
         public bool PrereqFufilled(LearningTreeNodeDef node)
@@ -382,15 +400,18 @@ namespace ItsSorceryFramework
         public bool ValidateNodeCanFufillPrereq(LearningTreeNodeDef node) // figure out if a node qualifies as a prereq
         {
             if (!completion[node]) return false; // if completion is false it's not good for prereq
-            if (node.repeatable && completionRepeated[node] < node.RepeatPrereqCompClamped) return false; // if it hasn't been completed x amount of times then false
+            if (node.repeatable && completionRepeated[node] < node.RepeatCompPrereqClamped) return false; // if it hasn't been completed x amount of times then false
 
             return true;
         }
 
         public void CompletionRecordUpdate(LearningTreeNodeDef node)
         {
+            // do NOT attempt to complete this completion record
             completion[node] = true;
             if (node.repeatable) completionRepeated[node] += 1;
         }
+
+
     }
 }
